@@ -30,7 +30,8 @@
             "mainClass": "vn.edu.uit.msshop.gateway.ApiGatewayApplication",
             "projectName": "api-gateway",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Duser.timezone=UTC"
         }
     ]
 }
