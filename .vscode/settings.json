@@ -2,8 +2,12 @@
     "cSpell.words": [
         "Duser",
         "msshop",
+        "pgadmin",
+        "PGDATA",
         "projectlombok",
-        "springframework"
+        "projectreactor",
+        "springframework",
+        "webflux"
     ],
     "java.import.maven.enabled": true,
     "java.autobuild.enabled": true,
