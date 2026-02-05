@@ -8,7 +8,8 @@
             "mainClass": "vn.edu.uit.msshop.config.ConfigServerApplication",
             "projectName": "config-server",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Duser.timezone=UTC"
         },
         {
             "type": "java",
@@ -18,7 +19,8 @@
             "mainClass": "vn.edu.uit.msshop.discovery.DiscoveryServerApplication",
             "projectName": "discovery-server",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Duser.timezone=UTC"
         }
     ]
 }
