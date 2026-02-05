@@ -1,0 +1,12 @@
+{
+    "cSpell.words": [
+        "Duser",
+        "msshop",
+        "projectlombok",
+        "springframework"
+    ],
+    "java.import.maven.enabled": true,
+    "java.autobuild.enabled": true,
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "automatic"
+}
