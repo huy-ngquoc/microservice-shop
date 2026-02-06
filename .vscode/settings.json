@@ -1,16 +1,27 @@
 {
     "cSpell.words": [
+        "ADMINPASSWORD",
+        "ADMINUSERNAME",
+        "alibou",
+        "confluentinc",
+        "dpage",
         "Duser",
+        "INITDB",
+        "maildev",
         "msshop",
+        "openzipkin",
         "pgadmin",
         "PGDATA",
         "projectlombok",
         "projectreactor",
         "springframework",
-        "webflux"
+        "valueobject",
+        "webflux",
+        "zipkin"
     ],
     "java.import.maven.enabled": true,
     "java.autobuild.enabled": true,
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.format.settings.url": ".vscode/java-formatter.xml"
 }
