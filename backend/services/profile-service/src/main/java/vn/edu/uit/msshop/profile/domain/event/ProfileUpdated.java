@@ -3,8 +3,6 @@ package vn.edu.uit.msshop.profile.domain.event;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.jspecify.annotations.NonNull;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
