@@ -2,9 +2,8 @@ package vn.edu.uit.msshop.profile.domain.model.valueobject;
 
 import java.util.regex.Pattern;
 
-import org.jspecify.annotations.NonNull;
-
-public record FullName(@NonNull String value) {
+public record FullName(
+        String value) {
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\p{IsWhite_Space}+");
 
     public FullName {

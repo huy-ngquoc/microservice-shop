@@ -1,9 +1,6 @@
 package vn.edu.uit.msshop.profile.domain.model.valueobject;
 
-import org.jspecify.annotations.NonNull;
-
 public record AvatarPublicId(
-        @NonNull
         String value) {
     public AvatarPublicId {
         if (value == null) {

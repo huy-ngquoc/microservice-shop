@@ -1,9 +1,6 @@
 package vn.edu.uit.msshop.profile.domain.model.valueobject;
 
-import org.jspecify.annotations.NonNull;
-
 public record ShippingAddress(
-        @NonNull
         String value) {
     public ShippingAddress {
         if (value == null) {

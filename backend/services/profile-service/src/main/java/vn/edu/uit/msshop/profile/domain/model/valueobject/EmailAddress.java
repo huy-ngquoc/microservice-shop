@@ -3,10 +3,7 @@ package vn.edu.uit.msshop.profile.domain.model.valueobject;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import org.jspecify.annotations.NonNull;
-
 public record EmailAddress(
-        @NonNull
         String value) {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[^@\\p{Z}\\t\\n\\r\\f]+@[^@\\p{Z}\\t\\n\\r\\f]+\\.[^@\\p{Z}\\t\\n\\r\\f]+$");

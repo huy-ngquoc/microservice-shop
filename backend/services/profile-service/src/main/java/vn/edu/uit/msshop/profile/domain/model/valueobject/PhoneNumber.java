@@ -2,10 +2,7 @@ package vn.edu.uit.msshop.profile.domain.model.valueobject;
 
 import java.util.regex.Pattern;
 
-import org.jspecify.annotations.NonNull;
-
 public record PhoneNumber(
-        @NonNull
         String value) {
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile(
             "^\\+?\\d{8,15}$");

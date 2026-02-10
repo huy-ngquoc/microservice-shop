@@ -3,8 +3,9 @@ package vn.edu.uit.msshop.profile.domain.model;
 import java.util.Objects;
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.edu.uit.msshop.profile.domain.model.valueobject.Avatar;
@@ -17,6 +18,8 @@ import vn.edu.uit.msshop.profile.domain.model.valueobject.ShippingAddress;
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
+@AllArgsConstructor(
+        access = AccessLevel.PRIVATE)
 public final class Profile {
     @EqualsAndHashCode.Include
     @NonNull
@@ -33,25 +36,6 @@ public final class Profile {
 
     private final Avatar avatar;
 
-    private Profile(
-            @NonNull
-            final ProfileId id,
-
-            @NonNull
-            final FullName fullName,
-
-            final ShippingAddress address,
-            final PhoneNumber phoneNumber,
-            final EmailAddress email,
-            final Avatar avatar) {
-        this.id = Objects.requireNonNull(id);
-        this.fullName = Objects.requireNonNull(fullName);
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.avatar = avatar;
-    }
-
     public static @NonNull Profile create(
             @NonNull
             final ProfileId id,
@@ -60,6 +44,10 @@ public final class Profile {
             final FullName fullName,
 
             final EmailAddress email) {
+        if (fullName == null) {
+            throw new IllegalArgumentException("Full name must NOT be null");
+        }
+
         return new Profile(
                 id,
                 fullName,
@@ -69,61 +57,42 @@ public final class Profile {
                 null);
     }
 
-    public @NonNull Profile withFullName(
+    public @NonNull Profile with(
             @NonNull
-            final FullName newName) {
-        return new Profile(
-                id,
-                Objects.requireNonNull(newName),
-                address,
-                phoneNumber,
-                email,
-                avatar);
-    }
+            final FullName newFullName,
 
-    public @NonNull Profile withAddress(
-            @Nullable
-            final ShippingAddress newAddress) {
-        return new Profile(
-                id,
-                fullName,
-                newAddress,
-                phoneNumber,
-                email,
-                avatar);
-    }
-
-    public @NonNull Profile withEmail(
-            @Nullable
-            final EmailAddress newEmail) {
-        return new Profile(
-                id,
-                fullName,
-                address,
-                phoneNumber,
-                newEmail,
-                avatar);
-    }
-
-    public @NonNull Profile withAvatar(
-            @Nullable
+            final EmailAddress newEmail,
+            final PhoneNumber newPhoneNumber,
+            final ShippingAddress newAddress,
             final Avatar newAvatar) {
+        if (newFullName == null) {
+            throw new IllegalArgumentException("New full name must NOT be null");
+        }
+
+        if (isSameInfo(newFullName, newEmail, newPhoneNumber, newAddress, newAvatar)) {
+            return this;
+        }
+
         return new Profile(
-                id,
-                fullName,
-                address,
-                phoneNumber,
-                email,
+                this.id,
+                newFullName,
+                newAddress,
+                newPhoneNumber,
+                newEmail,
                 newAvatar);
     }
 
-    public @NonNull Profile withoutAvatar() {
-        return new Profile(
-                id,
-                fullName,
-                address,
-                phoneNumber,
-                email,
-                null);
+    @SuppressWarnings("java:S1067")
+    private boolean isSameInfo(
+            final FullName newFullName,
+            final EmailAddress newEmail,
+            final PhoneNumber newPhoneNumber,
+            final ShippingAddress newAddress,
+            final Avatar newAvatar) {
+        return Objects.equals(newFullName, this.fullName)
+                && Objects.equals(newEmail, this.email)
+                && Objects.equals(newPhoneNumber, this.phoneNumber)
+                && Objects.equals(newAddress, this.address)
+                && Objects.equals(newAvatar, this.avatar);
     }
 }
