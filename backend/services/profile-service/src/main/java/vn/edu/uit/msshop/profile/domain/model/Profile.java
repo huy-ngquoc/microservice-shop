@@ -3,9 +3,11 @@ package vn.edu.uit.msshop.profile.domain.model;
 import java.util.Objects;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.edu.uit.msshop.profile.domain.model.valueobject.Avatar;
@@ -19,6 +21,8 @@ import vn.edu.uit.msshop.profile.domain.model.valueobject.ShippingAddress;
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
 @AllArgsConstructor(
+        access = AccessLevel.PRIVATE)
+@Builder(
         access = AccessLevel.PRIVATE)
 public final class Profile {
     @EqualsAndHashCode.Include
@@ -36,63 +40,138 @@ public final class Profile {
 
     private final Avatar avatar;
 
-    public static @NonNull Profile create(
+    @Builder
+    public static record Draft(
             @NonNull
-            final ProfileId id,
+            ProfileId id,
 
             @NonNull
-            final FullName fullName,
+            FullName fullName,
 
-            final EmailAddress email) {
-        if (fullName == null) {
+            ShippingAddress address,
+            PhoneNumber phoneNumber,
+            EmailAddress email) {
+    }
+
+    @Builder
+    public static record UpdateInfo(
+            @NonNull
+            ProfileId id,
+
+            @NonNull
+            FullName fullName,
+
+            ShippingAddress address,
+            PhoneNumber phoneNumber,
+            EmailAddress email) {
+    }
+
+    @Builder
+    public static record Snapshot(
+            @NonNull
+            ProfileId id,
+
+            @NonNull
+            FullName fullName,
+
+            ShippingAddress address,
+            PhoneNumber phoneNumber,
+            EmailAddress email,
+            Avatar avatar) {
+    }
+
+    @NullMarked
+    public static Profile create(
+            final Draft d) {
+        if (d == null) {
+            throw new IllegalArgumentException("Draft must NOT be null");
+        }
+
+        if (d.id() == null) {
+            throw new IllegalArgumentException("Id must NOT be null");
+        }
+
+        if (d.fullName() == null) {
             throw new IllegalArgumentException("Full name must NOT be null");
         }
 
-        return new Profile(
-                id,
-                fullName,
-                null,
-                null,
-                email,
-                null);
+        return Profile.builder()
+                .id(d.id())
+                .fullName(d.fullName())
+                .address(d.address())
+                .phoneNumber(d.phoneNumber())
+                .email(d.email())
+                .build();
     }
 
-    public @NonNull Profile with(
-            @NonNull
-            final FullName newFullName,
+    @NullMarked
+    public static Profile reconstitute(
+            final Snapshot s) {
+        if (s == null) {
+            throw new IllegalArgumentException("Snapshot must NOT be null");
+        }
 
-            final EmailAddress newEmail,
-            final PhoneNumber newPhoneNumber,
-            final ShippingAddress newAddress,
-            final Avatar newAvatar) {
-        if (newFullName == null) {
+        if (s.id() == null) {
+            throw new IllegalArgumentException("Id must NOT be null");
+        }
+
+        if (s.fullName() == null) {
+            throw new IllegalArgumentException("Full name must NOT be null");
+        }
+
+        return Profile.builder()
+                .id(s.id())
+                .fullName(s.fullName())
+                .address(s.address())
+                .phoneNumber(s.phoneNumber())
+                .email(s.email())
+                .avatar(s.avatar())
+                .build();
+    }
+
+    @NullMarked
+    public Profile applyUpdateInfo(
+            final UpdateInfo u) {
+        if (u == null) {
+            throw new IllegalArgumentException("Update must NOT be null");
+        }
+
+        if (u.fullName() == null) {
             throw new IllegalArgumentException("New full name must NOT be null");
         }
 
-        if (isSameInfo(newFullName, newEmail, newPhoneNumber, newAddress, newAvatar)) {
+        if (this.isSameInfoWithUpdateInfo(u)) {
             return this;
         }
 
-        return new Profile(
-                this.id,
-                newFullName,
-                newAddress,
-                newPhoneNumber,
-                newEmail,
-                newAvatar);
+        return Profile.builder()
+                .id(this.id)
+                .fullName(u.fullName())
+                .address(u.address())
+                .phoneNumber(u.phoneNumber())
+                .email(u.email())
+                .build();
     }
 
+    @NullMarked
+    public Snapshot snapshot() {
+        return Snapshot.builder()
+                .id(this.id)
+                .fullName(this.fullName)
+                .address(this.address)
+                .phoneNumber(this.phoneNumber)
+                .email(this.email)
+                .avatar(this.avatar)
+                .build();
+    }
+
+    @NullMarked
     @SuppressWarnings("java:S1067")
-    private boolean isSameInfo(
-            final FullName newFullName,
-            final EmailAddress newEmail,
-            final PhoneNumber newPhoneNumber,
-            final ShippingAddress newAddress,
-            final Avatar newAvatar) {
-        return Objects.equals(newFullName, this.fullName)
-                && Objects.equals(newEmail, this.email)
-                && Objects.equals(newPhoneNumber, this.phoneNumber)
-                && Objects.equals(newAddress, this.address)
-                && Objects.equals(newAvatar, this.avatar);
+    private boolean isSameInfoWithUpdateInfo(
+            final UpdateInfo u) {
+        return Objects.equals(u.fullName(), this.fullName)
+                && Objects.equals(u.email(), this.email)
+                && Objects.equals(u.phoneNumber(), this.phoneNumber)
+                && Objects.equals(u.address(), this.address);
     }
 }

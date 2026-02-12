@@ -3,6 +3,8 @@ package vn.edu.uit.msshop.profile.domain.model.valueobject;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.NullUnmarked;
+
 public record EmailAddress(
         String value) {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
@@ -18,5 +20,15 @@ public record EmailAddress(
         if (!EMAIL_PATTERN.matcher(value).matches()) {
             throw new IllegalArgumentException("email invalid");
         }
+    }
+
+    @NullUnmarked
+    public static EmailAddress fromValueOrNull(
+            final String value) {
+        if (value == null) {
+            return null;
+        }
+
+        return new EmailAddress(value);
     }
 }

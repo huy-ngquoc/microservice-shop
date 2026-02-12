@@ -20,8 +20,13 @@ public class CreateProfileService implements CreateProfileUseCase {
     @Override
     @Transactional
     public void create(
-            CreateProfileCommand cmd) {
-        final var profile = Profile.create(cmd.profileId(), cmd.fullName(), cmd.email());
+            final CreateProfileCommand cmd) {
+        final var draft = Profile.Draft.builder()
+                .id(cmd.profileId())
+                .fullName(cmd.fullName())
+                .email(cmd.email())
+                .build();
+        final var profile = Profile.create(draft);
         final var saved = this.savePort.save(profile);
 
         this.eventPort.publish(new ProfileCreated(saved.getId()));

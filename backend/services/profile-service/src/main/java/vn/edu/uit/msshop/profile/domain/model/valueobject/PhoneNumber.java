@@ -2,6 +2,8 @@ package vn.edu.uit.msshop.profile.domain.model.valueobject;
 
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.NullUnmarked;
+
 public record PhoneNumber(
         String value) {
     private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile(
@@ -17,5 +19,15 @@ public record PhoneNumber(
         if (!PHONE_NUMBER_PATTERN.matcher(value).matches()) {
             throw new IllegalArgumentException("phone invalid");
         }
+    }
+
+    @NullUnmarked
+    public static PhoneNumber fromValueOrNull(
+            final String value) {
+        if (value == null) {
+            return null;
+        }
+
+        return new PhoneNumber(value);
     }
 }
