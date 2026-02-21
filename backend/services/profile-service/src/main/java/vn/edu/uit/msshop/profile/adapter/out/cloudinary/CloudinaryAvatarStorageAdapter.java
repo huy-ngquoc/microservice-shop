@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Uploader;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.profile.adapter.exception.AvatarUploadFailedException;
 import vn.edu.uit.msshop.profile.application.port.out.DeleteAvatarPort;
