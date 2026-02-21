@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.profile.adapter.in.web.request.common.ChangeRequest;
 import vn.edu.uit.msshop.profile.adapter.in.web.request.common.PatchRequest;
 
 @NullUnmarked
-public record UpdateProfileInfoRequest(
+public record UpdateProfileRequest(
         @NotNull
         UUID id,
 

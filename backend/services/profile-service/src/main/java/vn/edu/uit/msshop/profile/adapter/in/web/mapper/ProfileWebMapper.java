@@ -3,12 +3,14 @@ package vn.edu.uit.msshop.profile.adapter.in.web.mapper;
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.profile.adapter.in.web.request.CreateProfileRequest;
-import vn.edu.uit.msshop.profile.adapter.in.web.request.UpdateProfileInfoRequest;
+import vn.edu.uit.msshop.profile.adapter.in.web.request.UpdateProfileRequest;
 import vn.edu.uit.msshop.profile.adapter.in.web.request.common.ChangeRequest;
 import vn.edu.uit.msshop.profile.adapter.in.web.request.common.PatchRequest;
+import vn.edu.uit.msshop.profile.adapter.in.web.response.AvatarResponse;
 import vn.edu.uit.msshop.profile.adapter.in.web.response.ProfileResponse;
 import vn.edu.uit.msshop.profile.application.dto.command.CreateProfileCommand;
 import vn.edu.uit.msshop.profile.application.dto.command.UpdateProfileCommand;
+import vn.edu.uit.msshop.profile.application.dto.query.AvatarView;
 import vn.edu.uit.msshop.profile.application.dto.query.ProfileView;
 import vn.edu.uit.msshop.profile.domain.model.valueobject.EmailAddress;
 import vn.edu.uit.msshop.profile.domain.model.valueobject.FullName;
@@ -35,7 +37,7 @@ public class ProfileWebMapper {
     }
 
     public UpdateProfileCommand toCommand(
-            final UpdateProfileInfoRequest req) {
+            final UpdateProfileRequest req) {
         final var id = new ProfileId(req.id());
 
         final var fullName = ChangeRequest.toChange(req.fullName(), FullName::new);
@@ -61,5 +63,13 @@ public class ProfileWebMapper {
                 view.phoneNumber(),
                 view.address(),
                 view.avatarUrl());
+    }
+
+    public AvatarResponse toResponse(
+            final AvatarView view) {
+        return new AvatarResponse(
+                view.url(),
+                view.width(),
+                view.height());
     }
 }

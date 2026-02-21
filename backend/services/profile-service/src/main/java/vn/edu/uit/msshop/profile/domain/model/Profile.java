@@ -154,6 +154,23 @@ public final class Profile {
     }
 
     @NullMarked
+    public Profile withAvatar(
+            final Avatar newAvatar) {
+        if (Objects.equals(newAvatar, this.avatar)) {
+            return this;
+        }
+
+        return Profile.builder()
+                .id(this.id)
+                .fullName(this.fullName)
+                .address(this.address)
+                .phoneNumber(this.phoneNumber)
+                .email(this.email)
+                .avatar(newAvatar)
+                .build();
+    }
+
+    @NullMarked
     public Snapshot snapshot() {
         return Snapshot.builder()
                 .id(this.id)

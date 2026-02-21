@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.profile.application.dto.command.UpdateProfileCommand;
 import vn.edu.uit.msshop.profile.application.exception.ProfileNotFoundException;
-import vn.edu.uit.msshop.profile.application.port.in.UpdateProfileInfoUseCase;
+import vn.edu.uit.msshop.profile.application.port.in.UpdateProfileUseCase;
 import vn.edu.uit.msshop.profile.application.port.out.LoadProfilePort;
 import vn.edu.uit.msshop.profile.application.port.out.PublishProfileEventPort;
 import vn.edu.uit.msshop.profile.application.port.out.SaveProfilePort;
@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.profile.domain.model.Profile;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateProfileService implements UpdateProfileInfoUseCase {
+public class UpdateProfileService implements UpdateProfileUseCase {
     private final LoadProfilePort loadPort;
     private final SaveProfilePort savePort;
     private final PublishProfileEventPort eventPort;

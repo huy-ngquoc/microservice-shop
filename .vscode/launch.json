@@ -9,7 +9,7 @@
             "projectName": "config-server",
             "args": "",
             "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Duser.timezone=UTC -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62022 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=config-server"
+            "vmArgs": " -Duser.timezone=UTC"
         },
         {
             "type": "java",
@@ -20,7 +20,7 @@
             "projectName": "discovery-server",
             "args": "",
             "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Duser.timezone=UTC -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=57136 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=discovery-server"
+            "vmArgs": " -Duser.timezone=UTC"
         },
         {
             "type": "java",
@@ -29,6 +29,17 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "vn.edu.uit.msshop.gateway.ApiGatewayApplication",
             "projectName": "api-gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Duser.timezone=UTC"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ProfileServiceApplication<profile-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "vn.edu.uit.msshop.profile.ProfileServiceApplication",
+            "projectName": "profile-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env",
             "vmArgs": " -Duser.timezone=UTC"
