@@ -23,6 +23,7 @@ import vn.edu.uit.msshop.product.domain.model.brand.valueobject.BrandName;
 @Builder(
         access = AccessLevel.PRIVATE)
 public final class Brand {
+    @NonNull
     @EqualsAndHashCode.Include
     private final BrandId id;
 
@@ -39,6 +40,7 @@ public final class Brand {
         }
 
         return Brand.builder()
+                .id(BrandId.newId())
                 .name(d.name())
                 .logo(d.logo())
                 .build();

@@ -9,4 +9,8 @@ public record BrandId(
             throw new IllegalArgumentException("id null");
         }
     }
+
+    public static BrandId newId() {
+        return new BrandId(UUID.randomUUID());
+    }
 }

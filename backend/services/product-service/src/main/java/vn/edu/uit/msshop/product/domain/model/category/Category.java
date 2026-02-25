@@ -23,6 +23,7 @@ import vn.edu.uit.msshop.product.domain.model.category.valueobject.CategoryName;
 @Builder(
         access = AccessLevel.PRIVATE)
 public final class Category {
+    @NonNull
     @EqualsAndHashCode.Include
     private final CategoryId id;
 
@@ -39,6 +40,7 @@ public final class Category {
         }
 
         return Category.builder()
+                .id(CategoryId.newId())
                 .name(d.name())
                 .image(d.image())
                 .build();

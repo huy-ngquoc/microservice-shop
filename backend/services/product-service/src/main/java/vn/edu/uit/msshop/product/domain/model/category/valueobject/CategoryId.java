@@ -9,4 +9,8 @@ public record CategoryId(
             throw new IllegalArgumentException("id null");
         }
     }
+
+    public static CategoryId newId() {
+        return new CategoryId(UUID.randomUUID());
+    }
 }
