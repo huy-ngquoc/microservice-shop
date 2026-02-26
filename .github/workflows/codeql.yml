@@ -1,0 +1,61 @@
+name: "CodeQL Analysis"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual run'
+        required: false
+        default: 'Manual CodeQL Scan'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    
+    # Grant permissions to write security events to the repository
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 1. Set up JDK 25 before running CodeQL (required since the source code uses Java 25)
+    - name: Set up JDK 25
+      uses: actions/setup-java@v4
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    # 2. Initialize CodeQL for Java
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v4
+      with:
+        languages: java-kotlin
+        build-mode: manual
+        # Enable extended security queries
+        queries: security-extended,security-and-quality
+
+    # 3. Manual Build
+    # This step is CRUCIAL. CodeQL needs to monitor the build process to analyze the data flow.
+    - name: Build Java Microservices
+      working-directory: ./backend/services
+      # Use the install command with -DskipTests for faster execution. 
+      # CodeQL only needs to compile the code, not run the tests.
+      run: |
+        chmod +x mvnw
+        ./mvnw -B clean install -DskipTests
+
+    # 4. Perform analysis and upload results to GitHub
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v4
+      with:
+        category: "/language:java-kotlin"
