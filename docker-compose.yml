@@ -10,7 +10,23 @@ services:
         volumes:
             - postgres:/data/postgres
         ports:
-            - "5432:5432"
+            - "5433:5432"
+        networks:
+            - microservices-net
+        restart: unless-stopped
+    postgresql_account:
+        container_name: ms_pg_sql_account
+        image: postgres:18
+        environment:
+            POSTGRES_USER: alibou
+            POSTGRES_PASSWORD: alibou
+            PGDATA: /data/postgres
+            TZ: UTC
+            POSTGRES_DB: account
+        volumes:
+            - postgres_account:/data/postgres
+        ports:
+            - "5434:5432"
         networks:
             - microservices-net
         restart: unless-stopped
@@ -120,5 +136,6 @@ networks:
 
 volumes:
     postgres:
+    postgres_account:
     pgadmin:
     mongo:
