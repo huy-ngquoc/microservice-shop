@@ -37,9 +37,10 @@ jobs:
 
     # 2. Initialize CodeQL for Java
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
-        languages: java
+        languages: java-kotlin
+        build-mode: manual
         # Enable extended security queries
         queries: security-extended,security-and-quality
 
@@ -49,10 +50,12 @@ jobs:
       working-directory: ./backend/services
       # Use the install command with -DskipTests for faster execution. 
       # CodeQL only needs to compile the code, not run the tests.
-      run: ./mvnw -B clean install -DskipTests
+      run: |
+        chmod +x mvnw
+        ./mvnw -B clean install -DskipTests
 
     # 4. Perform analysis and upload results to GitHub
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
-        category: "/language:java"
+        category: "/language:java-kotlin"
