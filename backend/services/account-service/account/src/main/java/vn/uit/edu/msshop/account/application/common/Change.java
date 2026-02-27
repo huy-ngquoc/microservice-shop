@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.account.application.common;
+package vn.uit.edu.msshop.account.application.common;
 import java.util.Objects;
 
 public sealed interface Change<T>

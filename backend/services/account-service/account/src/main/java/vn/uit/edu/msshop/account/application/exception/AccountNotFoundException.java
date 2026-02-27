@@ -1,6 +1,6 @@
-package vn.edu.uit.msshop.account.application.exception;
+package vn.uit.edu.msshop.account.application.exception;
 
-import vn.edu.uit.msshop.product.domain.model.valueobject.AccountId;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
 
 public class AccountNotFoundException extends RuntimeException {
     public AccountNotFoundException(AccountId accountId) {

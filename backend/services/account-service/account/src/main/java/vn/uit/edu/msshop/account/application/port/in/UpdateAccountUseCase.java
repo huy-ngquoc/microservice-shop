@@ -1,6 +1,7 @@
-package vn.edu.uit.msshop.profile.application.port.in;
+package vn.uit.edu.msshop.account.application.port.in;
 
-import vn.edu.uit.msshop.account.application.dto.command.UpdateAccountCommand;
+
+import vn.uit.edu.msshop.account.application.dto.command.UpdateAccountCommand;
 
 public interface UpdateAccountUseCase {
     public void update(UpdateAccountCommand updateAccountCommand);
