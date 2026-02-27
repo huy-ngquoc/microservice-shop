@@ -1,2 +1,2 @@
 @org.jspecify.annotations.NullMarked
-package vn.edu.uit.msshop.profile.application.port.out;
+package vn.uit.edu.msshop.account.application.port.out;

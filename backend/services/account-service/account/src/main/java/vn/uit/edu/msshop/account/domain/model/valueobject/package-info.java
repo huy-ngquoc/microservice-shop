@@ -1,2 +1,2 @@
 @org.jspecify.annotations.NullMarked
-package vn.edu.uit.msshop.account.domain.model.valueobject;
+package vn.uit.edu.msshop.account.domain.model.valueobject;

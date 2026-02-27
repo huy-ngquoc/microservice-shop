@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.domain.model.valueobject;
+package vn.uit.edu.msshop.account.domain.model.valueobject;
 
 import java.util.regex.Pattern;
 

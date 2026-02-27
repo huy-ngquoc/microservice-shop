@@ -1,5 +1,5 @@
 
-package vn.edu.uit.msshop.product.domain.model.valueobject;
+package vn.uit.edu.msshop.account.domain.model.valueobject;
 public record AccountPassword(String value) {
     public AccountPassword {
         if(value==null) {
