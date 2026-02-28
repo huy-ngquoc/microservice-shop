@@ -1,2 +1,2 @@
 @org.jspecify.annotations.NullMarked
-package vn.edu.uit.msshop.account.application.exception;
+package vn.uit.edu.msshop.account.application.exception;

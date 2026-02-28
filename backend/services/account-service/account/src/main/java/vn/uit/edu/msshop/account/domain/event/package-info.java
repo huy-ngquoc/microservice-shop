@@ -1,2 +1,2 @@
 @org.jspecify.annotations.NullMarked
-package vn.edu.uit.msshop.product.domain.model.account.event;
+package vn.uit.edu.msshop.account.domain.event;

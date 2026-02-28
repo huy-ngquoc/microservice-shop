@@ -5,11 +5,11 @@ package vn.uit.edu.msshop.account.application.service;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.domain.model.account.event.AccountCreated;
 import vn.uit.edu.msshop.account.application.dto.command.CreateAccountCommand;
 import vn.uit.edu.msshop.account.application.port.in.CreateAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.out.PublishAccountEventPort;
 import vn.uit.edu.msshop.account.application.port.out.SaveAccountPort;
+import vn.uit.edu.msshop.account.domain.event.AccountCreated;
 import vn.uit.edu.msshop.account.domain.model.Account;
 @Service
 @RequiredArgsConstructor

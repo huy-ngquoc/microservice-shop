@@ -3,14 +3,16 @@ package vn.uit.edu.msshop.account.adapter.out.event;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.domain.model.account.event.AccountCreated;
-import vn.edu.uit.msshop.product.domain.model.account.event.AccountUpdate;
 import vn.uit.edu.msshop.account.application.port.out.PublishAccountEventPort;
+import vn.uit.edu.msshop.account.domain.event.AccountCreated;
+import vn.uit.edu.msshop.account.domain.event.AccountUpdate;
 @Component
-@RequiredArgsConstructor
+
 public class AccountEventPublisherAdapter implements PublishAccountEventPort {
     private final ApplicationEventPublisher publisher;
+    public AccountEventPublisherAdapter(ApplicationEventPublisher publisher) {
+        this.publisher = publisher;
+    }
 
     @Override
     public void publish(AccountCreated event) {

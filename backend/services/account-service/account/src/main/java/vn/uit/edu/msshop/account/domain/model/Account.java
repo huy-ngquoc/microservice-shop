@@ -7,8 +7,12 @@ import org.antlr.v4.runtime.misc.NotNull;
 import org.jspecify.annotations.NullMarked;
 
 import lombok.Builder;
-import reactor.core.scheduler.Schedulers;
-import vn.uit.edu.msshop.account.domain.model.valueobject.*;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AccountEmail;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AccountPassword;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AccountRole;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
 
 @Builder
 public class Account {
@@ -22,14 +26,14 @@ public class Account {
     public Account() {
 
     } 
-    public Account(AccountId id, AccountEmail email,AccountPassword password, AccountRole role, AccountStatus status, AccountName name) {
-        this.id = id;
-        this.email=email;
-        this.password = password;
-        this.role = role;
-        this.status = status;
-        this.name= name;
-    }
+   public Account(AccountId id, AccountEmail email, AccountPassword password, AccountName name, AccountRole role, AccountStatus status) {
+    this.id = id;
+    this.email = email;
+    this.password = password;
+    this.name = name; 
+    this.role = role;
+    this.status = status;
+}
     public AccountId getId() {
         return this.id;
     } 

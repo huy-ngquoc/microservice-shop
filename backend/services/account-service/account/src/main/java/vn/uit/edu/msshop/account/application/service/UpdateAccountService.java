@@ -3,13 +3,13 @@ package vn.uit.edu.msshop.account.application.service;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.domain.model.account.event.AccountUpdate;
 import vn.uit.edu.msshop.account.adapter.out.event.AccountEventPublisherAdapter;
 import vn.uit.edu.msshop.account.application.dto.command.UpdateAccountCommand;
 import vn.uit.edu.msshop.account.application.exception.AccountNotFoundException;
 import vn.uit.edu.msshop.account.application.port.in.UpdateAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.out.LoadAccountPort;
 import vn.uit.edu.msshop.account.application.port.out.SaveAccountPort;
+import vn.uit.edu.msshop.account.domain.event.AccountUpdate;
 import vn.uit.edu.msshop.account.domain.model.Account;
 
 @Service

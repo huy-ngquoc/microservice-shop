@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.domain.model.account.event;
+package vn.uit.edu.msshop.account.domain.event;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -6,7 +6,8 @@ import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.domain.model.account.valueobject.AccountId;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
+
 
 @RequiredArgsConstructor
 @Getter

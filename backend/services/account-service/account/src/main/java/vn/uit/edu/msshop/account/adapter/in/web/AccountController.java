@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.account.adapter.in.web.mapper.AccountWebMapper;
 import vn.uit.edu.msshop.account.adapter.in.web.request.CreateAccountRequest;
 import vn.uit.edu.msshop.account.adapter.in.web.request.UpdateAccountRequest;
@@ -23,13 +22,18 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
 
 @RestController
 @RequestMapping("/account")
-@RequiredArgsConstructor
+
 public class AccountController {
     private final FindAccountUseCase findUseCase;
     private final CreateAccountUseCase createUseCase;
     private final UpdateAccountUseCase updateUseCase;
     private final AccountWebMapper webMapper;
-
+    public AccountController(FindAccountUseCase findUseCase, CreateAccountUseCase createUseCase, UpdateAccountUseCase updateUseCase, AccountWebMapper webMapper) {
+        this.findUseCase= findUseCase;
+        this.createUseCase = createUseCase;
+        this.updateUseCase= updateUseCase;
+        this.webMapper = webMapper;
+    }
     @GetMapping("/{id}")
     public ResponseEntity<AccountResponse> findById(@PathVariable UUID id) {
         final var view = this.findUseCase.findAccountById(new AccountId(id));
