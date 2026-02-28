@@ -1,18 +1,12 @@
 package vn.edu.uit.msshop.product.domain.model.category.command;
 
-import org.jspecify.annotations.NonNull;
-
 import lombok.Builder;
-import vn.edu.uit.msshop.product.domain.model.category.valueobject.CategoryImage;
 import vn.edu.uit.msshop.product.domain.model.category.valueobject.CategoryName;
 
 @Builder
-public record CategoryUpdate(
-        @NonNull
-        CategoryName name,
-
-        CategoryImage image) {
-    public CategoryUpdate {
+public record CategoryUpdateInfo(
+        CategoryName name) {
+    public CategoryUpdateInfo {
         if (name == null) {
             throw new IllegalArgumentException("Name must NOT be null");
         }

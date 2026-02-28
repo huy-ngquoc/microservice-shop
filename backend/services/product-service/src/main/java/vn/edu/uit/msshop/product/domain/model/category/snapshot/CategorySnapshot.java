@@ -1,18 +1,19 @@
 package vn.edu.uit.msshop.product.domain.model.category.snapshot;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
+import lombok.Builder;
 import vn.edu.uit.msshop.product.domain.model.category.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.domain.model.category.valueobject.CategoryImage;
 import vn.edu.uit.msshop.product.domain.model.category.valueobject.CategoryName;
 
+@Builder
 public record CategorySnapshot(
-        @NonNull
         CategoryId id,
 
-        @NonNull
         CategoryName name,
 
+        @Nullable
         CategoryImage image) {
     public CategorySnapshot {
         if (id == null) {

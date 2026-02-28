@@ -1,15 +1,15 @@
 package vn.edu.uit.msshop.product.domain.model.brand;
 
+import java.util.Objects;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.edu.uit.msshop.product.domain.model.brand.command.BrandDraft;
-import vn.edu.uit.msshop.product.domain.model.brand.command.BrandUpdate;
+import vn.edu.uit.msshop.product.domain.model.brand.command.BrandUpdateInfo;
 import vn.edu.uit.msshop.product.domain.model.brand.snapshot.BrandSnapshot;
 import vn.edu.uit.msshop.product.domain.model.brand.valueobject.BrandId;
 import vn.edu.uit.msshop.product.domain.model.brand.valueobject.BrandLogo;
@@ -18,59 +18,92 @@ import vn.edu.uit.msshop.product.domain.model.brand.valueobject.BrandName;
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-@AllArgsConstructor(
-        access = AccessLevel.PRIVATE)
-@Builder(
-        access = AccessLevel.PRIVATE)
 public final class Brand {
-    @NonNull
     @EqualsAndHashCode.Include
     private final BrandId id;
 
-    @NonNull
     private final BrandName name;
 
+    @Nullable
     private final BrandLogo logo;
 
-    @NullMarked
+    private Brand(
+            BrandId id,
+
+            BrandName name,
+
+            @Nullable
+            BrandLogo logo) {
+        this.id = Objects.requireNonNull(id, "Id must NOT be null");
+        this.name = Objects.requireNonNull(name, "Name must NOT be null");
+        this.logo = logo;
+    }
+
     public static Brand create(
-            final BrandDraft d) {
-        if (d == null) {
+            final BrandDraft draft) {
+        if (draft == null) {
             throw new IllegalArgumentException("Draft must NOT be null");
         }
 
-        return Brand.builder()
-                .id(BrandId.newId())
-                .name(d.name())
-                .logo(d.logo())
-                .build();
+        return new Brand(
+                BrandId.newId(),
+                draft.name(),
+                null);
     }
 
-    @NullMarked
     public static Brand reconstitute(
-            final BrandSnapshot s) {
-        if (s == null) {
+            final BrandSnapshot snapshot) {
+        if (snapshot == null) {
             throw new IllegalArgumentException("Snapshot must NOT be null");
         }
 
-        return Brand.builder()
-                .id(s.id())
-                .name(s.name())
-                .logo(s.logo())
-                .build();
+        return new Brand(
+                snapshot.id(),
+                snapshot.name(),
+                snapshot.logo());
     }
 
-    @NullMarked
-    public Brand applyUpdate(
-            final BrandUpdate u) {
-        if (u == null) {
+    public Brand applyUpdateInfo(
+            final BrandUpdateInfo updateInfo) {
+        if (updateInfo == null) {
             throw new IllegalArgumentException("Update must NOT be null");
         }
 
-        return Brand.builder()
-                .id(this.id)
-                .name(u.name())
-                .logo(u.logo())
-                .build();
+        if (this.isSameInfoAs(updateInfo)) {
+            return this;
+        }
+
+        return new Brand(
+                this.id,
+                updateInfo.name(),
+                this.logo);
+    }
+
+    public Brand withLogo(
+            final BrandLogo newLogo) {
+        if (Objects.equals(newLogo, this.logo)) {
+            return this;
+        }
+
+        return new Brand(
+                this.id,
+                this.name,
+                newLogo);
+    }
+
+    public Brand withoutLogo() {
+        if (this.logo == null) {
+            return this;
+        }
+
+        return new Brand(
+                this.id,
+                this.name,
+                null);
+    }
+
+    private boolean isSameInfoAs(
+            final BrandUpdateInfo updateInfo) {
+        return Objects.equals(updateInfo.name(), this.name);
     }
 }

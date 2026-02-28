@@ -1,16 +1,12 @@
 package vn.edu.uit.msshop.product.domain.model.brand.command;
 
-import org.jspecify.annotations.NonNull;
-
-import vn.edu.uit.msshop.product.domain.model.brand.valueobject.BrandLogo;
+import lombok.Builder;
 import vn.edu.uit.msshop.product.domain.model.brand.valueobject.BrandName;
 
-public record BrandUpdate(
-        @NonNull
-        BrandName name,
-
-        BrandLogo logo) {
-    public BrandUpdate {
+@Builder
+public record BrandUpdateInfo(
+        BrandName name) {
+    public BrandUpdateInfo {
         if (name == null) {
             throw new IllegalArgumentException("Name is null");
         }
