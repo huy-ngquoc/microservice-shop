@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,13 +42,15 @@ public class AccountController {
         return ResponseEntity.ok(response);  
     }
     @PostMapping("/create") 
-    public ResponseEntity<Void> create(CreateAccountRequest request) {
+    public ResponseEntity<Void> create(@RequestBody CreateAccountRequest request) {
+        System.out.println("Id "+request.id()+" vewrwevwevwevwewe");
+
         final var createAccountCommand = webMapper.toCommand(request);
         this.createUseCase.create(createAccountCommand);
         return ResponseEntity.noContent().build();
     } 
     @PutMapping("/update")
-    public ResponseEntity<Void> update(UpdateAccountRequest request) {
+    public ResponseEntity<Void> update(@RequestBody UpdateAccountRequest request) {
         final var updateAccountCommand = webMapper.toCommand(request);
         this.updateUseCase.update(updateAccountCommand);
         return ResponseEntity.noContent().build();

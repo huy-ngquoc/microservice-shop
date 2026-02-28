@@ -6,7 +6,11 @@ import java.util.Objects;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.jspecify.annotations.NullMarked;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountEmail;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
@@ -14,7 +18,12 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountPassword;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountRole;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
 
-@Builder
+
+@Getter
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
 public class Account {
     private AccountId id;
     private AccountEmail email;
@@ -26,14 +35,7 @@ public class Account {
     public Account() {
 
     } 
-   public Account(AccountId id, AccountEmail email, AccountPassword password, AccountName name, AccountRole role, AccountStatus status) {
-    this.id = id;
-    this.email = email;
-    this.password = password;
-    this.name = name; 
-    this.role = role;
-    this.status = status;
-}
+   
     public AccountId getId() {
         return this.id;
     } 

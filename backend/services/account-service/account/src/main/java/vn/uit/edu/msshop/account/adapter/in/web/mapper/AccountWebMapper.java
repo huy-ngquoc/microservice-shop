@@ -29,7 +29,9 @@ public class AccountWebMapper {
     }
     public UpdateAccountCommand toCommand(UpdateAccountRequest request) {
         final var id = new AccountId(request.id());
+        System.out.println(request.name()+"eibeiereribveribiervr");
         final var name = ChangeRequest.toChange(request.name(), AccountName::new);
+        System.out.println(name+" ieriereerer");
         final var email = ChangeRequest.toChange(request.email(), AccountEmail::new);
         final var password = ChangeRequest.toChange(request.password(), AccountPassword::new);
         final var role = ChangeRequest.toChange(request.role(), AccountRole::new);
