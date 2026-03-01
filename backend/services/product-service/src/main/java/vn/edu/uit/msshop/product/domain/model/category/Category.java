@@ -102,7 +102,7 @@ public final class Category {
 
     public CategorySnapshot snapshot() {
         return CategorySnapshot.builder()
-                .id(id)
+                .id(this.id)
                 .name(this.name)
                 .image(this.image)
                 .build();

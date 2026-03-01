@@ -3,10 +3,10 @@ package vn.edu.uit.msshop.product.application.service;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.application.dto.command.UpdateBrandImageCommand;
+import vn.edu.uit.msshop.product.application.dto.command.UpdateBrandLogoCommand;
 import vn.edu.uit.msshop.product.application.dto.query.BrandLogoView;
 import vn.edu.uit.msshop.product.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.application.port.in.UpdateBrandImageUseCase;
+import vn.edu.uit.msshop.product.application.port.in.UpdateBrandLogoUseCase;
 import vn.edu.uit.msshop.product.application.port.out.DeleteBrandLogoPort;
 import vn.edu.uit.msshop.product.application.port.out.LoadBrandPort;
 import vn.edu.uit.msshop.product.application.port.out.PublishBrandEventPort;
@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.domain.event.brand.BrandUpdated;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateBrandImageService implements UpdateBrandImageUseCase {
+public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
     private final LoadBrandPort loadPort;
     private final SaveBrandPort savePort;
     private final UploadBrandLogoPort uploadLogoPort;
@@ -25,7 +25,7 @@ public class UpdateBrandImageService implements UpdateBrandImageUseCase {
 
     @Override
     public BrandLogoView updateImage(
-            UpdateBrandImageCommand command) {
+            UpdateBrandLogoCommand command) {
         final var oldBrand = this.loadPort.loadById(command.id())
                 .orElseThrow(() -> new BrandNotFoundException(command.id()));
 

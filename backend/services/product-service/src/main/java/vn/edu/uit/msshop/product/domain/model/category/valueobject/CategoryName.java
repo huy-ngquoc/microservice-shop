@@ -4,6 +4,8 @@ import java.util.regex.Pattern;
 
 public record CategoryName(
         String value) {
+    public static final int MAX_LENGTH = 40;
+
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\p{IsWhite_Space}+");
 
     public CategoryName {
@@ -17,7 +19,7 @@ public record CategoryName(
             throw new IllegalArgumentException("Category name is blank");
         }
 
-        if (value.length() > 40) {
+        if (value.length() > MAX_LENGTH) {
             throw new IllegalArgumentException("Category name is too long");
         }
     }

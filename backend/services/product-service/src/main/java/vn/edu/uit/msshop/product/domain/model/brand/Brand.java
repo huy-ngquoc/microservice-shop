@@ -2,8 +2,6 @@ package vn.edu.uit.msshop.product.domain.model.brand;
 
 import java.util.Objects;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
@@ -100,6 +98,13 @@ public final class Brand {
                 this.id,
                 this.name,
                 null);
+    }
+
+    public BrandSnapshot snapshot() {
+        return new BrandSnapshot(
+                this.id,
+                this.name,
+                this.logo);
     }
 
     private boolean isSameInfoAs(
