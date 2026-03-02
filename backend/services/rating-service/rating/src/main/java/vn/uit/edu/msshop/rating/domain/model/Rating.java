@@ -67,6 +67,10 @@ public class Rating {
     ) {
 
     }
+    @Builder
+    public static record UpdateImage (Media media) {
+
+    }
     @NullMarked
     public static Rating create(Draft d) {
         if(d==null) {
@@ -91,13 +95,21 @@ public class Rating {
     @NullMarked
     public Rating applyUpdateInfo(UpdateInfo u) {
         if(u==null) {
-            throw new IllegalArgumentException("Draft must not be null");
+            throw new IllegalArgumentException("Update info must not be null");
         }
         if(u.id()==null) {
             throw new IllegalArgumentException("Id must not be null");
         }
         if(isSameInfoWithUpdateInfo(u)) return this;
         return Rating.builder().id(this.id).content(u.content()).media(this.media).productId(this.productId).ratingPoint(u.ratingPoint()).userAvatar(this.userAvatar).username(this.username).userId(this.userId).build();
+    }
+    @NullMarked
+    public Rating applyImageUpdate(UpdateImage u) {
+        if(u==null) {
+            throw new IllegalArgumentException("Update image can not be null");
+        }
+        return Rating.builder().id(this.id).content(this.content).media(u.media()).productId(this.productId).ratingPoint(this.ratingPoint).userAvatar(this.userAvatar).username(this.username).userId(this.userId).build();
+
     }
     @NullMarked
     public Snapshot snapShot() {
