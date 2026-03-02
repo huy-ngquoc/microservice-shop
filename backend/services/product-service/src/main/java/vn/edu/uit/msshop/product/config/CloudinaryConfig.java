@@ -5,18 +5,19 @@ import org.springframework.context.annotation.Configuration;
 
 import com.cloudinary.Cloudinary;
 
-import vn.edu.uit.msshop.product.resource.ResourceStrings;
+import vn.edu.uit.msshop.product.config.properties.CloudinaryProperties;
 
 @Configuration
 public class CloudinaryConfig {
-    public static final String URL = String.format(
-            "cloudinary://%s:%s@%s",
-            ResourceStrings.CLOUDINARY_API_KEY,
-            ResourceStrings.CLOUDINARY_API_SECRET,
-            ResourceStrings.CLOUDINARY_CLOUD_NAME);
-
     @Bean
-    Cloudinary cloudinary() {
-        return new Cloudinary(URL);
+    Cloudinary cloudinary(
+            CloudinaryProperties properties) {
+        final var url = String.format(
+                "cloudinary://%s:%s@%s",
+                properties.apiKey(),
+                properties.apiSecret(),
+                properties.cloudName());
+
+        return new Cloudinary(url);
     }
 }
