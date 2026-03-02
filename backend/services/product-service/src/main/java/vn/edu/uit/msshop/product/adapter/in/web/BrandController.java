@@ -24,10 +24,10 @@ import vn.edu.uit.msshop.product.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.application.dto.command.UpdateBrandLogoCommand;
 import vn.edu.uit.msshop.product.application.port.in.CreateBrandUseCase;
+import vn.edu.uit.msshop.product.application.port.in.FindBrandLogoUseCase;
 import vn.edu.uit.msshop.product.application.port.in.FindBrandUseCase;
 import vn.edu.uit.msshop.product.application.port.in.UpdateBrandInfoUseCase;
 import vn.edu.uit.msshop.product.application.port.in.UpdateBrandLogoUseCase;
-import vn.edu.uit.msshop.product.application.service.FindBrandLogoService;
 import vn.edu.uit.msshop.product.domain.model.brand.valueobject.BrandId;
 
 @RestController
@@ -35,7 +35,7 @@ import vn.edu.uit.msshop.product.domain.model.brand.valueobject.BrandId;
 @RequiredArgsConstructor
 public class BrandController {
     private final FindBrandUseCase findUseCase;
-    private final FindBrandLogoService findLogoUseCase;
+    private final FindBrandLogoUseCase findLogoUseCase;
     private final CreateBrandUseCase createUseCase;
     private final UpdateBrandInfoUseCase updateInfoUseCase;
     private final UpdateBrandLogoUseCase updateLogoUseCase;
