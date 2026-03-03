@@ -16,7 +16,7 @@ public class PostRatingService implements PostRatingUseCase {
     private final PublishRatingEvent publishEvent;
     @Override
     public void post(PostRatingCommand command) {
-        final var draft = Rating.Draft.builder().id(command.id()).content(command.content()).media(command.media()).productId(command.productId())
+        final var draft = Rating.Draft.builder().id(command.id()).content(command.content()).productId(command.productId())
         .ratingPoint(command.ratingPoint()).userId(command.userId()).username(command.username()).userAvatar(command.userAvatar()).build();
         final var rating = Rating.create(draft);
         final var saved = this.savePort.save(rating);

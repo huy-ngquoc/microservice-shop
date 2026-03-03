@@ -32,7 +32,7 @@ public class RatingWebMapper {
         final var userName = new Username(request.userName());
         final var userAvatar = new UserAvatar(request.userAvatar());
         final var ratingPoint = new RatingPoint(request.ratingPoint());
-        return new PostRatingCommand(id, content, null, productId, ratingPoint, userAvatar, userId, userName);
+        return new PostRatingCommand(id, content, productId, ratingPoint, userAvatar, userId, userName);
     }
     public UpdateRatingCommand toCommand(UpdateRatingRequest request) {
         final var id = new RatingId(request.id());

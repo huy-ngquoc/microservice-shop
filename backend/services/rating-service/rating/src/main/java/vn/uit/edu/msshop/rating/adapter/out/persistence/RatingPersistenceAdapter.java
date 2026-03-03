@@ -17,7 +17,7 @@ import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingId;
 @Component
 @RequiredArgsConstructor
 public class RatingPersistenceAdapter implements LoadRatingPort,SaveRatingPort,DeleteRatingPort {
-    private RatingMongoRepository repository;
+    private final RatingMongoRepository repository;
     private final RatingEntityMapper mapper;
 
     @Override

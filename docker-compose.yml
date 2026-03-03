@@ -68,6 +68,18 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=alibou
             - MONGO_INITDB_ROOT_PASSWORD=alibou
             - TZ=UTC
+    mongodb_rating:
+        container_name: ms_mongo_db_rating
+        image: mongo:8
+        ports:
+            - 27018:27017
+        volumes:
+            - mongo_rating:/data
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+
 
     mongo-express:
         container_name: ms_mongo_express
@@ -139,3 +151,4 @@ volumes:
     postgres_account:
     pgadmin:
     mongo:
+    mongo_rating:

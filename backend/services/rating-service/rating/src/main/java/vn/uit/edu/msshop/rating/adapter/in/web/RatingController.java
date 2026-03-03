@@ -76,7 +76,7 @@ public class RatingController {
 
     @PutMapping(value="/upload_image/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageViewResponse> uploadImage(@PathVariable UUID id,@RequestPart("file") final MultipartFile file) throws IOException {
-        if (!file.isEmpty()) {
+        if (file.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
