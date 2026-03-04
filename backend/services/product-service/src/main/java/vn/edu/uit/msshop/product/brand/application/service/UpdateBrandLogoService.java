@@ -26,6 +26,7 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
 
     @Override
     @Transactional
+    @SuppressWarnings("ReferenceEquality")
     public BrandLogoView updateImage(
             UpdateBrandLogoCommand command) {
         final var oldBrand = this.loadPort.loadById(command.id())
@@ -49,7 +50,7 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
         }
 
         final var oldLogo = oldBrand.getLogo();
-        if ((oldLogo != null) && (!oldLogo.key().equals(uploadedLogo.key()))) {
+        if ((oldLogo != null) && !oldLogo.key().equals(uploadedLogo.key())) {
             this.deleteLogoPort.deleteByKey(oldLogo.key());
         }
 

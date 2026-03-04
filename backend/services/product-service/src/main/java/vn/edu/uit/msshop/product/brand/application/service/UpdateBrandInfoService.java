@@ -22,6 +22,7 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
 
     @Override
     @Transactional
+    @SuppressWarnings("ReferenceEquality")
     public void updateInfo(
             final UpdateBrandInfoCommand command) {
         final var brand = this.loadPort.loadById(command.id())

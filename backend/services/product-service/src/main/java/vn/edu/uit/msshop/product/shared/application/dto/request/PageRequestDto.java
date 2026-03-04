@@ -32,7 +32,7 @@ public record PageRequestDto(
         this.page = page;
         this.size = size;
 
-        if ((sortBy == null) || (sortBy.isBlank())) {
+        if ((sortBy == null) || sortBy.isBlank()) {
             this.sortBy = null;
         } else {
             this.sortBy = sortBy.trim();

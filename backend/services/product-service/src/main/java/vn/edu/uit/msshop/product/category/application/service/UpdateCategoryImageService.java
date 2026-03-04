@@ -26,6 +26,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
 
     @Override
     @Transactional
+    @SuppressWarnings("ReferenceEquality")
     public CategoryImageView updateImage(
             UpdateCategoryImageCommand command) {
         final var oldCategory = this.loadPort.loadById(command.id())
@@ -49,7 +50,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
         }
 
         final var oldImage = oldCategory.getImage();
-        if ((oldImage != null) && (!oldImage.key().equals(uploadedImage.key()))) {
+        if ((oldImage != null) && !oldImage.key().equals(uploadedImage.key())) {
             this.deleteImagePort.deleteByKey(oldImage.key());
         }
 

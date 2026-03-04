@@ -22,6 +22,7 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
 
     @Override
     @Transactional
+    @SuppressWarnings("ReferenceEquality")
     public void updateInfo(
             final UpdateCategoryInfoCommand command) {
         final var category = this.loadPort.loadById(command.id())

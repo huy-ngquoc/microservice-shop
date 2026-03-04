@@ -35,14 +35,14 @@ public class NotFoundException extends RuntimeException {
             final String resource,
             final String identifier) {
         final String r;
-        if ((resource != null) && (!resource.isBlank())) {
+        if ((resource != null) && !resource.isBlank()) {
             r = resource;
         } else {
             r = "Resource";
         }
 
         final String id;
-        if ((identifier != null) && (!identifier.isBlank())) {
+        if ((identifier != null) && !identifier.isBlank()) {
             id = identifier;
         } else {
             id = "unknown";

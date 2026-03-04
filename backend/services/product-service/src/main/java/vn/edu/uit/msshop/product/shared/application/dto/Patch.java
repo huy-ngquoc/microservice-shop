@@ -27,6 +27,7 @@ public sealed interface Patch<T> permits Patch.Unchanged, Patch.Set, Patch.Clear
     }
 
     record Unchanged<T>() implements Patch<T> {
+        @Override
         public T apply(
                 final T current) {
             return current;
@@ -34,6 +35,7 @@ public sealed interface Patch<T> permits Patch.Unchanged, Patch.Set, Patch.Clear
     }
 
     record Clear<T>() implements Patch<T> {
+        @Override
         public T apply(
                 final T current) {
             return null;
@@ -42,6 +44,7 @@ public sealed interface Patch<T> permits Patch.Unchanged, Patch.Set, Patch.Clear
 
     record Set<T>(
             T value) implements Patch<T> {
+        @Override
         public T apply(
                 final T current) {
             return value;

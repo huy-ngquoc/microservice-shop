@@ -98,7 +98,7 @@ public class CategoryController {
         }
 
         final var contentType = file.getContentType();
-        if ((contentType == null || (!contentType.startsWith("image/")))) {
+        if ((contentType == null || !contentType.startsWith("image/"))) {
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
         }
 

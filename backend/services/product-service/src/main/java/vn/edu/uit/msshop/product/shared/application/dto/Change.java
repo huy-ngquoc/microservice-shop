@@ -19,6 +19,7 @@ public sealed interface Change<T>
     }
 
     record Unchanged<T>() implements Change<T> {
+        @Override
         public T apply(
                 final T current) {
             return current;
@@ -27,6 +28,7 @@ public sealed interface Change<T>
 
     record Set<T>(
             T value) implements Change<T> {
+        @Override
         public T apply(
                 final T current) {
             return value;
