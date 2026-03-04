@@ -12,7 +12,7 @@ public record Media(String type, String url,int size,String publicId) {
         if(url==null||url.isBlank()) {
             throw new IllegalArgumentException("Invalid url");
         }
-        if(size<=0||size>50) {
+        if(size<=0) {
             throw new IllegalArgumentException("Invalid size");
         }
         if(publicId==null||publicId.isBlank()) {
