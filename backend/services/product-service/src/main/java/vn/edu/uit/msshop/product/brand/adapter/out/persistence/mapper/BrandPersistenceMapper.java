@@ -3,7 +3,8 @@ package vn.edu.uit.msshop.product.brand.adapter.out.persistence.mapper;
 import org.jspecify.annotations.NullUnmarked;
 import org.springframework.stereotype.Component;
 
-import vn.edu.uit.msshop.product.brand.adapter.out.persistence.BrandJpaEntity;
+import vn.edu.uit.msshop.product.brand.adapter.out.persistence.BrandDocument;
+import vn.edu.uit.msshop.product.brand.adapter.out.persistence.BrandLogoDocument;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandLogo;
@@ -13,48 +14,46 @@ import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoUrl;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandName;
 
 @Component
-public class BrandEntityMapper {
+public class BrandPersistenceMapper {
     public Brand toDomain(
-            final BrandJpaEntity entity) {
-        final var logo = BrandEntityMapper.toLogoOrNull(
-                entity.getLogoUrl(),
-                entity.getLogoKey(),
-                entity.getLogoWidth(),
-                entity.getLogoHeight());
+            final BrandDocument entity) {
+        final var id = new BrandId(entity.getId());
+        final var name = new BrandName(entity.getName());
 
-        return new Brand(
-                new BrandId(entity.getId()),
-                new BrandName(entity.getName()),
-                logo);
+        final var logoDoc = entity.getLogo();
+        final BrandLogo logo;
+        if (logoDoc != null) {
+            logo = BrandPersistenceMapper.toLogoOrNull(
+                    logoDoc.getUrl(),
+                    logoDoc.getKey(),
+                    logoDoc.getWidth(),
+                    logoDoc.getHeight());
+        } else {
+            logo = null;
+        }
+
+        return new Brand(id, name, logo);
     }
 
-    public BrandJpaEntity toEntity(
+    public BrandDocument toPersistence(
             final Brand brand) {
         final var logo = brand.getLogo();
 
-        final String urlValue;
-        final String keyValue;
-        final Integer width;
-        final Integer height;
+        final BrandLogoDocument logoDoc;
         if (logo != null) {
-            urlValue = logo.url().value();
-            keyValue = logo.key().value();
-            width = logo.size().width();
-            height = logo.size().height();
+            logoDoc = new BrandLogoDocument(
+                    logo.url().value(),
+                    logo.key().value(),
+                    logo.size().width(),
+                    logo.size().height());
         } else {
-            urlValue = null;
-            keyValue = null;
-            width = null;
-            height = null;
+            logoDoc = null;
         }
 
-        return BrandJpaEntity.of(
+        return new BrandDocument(
                 brand.getId().value(),
                 brand.getName().value(),
-                urlValue,
-                keyValue,
-                width,
-                height);
+                logoDoc);
     }
 
     @NullUnmarked
@@ -67,7 +66,7 @@ public class BrandEntityMapper {
             return null;
         }
 
-        return BrandEntityMapper.toLogo(url, key, width, height);
+        return BrandPersistenceMapper.toLogo(url, key, width, height);
     }
 
     private static BrandLogo toLogo(

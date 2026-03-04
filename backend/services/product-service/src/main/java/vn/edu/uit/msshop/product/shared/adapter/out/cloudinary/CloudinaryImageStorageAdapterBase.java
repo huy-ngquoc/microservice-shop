@@ -55,7 +55,12 @@ public abstract class CloudinaryImageStorageAdapterBase {
     private static String getString(
             final Map<?, ?> response,
             final String key) {
-        return (String) response.get(key);
+        final var value = response.get(key);
+        if (!(value instanceof String str)) {
+            throw new IllegalStateException("Missing or invalid string field: " + key);
+        }
+
+        return str;
     }
 
     private static int getInt(
@@ -65,6 +70,7 @@ public abstract class CloudinaryImageStorageAdapterBase {
         if (!(value instanceof Number number)) {
             throw new IllegalStateException("Missing or invalid numeric field: " + key);
         }
+
         return number.intValue();
     }
 

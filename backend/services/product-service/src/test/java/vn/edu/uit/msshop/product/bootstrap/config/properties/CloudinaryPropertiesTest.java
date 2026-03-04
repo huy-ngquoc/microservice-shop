@@ -19,8 +19,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
         })
 class CloudinaryPropertiesTest {
 
-    // Tạo một context Spring siêu nhỏ chỉ load đúng cái class Record này để test
-    // cho lẹ
     @Configuration
     @EnableConfigurationProperties(CloudinaryProperties.class)
     static class TestConfig {
@@ -37,10 +35,8 @@ class CloudinaryPropertiesTest {
     @Test
     @DisplayName("Should bind properties from configuration to CloudinaryProperties record correctly")
     void shouldBindPropertiesCorrectly() {
-        // Kiểm tra xem Spring có tạo được Bean và tiêm (inject) vào đây không
         Assertions.assertThat(this.cloudinaryProperties).isNotNull();
 
-        // Kiểm tra xem dữ liệu map từ "cloud-name" sang "cloudName" có chuẩn xác không
         Assertions.assertThat(this.cloudinaryProperties.cloudName())
                 .as("Cloud name should be mapped correctly")
                 .isEqualTo("my-test-cloud");

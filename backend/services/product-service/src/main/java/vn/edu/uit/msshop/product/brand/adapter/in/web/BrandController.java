@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest;
@@ -64,6 +66,7 @@ public class BrandController {
     @PostMapping
     public ResponseEntity<Void> create(
             @RequestBody
+            @Valid
             final CreateBrandRequest request) {
         final var command = this.webMapper.toCommand(request);
         this.createUseCase.create(command);
@@ -77,6 +80,7 @@ public class BrandController {
             final UUID id,
 
             @RequestBody
+            @Valid
             final UpdateBrandInfoRequest request) {
         final var command = this.webMapper.toCommand(id, request);
         this.updateInfoUseCase.updateInfo(command);
@@ -92,6 +96,7 @@ public class BrandController {
             final UUID id,
 
             @RequestPart("file")
+            @NotNull
             final MultipartFile file)
             throws IOException {
         if (file.isEmpty()) {
@@ -99,7 +104,7 @@ public class BrandController {
         }
 
         final var contentType = file.getContentType();
-        if ((contentType == null || (!contentType.startsWith("image/")))) {
+        if ((contentType == null) || (!contentType.startsWith("image/"))) {
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
         }
 

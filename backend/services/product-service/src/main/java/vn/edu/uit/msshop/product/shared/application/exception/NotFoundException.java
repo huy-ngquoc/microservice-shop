@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.shared.application.exception;
 
+import org.jspecify.annotations.Nullable;
+
 public class NotFoundException extends RuntimeException {
     private final String resource;
     private final String identifier;
@@ -13,6 +15,7 @@ public class NotFoundException extends RuntimeException {
     public NotFoundException(
             final String resource,
             final String identifier,
+            @Nullable
             final Throwable cause) {
         super(NotFoundException.buildMessage(resource, identifier), cause);
 

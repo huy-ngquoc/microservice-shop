@@ -3,7 +3,8 @@ package vn.edu.uit.msshop.product.category.adapter.out.persistence.mapper;
 import org.jspecify.annotations.NullUnmarked;
 import org.springframework.stereotype.Component;
 
-import vn.edu.uit.msshop.product.category.adapter.out.persistence.CategoryJpaEntity;
+import vn.edu.uit.msshop.product.category.adapter.out.persistence.CategoryDocument;
+import vn.edu.uit.msshop.product.category.adapter.out.persistence.CategoryImageDocument;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImage;
@@ -13,50 +14,46 @@ import vn.edu.uit.msshop.product.category.domain.model.CategoryImageUrl;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
 
 @Component
-public class CategoryEntityMapper {
+public class CategoryPersistenceMapper {
     public Category toDomain(
-            final CategoryJpaEntity entity) {
+            final CategoryDocument entity) {
         final var id = new CategoryId(entity.getId());
         final var name = new CategoryName(entity.getName());
-        final var image = CategoryEntityMapper.toImageOrNull(
-                entity.getImageUrl(),
-                entity.getImageKey(),
-                entity.getImageWidth(),
-                entity.getImageHeight());
 
-        return new Category(
-                id,
-                name,
-                image);
+        final var imageDoc = entity.getImage();
+        final CategoryImage image;
+        if (imageDoc != null) {
+            image = CategoryPersistenceMapper.toImageOrNull(
+                    imageDoc.getUrl(),
+                    imageDoc.getKey(),
+                    imageDoc.getWidth(),
+                    imageDoc.getHeight());
+        } else {
+            image = null;
+        }
+
+        return new Category(id, name, image);
     }
 
-    public CategoryJpaEntity toEntity(
+    public CategoryDocument toPersistence(
             final Category category) {
         final var image = category.getImage();
 
-        final String urlValue;
-        final String keyValue;
-        final Integer width;
-        final Integer height;
+        final CategoryImageDocument imageDoc;
         if (image != null) {
-            urlValue = image.url().value();
-            keyValue = image.key().value();
-            width = image.size().width();
-            height = image.size().height();
+            imageDoc = new CategoryImageDocument(
+                    image.url().value(),
+                    image.key().value(),
+                    image.size().width(),
+                    image.size().height());
         } else {
-            urlValue = null;
-            keyValue = null;
-            width = null;
-            height = null;
+            imageDoc = null;
         }
 
-        return CategoryJpaEntity.of(
+        return new CategoryDocument(
                 category.getId().value(),
                 category.getName().value(),
-                urlValue,
-                keyValue,
-                width,
-                height);
+                imageDoc);
     }
 
     @NullUnmarked
@@ -69,7 +66,7 @@ public class CategoryEntityMapper {
             return null;
         }
 
-        return CategoryEntityMapper.toImage(url, key, width, height);
+        return CategoryPersistenceMapper.toImage(url, key, width, height);
     }
 
     private static CategoryImage toImage(

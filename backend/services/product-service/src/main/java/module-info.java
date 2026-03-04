@@ -29,17 +29,18 @@ import org.jspecify.annotations.NullMarked;
     // requires jakarta.servlet;
     requires jakarta.validation;
 
-    // ========= Persistence (Spring Data JPA + Hibernate) =========
+    // ========= Persistence (Spring Data MongoDB) =========
     requires spring.tx;
-    requires spring.jdbc;
-    requires spring.orm;
-
     requires spring.data.commons;
-    requires spring.data.jpa;
+    requires spring.data.mongodb;
 
-    requires jakarta.persistence;
+    // Nếu bạn có import trực tiếp class của Mongo driver/BSON trong code thì bật
+    // thêm:
+    // requires org.mongodb.bson;
+    // requires org.mongodb.driver.core;
+    // requires org.mongodb.driver.sync.client;
 
-    requires org.hibernate.orm.core;
+    // ========= Validation provider =========
     requires org.hibernate.validator;
 
     // ========= JSON (Jackson) =========
