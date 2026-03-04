@@ -41,6 +41,6 @@ public class RatingWebMapper {
         return new UpdateRatingCommand(id,content,ratingPoint);
     }
     public RatingResponse toResponse(RatingView view) {
-        return new RatingResponse(view.ratingId(), view.content(), view.mediaURL(), view.mediaType(),view.mediaPublicId(), view.productId(), view.userId(), view.userName(), view.userAvatar());
+        return new RatingResponse(view.ratingId(), view.content(), view.mediaURL(), view.mediaType(),view.mediaPublicId(), view.productId(), view.userId(), view.userName(), view.userAvatar(),view.ratingPoint());
     }
 }

@@ -13,6 +13,6 @@ public class RatingViewMapper {
         String publicId = rating.getMedia()!=null?rating.getMedia().publicId():"";
 
 
-        return new RatingView(rating.getId().value(), rating.getContent().value(), url, type,publicId, rating.getProductId().value(), rating.getUserId().value(), rating.getUsername().value(),rating.getUserAvatar().value());
+        return new RatingView(rating.getId().value(), rating.getContent().value(), url, type,publicId, rating.getProductId().value(), rating.getUserId().value(), rating.getUsername().value(),rating.getUserAvatar().value(),rating.getRatingPoint().value());
     }
 }
