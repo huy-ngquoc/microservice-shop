@@ -55,6 +55,7 @@ public class CloudDinaryStorage implements UploadImagePort,DeleteImagePort {
             throw new ImageUploadFailException(e);
         }
     }
+    
     @Override
     public void deleteImage(ImagePublicId publicId, ObjectId objectId, DataType dataType) {
         try {

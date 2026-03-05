@@ -1,0 +1,6 @@
+cloudinary:
+  cloud-name: 
+  api-key: 
+  api-secret: 
+server:
+    port: 8073

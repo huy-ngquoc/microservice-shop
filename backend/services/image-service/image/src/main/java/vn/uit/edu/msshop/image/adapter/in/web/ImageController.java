@@ -16,8 +16,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.image.adapter.in.web.mapper.ImageWebMapper;
+import vn.uit.edu.msshop.image.adapter.in.web.response.ImageResponse;
 import vn.uit.edu.msshop.image.application.port.in.DeleteImageUseCase;
 import vn.uit.edu.msshop.image.application.port.in.UploadImageUseCase;
+import vn.uit.edu.msshop.image.domain.model.ImageInfo;
+/*public ImageResponse toResponse(String url,
+    String publicId,
+    String fileName,
+    int width,
+    int height,
+    UUID objectId,
+    String dataType) */
 
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +37,7 @@ public class ImageController {
     private final ImageWebMapper mapper;
 
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> uploadImage(@RequestParam(required=true) UUID objectId, @RequestParam(required=true) String dataType, @RequestPart("file") final MultipartFile file) throws IOException {
+    public ResponseEntity<ImageResponse> uploadImage(@RequestParam(required=true) UUID objectId, @RequestParam(required=true) String dataType, @RequestPart("file") final MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -38,8 +47,9 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
         }
         final var uploadImageCommand = mapper.toCommand(file, objectId, dataType);
-        uploadUseCase.uploadImage(uploadImageCommand);
-        return ResponseEntity.noContent().build();
+        ImageInfo imageInfo = uploadUseCase.uploadImage(uploadImageCommand);
+        ImageResponse response = mapper.toResponse(imageInfo.getUrl().value(), imageInfo.getPublicId().value(), imageInfo.getFileName().value(), imageInfo.getWidth().value(), imageInfo.getHeight().value(), imageInfo.getObjectId().value(), imageInfo.getDataType().value());
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping()
