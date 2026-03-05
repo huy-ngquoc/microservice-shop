@@ -1,0 +1,10 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://alibou:alibou@localhost:27018/rating_db?authSource=admin&uuidRepresentation=STANDARD
+cloudinary:
+  cloud-name: 
+  api-key: 
+  api-secret: 
+server:
+    port: 8072

@@ -10,7 +10,23 @@ services:
         volumes:
             - postgres:/data/postgres
         ports:
-            - "5432:5432"
+            - "5433:5432"
+        networks:
+            - microservices-net
+        restart: unless-stopped
+    postgresql_account:
+        container_name: ms_pg_sql_account
+        image: postgres:18
+        environment:
+            POSTGRES_USER: alibou
+            POSTGRES_PASSWORD: alibou
+            PGDATA: /data/postgres
+            TZ: UTC
+            POSTGRES_DB: account
+        volumes:
+            - postgres_account:/data/postgres
+        ports:
+            - "5434:5432"
         networks:
             - microservices-net
         restart: unless-stopped
@@ -52,6 +68,18 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=alibou
             - MONGO_INITDB_ROOT_PASSWORD=alibou
             - TZ=UTC
+    mongodb_rating:
+        container_name: ms_mongo_db_rating
+        image: mongo:8
+        ports:
+            - 27018:27017
+        volumes:
+            - mongo_rating:/data
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+
 
     mongo-express:
         container_name: ms_mongo_express
@@ -120,5 +148,7 @@ networks:
 
 volumes:
     postgres:
+    postgres_account:
     pgadmin:
     mongo:
+    mongo_rating:
