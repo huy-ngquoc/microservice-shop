@@ -5,7 +5,6 @@ import java.util.List;
 import org.jspecify.annotations.NonNull;
 
 import vn.uit.edu.msshop.order.domain.model.valueobject.Discount;
-import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingFee;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
@@ -15,7 +14,7 @@ public record CreateOrderCommand(
     @NonNull
     OrderId id,
     ShippingInfo shippingInfo,
-    List<OrderDetail> details,
+    List<OrderDetailCommand> details,
     UserId userId,
     ShippingFee shippingFee,
     Discount discount

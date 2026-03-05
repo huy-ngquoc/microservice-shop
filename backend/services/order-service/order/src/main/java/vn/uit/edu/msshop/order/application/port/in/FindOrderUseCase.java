@@ -13,5 +13,5 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
 
 public interface FindOrderUseCase {
     public OrderView findOrderById(OrderId id);
-    public Page<OrderView> filterOrder(Optional<UUID> variantId, Optional<OrderStatus> status, Optional<Integer> minPrice, Optional<Integer> maxPrice, Optional<UserId> userId,Optional<Instant> createFrom, Optional<Instant> createTo);
+    public Page<OrderView> filterOrder(Optional<UUID> variantId, Optional<OrderStatus> status, Optional<Integer> minPrice, Optional<Integer> maxPrice, Optional<UserId> userId,Optional<Instant> createFrom, Optional<Instant> createTo, int pageNumber, int pageSize);
 }

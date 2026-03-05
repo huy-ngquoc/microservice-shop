@@ -12,12 +12,16 @@ import vn.uit.edu.msshop.order.adapter.in.web.response.OrderDetailResponse;
 import vn.uit.edu.msshop.order.adapter.in.web.response.OrderResponse;
 import vn.uit.edu.msshop.order.application.common.Change;
 import vn.uit.edu.msshop.order.application.dto.command.CreateOrderCommand;
+import vn.uit.edu.msshop.order.application.dto.command.OrderDetailCommand;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.dto.query.OrderView;
+import vn.uit.edu.msshop.order.domain.model.valueobject.Discount;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
+import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingFee;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
+import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
 /*String orderId,
     String fullName,
     String address,
@@ -30,11 +34,14 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
     Instant createAt */
 @Component
 public class OrderWebMapper {
+    
     public CreateOrderCommand toCommand(CreateOrderRequest request) {
-        return null;
+        ShippingInfo shippingInfo = new ShippingInfo(request.fullName(), request.address(), request.phone(), request.email());
+        List<OrderDetailCommand> details = request.detailRequests().stream().map(this::toOrderDetailCommand).toList();
+        return new CreateOrderCommand(new OrderId(request.id()), shippingInfo, details, new UserId(request.userId()), new ShippingFee(request.shippingFee()), new Discount(request.discount()));
     }
-    public OrderDetail toOrderDetail(OrderDetailRequest detailRequest) {
-        return null;
+    public OrderDetailCommand toOrderDetailCommand(OrderDetailRequest detailRequest) {
+        return new OrderDetailCommand(detailRequest.variantId(), detailRequest.quantity());
     }
     public UpdateOrderCommand toCommand(UpdateOrderRequest request) {
         String fullName = request.fullName().value();
