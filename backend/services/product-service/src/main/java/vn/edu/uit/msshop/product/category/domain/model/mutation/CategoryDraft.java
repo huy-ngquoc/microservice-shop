@@ -1,10 +1,8 @@
 package vn.edu.uit.msshop.product.category.domain.model.mutation;
 
-import lombok.Builder;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
-@Builder
 public record CategoryDraft(
         CategoryName name) {
     public CategoryDraft {

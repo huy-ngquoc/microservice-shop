@@ -49,12 +49,13 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
             return logoView;
         }
 
+        final var saved = this.savePort.save(newBrand);
+
         final var oldLogo = oldBrand.getLogo();
         if ((oldLogo != null) && !oldLogo.key().equals(uploadedLogo.key())) {
             this.deleteLogoPort.deleteByKey(oldLogo.key());
         }
 
-        final var saved = this.savePort.save(newBrand);
         this.eventPort.publish(new BrandUpdated(saved.getId()));
 
         return logoView;
