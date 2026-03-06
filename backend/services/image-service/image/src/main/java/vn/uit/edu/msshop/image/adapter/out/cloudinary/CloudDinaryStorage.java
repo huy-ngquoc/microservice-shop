@@ -2,6 +2,7 @@ package vn.uit.edu.msshop.image.adapter.out.cloudinary;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -13,6 +14,7 @@ import com.cloudinary.Uploader;
 import lombok.extern.slf4j.Slf4j;
 import vn.uit.edu.msshop.image.adapter.exception.ImageUploadFailException;
 import vn.uit.edu.msshop.image.application.port.out.DeleteImagePort;
+import vn.uit.edu.msshop.image.application.port.out.GetSignaturePort;
 import vn.uit.edu.msshop.image.application.port.out.UploadImagePort;
 import vn.uit.edu.msshop.image.domain.model.ImageInfo;
 import vn.uit.edu.msshop.image.domain.model.valueobject.DataType;
@@ -23,15 +25,17 @@ import vn.uit.edu.msshop.image.domain.model.valueobject.ImageSize;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImageUrl;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImageWidth;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ObjectId;
+import vn.uit.edu.msshop.image.domain.model.valueobject.TimeStamp;
 @Component
 @Slf4j
-public class CloudDinaryStorage implements UploadImagePort,DeleteImagePort {
+public class CloudDinaryStorage implements UploadImagePort,DeleteImagePort,GetSignaturePort {
     private static final Entry<String, String> UPLOAD_OPTION_RESOURCE_TYPE = Map
             .entry(CloudDinaryOptionKeys.RESOURCE_TYPE, CloudDinaryResourceType.IMAGE.value());
     private final Uploader uploader;
-
+    private final Cloudinary cloudinary;
     public CloudDinaryStorage(
             final Cloudinary cloudinary) {
+        this.cloudinary = cloudinary;
         this.uploader = cloudinary.uploader();
     }
     @Override
@@ -63,6 +67,14 @@ public class CloudDinaryStorage implements UploadImagePort,DeleteImagePort {
         } catch (final Exception e) {
             log.warn("Cannot delete image with public id: " + publicId.value(), e);
         }
+    }
+    @Override
+    public String getSignature(DataType dataType, TimeStamp timeStamp) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("folder", dataType.value());
+        params.put("timestamp", timeStamp.value());
+        String signature = cloudinary.apiSignRequest(params, cloudinary.config.apiSecret,1);
+        return signature;
     }
 
 }
