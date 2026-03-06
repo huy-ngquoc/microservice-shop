@@ -151,6 +151,12 @@ public class Payment {
         .paymentStatus(s.paymentStatus()).paymentValue(s.paymentValue()).updateAt(s.updateAt()).build();
     }
     @NullMarked
+    public Snapshot snapshot() {
+        return Snapshot.builder().paymentId(this.paymentId).createAt(this.createAt).currency(this.currency).orderId(this.orderId).paymentMethod(this.paymentMethod)
+        .paymentStatus(this.paymentStatus).paymentValue(this.paymentValue).updateAt(this.updateAt).build();
+    
+    }
+    @NullMarked
     public Payment applyUpdateInfo(final UpdateInfo u) {
         if (u == null) {
             throw new IllegalArgumentException("Update must NOT be null");

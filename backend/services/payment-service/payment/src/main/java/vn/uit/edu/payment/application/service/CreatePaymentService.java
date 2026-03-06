@@ -1,0 +1,37 @@
+package vn.uit.edu.payment.application.service;
+
+import java.time.Instant;
+
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import vn.uit.edu.payment.application.dto.command.CreatePaymentCommand;
+import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
+import vn.uit.edu.payment.application.port.out.CheckOrderPort;
+import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
+import vn.uit.edu.payment.application.port.out.SavePaymentPort;
+import vn.uit.edu.payment.domain.event.PaymentCreated;
+import vn.uit.edu.payment.domain.model.Payment;
+import vn.uit.edu.payment.domain.model.valueobject.CreateAt;
+import vn.uit.edu.payment.domain.model.valueobject.UpdateAt;
+
+@Service
+@RequiredArgsConstructor
+public class CreatePaymentService implements CreatePaymentUseCase {
+    private final CheckOrderPort checkOrderPort;
+    private final SavePaymentPort savePort;
+    private final PublishPaymentEventPort eventPort;
+
+    @Override
+    public void create(CreatePaymentCommand command) {
+        checkOrderPort.checkOrder(command.paymentId(), command.paymentValue(), command.orderId());
+
+        final var draft = Payment.Draft.builder().paymentId(command.paymentId()).createAt(new CreateAt(Instant.now())).currency(command.currency()).orderId(command.orderId()).paymentMethod(command.paymentMethod())
+        .paymentStatus(command.paymentStatus()).paymentValue(command.paymentValue()).updateAt(new UpdateAt(null)).build();
+        final var payment = Payment.create(draft);
+
+        final var saved=savePort.save(payment);
+        eventPort.publish(new PaymentCreated(saved.getPaymentId()));
+    }
+
+}
