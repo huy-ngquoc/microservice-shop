@@ -31,26 +31,26 @@ public class PaymentController {
     private final LoadPaymentUseCase loadPaymentUseCase;
     private final PaymentWebMapper mapper;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{paymentId}")
     public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable UUID paymentId) {
         final var result = mapper.toResponse(loadPaymentUseCase.findById(new PaymentId(paymentId)));
         return ResponseEntity.ok(result);
     }
-    @GetMapping("/{orderId}")
+    @GetMapping("/order/{orderId}")
     public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId) {
         final var result = mapper.toResponse(loadPaymentUseCase.loadByOrderId(new OrderId(orderId)));
         return ResponseEntity.ok(result);
     }
     @PostMapping("/create")
-    public ResponseEntity<Void> createPayment(@RequestBody CreatePaymentRequest request) {
+    public ResponseEntity<PaymentResponse> createPayment(@RequestBody CreatePaymentRequest request) {
         final var command = mapper.toCommand(request);
-        createUseCase.create(command);
-        return ResponseEntity.noContent().build();
+        final var result =createUseCase.create(command);
+        return ResponseEntity.ok(mapper.toResponse(result));
     } 
     @PutMapping("/update")
-    public ResponseEntity<Void> updatePayment(@RequestBody UpdatePaymentRequest request) {
+    public ResponseEntity<PaymentResponse> updatePayment(@RequestBody UpdatePaymentRequest request) {
         final var command = mapper.toCommand(request);
-        updateUseCase.update(command);
-        return ResponseEntity.noContent().build();
+        final var result =updateUseCase.update(command);
+        return ResponseEntity.ok(mapper.toResponse(result));
     }
 }

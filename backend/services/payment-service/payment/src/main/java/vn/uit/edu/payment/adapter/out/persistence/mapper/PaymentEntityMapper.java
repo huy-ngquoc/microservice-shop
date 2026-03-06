@@ -9,6 +9,7 @@ import vn.uit.edu.payment.domain.model.valueobject.Currency;
 import vn.uit.edu.payment.domain.model.valueobject.OrderId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentMethod;
+import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentValue;
 import vn.uit.edu.payment.domain.model.valueobject.UpdateAt;
 /*PaymentId paymentId,
@@ -28,6 +29,7 @@ public class PaymentEntityMapper {
         .orderId(new OrderId(e.getOrderId()))
         .paymentMethod(new PaymentMethod(e.getPaymentMethod()))
         .paymentValue(new PaymentValue(e.getPaymentValue()))
+        .paymentStatus(new PaymentStatus(e.getPaymentStatus()))
         .updateAt(new UpdateAt(e.getUpdateAt()))
         .build();
         return Payment.reconstitue(snapshot);

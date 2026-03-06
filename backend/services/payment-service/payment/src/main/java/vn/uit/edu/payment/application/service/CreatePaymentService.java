@@ -4,8 +4,11 @@ import java.time.Instant;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.payment.application.dto.command.CreatePaymentCommand;
+import vn.uit.edu.payment.application.dto.query.PaymentView;
+import vn.uit.edu.payment.application.mapper.PaymentViewMapper;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
 import vn.uit.edu.payment.application.port.out.CheckOrderPort;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
@@ -21,9 +24,11 @@ public class CreatePaymentService implements CreatePaymentUseCase {
     private final CheckOrderPort checkOrderPort;
     private final SavePaymentPort savePort;
     private final PublishPaymentEventPort eventPort;
+    private final PaymentViewMapper mapper;
 
     @Override
-    public void create(CreatePaymentCommand command) {
+    @Transactional
+    public PaymentView create(CreatePaymentCommand command) {
         checkOrderPort.checkOrder(command.paymentId(), command.paymentValue(), command.orderId());
 
         final var draft = Payment.Draft.builder().paymentId(command.paymentId()).createAt(new CreateAt(Instant.now())).currency(command.currency()).orderId(command.orderId()).paymentMethod(command.paymentMethod())
@@ -32,6 +37,7 @@ public class CreatePaymentService implements CreatePaymentUseCase {
 
         final var saved=savePort.save(payment);
         eventPort.publish(new PaymentCreated(saved.getPaymentId()));
+        return mapper.toView(saved);
     }
 
 }

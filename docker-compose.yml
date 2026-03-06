@@ -30,7 +30,22 @@ services:
         networks:
             - microservices-net
         restart: unless-stopped
-
+    postgresql_payment:
+        container_name: ms_pg_sql_payment
+        image: postgres:18
+        environment:
+            POSTGRES_USER: alibou
+            POSTGRES_PASSWORD: alibou
+            PGDATA: /data/postgres
+            TZ: UTC
+            POSTGRES_DB: payment
+        volumes:
+            - postgres_payment:/data/postgres
+        ports:
+            - "5435:5432"
+        networks:
+            - microservices-net
+        restart: unless-stopped
     pgadmin:
         container_name: ms_pgadmin
         image: dpage/pgadmin4:9
@@ -152,3 +167,4 @@ volumes:
     pgadmin:
     mongo:
     mongo_rating:
+    postgres_payment:

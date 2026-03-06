@@ -112,9 +112,7 @@ public class Payment {
             if(paymentMethod==null) {
                 throw new IllegalArgumentException("Payment method must not be null");
             }
-            if(paymentStatus==null) {
-                throw new IllegalArgumentException("Payment status must not be null");
-            }
+            
             if(paymentValue == null) {
                 throw new IllegalArgumentException("Payment value must not be null");
             }

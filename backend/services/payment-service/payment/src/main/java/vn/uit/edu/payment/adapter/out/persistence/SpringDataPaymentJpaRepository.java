@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SpringDataPaymentJpaRepository extends JpaRepository<PaymentJpaEntity, UUID>{
-    public PaymentJpaEntity findByOrderId(UUID orderId);
+    public PaymentJpaEntity findFirstByOrderId(UUID orderId);
 
 }
