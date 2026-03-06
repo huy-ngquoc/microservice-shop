@@ -1,7 +1,6 @@
 package vn.uit.edu.payment.domain.model;
 
 import java.time.Instant;
-import java.util.Currency;
 import java.util.Objects;
 
 import org.jspecify.annotations.NonNull;
@@ -13,6 +12,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.uit.edu.payment.domain.model.valueobject.CreateAt;
+import vn.uit.edu.payment.domain.model.valueobject.Currency;
 import vn.uit.edu.payment.domain.model.valueobject.OrderId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentMethod;
