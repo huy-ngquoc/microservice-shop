@@ -19,8 +19,6 @@ spring:
                         uri: lb:http://PAYMENT-SERVICE
                         predicates:
                         - Path=/payment/**
-                        filters:
-                        - StripPrefix=1
 management:
   endpoints:
     web:
