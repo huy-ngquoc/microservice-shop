@@ -8,3 +8,24 @@ spring:
             fail-fast: true
             retry:
                 max-attempts: 5
+        gateway:
+            server:
+                webflux:
+                    discovery:
+                        locator:
+                            enabled: true
+                    routes:
+                      - id: payment-service
+                        uri: lb:http://PAYMENT-SERVICE
+                        predicates:
+                        - Path=/payment/**
+                        filters:
+                        - StripPrefix=1
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway, health, info
+  endpoint:
+    gateway:
+      enabled: true
