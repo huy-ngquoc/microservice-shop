@@ -49,12 +49,13 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
             return imageView;
         }
 
+        final var saved = this.savePort.save(newCategory);
+
         final var oldImage = oldCategory.getImage();
         if ((oldImage != null) && !oldImage.key().equals(uploadedImage.key())) {
             this.deleteImagePort.deleteByKey(oldImage.key());
         }
 
-        final var saved = this.savePort.save(newCategory);
         this.eventPort.publish(new CategoryUpdated(saved.getId()));
 
         return imageView;
