@@ -10,6 +10,7 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.dto.command.CreateBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandInfoCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandLogoCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.query.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.dto.query.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
@@ -35,6 +36,23 @@ public class BrandWebMapper {
         return new UpdateBrandInfoCommand(
                 brandId,
                 name);
+    }
+
+    public UpdateBrandLogoCommand toCommand(
+            final UUID id,
+            final byte[] bytes,
+            final String originalFilename,
+            final String contentType) {
+        return new UpdateBrandLogoCommand(
+                new BrandId(id),
+                bytes,
+                originalFilename,
+                contentType);
+    }
+
+    public BrandId toBrandId(
+            final UUID id) {
+        return new BrandId(id);
     }
 
     public BrandResponse toResponse(

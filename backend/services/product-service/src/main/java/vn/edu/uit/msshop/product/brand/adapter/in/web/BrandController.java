@@ -24,13 +24,11 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
-import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandLogoCommand;
 import vn.edu.uit.msshop.product.brand.application.port.in.CreateBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.FindBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.FindBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.UpdateBrandInfoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.UpdateBrandLogoUseCase;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
 
 @RestController
 @RequestMapping("/brands")
@@ -47,7 +45,7 @@ public class BrandController {
     public ResponseEntity<BrandResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findUseCase.findById(new BrandId(id));
+        final var view = this.findUseCase.findById(this.webMapper.toBrandId(id));
         final var response = this.webMapper.toResponse(view);
 
         return ResponseEntity.ok(response);
@@ -57,7 +55,7 @@ public class BrandController {
     public ResponseEntity<BrandLogoResponse> findLogoById(
             @PathVariable
             final UUID id) {
-        final var view = this.findLogoUseCase.findById(new BrandId(id));
+        final var view = this.findLogoUseCase.findById(this.webMapper.toBrandId(id));
         final var response = this.webMapper.toResponse(view);
 
         return ResponseEntity.ok(response);
@@ -113,8 +111,8 @@ public class BrandController {
             originalFilename = "logo";
         }
 
-        final var command = new UpdateBrandLogoCommand(
-                new BrandId(id),
+        final var command = this.webMapper.toCommand(
+                id,
                 file.getBytes(),
                 originalFilename,
                 contentType);

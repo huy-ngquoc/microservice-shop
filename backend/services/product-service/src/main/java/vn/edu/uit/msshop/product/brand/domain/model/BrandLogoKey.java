@@ -6,13 +6,13 @@ public record BrandLogoKey(
         String value) {
     public BrandLogoKey {
         if (value == null) {
-            throw new DomainException("publicId null");
+            throw new DomainException("Key is null");
         }
 
         value = value.trim();
 
         if (value.isBlank()) {
-            throw new DomainException("publicId blank");
+            throw new DomainException("Key is blank");
         }
     }
 }

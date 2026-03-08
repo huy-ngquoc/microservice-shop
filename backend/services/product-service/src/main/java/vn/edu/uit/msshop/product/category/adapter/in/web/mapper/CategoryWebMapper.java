@@ -9,6 +9,7 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryI
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
 import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategoryCommand;
+import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
@@ -35,6 +36,23 @@ public class CategoryWebMapper {
         return new UpdateCategoryInfoCommand(
                 categoryId,
                 name);
+    }
+
+    public UpdateCategoryImageCommand toCommand(
+            final UUID id,
+            final byte[] bytes,
+            final String originalFilename,
+            final String contentType) {
+        return new UpdateCategoryImageCommand(
+                new CategoryId(id),
+                bytes,
+                originalFilename,
+                contentType);
+    }
+
+    public CategoryId toCategoryId(
+            final UUID id) {
+        return new CategoryId(id);
     }
 
     public CategoryResponse toResponse(

@@ -22,13 +22,11 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.request.CreateCategoryR
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryInfoRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
-import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.port.in.CreateCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.FindCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.FindCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryInfoUseCase;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
 
 @RestController
 @RequestMapping("/categories")
@@ -45,7 +43,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findUseCase.findById(new CategoryId(id));
+        final var view = this.findUseCase.findById(this.webMapper.toCategoryId(id));
         final var response = this.webMapper.toResponse(view);
 
         return ResponseEntity.ok(response);
@@ -55,7 +53,7 @@ public class CategoryController {
     public ResponseEntity<CategoryImageResponse> findImageById(
             @PathVariable
             final UUID id) {
-        final var view = this.findImageUseCase.findById(new CategoryId(id));
+        final var view = this.findImageUseCase.findById(this.webMapper.toCategoryId(id));
         final var response = this.webMapper.toResponse(view);
 
         return ResponseEntity.ok(response);
@@ -107,8 +105,8 @@ public class CategoryController {
             originalFilename = "image";
         }
 
-        final var command = new UpdateCategoryImageCommand(
-                new CategoryId(id),
+        final var command = this.webMapper.toCommand(
+                id,
                 file.getBytes(),
                 originalFilename,
                 contentType);

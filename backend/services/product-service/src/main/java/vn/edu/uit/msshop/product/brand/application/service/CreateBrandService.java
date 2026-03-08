@@ -22,9 +22,8 @@ public class CreateBrandService implements CreateBrandUseCase {
     @Transactional
     public void create(
             final CreateBrandCommand command) {
-        final var draft = BrandDraft.builder()
-                .name(command.name())
-                .build();
+        final var draft = new BrandDraft(
+                command.name());
         final var brand = Brand.create(draft);
         final var saved = this.savePort.save(brand);
 

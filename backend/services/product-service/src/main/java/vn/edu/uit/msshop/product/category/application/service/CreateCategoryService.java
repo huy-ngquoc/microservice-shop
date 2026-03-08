@@ -22,9 +22,8 @@ public class CreateCategoryService implements CreateCategoryUseCase {
     @Transactional
     public void create(
             final CreateCategoryCommand command) {
-        final var draft = CategoryDraft.builder()
-                .name(command.name())
-                .build();
+        final var draft = new CategoryDraft(
+                command.name());
         final var category = Category.create(draft);
         final var saved = this.savePort.save(category);
 
