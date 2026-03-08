@@ -5,6 +5,20 @@ spring:
                 jwt:
                     issuer-uri: http://localhost:9098/realms/ms_shop
                     jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+    kafka:
+        producer:
+            bootstrap-servers: localhost:9092
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                spring.json.type.mapping: accountCreated:vn.uit.edu.msshop.auth.domain.event.AccountCreated
+        consumer:
+            group-id: account-group
+            auto-offset-reset: earliest 
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.json.trusted.packages: "vn.uit.edu.msshop.auth.domain.event"
 server:
     port: 8082
 jwt:

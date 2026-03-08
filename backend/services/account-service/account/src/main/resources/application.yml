@@ -8,3 +8,4 @@ spring:
             fail-fast: true
             retry:
                 max-attempts: 5
+    
