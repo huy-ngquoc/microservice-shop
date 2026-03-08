@@ -11,5 +11,20 @@ spring:
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
+    kafka:
+        bootstrap-servers: localhost:9092 
+        consumer:
+            group-id: account-group
+            auto-offset-reset: earliest 
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.json.trusted.packages: "vn.uit.edu.msshop.account.kafka.dto"
+        producer:
+            bootstrap-servers: localhost:9092
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                spring.json.type.mapping: accountId:vn.uit.edu.msshop.account.kafka.dto.AccountId
 server:
     port: 8071
