@@ -11,7 +11,7 @@ import vn.uit.edu.msshop.auth.domain.event.AccountId;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@KafkaListener(topics = "account-topic", groupId = "account-group")
+@KafkaListener(topics = "account-topic-fail", groupId = "account-group")
 public class AccountEventConsumer {
 
     @KafkaHandler
