@@ -1,12 +1,12 @@
-package vn.uit.edu.msshop.auth.kafka.consumer;
+package vn.uit.edu.msshop.auth.adapter.in.web;
 
-import org.keycloak.admin.client.Keycloak;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.auth.application.port.in.DeleteAccountUseCase;
 import vn.uit.edu.msshop.auth.domain.event.AccountId;
 
 @Service
@@ -14,17 +14,11 @@ import vn.uit.edu.msshop.auth.domain.event.AccountId;
 @Slf4j
 @KafkaListener(topics = "account-topic-fail", groupId = "account-group")
 public class AccountEventConsumer {
-    private final Keycloak keycloak;
+    private final DeleteAccountUseCase deleteAccountUseCase;
 
     @KafkaHandler
     public void handleAccountCreatedFail(AccountId accountId) {
-        try {
-        keycloak.realm("ms_shop").users().get(accountId.value().toString()).remove();
+        deleteAccountUseCase.deleteAccount(accountId);
         
-        log.info("Đã xóa thành công User có ID: {}",accountId.value().toString());
-    } catch (Exception e) {
-        
-        throw new RuntimeException("Không thể xóa người dùng trong Keycloak");
-    }
     }
 }

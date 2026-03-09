@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.auth;
+package vn.uit.edu.msshop.auth.config;
 
 
 import java.util.Collection;
