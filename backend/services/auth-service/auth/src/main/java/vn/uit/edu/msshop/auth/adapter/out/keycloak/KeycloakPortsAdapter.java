@@ -12,7 +12,7 @@ import vn.uit.edu.msshop.auth.domain.event.AccountId;
 @Component
 @RequiredArgsConstructor
 public class KeycloakPortsAdapter implements CreateAccountPort,DeleteAccountPort {
-    private Keycloak keycloak;
+    private final Keycloak keycloak;
     private static final String REALM="ms_shop";
     @Override
     public Response createAccount(UserRepresentation user) {
