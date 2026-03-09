@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.account.domain.event;
+package vn.uit.edu.msshop.account.domain.event.normal;
 
 import java.time.Instant;
 import java.util.UUID;

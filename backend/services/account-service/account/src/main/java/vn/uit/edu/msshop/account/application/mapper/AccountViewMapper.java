@@ -13,4 +13,5 @@ public class AccountViewMapper {
         return new AccountView(account.getId().toString(),account.getName().value(),
          account.getEmail().value(), account.getPassword().value(), account.getRole().value(), account.getStatus().value());
     }
+    
 }

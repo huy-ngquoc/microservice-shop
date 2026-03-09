@@ -9,7 +9,7 @@ import vn.uit.edu.msshop.account.application.exception.AccountNotFoundException;
 import vn.uit.edu.msshop.account.application.port.in.UpdateAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.out.LoadAccountPort;
 import vn.uit.edu.msshop.account.application.port.out.SaveAccountPort;
-import vn.uit.edu.msshop.account.domain.event.AccountUpdate;
+import vn.uit.edu.msshop.account.domain.event.normal.AccountUpdate;
 import vn.uit.edu.msshop.account.domain.model.Account;
 
 @Service

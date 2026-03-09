@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.account.kafka.dto;
+package vn.uit.edu.msshop.account.domain.event.kafka;
 
 import java.util.UUID;
 

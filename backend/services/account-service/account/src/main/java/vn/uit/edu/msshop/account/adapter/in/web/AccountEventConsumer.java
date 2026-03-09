@@ -1,26 +1,25 @@
-package vn.uit.edu.msshop.account.kafka.consumer;
-
+package vn.uit.edu.msshop.account.adapter.in.web;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.account.adapter.in.web.mapper.AccountWebMapper;
 import vn.uit.edu.msshop.account.application.dto.command.CreateAccountCommand;
 import vn.uit.edu.msshop.account.application.port.in.CreateAccountUseCase;
-import vn.uit.edu.msshop.account.kafka.dto.AccountCreated;
-import vn.uit.edu.msshop.account.kafka.dto.AccountId;
-import vn.uit.edu.msshop.account.kafka.mapper.KafkaMessageMapper;
-import vn.uit.edu.msshop.account.kafka.producer.AccountEventProducer;
+import vn.uit.edu.msshop.account.application.port.out.PublishAccountEventPort;
+import vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated;
+import vn.uit.edu.msshop.account.domain.event.kafka.AccountId;
 
-@Service
+@Component
 @Slf4j
 @RequiredArgsConstructor
 @KafkaListener(topics="account-topic", groupId="account-group")
 public class AccountEventConsumer {
     private final CreateAccountUseCase createUseCase;
-    private final KafkaMessageMapper mapper;
-    private final AccountEventProducer producer;
+    private final AccountWebMapper mapper;
+    private final PublishAccountEventPort producer;
     @KafkaHandler
     public void handleCreateAccount(AccountCreated accountCreated) {
         try {
