@@ -9,6 +9,7 @@ import vn.uit.edu.msshop.account.adapter.in.web.response.AccountResponse;
 import vn.uit.edu.msshop.account.application.dto.command.CreateAccountCommand;
 import vn.uit.edu.msshop.account.application.dto.command.UpdateAccountCommand;
 import vn.uit.edu.msshop.account.application.dto.query.AccountView;
+import vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountEmail;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
@@ -42,6 +43,15 @@ public class AccountWebMapper {
     }
     public AccountResponse toResponse(AccountView view) {
         return new AccountResponse(view.id(),view.name(),view.email(),view.password(),view.role(),view.status());
+    }
+    public CreateAccountCommand toCommand(AccountCreated accountCreated) {
+         final var id = new AccountId(accountCreated.id());
+        final var name = new AccountName(accountCreated.name());
+        final var email = new AccountEmail(accountCreated.email());
+        final var password = new AccountPassword(accountCreated.password());
+        final var role = new AccountRole(accountCreated.role());
+        final var status = new AccountStatus("ACTIVE");
+        return new CreateAccountCommand(id,name,email,password,role,status);
     }
 }
  
