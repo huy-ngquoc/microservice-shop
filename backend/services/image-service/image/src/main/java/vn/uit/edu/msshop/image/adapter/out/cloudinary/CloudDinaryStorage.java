@@ -69,9 +69,9 @@ public class CloudDinaryStorage implements UploadImagePort,DeleteImagePort,GetSi
         }
     }
     @Override
-    public String getSignature(DataType dataType, TimeStamp timeStamp) {
+    public String getSignature( TimeStamp timeStamp) {
         Map<String, Object> params = new HashMap<>();
-        params.put("folder", dataType.value());
+        params.put("folder", "temp");
         params.put("timestamp", timeStamp.value());
         String signature = cloudinary.apiSignRequest(params, cloudinary.config.apiSecret,1);
         return signature;

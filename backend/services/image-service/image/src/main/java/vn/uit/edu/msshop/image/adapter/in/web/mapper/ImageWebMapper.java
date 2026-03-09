@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cloudinary.Cloudinary;
 
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.msshop.image.adapter.in.web.request.GetSignatureRequest;
 import vn.uit.edu.msshop.image.adapter.in.web.response.ImageResponse;
 import vn.uit.edu.msshop.image.adapter.in.web.response.SignatureResponse;
 import vn.uit.edu.msshop.image.application.dto.command.DeleteImageCommand;
@@ -45,10 +44,10 @@ public class ImageWebMapper {
         return new ImageResponse(url, publicId, fileName, width, height, objectId, dataType);
     }
 
-    public GetSignatureCommand toCommand(GetSignatureRequest request) {
+    public GetSignatureCommand toCommand() {
         long timestamp = System.currentTimeMillis() / 1000L;
         TimeStamp ts = new TimeStamp(timestamp);
-        return new GetSignatureCommand(new DataType(request.getDataType()),ts);
+        return new GetSignatureCommand(ts);
     }
     public SignatureResponse toResponse(String signature, long timeStamp) {
         return new SignatureResponse(signature,timeStamp,cloudinary.config.apiKey,cloudinary.config.cloudName);

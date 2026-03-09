@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.image.adapter.in.web.mapper.ImageWebMapper;
-import vn.uit.edu.msshop.image.adapter.in.web.request.GetSignatureRequest;
 import vn.uit.edu.msshop.image.adapter.in.web.response.ImageResponse;
 import vn.uit.edu.msshop.image.adapter.in.web.response.SignatureResponse;
 import vn.uit.edu.msshop.image.application.port.in.DeleteImageUseCase;
@@ -64,9 +63,9 @@ public class ImageController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/signature")
-    public ResponseEntity<SignatureResponse> getSignature(@RequestBody GetSignatureRequest request) {
-        final var getSignatureCommand = mapper.toCommand(request);
+    @GetMapping("/signature")
+    public ResponseEntity<SignatureResponse> getSignature() {
+        final var getSignatureCommand = mapper.toCommand();
         final var result= getSignatureUseCase.getSignature(getSignatureCommand);
         return ResponseEntity.ok(result);
     }

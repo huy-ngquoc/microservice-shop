@@ -18,7 +18,7 @@ public class GetSignatureService implements GetSignatureUseCase {
     private final ImageWebMapper mapper;
     @Override
     public SignatureResponse getSignature(GetSignatureCommand command) {
-        String signature = getSignaturePort.getSignature(command.dataType(), command.timeStamp());
+        String signature = getSignaturePort.getSignature( command.timeStamp());
         return mapper.toResponse(signature, command.timeStamp().value());
     }
 
