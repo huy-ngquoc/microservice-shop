@@ -16,7 +16,7 @@ import vn.uit.edu.msshop.account.kafka.dto.AccountId;
 public class AccountEventProducer {
     private final KafkaTemplate<String,AccountId> kafkaTemplate;
     public void sendAccountCreationFailEvent(AccountId accountId) {
-        Message<AccountId> message = MessageBuilder.withPayload(accountId).setHeader(KafkaHeaders.TOPIC, "account-topic").build();
+        Message<AccountId> message = MessageBuilder.withPayload(accountId).setHeader(KafkaHeaders.TOPIC, "account-topic-fail").build();
         kafkaTemplate.send(message);
     }
 
