@@ -9,6 +9,8 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaAuthConfig {
     @Bean
     public NewTopic accountTopic() {
-        return TopicBuilder.name("account-topic").build();
+        return TopicBuilder.name("account-topic").partitions(3)
+                .replicas(1)   
+                .build();
     }
 }

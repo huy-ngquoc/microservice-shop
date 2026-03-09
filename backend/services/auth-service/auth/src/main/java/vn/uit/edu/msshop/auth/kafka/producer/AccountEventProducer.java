@@ -17,7 +17,7 @@ public class AccountEventProducer {
     private final KafkaTemplate<String,AccountCreated> kafkaTemplate;
     public void sendAccountCreateEvent(AccountCreated accountCreated) {
         Message<AccountCreated> message = MessageBuilder.withPayload(accountCreated).setHeader(KafkaHeaders.TOPIC, "account-topic").build();
-        kafkaTemplate.send(message);
+        kafkaTemplate.send(message); 
     }
 
 }

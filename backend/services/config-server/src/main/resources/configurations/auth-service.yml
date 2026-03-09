@@ -26,3 +26,14 @@ jwt:
         converter:
             resource-id: ms_shop_rest_api
             principle-attribute: preferred_username
+app:
+    keycloak:
+        admin:
+            server-url: http://localhost:9098
+            realm: ms_shop
+            client-id: ms_shop_rest_api
+            client-secret: CUKAVq8UFZ8gxav1JyfeT69WaEO5zekG
+logging:
+  level:
+    org.apache.kafka: ERROR
+    org.springframework.kafka: ERROR
