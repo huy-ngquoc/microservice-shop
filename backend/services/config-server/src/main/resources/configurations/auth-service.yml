@@ -11,14 +11,14 @@ spring:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
             properties:
-                spring.json.type.mapping: accountCreated:vn.uit.edu.msshop.auth.domain.event.AccountCreated
+                spring.json.type.mapping: AccountCreated:vn.uit.edu.msshop.auth.domain.event.AccountCreated
         consumer:
             group-id: account-group
-            auto-offset-reset: earliest 
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
             properties:
-                spring.json.trusted.packages: "vn.uit.edu.msshop.auth.domain.event"
+                spring.json.trusted.packages: "*"
+                spring.json.type.mapping: AccountId:vn.uit.edu.msshop.auth.domain.event.AccountId
 server:
     port: 8082
 jwt:
