@@ -9,6 +9,6 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaAccountTopicConfig {
     @Bean
     public NewTopic accountTopic() {
-        return TopicBuilder.name("account-topic").build();
+        return TopicBuilder.name("account-topic-fail").build();
     }
 }
