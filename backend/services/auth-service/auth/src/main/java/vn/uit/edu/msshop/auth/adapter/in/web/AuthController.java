@@ -1,5 +1,6 @@
-package vn.uit.edu.msshop.auth;
+package vn.uit.edu.msshop.auth.adapter.in.web;
 
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,13 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.msshop.auth.domain.dto.request.CreateAccountRequest;
+import vn.uit.edu.msshop.auth.adapter.in.web.mapper.AccountMapper;
+import vn.uit.edu.msshop.auth.adapter.in.web.request.CreateAccountRequest;
+import vn.uit.edu.msshop.auth.application.port.in.CreateAccountUseCase;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthService authService;
+    private final CreateAccountUseCase createUseCase;
+    private final AccountMapper mapper;
     @GetMapping
     @PreAuthorize("hasRole('Client User')")
     public String hello(){
@@ -29,7 +33,8 @@ public class AuthController {
 
     @PostMapping("/sign_up")
     public ResponseEntity<Void> createAccount(@RequestBody CreateAccountRequest request) {
-        authService.createUser(request);
+        UserRepresentation user= mapper.toUserRepresentation(request);
+        createUseCase.createAccount(user, request.role());
         return ResponseEntity.noContent().build();
 
     }

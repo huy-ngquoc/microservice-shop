@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.auth.domain.dto.response;
+package vn.uit.edu.msshop.auth.adapter.in.web.response;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.auth.domain.dto.request;
+package vn.uit.edu.msshop.auth.adapter.in.web.request;
 
 
 public record CreateAccountRequest(
