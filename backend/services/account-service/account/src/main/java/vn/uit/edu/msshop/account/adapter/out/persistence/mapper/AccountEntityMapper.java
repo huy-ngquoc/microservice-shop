@@ -10,7 +10,7 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountPassword;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountRole;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
-
+//String avatarPublicId, int avatarWidth, int avatarHeight, String shippingAddress, String phoneNumber
 @Component
 public class AccountEntityMapper {
     public Account toDomain(AccountJpaEntity e) {
@@ -25,6 +25,7 @@ public class AccountEntityMapper {
     public AccountJpaEntity toEntity(Account a) {
         final var snapshot = a.snapShot();
         
-        return AccountJpaEntity.of(snapshot.id().value(), snapshot.name().value(), snapshot.password().value(), snapshot.email().value(), snapshot.role().value(), snapshot.status().value());
+        return AccountJpaEntity.of(snapshot.id().value(), snapshot.name().value(), snapshot.password().value(), snapshot.email().value(), snapshot.role().value(), snapshot.status().value(), snapshot.avatar().url().value()
+    ,snapshot.avatar().publicId().value(),snapshot.avatar().imageSize().width(),snapshot.avatar().imageSize().height(), snapshot.shippingAdress().value(),snapshot.phoneNumber().value());
     }
 }

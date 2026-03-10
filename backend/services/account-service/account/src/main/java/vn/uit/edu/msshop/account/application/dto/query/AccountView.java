@@ -1,6 +1,6 @@
 package vn.uit.edu.msshop.account.application.dto.query;
 public record AccountView (
-    String id, String name, String email,String password, String role, String status
+    String id, String name, String email,String password, String role, String status, String shippingAddress, String avatarUrl, String phoneNumber
 ){
 
 }

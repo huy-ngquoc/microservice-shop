@@ -15,6 +15,8 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountPassword;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountRole;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
+import vn.uit.edu.msshop.account.domain.model.valueobject.PhoneNumber;
+import vn.uit.edu.msshop.account.domain.model.valueobject.ShippingAddress;
 
 @Component
 public class AccountWebMapper {
@@ -25,7 +27,9 @@ public class AccountWebMapper {
         final var password = new AccountPassword(request.password());
         final var role = new AccountRole(request.role());
         final var status = new AccountStatus(request.status());
-        return new CreateAccountCommand(id,name,email,password,role,status);
+        final var shippingAddress = new ShippingAddress(request.shippingAddress());
+        final var phoneNumber = new PhoneNumber(request.phoneNumber());
+        return new CreateAccountCommand(id,name,email,password,role,status,shippingAddress,phoneNumber);
     }
     public UpdateAccountCommand toCommand(UpdateAccountRequest request) {
         final var id = new AccountId(request.id());
@@ -36,12 +40,14 @@ public class AccountWebMapper {
         final var password = ChangeRequest.toChange(request.password(), AccountPassword::new);
         final var role = ChangeRequest.toChange(request.role(), AccountRole::new);
         final var status = ChangeRequest.toChange(request.status(), AccountStatus::new);
-        return new UpdateAccountCommand(id,name,email,password,role,status);
+        final var shippingAddress = ChangeRequest.toChange(request.shippingAddress(),ShippingAddress::new);
+        final var phoneNumber = ChangeRequest.toChange(request.phoneNumber(),PhoneNumber::new);
+        return new UpdateAccountCommand(id,name,email,password,role,status,shippingAddress,phoneNumber);
     
 
     }
     public AccountResponse toResponse(AccountView view) {
-        return new AccountResponse(view.id(),view.name(),view.email(),view.password(),view.role(),view.status());
+        return new AccountResponse(view.id(),view.name(),view.email(),view.password(),view.role(),view.status(),view.avatarUrl(),view.phoneNumber(),view.shippingAddress());
     }
 }
  
