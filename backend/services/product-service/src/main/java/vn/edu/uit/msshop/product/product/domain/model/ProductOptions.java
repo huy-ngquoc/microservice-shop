@@ -10,6 +10,8 @@ public record ProductOptions(
         List<ProductOption> values) {
     public static final int MAX_TIERS = 3;
 
+    private static final ProductOptions EMPTY = new ProductOptions(List.of());
+
     public ProductOptions {
         if (values == null) {
             throw new DomainException("Product options list CANNOT be null");
@@ -31,7 +33,7 @@ public record ProductOptions(
     }
 
     public static ProductOptions empty() {
-        return new ProductOptions(List.of());
+        return ProductOptions.EMPTY;
     }
 
     public boolean hasOptions() {

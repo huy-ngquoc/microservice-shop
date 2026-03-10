@@ -10,6 +10,8 @@ public record ProductVariants(
         List<ProductVariantSummary> values) {
     public static final int MAX_AMOUNT = ProductOptions.MAX_TIERS * ProductOption.MAX_AMOUNT_VALUES;
 
+    private static final ProductVariants EMPTY = new ProductVariants(List.of());
+
     public ProductVariants {
         if (values == null) {
             throw new DomainException("Variants CANNOT be null");
@@ -43,7 +45,7 @@ public record ProductVariants(
     }
 
     public static ProductVariants empty() {
-        return new ProductVariants(List.of());
+        return ProductVariants.EMPTY;
     }
 
     public boolean isEmpty() {

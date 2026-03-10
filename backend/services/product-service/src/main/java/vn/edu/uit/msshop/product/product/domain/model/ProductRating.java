@@ -5,9 +5,10 @@ import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 public record ProductRating(
         float average,
         int count) {
-    public static final ProductRating ZERO = new ProductRating(0.0F, 0);
     public static final float MIN_RATING = 0.0F;
     public static final float MAX_RATING = 5.0F;
+
+    private static final ProductRating ZERO = new ProductRating(0.0F, 0);
 
     public ProductRating {
         if ((average < MIN_RATING) || (average > MAX_RATING)) {
@@ -23,4 +24,7 @@ public record ProductRating(
         }
     }
 
+    public static ProductRating zero() {
+        return ProductRating.ZERO;
+    }
 }

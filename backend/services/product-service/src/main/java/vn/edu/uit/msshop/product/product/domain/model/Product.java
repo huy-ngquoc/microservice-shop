@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
 @FieldNameConstants
+// TODO: add status
 public final class Product {
     @EqualsAndHashCode.Include
     private final ProductId id;
@@ -52,8 +53,8 @@ public final class Product {
         this.rating = requireNonNull(rating, "Rating CANNOT be null");
         this.categoryId = requireNonNull(categoryId, "Category ID CANNOT be null");
         this.brandId = requireNonNull(brandId, "Brand ID CANNOT be null");
-        this.options = (options != null) ? options : ProductOptions.empty();
-        this.variants = (variants != null) ? variants : ProductVariants.empty();
+        this.variants = requireNonNull(variants, "Variants list CANNOT be null");
+        this.options = requireNonNull(options, "Options list CANNOT be null");
 
         this.validateConsistencyBetweenOptionsAndVariants();
     }
