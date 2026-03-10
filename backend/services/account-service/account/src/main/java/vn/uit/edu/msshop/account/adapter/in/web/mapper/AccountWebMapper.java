@@ -57,7 +57,9 @@ public class AccountWebMapper {
         final var password = new AccountPassword(accountCreated.password());
         final var role = new AccountRole(accountCreated.role());
         final var status = new AccountStatus("ACTIVE");
-        return new CreateAccountCommand(id,name,email,password,role,status);
+        final var shippingAddress = new ShippingAddress(accountCreated.shippingAddress());
+        final var phoneNumber = new PhoneNumber(accountCreated.phoneNumber());
+        return new CreateAccountCommand(id,name,email,password,role,status,shippingAddress,phoneNumber);
     }
 }
  

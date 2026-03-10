@@ -34,7 +34,7 @@ public class AuthController {
     @PostMapping("/sign_up")
     public ResponseEntity<Void> createAccount(@RequestBody CreateAccountRequest request) {
         UserRepresentation user= mapper.toUserRepresentation(request);
-        createUseCase.createAccount(user, request.role());
+        createUseCase.createAccount(user, request.role(), request.shippingAddress(), request.phoneNumber());
         return ResponseEntity.noContent().build();
 
     }

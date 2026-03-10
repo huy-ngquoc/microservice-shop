@@ -31,7 +31,9 @@ public class AccountJpaEntity {
     private String status;
     private String avatarUrl;
     private String avatarPublicId;
+    @Column(name = "avatar_width", nullable = false, columnDefinition = "integer default 0")
     private int avatarWidth;
+     @Column(name = "avatar_height", nullable = false, columnDefinition = "integer default 0")
     private int avatarHeight;
     private String shippingAddress;
     private String phoneNumber;
