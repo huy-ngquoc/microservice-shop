@@ -5,14 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.uit.edu.msshop.image.domain.model.valueobject.DataType;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImageFileName;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImageHeight;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImagePublicId;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImageSize;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImageUrl;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImageWidth;
-import vn.uit.edu.msshop.image.domain.model.valueobject.ObjectId;
 
 @Getter
 @Setter
@@ -26,6 +24,5 @@ public class ImageInfo {
     private ImageWidth width;
     private ImageHeight height;
     private ImageSize size;
-    private ObjectId objectId;
-    private DataType dataType;
+    
 }

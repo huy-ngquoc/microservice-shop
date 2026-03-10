@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.image.adapter.in.web.request;
+package vn.uit.edu.msshop.image.domain.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetSignatureRequest {
-    private String dataType;
+public class ImageRemoveFail {
+    private String imagePublicId;
 }
