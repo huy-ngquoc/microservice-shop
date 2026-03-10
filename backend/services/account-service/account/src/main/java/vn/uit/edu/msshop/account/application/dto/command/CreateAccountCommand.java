@@ -7,7 +7,9 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountPassword;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountRole;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
+import vn.uit.edu.msshop.account.domain.model.valueobject.PhoneNumber;
+import vn.uit.edu.msshop.account.domain.model.valueobject.ShippingAddress;
 
-public record CreateAccountCommand(AccountId id, AccountName name, AccountEmail email, AccountPassword password, AccountRole role, AccountStatus status) {
+public record CreateAccountCommand(AccountId id, AccountName name, AccountEmail email, AccountPassword password, AccountRole role, AccountStatus status, ShippingAddress shippingAddress,PhoneNumber phoneNumber) {
 
 }

@@ -13,7 +13,9 @@ public record UpdateAccountRequest(
     ChangeRequest<String> email, 
     ChangeRequest<String> password,
     ChangeRequest<String> role,
-    ChangeRequest<String> status
+    ChangeRequest<String> status,
+    ChangeRequest<String> shippingAddress,
+    ChangeRequest<String> phoneNumber
 ) {
 
 }

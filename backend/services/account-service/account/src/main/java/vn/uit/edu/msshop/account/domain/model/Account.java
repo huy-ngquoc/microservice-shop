@@ -17,6 +17,9 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountPassword;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountRole;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
+import vn.uit.edu.msshop.account.domain.model.valueobject.Avatar;
+import vn.uit.edu.msshop.account.domain.model.valueobject.PhoneNumber;
+import vn.uit.edu.msshop.account.domain.model.valueobject.ShippingAddress;
 
 
 @Getter
@@ -31,6 +34,9 @@ public class Account {
     private AccountName name;
     private AccountRole role;
     private AccountStatus status;
+    private Avatar avatar;
+    private ShippingAddress shippingAddress;
+    private PhoneNumber phoneNumber;
     
     public Account() {
 
@@ -81,7 +87,9 @@ public class Account {
         AccountEmail email,
         AccountPassword password,
         AccountRole role,
-        AccountStatus status
+        AccountStatus status,
+        PhoneNumber phoneNumber,
+        ShippingAddress shippingAddress
     ) {
 
     }
@@ -93,7 +101,9 @@ public class Account {
         AccountEmail email,
         AccountPassword password,
         AccountRole role,
-        AccountStatus status
+        AccountStatus status,
+        ShippingAddress shippingAddress,
+        PhoneNumber phoneNumber
     ) {
 
     }
@@ -104,7 +114,11 @@ public class Account {
         AccountEmail email,
         AccountPassword password,
         AccountRole role,
-        AccountStatus status) {
+        AccountStatus status,
+        Avatar avatar,
+        ShippingAddress shippingAdress,
+        PhoneNumber phoneNumber
+    ) {
 
     }
 
@@ -116,7 +130,7 @@ public class Account {
         if(d.id()==null) {
             throw new IllegalArgumentException("Id must not be null");
         }
-        return Account.builder().id(d.id()).name(d.name()).email(d.email()).password(d.password()).role(d.role()).status(d.status()).build();
+        return Account.builder().id(d.id()).name(d.name()).email(d.email()).password(d.password()).role(d.role()).status(d.status()).avatar(null).shippingAddress(d.shippingAddress()).phoneNumber(d.phoneNumber()).build();
     }
     @NullMarked
     public static Account reconstitue(SnapShot s) {
@@ -126,7 +140,7 @@ public class Account {
         if(s.id()==null) {
             throw new IllegalArgumentException("Id must not be null");
         }
-        return Account.builder().id(s.id()).name(s.name()).email(s.email()).password(s.password()).role(s.role()).status(s.status()).build();
+        return Account.builder().id(s.id()).name(s.name()).email(s.email()).password(s.password()).role(s.role()).status(s.status()).avatar(s.avatar()).shippingAddress(s.shippingAdress()).phoneNumber(s.phoneNumber()).build();
     }
     @NullMarked
     public Account applyUpdateInfo(UpdateInfo u) {
@@ -140,16 +154,16 @@ public class Account {
         if(this.isSameInfoWithUpdateInfo(u)) {
             return this;
         } 
-        return Account.builder().id(this.id).name(u.name()).email(u.email()).password(u.password()).role(u.role()).status(u.status()).build();
+        return Account.builder().id(this.id).name(u.name()).email(u.email()).password(u.password()).role(u.role()).status(u.status()).avatar(this.avatar).shippingAddress(u.shippingAddress()).build();
 
 
     }
     @NullMarked
     public SnapShot snapShot() {
-        return SnapShot.builder().id(this.id).name(this.name).email(this.email).password(this.password).role(this.role).status(this.status).build();
+        return SnapShot.builder().id(this.id).name(this.name).email(this.email).password(this.password).role(this.role).status(this.status).avatar(this.avatar).shippingAdress(this.shippingAddress).phoneNumber(this.phoneNumber).build();
     }
     @NullMarked
     private  boolean isSameInfoWithUpdateInfo(UpdateInfo u) {
-        return Objects.equals(u.name(), this.name)&&Objects.equals(u.email(), this.email)&&Objects.equals(u.password(), this.password)&&Objects.equals(u.role(), this.role)&&Objects.equals(u.status(),this.status);
+        return Objects.equals(u.name(), this.name)&&Objects.equals(u.email(), this.email)&&Objects.equals(u.password(), this.password)&&Objects.equals(u.role(), this.role)&&Objects.equals(u.status(),this.status)&&Objects.equals(u.shippingAddress(),this.shippingAddress)&&Objects.equals(u.phoneNumber(),this.phoneNumber);
     }
 }

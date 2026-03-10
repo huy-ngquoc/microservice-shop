@@ -11,6 +11,6 @@ import vn.uit.edu.msshop.account.domain.model.Account;
 public class AccountViewMapper {
     public AccountView toView(Account account) {
         return new AccountView(account.getId().toString(),account.getName().value(),
-         account.getEmail().value(), account.getPassword().value(), account.getRole().value(), account.getStatus().value());
+         account.getEmail().value(), account.getPassword().value(), account.getRole().value(), account.getStatus().value(),account.getShippingAddress().value(), account.getAvatar().url().value(),account.getPhoneNumber().value());
     }
 }
