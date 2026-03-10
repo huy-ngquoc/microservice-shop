@@ -154,7 +154,7 @@ public class Account {
         if(this.isSameInfoWithUpdateInfo(u)) {
             return this;
         } 
-        return Account.builder().id(this.id).name(u.name()).email(u.email()).password(u.password()).role(u.role()).status(u.status()).avatar(this.avatar).shippingAddress(u.shippingAddress()).build();
+        return Account.builder().id(this.id).name(u.name()).email(u.email()).password(u.password()).role(u.role()).status(u.status()).avatar(this.avatar).shippingAddress(u.shippingAddress()).phoneNumber(u.phoneNumber()).build();
 
 
     }

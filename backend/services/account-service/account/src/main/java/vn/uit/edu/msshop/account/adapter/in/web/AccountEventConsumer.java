@@ -27,6 +27,7 @@ public class AccountEventConsumer {
             createUseCase.create(command);
         }
         catch(Exception e) {
+            e.printStackTrace();
             producer.sendAccountCreationFailEvent(new AccountId(accountCreated.id()));
         }
     }

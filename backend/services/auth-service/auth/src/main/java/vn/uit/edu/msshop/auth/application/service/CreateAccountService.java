@@ -19,13 +19,13 @@ public class CreateAccountService implements CreateAccountUseCase  {
     private final PublishAccountEventPort eventProducer;
     private final CreateAccountPort createPort;
     @Override
-    public void createAccount(UserRepresentation user, String role) {
+    public void createAccount(UserRepresentation user, String role, String shippingAddress, String phoneNumber ) {
         Response response = createPort.createAccount(user);
 
         if (response.getStatus() == 201) {
             
             String userId = CreatedResponseUtil.getCreatedId(response);
-            AccountCreated event = new AccountCreated(userId, user.getUsername(), user.getEmail(),"", role, "ACTIVE");
+            AccountCreated event = new AccountCreated(userId, user.getUsername(), user.getEmail(),"", role, "ACTIVE", shippingAddress,phoneNumber);
             eventProducer.sendAccountCreateEvent(event);
         } else {
             System.out.println("Lỗi từ Keycloak: " + response.getStatus());

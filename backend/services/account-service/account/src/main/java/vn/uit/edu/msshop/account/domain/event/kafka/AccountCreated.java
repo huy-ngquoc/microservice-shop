@@ -8,7 +8,9 @@ public record AccountCreated(
     String email,
     String password,
     String role,
-    String status
+    String status,
+    String shippingAddress,
+    String phoneNumber
 ) {
 
 }
