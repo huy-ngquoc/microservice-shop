@@ -8,8 +8,11 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountPassword;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountRole;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
+import vn.uit.edu.msshop.account.domain.model.valueobject.PhoneNumber;
+import vn.uit.edu.msshop.account.domain.model.valueobject.ShippingAddress;
 
 
-public record UpdateAccountCommand(AccountId accountId, Change<AccountName> accountName, Change<AccountEmail> email,Change<AccountPassword> password, Change<AccountRole> role, Change<AccountStatus> status) {
+public record UpdateAccountCommand(AccountId accountId, Change<AccountName> accountName, Change<AccountEmail> email,Change<AccountPassword> password, Change<AccountRole> role, Change<AccountStatus> status,
+     Change<ShippingAddress> shippingAddress, Change<PhoneNumber> phoneNumber) {
 
 }

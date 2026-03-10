@@ -29,14 +29,19 @@ public class AccountJpaEntity {
     private String email;
     private String role;
     private String status;
-
+    private String avatarUrl;
+    private String avatarPublicId;
+    private int avatarWidth;
+    private int avatarHeight;
+    private String shippingAddress;
+    private String phoneNumber;
      @Version
     @Column(
             nullable = false)
     private long version;
 
-    public static AccountJpaEntity of(UUID id, String name, String password, String email, String role, String status) {
-        return new AccountJpaEntity(id, name, password, email, role, status,0L);
+    public static AccountJpaEntity of(UUID id, String name, String password, String email, String role, String status, String avatarUrl, String avatarPublicId, int avatarWidth, int avatarHeight, String shippingAddress, String phoneNumber) {
+        return new AccountJpaEntity(id, name, password, email, role, status,avatarUrl,avatarPublicId,avatarWidth,avatarHeight,shippingAddress,phoneNumber,0L);
     }
     
     
