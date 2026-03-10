@@ -23,7 +23,8 @@ public class UpdateAccountService implements UpdateAccountUseCase {
     public void update(UpdateAccountCommand updateAccountCommand) {
         final var account = this.loadAccountPort.loadById(updateAccountCommand.accountId()).orElseThrow(()->new AccountNotFoundException(updateAccountCommand.accountId()));
         final var update = Account.UpdateInfo.builder().id(account.getId()).name(updateAccountCommand.accountName().apply(account.getName()))
-        .email(updateAccountCommand.email().apply(account.getEmail())).password(updateAccountCommand.password().apply(account.getPassword())).role(updateAccountCommand.role().apply(account.getRole())).status(updateAccountCommand.status().apply(account.getStatus())).build();
+        .email(updateAccountCommand.email().apply(account.getEmail())).password(updateAccountCommand.password().apply(account.getPassword())).role(updateAccountCommand.role().apply(account.getRole())).status(updateAccountCommand.status().apply(account.getStatus()))
+        .shippingAddress(updateAccountCommand.shippingAddress().apply(account.getShippingAddress())).phoneNumber(updateAccountCommand.phoneNumber().apply(account.getPhoneNumber())).build();
         final var next = account.applyUpdateInfo(update);
         
         final var saved = this.saveAccountPort.save(next);

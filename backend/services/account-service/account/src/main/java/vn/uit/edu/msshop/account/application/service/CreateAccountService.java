@@ -19,7 +19,8 @@ public class CreateAccountService implements CreateAccountUseCase {
     @Override
     public void create(CreateAccountCommand createAccountCommand) {
         final var draft = Account.Draft.builder().id(createAccountCommand.id()).name(createAccountCommand.name())
-        .email(createAccountCommand.email()).password(createAccountCommand.password()).role(createAccountCommand.role()).status(createAccountCommand.status()).build();
+        .email(createAccountCommand.email()).password(createAccountCommand.password()).role(createAccountCommand.role()).status(createAccountCommand.status()).
+        shippingAddress(createAccountCommand.shippingAddress()).phoneNumber(createAccountCommand.phoneNumber()).build();
         final var account = Account.create(draft);
         final var saved = this.savePort.save(account);
         this.eventPort.publish(new AccountCreated(saved.getId()));

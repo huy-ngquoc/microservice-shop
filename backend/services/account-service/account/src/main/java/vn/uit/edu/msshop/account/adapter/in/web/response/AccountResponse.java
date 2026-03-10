@@ -5,7 +5,10 @@ public record AccountResponse(
     String email,
     String password,
     String role,
-    String status
+    String status,
+    String avatarUrl,
+    String phoneNumber,
+    String shippingAddress
 ) {
 
 }
