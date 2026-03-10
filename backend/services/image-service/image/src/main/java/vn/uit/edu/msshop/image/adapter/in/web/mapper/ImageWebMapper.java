@@ -9,12 +9,17 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cloudinary.Cloudinary;
 
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.msshop.image.adapter.in.web.request.GetSignatureRequest;
 import vn.uit.edu.msshop.image.adapter.in.web.response.ImageResponse;
 import vn.uit.edu.msshop.image.adapter.in.web.response.SignatureResponse;
 import vn.uit.edu.msshop.image.application.dto.command.DeleteImageCommand;
 import vn.uit.edu.msshop.image.application.dto.command.GetSignatureCommand;
+import vn.uit.edu.msshop.image.application.dto.command.RemoveAvatarImageCommand;
+import vn.uit.edu.msshop.image.application.dto.command.RemoveProductImageCommand;
+import vn.uit.edu.msshop.image.application.dto.command.RemoveVariantImageCommand;
 import vn.uit.edu.msshop.image.application.dto.command.UploadImageCommand;
+import vn.uit.edu.msshop.image.domain.event.AvatarImageEvent;
+import vn.uit.edu.msshop.image.domain.event.ProductImageEvent;
+import vn.uit.edu.msshop.image.domain.event.VariantImageEvent;
 import vn.uit.edu.msshop.image.domain.model.valueobject.DataType;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImageFileName;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImagePublicId;
@@ -42,15 +47,24 @@ public class ImageWebMapper {
     int height,
     UUID objectId,
     String dataType) {
-        return new ImageResponse(url, publicId, fileName, width, height, objectId, dataType);
+        return new ImageResponse(url, publicId, fileName, width, height);
     }
 
-    public GetSignatureCommand toCommand(GetSignatureRequest request) {
+    public GetSignatureCommand toCommand() {
         long timestamp = System.currentTimeMillis() / 1000L;
         TimeStamp ts = new TimeStamp(timestamp);
-        return new GetSignatureCommand(new DataType(request.getDataType()),ts);
+        return new GetSignatureCommand(ts);
     }
     public SignatureResponse toResponse(String signature, long timeStamp) {
         return new SignatureResponse(signature,timeStamp,cloudinary.config.apiKey,cloudinary.config.cloudName);
     } 
+    public RemoveProductImageCommand toCommand(ProductImageEvent event) {
+        return new RemoveProductImageCommand(event.getId());
+    }
+    public RemoveAvatarImageCommand toCommand(AvatarImageEvent event) {
+        return new RemoveAvatarImageCommand(event.getId());
+    }
+    public RemoveVariantImageCommand toCommand(VariantImageEvent event) {
+        return new RemoveVariantImageCommand(event.getId());
+    }
 }
