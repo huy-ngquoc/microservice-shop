@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.account.adapter.in.web.mapper.AccountWebMapper;
 import vn.uit.edu.msshop.account.application.port.in.UpdateAvatarUseCase;
 import vn.uit.edu.msshop.account.domain.event.kafka.ImageRemoveSuccess;
 
@@ -15,10 +16,12 @@ import vn.uit.edu.msshop.account.domain.event.kafka.ImageRemoveSuccess;
 @KafkaListener(topics="image-topic",groupId="image-group")
 public class AccountAvatarImageEventConsumer {
     private final UpdateAvatarUseCase updateAvatarUseCase;
+    private final AccountWebMapper mapper;
 
     @KafkaHandler
     public void handleRemoveAvatarFolderSuccess(ImageRemoveSuccess event) {
-        
+        final var command = mapper.toCommand(event);
+        updateAvatarUseCase.updateAvatar(command);
     }
 
 }
