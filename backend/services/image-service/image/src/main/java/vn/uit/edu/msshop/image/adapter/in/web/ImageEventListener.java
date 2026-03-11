@@ -1,39 +1,40 @@
 package vn.uit.edu.msshop.image.adapter.in.web;
 
+import java.io.IOException;
+
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import vn.uit.edu.msshop.image.adapter.in.web.mapper.ImageWebMapper;
-import vn.uit.edu.msshop.image.application.dto.command.RemoveAvatarImageCommand;
-import vn.uit.edu.msshop.image.application.dto.command.RemoveProductImageCommand;
-import vn.uit.edu.msshop.image.application.dto.command.RemoveVariantImageCommand;
+import vn.uit.edu.msshop.image.application.port.in.DeleteImageUseCase;
 import vn.uit.edu.msshop.image.application.port.in.RemoveImageFolderUseCase;
-import vn.uit.edu.msshop.image.domain.event.AvatarImageEvent;
-import vn.uit.edu.msshop.image.domain.event.ProductImageEvent;
-import vn.uit.edu.msshop.image.domain.event.VariantImageEvent;
+import vn.uit.edu.msshop.image.domain.event.DeleteOldImageEvent;
+import vn.uit.edu.msshop.image.domain.event.RollbackImageEvent;
 
 @Component
-@KafkaListener(topics="image-remove-topic",groupId="image-group")
+@KafkaListener(topics="image-account-topic")
 @RequiredArgsConstructor
+@Slf4j
 public class ImageEventListener {
+    private final DeleteImageUseCase deleteUseCase;
     private final RemoveImageFolderUseCase removeUseCase;
     private final ImageWebMapper mapper;
+    
     @KafkaHandler
-    public void handleRemoveProductImage(ProductImageEvent event) {
-        RemoveProductImageCommand command = mapper.toCommand(event);
-        removeUseCase.removeProduct(command);
-    } 
+    public void handleDeleteOldImage(DeleteOldImageEvent event) {
+        final var command = mapper.toCommand(event.oldImagePublicId());
+        deleteUseCase.deleteImage(command);
+    }
 
     @KafkaHandler
-    public void handleRemoveVariantImage(VariantImageEvent event) {
-        RemoveVariantImageCommand command = mapper.toCommand(event);
-        removeUseCase.removeVariant(command);
-    } 
-    @KafkaHandler
-    public void handleRemoveAvatarImage(AvatarImageEvent event) {
-        RemoveAvatarImageCommand command = mapper.toCommand(event);
-        removeUseCase.removeAvatar(command);
+    public void handleRollback(RollbackImageEvent event) throws IOException {
+        final var command = mapper.toCommand(event);
+        removeUseCase.rollbackImageFolder(command);
     }
+
+
+
 }

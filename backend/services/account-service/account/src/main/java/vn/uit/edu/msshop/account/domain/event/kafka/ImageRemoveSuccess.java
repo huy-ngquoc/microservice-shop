@@ -1,5 +1,4 @@
-package vn.uit.edu.msshop.image.domain.event;
-
+package vn.uit.edu.msshop.account.domain.event.kafka;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;

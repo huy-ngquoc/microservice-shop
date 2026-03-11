@@ -78,6 +78,9 @@ public class Account {
     public void setName(AccountName name) {
         this.name = name;
     }
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
+    }
 
     @Builder
     public static record Draft(

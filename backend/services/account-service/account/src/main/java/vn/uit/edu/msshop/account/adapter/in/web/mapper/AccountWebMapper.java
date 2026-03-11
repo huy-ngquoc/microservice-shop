@@ -8,14 +8,19 @@ import vn.uit.edu.msshop.account.adapter.in.web.request.common.ChangeRequest;
 import vn.uit.edu.msshop.account.adapter.in.web.response.AccountResponse;
 import vn.uit.edu.msshop.account.application.dto.command.CreateAccountCommand;
 import vn.uit.edu.msshop.account.application.dto.command.UpdateAccountCommand;
+import vn.uit.edu.msshop.account.application.dto.command.UpdateAvatarCommand;
 import vn.uit.edu.msshop.account.application.dto.query.AccountView;
 import vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated;
+import vn.uit.edu.msshop.account.domain.event.kafka.ImageRemoveSuccess;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountEmail;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountPassword;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountRole;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AvatarPublicId;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AvatarUrl;
+import vn.uit.edu.msshop.account.domain.model.valueobject.ImageSize;
 import vn.uit.edu.msshop.account.domain.model.valueobject.PhoneNumber;
 import vn.uit.edu.msshop.account.domain.model.valueobject.ShippingAddress;
 
@@ -60,6 +65,10 @@ public class AccountWebMapper {
         final var shippingAddress = new ShippingAddress(accountCreated.shippingAddress());
         final var phoneNumber = new PhoneNumber(accountCreated.phoneNumber());
         return new CreateAccountCommand(id,name,email,password,role,status,shippingAddress,phoneNumber);
+    }
+    public UpdateAvatarCommand toCommand(ImageRemoveSuccess event) {
+        return new UpdateAvatarCommand(new AvatarUrl(event.getUrl()), new AvatarPublicId(event.getPublicId()), new ImageSize(event.getWidth(),event.getHeight()), new AccountId(event.getObjectId()));
+        
     }
 }
  

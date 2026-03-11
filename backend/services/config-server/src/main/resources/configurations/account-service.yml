@@ -19,13 +19,19 @@ spring:
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
             properties:
                 spring.json.trusted.packages: "*"
-                spring.json.type.mapping: AccountCreated:vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated
+                spring.json.type.mapping: 
+                    AccountCreated:vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated,
+                    ImageRemoveSuccess:vn.uit.edu.msshop.account.domain.event.kafka.ImageRemoveSuccess
         producer:
             bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
             properties:
-                spring.json.type.mapping: AccountId:vn.uit.edu.msshop.account.domain.event.kafka.AccountId
+                spring.json.type.mapping: 
+                    AccountId:vn.uit.edu.msshop.account.domain.event.kafka.AccountId,
+                    DeleteOldImageEvent:vn.uit.edu.msshop.account.domain.event.kafka.DeleteOldImageEvent,
+                    RollbackImageEvent:vn.uit.edu.msshop.account.domain.event.kafka.RollbackImageEvent
+
 server:
     port: 8071
 logging:
