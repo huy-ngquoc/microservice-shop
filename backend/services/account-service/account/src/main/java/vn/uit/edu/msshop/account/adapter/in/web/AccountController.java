@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.uit.edu.msshop.account.adapter.in.web.mapper.AccountWebMapper;
 import vn.uit.edu.msshop.account.adapter.in.web.request.CreateAccountRequest;
 import vn.uit.edu.msshop.account.adapter.in.web.request.UpdateAccountRequest;
+import vn.uit.edu.msshop.account.adapter.in.web.request.UpdateAvatarRequest;
 import vn.uit.edu.msshop.account.adapter.in.web.response.AccountResponse;
 import vn.uit.edu.msshop.account.application.port.in.CreateAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.in.FindAccountUseCase;
@@ -53,6 +54,11 @@ public class AccountController {
     public ResponseEntity<Void> update(@RequestBody UpdateAccountRequest request) {
         final var updateAccountCommand = webMapper.toCommand(request);
         this.updateUseCase.update(updateAccountCommand);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/update_avatar") 
+    public ResponseEntity<Void> updateAvatar(@RequestBody UpdateAvatarRequest request) {
         return ResponseEntity.noContent().build();
     }
 

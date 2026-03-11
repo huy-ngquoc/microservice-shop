@@ -1,12 +1,12 @@
 package vn.uit.edu.msshop.image.application.port.in;
 
-import vn.uit.edu.msshop.image.application.dto.command.RemoveAvatarImageCommand;
-import vn.uit.edu.msshop.image.application.dto.command.RemoveProductImageCommand;
-import vn.uit.edu.msshop.image.application.dto.command.RemoveVariantImageCommand;
+import java.io.IOException;
+
+import vn.uit.edu.msshop.image.application.dto.command.RemoveImageFolderCommand;
+import vn.uit.edu.msshop.image.application.dto.command.RollbackImageFolderCommand;
+
 
 public interface RemoveImageFolderUseCase {
-    public void removeProduct(RemoveProductImageCommand command);
-    public void removeAvatar(RemoveAvatarImageCommand command);
-    public void removeVariant(RemoveVariantImageCommand command);
-
+    public void removeImageFolder(RemoveImageFolderCommand command) throws IOException;
+    public void rollbackImageFolder(RollbackImageFolderCommand command) throws IOException;
 }

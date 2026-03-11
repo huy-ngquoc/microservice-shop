@@ -1,7 +1,7 @@
 cloudinary:
-  cloud-name: 
-  api-key: 
-  api-secret: 
+  cloud-name: ddouspryd
+  api-key: 183591468263317 
+  api-secret: CVkyDeKCXswJyFn_aAwcFN5W624
 server:
     port: 8073
 logging:
@@ -16,8 +16,7 @@ spring:
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
             properties:
                 spring.json.type.mapping: 
-                  ImageRemoveSuccess:vn.uit.edu.msshop.image.domain.event.ImageRemoveSuccess,
-                  ImageDeleted:import vn.uit.edu.msshop.image.domain.event.ImageDeleted
+                  ImageRemoveSuccess:vn.uit.edu.msshop.image.domain.event.ImageRemoveSuccess
 
         consumer:
             group-id: account-group
@@ -26,6 +25,5 @@ spring:
             properties:
                 spring.json.trusted.packages: "*"
                 spring.json.type.mapping: 
-                  AvatarImageEvent:vn.uit.edu.msshop.image.domain.event.AvatarImageEvent,
-                  ProductImageEvent:vn.uit.edu.msshop.image.domain.event.ProductImageEvent,
-                  VariantImageEvent:vn.uit.edu.msshop.image.domain.event.VariantImageEvent
+                  DeleteOldImageEvent:vn.uit.edu.msshop.image.domain.event.DeleteOldImageEvent,
+                  RollbackImageEvent:vn.uit.edu.msshop.image.domain.event.RollbackImageEvent

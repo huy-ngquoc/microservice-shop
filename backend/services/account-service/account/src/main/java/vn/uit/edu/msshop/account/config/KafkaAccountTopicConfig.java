@@ -11,4 +11,9 @@ public class KafkaAccountTopicConfig {
     public NewTopic accountTopic() {
         return TopicBuilder.name("account-topic-fail").build();
     }
+    @Bean
+    public NewTopic accountAvatarTopic() {
+        return TopicBuilder.name("image-account-topic").build();
+    }
+    
 }
