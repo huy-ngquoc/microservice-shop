@@ -2,7 +2,6 @@ package vn.edu.uit.msshop.product.brand.adapter.out.persistence;
 
 import java.util.UUID;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;

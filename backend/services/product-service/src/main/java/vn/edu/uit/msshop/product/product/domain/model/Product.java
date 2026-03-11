@@ -61,9 +61,13 @@ public final class Product {
 
     private void validateConsistencyBetweenOptionsAndVariants() {
         if (this.options.isEmpty()) {
-            if (!this.variants.isEmpty()) {
+            if (this.variants.getCount() > 1) {
                 throw new DomainException(
-                        "Cross-Validation failed: Product with NO definition for options CANNOT hold variants");
+                        "Cross-Validation failed: Product with NO definition for options CANNOT hold more than 1 variant");
+            }
+
+            if (!this.variants.isEmpty() && !this.variants.values().get(0).optionValues().isEmpty()) {
+                throw new DomainException("Default variant must have empty option values");
             }
 
             return;
