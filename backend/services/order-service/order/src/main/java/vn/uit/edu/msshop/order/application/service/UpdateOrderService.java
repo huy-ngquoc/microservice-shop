@@ -13,6 +13,8 @@ import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
 import vn.uit.edu.msshop.order.domain.model.Order;
+import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
+import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 /*@NonNull
         OrderId  id,
         ShippingInfo shippingInfo,
@@ -38,6 +40,22 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(saved.getId().value()));
         }
         publishEventPort.publish(new OrderUpdated(saved.getId()));
+    }
+
+    @Override
+    public void codOrderSuccess(OrderId orderId) {
+        Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
+        final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("RECEIVED")).build();
+        final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
+        publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(order.getId().value()));
+    }
+
+    @Override
+    public void codOrderCancelled(OrderId orderId) {
+       Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
+        final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
+        final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
+        publishEventPort.publishCodPaymentCancelled(new CodPaymentCancelled(order.getId().value()));
     }
 
 }

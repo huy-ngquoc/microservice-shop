@@ -21,7 +21,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     private final KafkaTemplate<String,CodPaymentCancelled> codPaymentCancelledTemplate;
     private final KafkaTemplate<String,CodPaymentReceived> codPaymentReceivedTemplate;
     private static final String ORDER_CREATED_TOPIC = "order-topic";
-    private static final String PAYMENT_STATUS_TOPIC="payment-topic";
+    private static final String PAYMENT_STATUS_TOPIC="payment-cod-topic";
    
 
     @Override
