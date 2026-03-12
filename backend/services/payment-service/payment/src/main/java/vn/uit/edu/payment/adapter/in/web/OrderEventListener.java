@@ -1,5 +1,6 @@
 package vn.uit.edu.payment.adapter.in.web;
 
+import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ public class OrderEventListener {
     private final PaymentWebMapper mapper;
     private final CreatePaymentUseCase createUseCase;
 
-    @KafkaListener
+    @KafkaHandler
     public void handleOrderCreated(OrderCreated event) {
         CreatePaymentCommand command = mapper.toCommand(event);
         createUseCase.create(command);
