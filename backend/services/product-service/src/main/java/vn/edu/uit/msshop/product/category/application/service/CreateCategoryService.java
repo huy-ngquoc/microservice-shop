@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.category.application.port.out.PublishCategoryEv
 import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryCreated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
-import vn.edu.uit.msshop.product.category.domain.model.mutation.CategoryDraft;
+import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +22,12 @@ public class CreateCategoryService implements CreateCategoryUseCase {
     @Transactional
     public void create(
             final CreateCategoryCommand command) {
-        final var draft = new CategoryDraft(
-                command.name());
-        final var category = Category.create(draft);
-        final var saved = this.savePort.save(category);
+        final var category = new Category(
+                CategoryId.newId(),
+                command.name(),
+                null);
 
+        final var saved = this.savePort.save(category);
         this.eventPort.publish(new CategoryCreated(saved.getId()));
     }
 }

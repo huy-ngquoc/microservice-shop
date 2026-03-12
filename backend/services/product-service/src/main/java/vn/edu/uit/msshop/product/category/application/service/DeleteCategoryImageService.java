@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.category.application.port.out.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.PublishCategoryEventPort;
 import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
+import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
 
 @Service
@@ -33,9 +34,14 @@ public class DeleteCategoryImageService implements DeleteCategoryImageUseCase {
             return;
         }
 
-        this.deleteImagePort.deleteByKey(oldImage.key());
-        final var newCategory = oldCategory.withoutImage();
+        final var newCategory = new Category(
+                oldCategory.getId(),
+                oldCategory.getName(),
+                null);
         final var saved = this.savePort.save(newCategory);
+
+        this.deleteImagePort.deleteByKey(oldImage.key());
+
         this.eventPort.publish(new CategoryUpdated(saved.getId()));
     }
 }

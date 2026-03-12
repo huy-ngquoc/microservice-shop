@@ -4,14 +4,11 @@ import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.experimental.FieldNameConstants;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
-import vn.edu.uit.msshop.product.variant.domain.model.mutation.VariantChangeInfo;
 
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-@FieldNameConstants
 public final class Variant {
     @EqualsAndHashCode.Include
     private final VariantId id;
@@ -41,24 +38,6 @@ public final class Variant {
         this.traits = requireNonNull(traits, "Variant traits must not be null");
     }
 
-    public Variant applyChangeInfo(
-            final VariantChangeInfo changeInfo) {
-        if (changeInfo == null) {
-            throw new DomainException("Variant change info must be null");
-        }
-
-        if (this.isInfoUnchanged(changeInfo)) {
-            return this;
-        }
-
-        return new Variant(this.id,
-                changeInfo.productId(),
-                this.image,
-                changeInfo.price(),
-                this.sold,
-                changeInfo.traits());
-    }
-
     private static <T> T requireNonNull(
             @Nullable
             T obj,
@@ -69,12 +48,5 @@ public final class Variant {
         }
 
         return obj;
-    }
-
-    private boolean isInfoUnchanged(
-            final VariantChangeInfo changeInfo) {
-        return this.productId.equals(changeInfo.productId())
-                && this.price.equals(changeInfo.price())
-                && this.traits.equals(changeInfo.traits());
     }
 }

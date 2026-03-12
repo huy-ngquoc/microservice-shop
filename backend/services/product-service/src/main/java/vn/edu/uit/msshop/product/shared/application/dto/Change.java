@@ -1,8 +1,8 @@
 package vn.edu.uit.msshop.product.shared.application.dto;
 
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Supplier;
+
+import org.jspecify.annotations.Nullable;
 
 // TODO: move this to common package of all services
 public sealed interface Change<T>
@@ -17,41 +17,26 @@ public sealed interface Change<T>
         return new Set<>(Objects.requireNonNull(value));
     }
 
-    T apply(
-            final T current);
+    default @Nullable Unchanged<T> getUnchanged() {
+        return null;
+    }
 
-    <R> R fold(
-            Supplier<R> onUnchanged,
-            Function<T, R> onSet);
+    default @Nullable Set<T> getSet() {
+        return null;
+    }
 
     record Unchanged<T>() implements Change<T> {
         @Override
-        public T apply(
-                final T current) {
-            return current;
-        }
-
-        @Override
-        public <R> R fold(
-                Supplier<R> onUnchanged,
-                Function<T, R> onSet) {
-            return onUnchanged.get();
+        public @Nullable Unchanged<T> getUnchanged() {
+            return this;
         }
     }
 
     record Set<T>(
             T value) implements Change<T> {
         @Override
-        public T apply(
-                final T current) {
-            return value;
-        }
-
-        @Override
-        public <R> R fold(
-                Supplier<R> onUnchanged,
-                Function<T, R> onSet) {
-            return onSet.apply(value);
+        public @Nullable Set<T> getSet() {
+            return this;
         }
     }
 }

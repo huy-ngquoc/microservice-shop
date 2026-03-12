@@ -14,6 +14,7 @@ import vn.edu.uit.msshop.product.category.application.port.out.PublishCategoryEv
 import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.UploadCategoryImagePort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
+import vn.edu.uit.msshop.product.category.domain.model.Category;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,6 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
 
     @Override
     @Transactional
-    @SuppressWarnings("ReferenceEquality")
     public CategoryImageView updateImage(
             UpdateCategoryImageCommand command) {
         final var oldCategory = this.loadPort.loadById(command.id())
@@ -38,7 +38,10 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
                 command.originalFilename(),
                 command.contentType());
 
-        final var newCategory = oldCategory.withImage(uploadedImage);
+        final var newCategory = new Category(
+                oldCategory.getId(),
+                oldCategory.getName(),
+                uploadedImage);
 
         final var imageView = new CategoryImageView(
                 uploadedImage.url().value(),

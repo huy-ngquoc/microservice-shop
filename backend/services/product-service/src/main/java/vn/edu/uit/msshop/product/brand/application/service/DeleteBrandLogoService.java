@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.brand.application.port.out.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.SaveBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
+import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
 
 @Service
@@ -33,9 +34,14 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
             return;
         }
 
-        this.deleteLogoPort.deleteByKey(oldLogo.key());
-        final var newBrand = oldBrand.withoutLogo();
+        final var newBrand = new Brand(
+                oldBrand.getId(),
+                oldBrand.getName(),
+                null);
         final var saved = this.savePort.save(newBrand);
+
+        this.deleteLogoPort.deleteByKey(oldLogo.key());
+
         this.eventPort.publish(new BrandUpdated(saved.getId()));
     }
 }

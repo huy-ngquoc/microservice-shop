@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.brand.application.port.out.PublishBrandEventPor
 import vn.edu.uit.msshop.product.brand.application.port.out.SaveBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandCreated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
-import vn.edu.uit.msshop.product.brand.domain.model.mutation.BrandDraft;
+import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +22,12 @@ public class CreateBrandService implements CreateBrandUseCase {
     @Transactional
     public void create(
             final CreateBrandCommand command) {
-        final var draft = new BrandDraft(
-                command.name());
-        final var brand = Brand.create(draft);
-        final var saved = this.savePort.save(brand);
+        final var brand = new Brand(
+                BrandId.newId(),
+                command.name(),
+                null);
 
+        final var saved = this.savePort.save(brand);
         this.eventPort.publish(new BrandCreated(saved.getId()));
     }
 }

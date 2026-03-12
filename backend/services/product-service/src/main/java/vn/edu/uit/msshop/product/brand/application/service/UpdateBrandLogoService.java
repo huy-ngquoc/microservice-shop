@@ -14,6 +14,7 @@ import vn.edu.uit.msshop.product.brand.application.port.out.PublishBrandEventPor
 import vn.edu.uit.msshop.product.brand.application.port.out.SaveBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.UploadBrandLogoPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
+import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,6 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
 
     @Override
     @Transactional
-    @SuppressWarnings("ReferenceEquality")
     public BrandLogoView updateImage(
             UpdateBrandLogoCommand command) {
         final var oldBrand = this.loadPort.loadById(command.id())
@@ -38,7 +38,10 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
                 command.originalFilename(),
                 command.contentType());
 
-        final var newBrand = oldBrand.withLogo(uploadedLogo);
+        final var newBrand = new Brand(
+                oldBrand.getId(),
+                oldBrand.getName(),
+                uploadedLogo);
 
         final var logoView = new BrandLogoView(
                 uploadedLogo.url().value(),
