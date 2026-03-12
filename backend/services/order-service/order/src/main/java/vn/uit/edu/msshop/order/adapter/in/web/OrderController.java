@@ -69,5 +69,12 @@ public class OrderController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/update/cod_success") 
+    public ResponseEntity<Void> codOrderSuccess(@RequestParam UUID orderId) {
+        this.updateService.codOrderSuccess(new OrderId(orderId));
+        return ResponseEntity.noContent().build();
+
+    }
+
 
 }

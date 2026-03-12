@@ -17,7 +17,7 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@KafkaListener(topics="payment-topic",groupId="order-payment-group")
+@KafkaListener(topics="payment-cod-topic",groupId="order-payment-group")
 public class PaymentStatusEventListener {
     private final LoadPaymentPort loadPort;
     private final SavePaymentPort savePort;

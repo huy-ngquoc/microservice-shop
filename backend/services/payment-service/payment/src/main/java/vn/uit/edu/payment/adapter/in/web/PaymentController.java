@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -52,5 +53,15 @@ public class PaymentController {
         final var command = mapper.toCommand(request);
         final var result =updateUseCase.update(command);
         return ResponseEntity.ok(mapper.toResponse(result));
+    }
+    @PutMapping("/update/online_cancelled") 
+    public ResponseEntity<Void> onlinePaymentCancelled(@RequestParam UUID orderId) {
+        this.updateUseCase.onlinePaymentCancelled(new OrderId(orderId));
+        return ResponseEntity.noContent().build();
+    } 
+    @PutMapping("/update/online_expired")
+    public ResponseEntity<Void> onlinePaymentExpired(@RequestParam UUID orderId) {
+        this.updateUseCase.onlinePaymentExpire(new OrderId(orderId));
+        return ResponseEntity.noContent().build();
     }
 }

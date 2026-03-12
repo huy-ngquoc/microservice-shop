@@ -22,7 +22,7 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
     private final KafkaTemplate<String,OnlinePaymentCancelled> paymentCancelledTemplate;
     private final KafkaTemplate<String,OnlinePaymentExpired> paymentExpiredTemplate;
     private final KafkaTemplate<String, CodPaymentCreated> codPaymentCreatedTemplate;
-    private static final String PAYMENT_TOPIC="payment-topic";
+    private static final String PAYMENT_TOPIC="payment-online-topic";
     @Override
     public void publish(PaymentCreated event) {
         publisher.publishEvent(event);

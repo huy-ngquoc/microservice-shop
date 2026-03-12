@@ -1,6 +1,7 @@
 package vn.uit.edu.msshop.order.adapter.in.web.mapper;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -38,7 +39,7 @@ public class OrderWebMapper {
     public CreateOrderCommand toCommand(CreateOrderRequest request) {
         ShippingInfo shippingInfo = new ShippingInfo(request.fullName(), request.address(), request.phone(), request.email());
         List<OrderDetailCommand> details = request.detailRequests().stream().map(this::toOrderDetailCommand).toList();
-        return new CreateOrderCommand(new OrderId(request.id()), shippingInfo, details, new UserId(request.userId()), new ShippingFee(request.shippingFee()), new Discount(request.discount()));
+        return new CreateOrderCommand(new OrderId(UUID.randomUUID()), shippingInfo, details, new UserId(request.userId()), new ShippingFee(request.shippingFee()), new Discount(request.discount()));
     }
     public OrderDetailCommand toOrderDetailCommand(OrderDetailRequest detailRequest) {
         return new OrderDetailCommand(detailRequest.variantId(), detailRequest.quantity());
