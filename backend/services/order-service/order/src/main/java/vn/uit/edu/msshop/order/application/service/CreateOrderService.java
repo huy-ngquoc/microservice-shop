@@ -2,6 +2,7 @@ package vn.uit.edu.msshop.order.application.service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -60,7 +61,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     private final PublishOrderEventPort publishPort;
 
     @Override
-    public void create(CreateOrderCommand command) {
+    public UUID create(CreateOrderCommand command) {
         this.checkUserPort.isUserAvailable(command.userId().value());
         List<OrderDetail> listDetails = command.details().stream().map(item->{
             return loadOrderDetailPort.loadOrderDetail(item.variantId(), item.quantity());
@@ -83,7 +84,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         final var order = Order.create(draft);
         final var saved = savePort.save(order);
         
-        
+        return saved.getId().value();
     }
 
 }

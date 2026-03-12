@@ -51,10 +51,10 @@ public class OrderController {
     }
 
     @PostMapping("/create") 
-    public ResponseEntity<Void> createOrder(@RequestBody CreateOrderRequest request) {
+    public ResponseEntity<UUID> createOrder(@RequestBody CreateOrderRequest request) {
         final var command = this.mapper.toCommand(request);
-        this.createService.create(command);
-        return ResponseEntity.noContent().build();
+        final var result= this.createService.create(command);
+        return ResponseEntity.ok(result);
     } 
 
     @PutMapping("/update")
