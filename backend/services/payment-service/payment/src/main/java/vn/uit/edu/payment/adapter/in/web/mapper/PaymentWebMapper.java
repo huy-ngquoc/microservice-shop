@@ -11,6 +11,7 @@ import vn.uit.edu.payment.adapter.in.web.response.PaymentResponse;
 import vn.uit.edu.payment.application.dto.command.CreatePaymentCommand;
 import vn.uit.edu.payment.application.dto.command.UpdatePaymentCommand;
 import vn.uit.edu.payment.application.dto.query.PaymentView;
+import vn.uit.edu.payment.domain.event.OrderCreated;
 import vn.uit.edu.payment.domain.model.valueobject.Currency;
 import vn.uit.edu.payment.domain.model.valueobject.OrderId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
@@ -31,10 +32,22 @@ public class PaymentWebMapper {
             new Currency(request.currency()),
             new OrderId(request.orderId()),
             new PaymentMethod(request.paymentMethod()),
-            new PaymentStatus("PENDING"),
+            new PaymentStatus("CREATED"),
             new PaymentValue(request.paymentValue())
         );
     }
+
+    public CreatePaymentCommand toCommand(OrderCreated event) {
+        return new CreatePaymentCommand(
+            new PaymentId(UUID.randomUUID()),
+            new Currency(event.currency()),
+            new OrderId(event.orderId()),
+            new PaymentMethod(event.paymentMethod()),
+            new PaymentStatus("CREATED"),
+            new PaymentValue(event.paymentValue())
+        );
+    }
+    
     public UpdatePaymentCommand toCommand(UpdatePaymentRequest request) {
         final var paymentId = new PaymentId(request.paymentId());
         final var currency = ChangeRequest.toChange(request.currency(), Currency::new);

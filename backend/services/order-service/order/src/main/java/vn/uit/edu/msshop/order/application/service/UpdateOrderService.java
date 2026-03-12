@@ -9,6 +9,8 @@ import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
+import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
+import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
 import vn.uit.edu.msshop.order.domain.model.Order;
 /*@NonNull
@@ -28,6 +30,13 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         final var updateInfo = Order.UpdateInfo.builder().id(command.id()).shippingInfo(command.shippingInfo().apply(order.getShippingInfo())).orderStatus(command.status().apply(order.getStatus())).build();
         final var next = order.applyUpdateInfo(updateInfo);
         final var saved = saveOrderPort.save(next);
+        
+        if(saved.getStatus().value().equals("CANCELLED")) {
+            publishEventPort.publishCodPaymentCancelled(new CodPaymentCancelled(saved.getId().value()));
+        }
+        if(saved.getStatus().value().equals("RECEIVED")) {
+            publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(saved.getId().value()));
+        }
         publishEventPort.publish(new OrderUpdated(saved.getId()));
     }
 
