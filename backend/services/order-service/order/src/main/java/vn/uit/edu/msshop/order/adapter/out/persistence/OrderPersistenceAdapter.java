@@ -96,6 +96,7 @@ public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort {
     @Override
     public Order save(Order order) {
         OrderDocument orderDocument = this.orderDataMapper.toDocument(order);
+        orderRepo.save(orderDocument);
         return order;
     }
 

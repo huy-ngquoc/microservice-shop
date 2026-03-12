@@ -25,8 +25,9 @@ public class PaymentPersistenceAdapter implements LoadPaymentPort, SavePaymentPo
 
     @Override
     public Payment loadPaymentByOrderId(OrderId orderId) {
-        PaymentJpaEntity paymentJpaEntity = repository.findFirstByOrderId(orderId.value());
-        return mapper.toDomain(paymentJpaEntity);
+        Optional<PaymentJpaEntity> paymentJpaEntity = repository.findFirstByOrderId(orderId.value());
+        if(paymentJpaEntity.isEmpty()) return null;
+        return mapper.toDomain(paymentJpaEntity.get());
     }
 
     @Override

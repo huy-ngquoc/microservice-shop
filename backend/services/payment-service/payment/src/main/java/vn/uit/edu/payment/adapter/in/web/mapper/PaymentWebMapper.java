@@ -32,7 +32,7 @@ public class PaymentWebMapper {
             new Currency(request.currency()),
             new OrderId(request.orderId()),
             new PaymentMethod(request.paymentMethod()),
-            new PaymentStatus("CREATED"),
+            new PaymentStatus("PENDING"),
             new PaymentValue(request.paymentValue())
         );
     }
@@ -43,7 +43,7 @@ public class PaymentWebMapper {
             new Currency(event.currency()),
             new OrderId(event.orderId()),
             new PaymentMethod(event.paymentMethod()),
-            new PaymentStatus("CREATED"),
+            new PaymentStatus("PENDING"),
             new PaymentValue(event.paymentValue())
         );
     }
