@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
+import vn.uit.edu.payment.domain.event.CodPaymentCreated;
 import vn.uit.edu.payment.domain.event.OnlinePaymentCancelled;
 import vn.uit.edu.payment.domain.event.OnlinePaymentExpired;
 import vn.uit.edu.payment.domain.event.PaymentCreated;
@@ -20,6 +21,7 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
     private final ApplicationEventPublisher publisher;
     private final KafkaTemplate<String,OnlinePaymentCancelled> paymentCancelledTemplate;
     private final KafkaTemplate<String,OnlinePaymentExpired> paymentExpiredTemplate;
+    private final KafkaTemplate<String, CodPaymentCreated> codPaymentCreatedTemplate;
     private static final String PAYMENT_TOPIC="payment-topic";
     @Override
     public void publish(PaymentCreated event) {
@@ -52,6 +54,12 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
     public void publishPaymentExpired(OnlinePaymentExpired event) {
         Message<OnlinePaymentExpired> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
         paymentExpiredTemplate.send(message);
+    }
+
+    @Override
+    public void publishPaymentCodCreated(CodPaymentCreated event) {
+        Message<CodPaymentCreated> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
+        codPaymentCreatedTemplate.send(message);
     }
 
 }

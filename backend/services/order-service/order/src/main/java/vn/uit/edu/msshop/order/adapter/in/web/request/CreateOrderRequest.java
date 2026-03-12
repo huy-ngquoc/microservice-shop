@@ -16,7 +16,9 @@ public record CreateOrderRequest(
     UUID userId,
     long shippingFee,
     long totalPrice,
-    long discount
+    long discount,
+    String currency,
+    String paymentMethod
 ) {
 
 }

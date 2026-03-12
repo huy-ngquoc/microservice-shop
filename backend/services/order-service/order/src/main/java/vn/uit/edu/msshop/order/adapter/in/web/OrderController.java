@@ -23,6 +23,8 @@ import vn.uit.edu.msshop.order.adapter.in.web.response.OrderResponse;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.FindOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
+import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
+import vn.uit.edu.msshop.order.domain.event.OrderCreated;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
@@ -35,6 +37,7 @@ public class OrderController {
     private final FindOrderUseCase findService;
     private final UpdateOrderUseCase updateService;
     private final OrderWebMapper mapper;
+    private final PublishOrderEventPort eventPublisher;
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getById(@PathVariable UUID id) {
@@ -53,7 +56,9 @@ public class OrderController {
     @PostMapping("/create") 
     public ResponseEntity<UUID> createOrder(@RequestBody CreateOrderRequest request) {
         final var command = this.mapper.toCommand(request);
+        
         final var result= this.createService.create(command);
+        eventPublisher.publishOrderCreatedEvent(new OrderCreated(request.currency(),result,request.paymentMethod(),request.totalPrice()));
         return ResponseEntity.ok(result);
     } 
 
