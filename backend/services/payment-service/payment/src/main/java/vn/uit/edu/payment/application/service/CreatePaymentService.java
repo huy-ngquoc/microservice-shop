@@ -11,6 +11,7 @@ import vn.uit.edu.payment.application.dto.query.PaymentView;
 import vn.uit.edu.payment.application.mapper.PaymentViewMapper;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
 import vn.uit.edu.payment.application.port.out.CheckOrderPort;
+import vn.uit.edu.payment.application.port.out.LoadPaymentPort;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.application.port.out.SavePaymentPort;
 import vn.uit.edu.payment.domain.event.PaymentCreated;
@@ -25,12 +26,14 @@ public class CreatePaymentService implements CreatePaymentUseCase {
     private final SavePaymentPort savePort;
     private final PublishPaymentEventPort eventPort;
     private final PaymentViewMapper mapper;
+    private final LoadPaymentPort loadPort;
 
     @Override
     @Transactional
     public PaymentView create(CreatePaymentCommand command) {
         checkOrderPort.checkOrder(command.paymentId(), command.paymentValue(), command.orderId());
-
+        Payment p = loadPort.loadPaymentByOrderId(command.orderId());
+        if(p!=null) throw new RuntimeException("Payment for this order already exist");
         final var draft = Payment.Draft.builder().paymentId(command.paymentId()).createAt(new CreateAt(Instant.now())).currency(command.currency()).orderId(command.orderId()).paymentMethod(command.paymentMethod())
         .paymentStatus(command.paymentStatus()).paymentValue(command.paymentValue()).updateAt(new UpdateAt(null)).build();
         final var payment = Payment.create(draft);

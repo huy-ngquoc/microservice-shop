@@ -12,7 +12,6 @@ import vn.uit.edu.msshop.order.application.port.out.CheckUserPort;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderDetailPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
-import vn.uit.edu.msshop.order.domain.event.OrderCreated;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.CreateAt;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
@@ -83,7 +82,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         .build();
         final var order = Order.create(draft);
         final var saved = savePort.save(order);
-        publishPort.publish(new OrderCreated(saved.getId()));
+        
         
     }
 

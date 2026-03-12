@@ -94,8 +94,21 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=alibou
             - MONGO_INITDB_ROOT_PASSWORD=alibou
             - TZ=UTC
-
-
+        networks:
+            - microservices-net
+    mongodb_order:
+        container_name: ms_mongo_db_order
+        image: mongo:8
+        ports:
+            - 27019:27017
+        volumes:
+            - mongo_order:/data
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+        networks:
+            - microservices-net
     mongo-express:
         container_name: ms_mongo_express
         image: mongo-express:1
@@ -168,3 +181,4 @@ volumes:
     mongo:
     mongo_rating:
     postgres_payment:
+    mongo_order:
