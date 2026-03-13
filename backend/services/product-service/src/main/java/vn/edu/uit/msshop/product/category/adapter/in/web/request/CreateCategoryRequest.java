@@ -8,5 +8,8 @@ public record CreateCategoryRequest(
         @NotBlank
         @Size(
                 max = CategoryName.MAX_LENGTH)
-        String name) {
+        String name,
+
+        @NotBlank
+        String imageKey) {
 }

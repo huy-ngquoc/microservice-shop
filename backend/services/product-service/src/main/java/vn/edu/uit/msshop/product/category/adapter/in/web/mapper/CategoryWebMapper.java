@@ -5,15 +5,15 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.CreateCategoryRequest;
+import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryImageRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryInfoRequest;
-import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
 import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategoryCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
-import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
 
@@ -22,8 +22,11 @@ public class CategoryWebMapper {
     public CreateCategoryCommand toCommand(
             final CreateCategoryRequest request) {
         final var name = new CategoryName(request.name());
+        final var imageKey = this.extractKeyFromTempPublicId(request.imageKey());
 
-        return new CreateCategoryCommand(name);
+        return new CreateCategoryCommand(
+                name,
+                imageKey);
     }
 
     public UpdateCategoryInfoCommand toCommand(
@@ -40,14 +43,14 @@ public class CategoryWebMapper {
 
     public UpdateCategoryImageCommand toCommand(
             final UUID id,
-            final byte[] bytes,
-            final String originalFilename,
-            final String contentType) {
+            final UpdateCategoryImageRequest request) {
+        final var categoryId = new CategoryId(id);
+
+        final var imageKey = ChangeRequest.toChange(request.imageKey(), this::extractKeyFromTempPublicId);
+
         return new UpdateCategoryImageCommand(
-                new CategoryId(id),
-                bytes,
-                originalFilename,
-                contentType);
+                categoryId,
+                imageKey);
     }
 
     public CategoryId toCategoryId(
@@ -60,14 +63,15 @@ public class CategoryWebMapper {
         return new CategoryResponse(
                 view.id(),
                 view.name(),
-                view.imageUrl());
+                view.imageKey());
     }
 
-    public CategoryImageResponse toResponse(
-            final CategoryImageView view) {
-        return new CategoryImageResponse(
-                view.url(),
-                view.width(),
-                view.height());
+    private CategoryImageKey extractKeyFromTempPublicId(
+            final String publicId) {
+        if (!publicId.startsWith("temp/")) {
+            throw new IllegalArgumentException("Image key must be in temp folder");
+        }
+
+        return new CategoryImageKey(publicId.substring("temp/".length()));
     }
 }

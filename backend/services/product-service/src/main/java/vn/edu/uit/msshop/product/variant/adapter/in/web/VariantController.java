@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.mapper.VariantWebMapper;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.CreateVariantRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;

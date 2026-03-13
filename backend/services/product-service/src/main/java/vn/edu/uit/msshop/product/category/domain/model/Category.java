@@ -16,18 +16,14 @@ public final class Category {
 
     private final CategoryName name;
 
-    @Nullable
-    private final CategoryImage image;
+    private final CategoryImageKey imageKey;
 
     public Category(
             CategoryId id,
-
             CategoryName name,
-
-            @Nullable
-            CategoryImage image) {
+            CategoryImageKey imageKey) {
         this.id = Objects.requireNonNull(id, "Id must NOT be null");
         this.name = Objects.requireNonNull(name, "Name must NOT be null");
-        this.image = image;
+        this.imageKey = Objects.requireNonNull(imageKey, "Image key must NOT be null");
     }
 }

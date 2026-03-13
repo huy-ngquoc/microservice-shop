@@ -9,6 +9,5 @@ import vn.edu.uit.msshop.product.shared.application.dto.Change;
 @NullMarked
 public record UpdateCategoryInfoCommand(
         CategoryId id,
-
         Change<CategoryName> name) {
 }

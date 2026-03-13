@@ -31,8 +31,7 @@ public class CategoryDocument {
 
     private String name;
 
-    @Nullable
-    private CategoryImageDocument image;
+    private String imageKey;
 
     @Version
     @Nullable
@@ -41,8 +40,11 @@ public class CategoryDocument {
     public CategoryDocument(
             final UUID id,
             final String name,
-            @Nullable
-            CategoryImageDocument image) {
-        this(id, name, image, null);
+            final String image) {
+        this(
+                id,
+                name,
+                image,
+                null);
     }
 }

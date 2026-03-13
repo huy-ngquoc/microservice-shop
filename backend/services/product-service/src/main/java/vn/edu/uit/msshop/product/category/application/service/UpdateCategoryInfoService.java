@@ -47,24 +47,14 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
 
     private @Nullable Category applyChanges(
             final Category current,
-            final Change.@Nullable Set<CategoryName> nameSet) {
-        final CategoryName newName;
-        final boolean nameUnchanged;
-        if ((nameSet != null) && !nameSet.value().equals(current.getName())) {
-            newName = nameSet.value();
-            nameUnchanged = false;
-        } else {
-            newName = current.getName();
-            nameUnchanged = true;
-        }
-
-        if (nameUnchanged) {
+            final Change.Set<CategoryName> nameSet) {
+        if (nameSet.value().equals(current.getName())) {
             return null;
         }
 
         return new Category(
                 current.getId(),
-                newName,
-                current.getImage());
+                nameSet.value(),
+                current.getImageKey());
     }
 }
