@@ -1,5 +1,7 @@
 package vn.uit.edu.payment.adapter.out.persistence;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -35,6 +37,19 @@ public class PaymentPersistenceAdapter implements LoadPaymentPort, SavePaymentPo
         PaymentJpaEntity paymentJpaEntity = mapper.toEntity(payment);
         PaymentJpaEntity result = repository.save(paymentJpaEntity);
         return mapper.toDomain(result);
+    }
+
+    @Override
+    public List<Payment> loadExpiredPayment(Instant timeout) {
+        List<PaymentJpaEntity> result = repository.findExpiredPayments(timeout);
+        return result.stream().map(item->mapper.toDomain(item)).toList();
+        
+    }
+
+    @Override
+    public List<Payment> saveAll(List<Payment> payments) {
+        this.repository.saveAll(payments.stream().map(item->mapper.toEntity(item)).toList());
+        return payments;
     }
 
 }

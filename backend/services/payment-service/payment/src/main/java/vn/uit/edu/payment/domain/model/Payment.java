@@ -175,4 +175,7 @@ public class Payment {
                 && Objects.equals(u.paymentMethod(), this.paymentMethod);
                 
     }
+    public void setPaymentStatus(PaymentStatus s) {
+        this.paymentStatus=s;
+    }
 }

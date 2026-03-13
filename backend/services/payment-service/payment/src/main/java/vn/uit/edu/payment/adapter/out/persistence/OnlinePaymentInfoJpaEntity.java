@@ -1,5 +1,6 @@
 package vn.uit.edu.payment.adapter.out.persistence;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -33,4 +34,5 @@ public class OnlinePaymentInfoJpaEntity {
     private long paymentCode;
     private String paymentLink;
     private String transactionId;
+    private Instant createAt;
 }

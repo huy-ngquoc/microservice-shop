@@ -1,5 +1,8 @@
 package vn.uit.edu.payment.application.service;
 
+import java.time.Instant;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -8,6 +11,7 @@ import vn.uit.edu.payment.application.exception.PaymentNotFoundException;
 import vn.uit.edu.payment.application.mapper.PaymentViewMapper;
 import vn.uit.edu.payment.application.port.in.LoadPaymentUseCase;
 import vn.uit.edu.payment.application.port.out.LoadPaymentPort;
+import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.OrderId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 
@@ -25,6 +29,11 @@ public class LoadPaymentService implements LoadPaymentUseCase {
     @Override
     public PaymentView loadByOrderId(OrderId orderId) {
        return mapper.toView(loadPort.loadPaymentByOrderId(orderId));
+    }
+
+    @Override
+    public List<Payment> loadExpiredPayment(Instant timeout) {
+        return loadPort.loadExpiredPayment(timeout);
     }
 
     
