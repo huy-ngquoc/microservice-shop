@@ -10,7 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +18,7 @@ import lombok.Setter;
 @Table(name="online_payment_info")
 @Getter
 @Setter
-@AllArgsConstructor
+
 @NoArgsConstructor
 public class OnlinePaymentInfoJpaEntity {
     @Id
@@ -35,4 +34,11 @@ public class OnlinePaymentInfoJpaEntity {
     private String paymentLink;
     private String transactionId;
     private Instant createAt;
+    public OnlinePaymentInfoJpaEntity(PaymentJpaEntity payment, long paymentCode, String paymentLink,String transactionId, Instant createAt) {
+        this.payment= payment;
+        this.paymentCode = paymentCode;
+        this.paymentLink = paymentLink;
+        this.transactionId=transactionId;
+        this.createAt=createAt;
+    }
 }

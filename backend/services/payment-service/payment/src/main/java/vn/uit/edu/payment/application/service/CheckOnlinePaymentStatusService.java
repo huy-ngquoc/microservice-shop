@@ -8,10 +8,8 @@ import java.util.List;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.payos.PayOS;
-import vn.payos.type.PaymentLinkData;
 import vn.uit.edu.payment.application.port.in.LoadPaymentUseCase;
 import vn.uit.edu.payment.application.port.out.CheckOnlinePaymentStatusPort;
 import vn.uit.edu.payment.application.port.out.LoadOnlinePaymentInfoPort;
@@ -34,32 +32,20 @@ public class CheckOnlinePaymentStatusService implements CheckOnlinePaymentStatus
 
     @Override
     @Scheduled(fixedRate=15*60*1000)
-    @Transactional
+    
     public void checkOnlinePaymentStatus() {
 
         List<Payment> payments = loadUseCase.loadExpiredPayment(Instant.now().plus(15, ChronoUnit.MINUTES));
         List<OnlinePaymentInfo> onlinePaymentInfos = loadOnlinePaymentInfoPort.loadByPayments(payments);
         List<Payment> savedPayment = new ArrayList<>();
         for(OnlinePaymentInfo i:onlinePaymentInfos) {
-            try {
-                PaymentLinkData info = payOS.getPaymentLinkInformation(i.getPaymentNumber().value());
+            
                 Payment p = findPaymentInList(i.getPaymentId(), payments);
-                if(p==null) {
-                    throw new Exception("Fail");
-                }
-                if ("PAID".equals(info.getStatus())) {
-                    p.setPaymentStatus(new PaymentStatus("SUCCESS"));
-                } else {
-                    p.setPaymentStatus(new PaymentStatus("EXPIRED"));
-                    publishEventPort.publishPaymentExpired(new OnlinePaymentExpired(p.getOrderId().value()));
-                }
+                p.setPaymentStatus(new PaymentStatus("EXPIRED"));
+                publishEventPort.publishPaymentExpired(new OnlinePaymentExpired(p.getOrderId().value()));
                 savedPayment.add(p);
                 savePort.saveAll(savedPayment);
-            }
-
-            catch(Exception e) {
-                throw new RuntimeException(e.getMessage());
-            }
+            
         }
         
     }

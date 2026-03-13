@@ -10,4 +10,5 @@ public class OnlinePaymentInfoNotFoundException extends RuntimeException {
     public OnlinePaymentInfoNotFoundException(OnlinePaymentNumber onlinePaymentNumber) {
         super("Payment not found with payment number "+onlinePaymentNumber.value());
     }
+    
 }

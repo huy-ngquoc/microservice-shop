@@ -35,7 +35,7 @@ public class PaymentPersistenceAdapter implements LoadPaymentPort, SavePaymentPo
     @Override
     public Payment save(Payment payment) {
         PaymentJpaEntity paymentJpaEntity = mapper.toEntity(payment);
-        PaymentJpaEntity result = repository.save(paymentJpaEntity);
+        PaymentJpaEntity result = repository.saveAndFlush(paymentJpaEntity);
         return mapper.toDomain(result);
     }
 
