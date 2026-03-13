@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.payment.application.dto.command.CreatePaymentCommand;
 import vn.uit.edu.payment.application.dto.query.PaymentView;
 import vn.uit.edu.payment.application.mapper.PaymentViewMapper;
+import vn.uit.edu.payment.application.port.in.CreateOnlinePaymentInfoUseCase;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
 import vn.uit.edu.payment.application.port.out.CheckOrderPort;
 import vn.uit.edu.payment.application.port.out.LoadPaymentPort;
@@ -27,7 +28,7 @@ public class CreatePaymentService implements CreatePaymentUseCase {
     private final PublishPaymentEventPort eventPort;
     private final PaymentViewMapper mapper;
     private final LoadPaymentPort loadPort;
-
+    private final CreateOnlinePaymentInfoUseCase createOnlineUseCase;
     @Override
     @Transactional
     public PaymentView create(CreatePaymentCommand command) {
@@ -39,6 +40,9 @@ public class CreatePaymentService implements CreatePaymentUseCase {
         final var payment = Payment.create(draft);
 
         final var saved=savePort.save(payment);
+        if(command.paymentMethod().value().equals("ONLINE")) {
+            createOnlineUseCase.createPaymentLink(saved);
+        }
         eventPort.publish(new PaymentCreated(saved.getPaymentId()));
         return mapper.toView(saved);
     }

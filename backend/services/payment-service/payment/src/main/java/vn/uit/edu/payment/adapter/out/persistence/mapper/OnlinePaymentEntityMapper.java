@@ -26,6 +26,6 @@ public class OnlinePaymentEntityMapper {
     }
     public OnlinePaymentInfoJpaEntity toEntity(OnlinePaymentInfo domain) {
         Payment p = loadPaymentPort.loadPaymentById(domain.getPaymentId()).orElseThrow(()-> new PaymentNotFoundException(domain.getPaymentId()));
-        return new OnlinePaymentInfoJpaEntity(domain.getPaymentId().value(), mapper.toEntity(p), domain.getPaymentNumber().value(), domain.getLink().value(), domain.getTransactionId().value(), domain.getCreateAt().value());
+        return new OnlinePaymentInfoJpaEntity(mapper.toEntity(p), domain.getPaymentNumber().value(), domain.getLink().value(), domain.getTransactionId().value(), domain.getCreateAt().value());
     }
 }
