@@ -2,40 +2,32 @@ package vn.uit.edu.msshop.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity
-@RequiredArgsConstructor
+@EnableWebFluxSecurity 
 public class SecurityConfig {
+
     private final JwtAuthConverter jwtAuthConverter;
+
+    public SecurityConfig(JwtAuthConverter jwtAuthConverter) {
+        this.jwtAuthConverter = jwtAuthConverter;
+    }
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
-            
-            .csrf(csrf -> csrf.disable())
-            
-           
-            .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/sign_up").permitAll()
-                .anyRequest().authenticated() 
+            .csrf(ServerHttpSecurity.CsrfSpec::disable)
+            .authorizeExchange(auth -> auth
+                .pathMatchers("/auth/sign_up").permitAll()
+                .anyExchange().authenticated()
             )
-            
-            
             .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt->jwt.jwtAuthenticationConverter(jwtAuthConverter))
-                
-            )
-            
-            
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(it -> Mono.just(jwtAuthConverter.convert(it))))
             );
 
         return http.build();
