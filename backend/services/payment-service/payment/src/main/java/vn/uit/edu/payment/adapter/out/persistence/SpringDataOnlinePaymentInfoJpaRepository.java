@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SpringDataOnlinePaymentInfoJpaRepository extends JpaRepository<OnlinePaymentInfoJpaEntity, UUID> {
     public Optional<OnlinePaymentInfoJpaEntity> findByPaymentCode(Long paymentCode);
-    public List<OnlinePaymentInfoJpaEntity> findByPayment_PaymentIdIn(List<UUID> paymentIds);
+    public List<OnlinePaymentInfoJpaEntity> findByPayment_IdIn(List<UUID> paymentIds);
 }

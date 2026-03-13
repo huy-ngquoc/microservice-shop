@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import vn.payos.type.Webhook;
 import vn.uit.edu.payment.adapter.in.web.mapper.PaymentWebMapper;
 import vn.uit.edu.payment.adapter.in.web.request.CreatePaymentRequest;
 import vn.uit.edu.payment.adapter.in.web.request.UpdatePaymentRequest;
@@ -20,6 +21,7 @@ import vn.uit.edu.payment.adapter.in.web.response.PaymentResponse;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
 import vn.uit.edu.payment.application.port.in.LoadPaymentUseCase;
 import vn.uit.edu.payment.application.port.in.UpdatePaymentUseCase;
+import vn.uit.edu.payment.application.port.out.PayOsWebHookPort;
 import vn.uit.edu.payment.domain.model.valueobject.OrderId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 
@@ -31,6 +33,7 @@ public class PaymentController {
     private final UpdatePaymentUseCase updateUseCase;
     private final LoadPaymentUseCase loadPaymentUseCase;
     private final PaymentWebMapper mapper;
+    private final PayOsWebHookPort webHookPort;
 
     @GetMapping("/{paymentId}")
     public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable UUID paymentId) {
@@ -64,4 +67,13 @@ public class PaymentController {
         this.updateUseCase.onlinePaymentExpire(new OrderId(orderId));
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/pay_os/web_hook")
+    public ResponseEntity<String> handlePayOSWebHook(@RequestBody Webhook body) {
+        webHookPort.handlePayOSWebHook(body);
+        return ResponseEntity.ok("Confirmed");
+
+    }
+
 }
+

@@ -1,9 +1,11 @@
 package vn.uit.edu.payment.application.service;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.payos.PayOS;
@@ -14,6 +16,7 @@ import vn.uit.edu.payment.application.port.in.CreateOnlinePaymentInfoUseCase;
 import vn.uit.edu.payment.application.port.out.SaveOnlinePaymentInfoPort;
 import vn.uit.edu.payment.domain.model.OnlinePaymentInfo;
 import vn.uit.edu.payment.domain.model.Payment;
+import vn.uit.edu.payment.domain.model.valueobject.CreateAt;
 import vn.uit.edu.payment.domain.model.valueobject.OnlinePaymentNumber;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentLink;
 import vn.uit.edu.payment.domain.model.valueobject.TransactionId;
@@ -29,6 +32,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
     private static final long PAYMENT_LINK_LIFETIME = 15*60;
 
     @Override
+    @Transactional
     public String createPaymentLink(Payment payment) {
         String description = "Payment with id "+payment.getPaymentId().value().toString();
 
@@ -50,7 +54,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
                 .build();
         try {
         CheckoutResponseData response = payOS.createPaymentLink(paymentData);
-        OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new PaymentLink(response.getCheckoutUrl()), new OnlinePaymentNumber(orderCode),new TransactionId(null));
+        OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new PaymentLink(response.getCheckoutUrl()), new OnlinePaymentNumber(orderCode),new TransactionId(null), new CreateAt(Instant.now()));
         this.savePort.save(info);
 
         return response.getCheckoutUrl(); 

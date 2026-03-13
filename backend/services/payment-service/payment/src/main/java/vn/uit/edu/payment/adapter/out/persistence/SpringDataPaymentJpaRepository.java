@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SpringDataPaymentJpaRepository extends JpaRepository<PaymentJpaEntity, UUID>{
     public Optional<PaymentJpaEntity> findFirstByOrderId(UUID orderId);
-    @Query("SELECT p FROM Payment p WHERE p.paymentStatus = 'PENDING' AND p.paymentMethod = 'ONLINE' AND p.createdAt < :timeout")
+    @Query("SELECT p FROM PaymentJpaEntity p WHERE p.paymentStatus = 'PENDING' AND p.paymentMethod = 'ONLINE' AND p.createAt < :timeout")
     List<PaymentJpaEntity> findExpiredPayments(@Param("timeout") Instant timeout);
 
 }
