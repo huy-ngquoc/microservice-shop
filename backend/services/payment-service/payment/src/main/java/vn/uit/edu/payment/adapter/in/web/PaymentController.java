@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import vn.payos.model.webhooks.Webhook;
-
 import vn.uit.edu.payment.adapter.in.web.mapper.PaymentWebMapper;
 import vn.uit.edu.payment.adapter.in.web.request.CreatePaymentRequest;
 import vn.uit.edu.payment.adapter.in.web.request.UpdatePaymentRequest;
@@ -44,7 +44,8 @@ public class PaymentController {
         return ResponseEntity.ok(result);
     }
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId) {
+    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId, @RequestHeader("X-User-Id") String userIdFromHeader) {
+        System.out.println("X-User-Id "+userIdFromHeader+"newiwniweviwenvioernoviernv");
         final var result = mapper.toResponse(loadPaymentUseCase.loadByOrderId(new OrderId(orderId)));
         return ResponseEntity.ok(result);
     }

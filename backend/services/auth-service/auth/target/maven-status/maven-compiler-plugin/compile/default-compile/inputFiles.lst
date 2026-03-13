@@ -13,6 +13,7 @@ D:\kltn\microservice-shop\backend\services\auth-service\auth\src\main\java\vn\ui
 D:\kltn\microservice-shop\backend\services\auth-service\auth\src\main\java\vn\uit\edu\msshop\auth\application\service\CreateAccountService.java
 D:\kltn\microservice-shop\backend\services\auth-service\auth\src\main\java\vn\uit\edu\msshop\auth\application\service\DeleteAccountService.java
 D:\kltn\microservice-shop\backend\services\auth-service\auth\src\main\java\vn\uit\edu\msshop\auth\AuthApplication.java
+D:\kltn\microservice-shop\backend\services\auth-service\auth\src\main\java\vn\uit\edu\msshop\auth\config\AuthHeaderFilter.java
 D:\kltn\microservice-shop\backend\services\auth-service\auth\src\main\java\vn\uit\edu\msshop\auth\config\JwtAuthConverter.java
 D:\kltn\microservice-shop\backend\services\auth-service\auth\src\main\java\vn\uit\edu\msshop\auth\config\KafkaAuthConfig.java
 D:\kltn\microservice-shop\backend\services\auth-service\auth\src\main\java\vn\uit\edu\msshop\auth\config\KeyCloakConfig.java

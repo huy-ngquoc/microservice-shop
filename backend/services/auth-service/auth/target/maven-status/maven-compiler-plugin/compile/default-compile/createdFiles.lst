@@ -11,6 +11,7 @@ vn\uit\edu\msshop\auth\config\KeyCloakConfig.class
 vn\uit\edu\msshop\auth\adapter\in\web\AuthController.class
 vn\uit\edu\msshop\auth\adapter\out\keycloak\KeycloakPortsAdapter.class
 vn\uit\edu\msshop\auth\adapter\in\web\mapper\AccountMapper.class
+vn\uit\edu\msshop\auth\config\AuthHeaderFilter.class
 vn\uit\edu\msshop\auth\application\service\CreateAccountService.class
 vn\uit\edu\msshop\auth\application\port\in\CreateAccountUseCase.class
 vn\uit\edu\msshop\auth\config\KafkaAuthConfig.class
