@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.uit.edu.payment.domain.model.valueobject.CreateAt;
 import vn.uit.edu.payment.domain.model.valueobject.OnlinePaymentNumber;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentLink;
@@ -17,5 +18,6 @@ public class OnlinePaymentInfo {
     private PaymentLink link;
     private OnlinePaymentNumber paymentNumber;
     private TransactionId transactionId;
+    private CreateAt createAt;
 
 }

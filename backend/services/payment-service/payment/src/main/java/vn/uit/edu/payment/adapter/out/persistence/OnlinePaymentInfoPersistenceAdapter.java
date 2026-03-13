@@ -1,5 +1,7 @@
 package vn.uit.edu.payment.adapter.out.persistence;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,7 @@ import vn.uit.edu.payment.application.exception.OnlinePaymentInfoNotFoundExcepti
 import vn.uit.edu.payment.application.port.out.LoadOnlinePaymentInfoPort;
 import vn.uit.edu.payment.application.port.out.SaveOnlinePaymentInfoPort;
 import vn.uit.edu.payment.domain.model.OnlinePaymentInfo;
+import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.OnlinePaymentNumber;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 @Service
@@ -32,6 +35,12 @@ public class OnlinePaymentInfoPersistenceAdapter implements LoadOnlinePaymentInf
     public OnlinePaymentInfo loadByOrderCode(OnlinePaymentNumber paymentNumber) {
         final var result = repo.findByPaymentCode(paymentNumber.value()).orElseThrow(()->new OnlinePaymentInfoNotFoundException(paymentNumber));
         return mapper.toDomain(result);
+    }
+
+    @Override
+    public List<OnlinePaymentInfo> loadByPayments(List<Payment> payments) {
+        final var result = repo.findByPayment_PaymentIdIn(payments.stream().map(item->item.getPaymentId().value()).toList());
+        return result.stream().map(item->mapper.toDomain(item)).toList();
     }
 
 }
