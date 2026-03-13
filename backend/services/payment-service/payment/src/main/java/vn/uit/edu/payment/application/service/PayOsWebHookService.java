@@ -12,8 +12,10 @@ import vn.uit.edu.payment.application.exception.PaymentNotFoundException;
 import vn.uit.edu.payment.application.port.out.LoadOnlinePaymentInfoPort;
 import vn.uit.edu.payment.application.port.out.LoadPaymentPort;
 import vn.uit.edu.payment.application.port.out.PayOsWebHookPort;
+import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.application.port.out.SaveOnlinePaymentInfoPort;
 import vn.uit.edu.payment.application.port.out.SavePaymentPort;
+import vn.uit.edu.payment.domain.event.OnlinePaymentCancelled;
 import vn.uit.edu.payment.domain.model.OnlinePaymentInfo;
 import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.OnlinePaymentNumber;
@@ -29,9 +31,11 @@ public class PayOsWebHookService implements PayOsWebHookPort {
     private final LoadOnlinePaymentInfoPort loadOnlinePaymentInfoPort;
     private final SavePaymentPort savePaymentPort;
     private final LoadPaymentPort loadPaymentPort;
+    private final PublishPaymentEventPort eventPort;
     @Override
     @Transactional
     public void handlePayOSWebHook(Webhook body) {
+        
         try {
             WebhookData webhookData = payOS.verifyPaymentWebhookData(body);
             long orderCode = webhookData.getOrderCode();
@@ -44,7 +48,12 @@ public class PayOsWebHookService implements PayOsWebHookPort {
             saveOnlinePaymentInfoPort.save(onlinePaymentInfo);
 
         } catch (Exception ex) {
+            long orderCode = body.getData().getOrderCode();
+            OnlinePaymentInfo onlinePaymentInfo = loadOnlinePaymentInfoPort.loadByOrderCode(new OnlinePaymentNumber(orderCode));
+            Payment payment = loadPaymentPort.loadPaymentById(onlinePaymentInfo.getPaymentId()).orElseThrow(()->new PaymentNotFoundException(onlinePaymentInfo.getPaymentId()));
+            eventPort.publishPaymentCancelled(new OnlinePaymentCancelled(payment.getOrderId().value()));
             System.getLogger(PayOsWebHookService.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+
         }
 
     }

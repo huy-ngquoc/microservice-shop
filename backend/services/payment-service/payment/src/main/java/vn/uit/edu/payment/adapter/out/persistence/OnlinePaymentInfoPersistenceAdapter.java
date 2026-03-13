@@ -39,7 +39,7 @@ public class OnlinePaymentInfoPersistenceAdapter implements LoadOnlinePaymentInf
 
     @Override
     public List<OnlinePaymentInfo> loadByPayments(List<Payment> payments) {
-        final var result = repo.findByPayment_PaymentIdIn(payments.stream().map(item->item.getPaymentId().value()).toList());
+        final var result = repo.findByPayment_IdIn(payments.stream().map(item->item.getPaymentId().value()).toList());
         return result.stream().map(item->mapper.toDomain(item)).toList();
     }
 
