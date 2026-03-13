@@ -15,7 +15,7 @@ public final class Variant {
 
     private final VariantProductId productId;
 
-    private final VariantImage image;
+    private final VariantImageKey imageKey;
 
     private final VariantPrice price;
 
@@ -26,13 +26,13 @@ public final class Variant {
     public Variant(
             VariantId id,
             VariantProductId productId,
-            VariantImage image,
+            VariantImageKey imageKey,
             VariantPrice price,
             VariantSold sold,
             VariantTraits traits) {
         this.id = requireNonNull(id, "Variant ID must not be null");
         this.productId = requireNonNull(productId, "Variant Product ID must not be null");
-        this.image = requireNonNull(image, "Variant image must not be null");
+        this.imageKey = requireNonNull(imageKey, "Variant image key must not be null");
         this.price = requireNonNull(price, "Variant price must not be null");
         this.sold = requireNonNull(sold, "Variant sold must not be null");
         this.traits = requireNonNull(traits, "Variant traits must not be null");

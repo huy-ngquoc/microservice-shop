@@ -12,6 +12,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.SaveVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantCreated;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantSold;
 
 @Service
 @RequiredArgsConstructor
@@ -30,9 +31,9 @@ public class CreateVariantService implements CreateVariantUseCase {
         final var variant = new Variant(
                 VariantId.newId(),
                 command.productId(),
-                command.image(),
+                command.imageKey(),
                 command.price(),
-                command.sold(),
+                VariantSold.zero(),
                 command.traits());
 
         final var saved = this.savePort.save(variant);

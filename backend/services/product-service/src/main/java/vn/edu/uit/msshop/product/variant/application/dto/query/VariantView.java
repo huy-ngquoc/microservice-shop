@@ -9,7 +9,7 @@ public record VariantView(
         String imageKey,
         int price,
         int sold,
-        List<VariantTraitView> traits) {
+        List<String> traits) {
     public VariantView {
         traits = List.copyOf(traits);
     }
