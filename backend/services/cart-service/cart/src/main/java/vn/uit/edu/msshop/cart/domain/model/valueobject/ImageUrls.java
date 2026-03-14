@@ -1,6 +1,8 @@
 package vn.uit.edu.msshop.cart.domain.model.valueobject;
 
-public record ImageUrls(String[] images) {
+import java.util.List;
+
+public record ImageUrls(List<String> images) {
     
 
 }
