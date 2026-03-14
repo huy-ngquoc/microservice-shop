@@ -16,7 +16,6 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryWebMappe
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.CreateCategoryRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryImageRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryInfoRequest;
-import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
 import vn.edu.uit.msshop.product.category.application.port.in.CreateCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.FindCategoryUseCase;
@@ -69,7 +68,7 @@ public class CategoryController {
     }
 
     @PatchMapping("/{id}/image")
-    public ResponseEntity<CategoryImageResponse> updateImage(
+    public ResponseEntity<Void> updateImage(
             @PathVariable
             final UUID id,
 

@@ -11,10 +11,9 @@ import vn.edu.uit.msshop.product.category.application.exception.CategoryImageKey
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.LoadCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.MoveCategoryImagePort;
+import vn.edu.uit.msshop.product.category.application.port.out.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.PublishCategoryEventPort;
 import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.VerifyCategoryImageKeyPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
@@ -26,8 +25,7 @@ import vn.edu.uit.msshop.product.shared.application.dto.Change;
 public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
     private final LoadCategoryPort loadPort;
     private final SaveCategoryPort savePort;
-    private final VerifyCategoryImageKeyPort verifyImageKeyPort;
-    private final MoveCategoryImagePort moveImagePort;
+    private final CategoryImageStoragePort imageStoragePort;
     private final PublishCategoryEventPort eventPort;
 
     @Override
@@ -49,7 +47,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
             return;
         }
 
-        this.moveImagePort.moveToCategory(imageKeySet.value());
+        this.imageStoragePort.publishImage(imageKeySet.value());
         final var saved = this.saveWithCompensation(next, imageKeySet.value());
 
         final var event = new CategoryImageUpdated(
@@ -63,7 +61,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
 
     private void ensureImageKeyExistsInTemp(
             final CategoryImageKey imageKey) {
-        if (!this.verifyImageKeyPort.existsInTemp(imageKey)) {
+        if (!this.imageStoragePort.existsAsTemp(imageKey)) {
             throw new CategoryImageKeyNotFoundException(imageKey);
         }
     }
@@ -88,7 +86,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
             return this.savePort.save(next);
         } catch (final RuntimeException e) {
             try {
-                this.moveImagePort.moveBackToTemp(newKey);
+                this.imageStoragePort.unpublishImage(newKey);
             } catch (final RuntimeException compensateEx) {
                 e.addSuppressed(compensateEx);
                 log.error("Compensation failed for key '{}'", newKey.value(), compensateEx);
@@ -98,14 +96,9 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
     }
 
     private void deleteOldImage(
-            @Nullable
             final CategoryImageKey oldKey) {
-        if (oldKey == null) {
-            return;
-        }
-
         try {
-            this.moveImagePort.deleteFromCategory(oldKey);
+            this.imageStoragePort.deleteImage(oldKey);
         } catch (Exception e) {
             log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
         }

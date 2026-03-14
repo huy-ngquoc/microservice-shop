@@ -2,13 +2,16 @@ package vn.edu.uit.msshop.product.category.application.port.out;
 
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
 
-public interface MoveCategoryImagePort {
-    void moveToCategory(
+public interface CategoryImageStoragePort {
+    boolean existsAsTemp(
             final CategoryImageKey key);
 
-    void moveBackToTemp(
+    void publishImage(
             final CategoryImageKey key);
 
-    void deleteFromCategory(
+    void unpublishImage(
+            final CategoryImageKey key);
+
+    void deleteImage(
             final CategoryImageKey key);
 }

@@ -2,8 +2,6 @@ package vn.edu.uit.msshop.product.category.domain.model;
 
 import java.util.Objects;
 
-import org.jspecify.annotations.Nullable;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 

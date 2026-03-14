@@ -12,7 +12,7 @@ public record ChangeRequest<T>(
             ChangeRequest<T> c,
 
             @NonNull
-            Function<T, V> map) {
+            Function<@NonNull T, @NonNull V> map) {
         if ((c == null) || (c.value() == null)) {
             return Change.unchanged();
         }

@@ -8,10 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategoryCommand;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryImageKeyNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.CreateCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.out.MoveCategoryImagePort;
+import vn.edu.uit.msshop.product.category.application.port.out.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.PublishCategoryEventPort;
 import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.VerifyCategoryImageKeyPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryCreated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
@@ -22,8 +21,7 @@ import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
 @Slf4j
 public class CreateCategoryService implements CreateCategoryUseCase {
     private final SaveCategoryPort savePort;
-    private final VerifyCategoryImageKeyPort verifyImageKeyPort;
-    private final MoveCategoryImagePort moveImagePort;
+    private final CategoryImageStoragePort imageStoragePort;
     private final PublishCategoryEventPort eventPort;
 
     @Override
@@ -37,7 +35,7 @@ public class CreateCategoryService implements CreateCategoryUseCase {
                 command.name(),
                 command.imageKey());
 
-        this.moveImagePort.moveToCategory(command.imageKey());
+        this.imageStoragePort.publishImage(command.imageKey());
         final var saved = this.saveWithCompensation(category, command.imageKey());
 
         this.eventPort.publish(new CategoryCreated(saved.getId()));
@@ -45,7 +43,7 @@ public class CreateCategoryService implements CreateCategoryUseCase {
 
     private void ensureImageKeyExistsInTemp(
             final CategoryImageKey imageKey) {
-        if (!this.verifyImageKeyPort.existsInTemp(imageKey)) {
+        if (!this.imageStoragePort.existsAsTemp(imageKey)) {
             throw new CategoryImageKeyNotFoundException(imageKey);
         }
     }
@@ -57,7 +55,7 @@ public class CreateCategoryService implements CreateCategoryUseCase {
             return this.savePort.save(category);
         } catch (final RuntimeException e) {
             try {
-                this.moveImagePort.moveBackToTemp(imageKey);
+                this.imageStoragePort.unpublishImage(imageKey);
             } catch (final RuntimeException compensateEx) {
                 e.addSuppressed(compensateEx);
                 log.error("Compensation failed for key '{}'", imageKey.value(), compensateEx);
