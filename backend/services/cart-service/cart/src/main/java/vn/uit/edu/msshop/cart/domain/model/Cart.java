@@ -66,10 +66,22 @@ public class Cart {
         }
         return Cart.builder().userId(this.userId).details(this.details).build();
     }
-    private CartDetail findByVariantId(VariantId id) {
+    public CartDetail findByVariantId(VariantId id) {
         for(CartDetail c: details) {
             if(c.getVariantId().value().equals(id.value())) return c;
         }
         return null;
+    }
+    public void removeByVariantId(VariantId id) {
+        CartDetail toDelete = findByVariantId(id);
+        if(toDelete!=null) details.remove(toDelete);
+    }
+    public Cart addItems(List<CartDetail> details) {
+        for(CartDetail d: details) {
+            if(findByVariantId(d.getVariantId())==null) {
+                this.details.add(d);
+            }
+        }
+        return this;
     }
 }
