@@ -1,8 +1,8 @@
 package vn.edu.uit.msshop.product.brand.application.port.in;
 
-import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
+import vn.edu.uit.msshop.product.brand.application.dto.command.DeleteBrandLogoCommand;
 
 public interface DeleteBrandLogoUseCase {
-    void deleteById(
-            final BrandId id);
+    void deleteLogo(
+            final DeleteBrandLogoCommand command);
 }

@@ -1,12 +1,11 @@
 package vn.edu.uit.msshop.product.brand.domain.model;
 
-import java.util.Objects;
-
 import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
+import vn.edu.uit.msshop.product.shared.domain.exception.Domains;
 
 @Getter
 @EqualsAndHashCode(
@@ -19,17 +18,41 @@ public final class Brand {
     private final BrandName name;
 
     @Nullable
-    private final BrandLogo logo;
+    private final BrandLogoKey logoKey;
+
+    // ===== Metadata =====
+
+    @Nullable
+    private final BrandVersion version;
 
     public Brand(
-            BrandId id,
+            final BrandId id,
 
-            BrandName name,
+            final BrandName name,
 
             @Nullable
-            BrandLogo logo) {
-        this.id = Objects.requireNonNull(id, "Id must NOT be null");
-        this.name = Objects.requireNonNull(name, "Name must NOT be null");
-        this.logo = logo;
+            final BrandLogoKey logoKey,
+
+            @Nullable
+            final BrandVersion version) {
+        this.id = Domains.requireNonNull(id, "Id must NOT be null");
+        this.name = Domains.requireNonNull(name, "Name must NOT be null");
+        this.logoKey = logoKey;
+
+        this.version = version;
+    }
+
+    public Brand(
+            final BrandId id,
+
+            final BrandName name,
+
+            @Nullable
+            final BrandLogoKey logoKey) {
+        this(
+                id,
+                name,
+                logoKey,
+                null);
     }
 }

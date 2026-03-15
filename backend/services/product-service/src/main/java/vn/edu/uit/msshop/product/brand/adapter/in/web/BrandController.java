@@ -1,30 +1,29 @@
 package vn.edu.uit.msshop.product.brand.adapter.in.web;
 
-import java.io.IOException;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
+import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.port.in.CreateBrandUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.DeleteBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.FindBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.FindBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.UpdateBrandInfoUseCase;
@@ -39,15 +38,16 @@ public class BrandController {
     private final CreateBrandUseCase createUseCase;
     private final UpdateBrandInfoUseCase updateInfoUseCase;
     private final UpdateBrandLogoUseCase updateLogoUseCase;
-    private final BrandWebMapper webMapper;
+    private final DeleteBrandLogoUseCase deleteLogoUseCase;
+    private final BrandWebMapper mapper;
 
     @GetMapping("/{id}")
     public ResponseEntity<BrandResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findUseCase.findById(this.webMapper.toBrandId(id));
-        final var response = this.webMapper.toResponse(view);
+        final var view = this.findUseCase.findById(this.mapper.toBrandId(id));
 
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -55,71 +55,68 @@ public class BrandController {
     public ResponseEntity<BrandLogoResponse> findLogoById(
             @PathVariable
             final UUID id) {
-        final var view = this.findLogoUseCase.findById(this.webMapper.toBrandId(id));
-        final var response = this.webMapper.toResponse(view);
+        final var view = this.findLogoUseCase.findLogoById(this.mapper.toBrandId(id));
 
+        final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(
+    public ResponseEntity<BrandResponse> create(
             @RequestBody
             @Valid
             final CreateBrandRequest request) {
-        final var command = this.webMapper.toCommand(request);
-        this.createUseCase.create(command);
+        final var command = this.mapper.toCreateCommand(request);
+        final var view = this.createUseCase.create(command);
 
-        return ResponseEntity.noContent().build();
+        final var response = this.mapper.toResponse(view);
+        final var location = WebMvcLinkBuilder
+                .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id()))
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
     }
 
     @PatchMapping("/{id}/info")
-    public ResponseEntity<Void> updateInfo(
+    public ResponseEntity<BrandResponse> updateInfo(
             @PathVariable
             final UUID id,
 
             @RequestBody
             @Valid
             final UpdateBrandInfoRequest request) {
-        final var command = this.webMapper.toCommand(id, request);
-        this.updateInfoUseCase.updateInfo(command);
+        final var command = this.mapper.toUpdateInfoCommand(id, request);
+        final var view = this.updateInfoUseCase.updateInfo(command);
 
-        return ResponseEntity.noContent().build();
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
     }
 
-    @PatchMapping(
-            value = "/{id}/logo",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<BrandLogoResponse> updateImage(
+    @PatchMapping("/{id}/logo")
+    public ResponseEntity<BrandLogoResponse> updateLogo(
             @PathVariable
             final UUID id,
 
-            @RequestPart("file")
-            @NotNull
-            final MultipartFile file)
-            throws IOException {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
+            @RequestBody
+            @Valid
+            final UpdateBrandLogoRequest request) {
+        final var command = this.mapper.toUpdateLogoCommand(id, request);
+        final var view = this.updateLogoUseCase.updateLogo(command);
 
-        final var contentType = file.getContentType();
-        if ((contentType == null) || !contentType.startsWith("image/")) {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
-        }
-
-        String originalFilename = file.getOriginalFilename();
-        if (originalFilename == null) {
-            originalFilename = "logo";
-        }
-
-        final var command = this.webMapper.toCommand(
-                id,
-                file.getBytes(),
-                originalFilename,
-                contentType);
-
-        final var view = this.updateLogoUseCase.updateImage(command);
-        final var response = this.webMapper.toResponse(view);
-
+        final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}/logo")
+    public ResponseEntity<Void> deleteLogoById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toDeleteLogoCommand(id, version);
+        this.deleteLogoUseCase.deleteLogo(command);
+
+        return ResponseEntity.noContent().build();
     }
 }

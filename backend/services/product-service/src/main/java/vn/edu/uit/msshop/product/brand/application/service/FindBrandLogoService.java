@@ -9,7 +9,6 @@ import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundExcept
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.FindBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.LoadBrandPort;
-import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
 
 @Service
@@ -21,11 +20,10 @@ public class FindBrandLogoService implements FindBrandLogoUseCase {
     @Override
     @Transactional(
             readOnly = true)
-    public BrandLogoView findById(
+    public BrandLogoView findLogoById(
             final BrandId id) {
         return this.loadPort.loadById(id)
-                .map(Brand::getLogo)
-                .map(this.mapper::toView)
+                .map(this.mapper::toLogoView)
                 .orElseThrow(() -> new BrandNotFoundException(id));
     }
 }

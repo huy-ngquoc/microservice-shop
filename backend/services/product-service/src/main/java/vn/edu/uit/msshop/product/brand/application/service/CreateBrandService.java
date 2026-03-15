@@ -4,7 +4,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.brand.application.dto.command.CreateBrandCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.query.BrandView;
+import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.CreateBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.SaveBrandPort;
@@ -14,13 +17,15 @@ import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CreateBrandService implements CreateBrandUseCase {
     private final SaveBrandPort savePort;
+    private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
 
     @Override
     @Transactional
-    public void create(
+    public BrandView create(
             final CreateBrandCommand command) {
         final var brand = new Brand(
                 BrandId.newId(),
@@ -29,5 +34,7 @@ public class CreateBrandService implements CreateBrandUseCase {
 
         final var saved = this.savePort.save(brand);
         this.eventPort.publish(new BrandCreated(saved.getId()));
+
+        return this.mapper.toView(saved);
     }
 }

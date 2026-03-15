@@ -10,5 +10,8 @@ public record BrandView(
         String name,
 
         @Nullable
-        String logoUrl) {
+        String logoKey,
+
+        @Nullable
+        Long version) {
 }

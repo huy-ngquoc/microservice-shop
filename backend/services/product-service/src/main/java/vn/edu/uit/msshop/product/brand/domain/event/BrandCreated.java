@@ -10,8 +10,9 @@ import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
 
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class BrandCreated {
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
+public final class BrandCreated {
     @EqualsAndHashCode.Include
     private final UUID eventId = UUID.randomUUID();
 

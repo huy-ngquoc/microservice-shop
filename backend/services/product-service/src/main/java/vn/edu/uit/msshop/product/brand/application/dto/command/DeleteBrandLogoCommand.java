@@ -1,12 +1,9 @@
 package vn.edu.uit.msshop.product.brand.application.dto.command;
 
 import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
-import vn.edu.uit.msshop.product.shared.application.dto.Change;
 
-public record UpdateBrandLogoCommand(
+public record DeleteBrandLogoCommand(
         BrandId id,
-        Change<BrandLogoKey> logoKey,
         BrandVersion expectedVersion) {
 }

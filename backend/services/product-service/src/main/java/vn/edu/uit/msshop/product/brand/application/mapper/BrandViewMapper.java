@@ -5,30 +5,25 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.brand.application.dto.query.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.dto.query.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandLogo;
+import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
+import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
 
 @Component
 public class BrandViewMapper {
     public BrandView toView(
             final Brand brand) {
-        final var logo = brand.getLogo();
-
-        String logoUrlValue = null;
-        if (logo != null) {
-            logoUrlValue = logo.url().value();
-        }
-
         return new BrandView(
                 brand.getId().value(),
                 brand.getName().value(),
-                logoUrlValue);
+                BrandLogoKey.unwrap(brand.getLogoKey()),
+                BrandVersion.unwrap(brand.getVersion()));
     }
 
-    public BrandLogoView toView(
-            final BrandLogo logo) {
+    public BrandLogoView toLogoView(
+            final Brand brand) {
         return new BrandLogoView(
-                logo.url().value(),
-                logo.size().width(),
-                logo.size().height());
+                brand.getId().value(),
+                BrandLogoKey.unwrap(brand.getLogoKey()),
+                BrandVersion.unwrap(brand.getVersion()));
     }
 }
