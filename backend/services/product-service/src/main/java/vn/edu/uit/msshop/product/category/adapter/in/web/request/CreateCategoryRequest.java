@@ -2,6 +2,7 @@ package vn.edu.uit.msshop.product.category.adapter.in.web.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
 
 public record CreateCategoryRequest(
@@ -11,5 +12,7 @@ public record CreateCategoryRequest(
         String name,
 
         @NotBlank
+        @Size(
+                max = CategoryImageKey.MAX_LENGTH)
         String imageKey) {
 }
