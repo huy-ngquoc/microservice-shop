@@ -31,11 +31,11 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
     @Transactional
     public CategoryView updateInfo(
             final UpdateCategoryInfoCommand command) {
-        final var category = this.loadPort.loadById(command.id())
-                .orElseThrow(() -> new CategoryNotFoundException(command.id()));
+        final var categoryId = command.id();
+        final var category = this.loadPort.loadById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         final var nameSet = command.name().getSet();
-
         if (nameSet == null) {
             return this.mapper.toView(category);
         }

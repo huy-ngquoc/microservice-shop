@@ -7,6 +7,8 @@ import org.jspecify.annotations.Nullable;
 public record CategoryResponse(
         UUID id,
         String name,
+
+        @Nullable
         String imageUrl,
 
         @Nullable

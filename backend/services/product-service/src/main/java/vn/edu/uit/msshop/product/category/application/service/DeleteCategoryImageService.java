@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.category.application.dto.command.DeleteCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
-import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.DeleteCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.LoadCategoryPort;
@@ -18,6 +17,7 @@ import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
+import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -32,21 +32,24 @@ public class DeleteCategoryImageService implements DeleteCategoryImageUseCase {
     @Transactional
     public void deleteImage(
             final DeleteCategoryImageCommand command) {
-        final var category = this.loadPort.loadById(command.id())
-                .orElseThrow(() -> new CategoryNotFoundException(command.id()));
+        final var categoryId = command.id();
+        final var category = this.loadPort.loadById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         final var oldKey = category.getImageKey();
         if (oldKey == null) {
             return;
         }
 
+        final var expectedVersion = command.expectedVersion();
         final var currentVersion = category.getVersion();
-        if (!command.expectedVersion().equals(currentVersion)) {
+        if (!expectedVersion.equals(currentVersion)) {
             throw new ConcurrentModificationException(
                     String.format(
                             "Category version mismatched while trying to deleting image "
                                     + "(Expected: %s, Current: %s).",
-                            command.expectedVersion().value(), currentVersion.value()));
+                            expectedVersion.value(),
+                            CategoryVersion.unwrap(currentVersion)));
         }
 
         final var next = new Category(
@@ -73,5 +76,4 @@ public class DeleteCategoryImageService implements DeleteCategoryImageUseCase {
             log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
         }
     }
-
 }

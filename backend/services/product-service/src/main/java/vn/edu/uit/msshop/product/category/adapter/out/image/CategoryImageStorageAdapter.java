@@ -57,7 +57,7 @@ public class CategoryImageStorageAdapter implements CategoryImageStoragePort {
             final CategoryImageKey key) {
         try {
             this.cloudinary.uploader().destroy(CATEGORY_FOLDER + "/" + key.value(), Map.of());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Failed to delete image: " + key.value(), e);
         }
     }
@@ -67,7 +67,7 @@ public class CategoryImageStorageAdapter implements CategoryImageStoragePort {
             final String toPublicId) {
         try {
             this.cloudinary.uploader().rename(fromPublicId, toPublicId, Map.of());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("Failed to rename image: " + fromPublicId + " → " + toPublicId, e);
         }
     }

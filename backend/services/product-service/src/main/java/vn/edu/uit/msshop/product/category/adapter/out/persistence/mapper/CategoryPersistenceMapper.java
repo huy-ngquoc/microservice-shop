@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.category.adapter.out.persistence.mapper;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.category.adapter.out.persistence.CategoryDocument;
@@ -15,14 +16,9 @@ public class CategoryPersistenceMapper {
             final CategoryDocument entity) {
         final var id = new CategoryId(entity.getId());
         final var name = new CategoryName(entity.getName());
-        final var imageKey = new CategoryImageKey(entity.getImageKey());
+        final var imageKey = CategoryImageKey.ofNullable(entity.getImageKey());
 
-        final CategoryVersion version;
-        if (entity.getVersion() != null) {
-            version = new CategoryVersion(entity.getVersion());
-        } else {
-            version = null;
-        }
+        final var version = CategoryVersion.ofNullable(entity.getVersion());
 
         return new Category(
                 id,
@@ -33,17 +29,10 @@ public class CategoryPersistenceMapper {
 
     public CategoryDocument toPersistence(
             final Category category) {
-        final Long versionRawValue;
-        if (category.getVersion() != null) {
-            versionRawValue = category.getVersion().value();
-        } else {
-            versionRawValue = null;
-        }
-
         return new CategoryDocument(
                 category.getId().value(),
                 category.getName().value(),
-                category.getImageKey().value(),
-                versionRawValue);
+                CategoryImageKey.unwrap(category.getImageKey()),
+                CategoryVersion.unwrap(category.getVersion()));
     }
 }

@@ -25,6 +25,7 @@ public final class Category {
 
     public Category(
             final CategoryId id,
+
             final CategoryName name,
 
             @Nullable
@@ -41,6 +42,7 @@ public final class Category {
 
     public Category(
             final CategoryId id,
+
             final CategoryName name,
 
             @Nullable

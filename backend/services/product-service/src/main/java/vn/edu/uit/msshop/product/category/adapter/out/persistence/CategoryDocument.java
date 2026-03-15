@@ -32,6 +32,7 @@ public class CategoryDocument {
     @PersistenceCreator
     public CategoryDocument(
             final UUID id,
+
             final String name,
 
             @Nullable
@@ -47,6 +48,7 @@ public class CategoryDocument {
 
     public CategoryDocument(
             final UUID id,
+
             final String name,
 
             @Nullable

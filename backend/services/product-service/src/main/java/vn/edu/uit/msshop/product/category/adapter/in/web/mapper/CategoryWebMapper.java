@@ -2,6 +2,7 @@ package vn.edu.uit.msshop.product.category.adapter.in.web.mapper;
 
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import com.cloudinary.Cloudinary;
@@ -51,7 +52,7 @@ public class CategoryWebMapper {
                 version);
     }
 
-    public UpdateCategoryImageCommand toCategoryImageCommand(
+    public UpdateCategoryImageCommand toUpdateImageCommand(
             final UUID id,
             final UpdateCategoryImageRequest request) {
         final var categoryId = new CategoryId(id);
@@ -83,24 +84,18 @@ public class CategoryWebMapper {
 
     public CategoryResponse toResponse(
             final CategoryView view) {
-        final var imageUrl = this.cloudinary.url()
-                .generate("categories/" + view.imageKey());
-
         return new CategoryResponse(
                 view.id(),
                 view.name(),
-                imageUrl,
+                this.toImageUrlString(view.imageKey()),
                 view.version());
     }
 
     public CategoryImageResponse toImageResponse(
             final CategoryImageView view) {
-        final var imageUrl = this.cloudinary.url()
-                .generate("categories/" + view.imageKey());
-
         return new CategoryImageResponse(
                 view.id(),
-                imageUrl,
+                this.toImageUrlString(view.imageKey()),
                 view.version());
     }
 
@@ -111,5 +106,16 @@ public class CategoryWebMapper {
         }
 
         return new CategoryImageKey(publicId.substring("temp/".length()));
+    }
+
+    private @Nullable String toImageUrlString(
+            @Nullable
+            final String keyString) {
+        if (keyString == null) {
+            return null;
+        }
+
+        return this.cloudinary.url()
+                .generate("categories/" + keyString);
     }
 }

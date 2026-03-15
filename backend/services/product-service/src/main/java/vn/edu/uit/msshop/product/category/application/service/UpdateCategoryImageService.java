@@ -36,22 +36,19 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
     @Transactional
     public CategoryImageView updateImage(
             final UpdateCategoryImageCommand command) {
-        final var category = this.loadPort.loadById(command.id())
-                .orElseThrow(() -> new CategoryNotFoundException(command.id()));
+        final var categoryId = command.id();
+        final var category = this.loadPort.loadById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         final var imageKeySet = command.imageKey().getSet();
         if (imageKeySet == null) {
             return this.mapper.toImageView(category);
         }
 
-        this.ensureImageKeyExistsInTemp(imageKeySet.value());
-
-        final var next = this.applyChanges(category, imageKeySet, command.expectedVersion());
-        if (next == null) {
+        final var saved = this.commitImageChange(category, imageKeySet, command.expectedVersion());
+        if (saved == null) {
             return this.mapper.toImageView(category);
         }
-
-        final var saved = this.publishImageAndSave(next);
 
         final var event = new CategoryImageUpdated(
                 saved.getId(),
@@ -64,10 +61,30 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
         return this.mapper.toImageView(saved);
     }
 
-    private void ensureImageKeyExistsInTemp(
-            final CategoryImageKey imageKey) {
-        if (!this.imageStoragePort.existsAsTemp(imageKey)) {
-            throw new CategoryImageKeyNotFoundException(imageKey);
+    private @Nullable Category commitImageChange(
+            final Category current,
+            final Change.Set<CategoryImageKey> imageKeySet,
+            final CategoryVersion expectedVersion) {
+        final var next = this.applyChanges(current, imageKeySet, expectedVersion);
+        if (next == null) {
+            return null;
+        }
+
+        final var newImageKey = imageKeySet.value();
+
+        this.ensureImageKeyExistsInTemp(newImageKey);
+        this.imageStoragePort.publishImage(newImageKey);
+
+        try {
+            return this.savePort.save(next);
+        } catch (final RuntimeException e) {
+            try {
+                this.imageStoragePort.unpublishImage(newImageKey);
+            } catch (final RuntimeException compensateEx) {
+                e.addSuppressed(compensateEx);
+                log.error("Compensation failed for key '{}'", newImageKey.value(), compensateEx);
+            }
+            throw e;
         }
     }
 
@@ -86,21 +103,10 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
                 expectedVersion);
     }
 
-    private Category publishImageAndSave(
-            final Category next) {
-        final var imageKey = next.getImageKey();
-        this.imageStoragePort.publishImage(imageKey);
-
-        try {
-            return this.savePort.save(next);
-        } catch (final RuntimeException e) {
-            try {
-                this.imageStoragePort.unpublishImage(imageKey);
-            } catch (final RuntimeException compensateEx) {
-                e.addSuppressed(compensateEx);
-                log.error("Compensation failed for key '{}'", imageKey.value(), compensateEx);
-            }
-            throw e;
+    private void ensureImageKeyExistsInTemp(
+            final CategoryImageKey imageKey) {
+        if (!this.imageStoragePort.existsAsTemp(imageKey)) {
+            throw new CategoryImageKeyNotFoundException(imageKey);
         }
     }
 
@@ -113,7 +119,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
 
         try {
             this.imageStoragePort.deleteImage(oldKey);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
         }
     }

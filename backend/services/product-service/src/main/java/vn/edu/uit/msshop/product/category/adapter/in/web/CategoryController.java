@@ -3,7 +3,6 @@ package vn.edu.uit.msshop.product.category.adapter.in.web;
 import java.util.UUID;
 
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryWebMapper;
@@ -25,6 +24,7 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageR
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
 import vn.edu.uit.msshop.product.category.application.port.in.CreateCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.DeleteCategoryImageUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.FindCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.FindCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryInfoUseCase;
@@ -34,6 +34,7 @@ import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryInfo
 @RequiredArgsConstructor
 public class CategoryController {
     private final FindCategoryUseCase findUseCase;
+    private final FindCategoryImageUseCase findImageUseCase;
     private final CreateCategoryUseCase createUseCase;
     private final UpdateCategoryInfoUseCase updateInfoUseCase;
     private final UpdateCategoryImageUseCase updateImageUseCase;
@@ -47,6 +48,16 @@ public class CategoryController {
         final var view = this.findUseCase.findById(this.mapper.toCategoryId(id));
 
         final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<CategoryImageResponse> findImageById(
+            @PathVariable
+            final UUID id) {
+        final var view = this.findImageUseCase.findImageById(this.mapper.toCategoryId(id));
+
+        final var response = this.mapper.toImageResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -82,7 +93,6 @@ public class CategoryController {
     }
 
     @PatchMapping("/{id}/image")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<CategoryImageResponse> updateImage(
             @PathVariable
             final UUID id,
@@ -90,7 +100,7 @@ public class CategoryController {
             @RequestBody
             @Valid
             final UpdateCategoryImageRequest request) {
-        final var command = this.mapper.toCategoryImageCommand(id, request);
+        final var command = this.mapper.toUpdateImageCommand(id, request);
         final var view = this.updateImageUseCase.updateImage(command);
 
         final var response = this.mapper.toImageResponse(view);
@@ -103,8 +113,8 @@ public class CategoryController {
             final UUID id,
 
             @RequestParam
-            final long expectedVersion) {
-        final var command = this.mapper.toDeleteImageCommand(id, expectedVersion);
+            final long version) {
+        final var command = this.mapper.toDeleteImageCommand(id, version);
         this.deleteImageUseCase.deleteImage(command);
 
         return ResponseEntity.noContent().build();

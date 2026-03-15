@@ -6,6 +6,8 @@ import org.jspecify.annotations.Nullable;
 
 public record CategoryImageView(
         UUID id,
+
+        @Nullable
         String imageKey,
 
         @Nullable
