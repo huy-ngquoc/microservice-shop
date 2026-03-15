@@ -64,6 +64,17 @@ public class CategoryWebMapper {
                 version);
     }
 
+    public DeleteCategoryImageCommand toDeleteImageCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var categoryId = new CategoryId(id);
+        final var version = new CategoryVersion(expectedVersion);
+
+        return new DeleteCategoryImageCommand(
+                categoryId,
+                version);
+    }
+
     public CategoryId toCategoryId(
             final UUID id) {
         return new CategoryId(id);

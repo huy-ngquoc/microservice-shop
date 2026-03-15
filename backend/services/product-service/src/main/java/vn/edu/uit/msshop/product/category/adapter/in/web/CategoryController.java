@@ -77,7 +77,17 @@ public class CategoryController {
             final UpdateCategoryImageRequest request) {
         final var command = this.mapper.toCommand(id, request);
         this.updateImageUseCase.updateImage(command);
+    }
 
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/{id}/image")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteImageById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long expectedVersion) {
+        final var command = this.mapper.toDeleteImageCommand(id, expectedVersion);
+        this.deleteImageUseCase.deleteImage(command);
     }
 }

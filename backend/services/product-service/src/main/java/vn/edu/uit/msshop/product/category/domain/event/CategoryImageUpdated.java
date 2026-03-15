@@ -23,6 +23,7 @@ public class CategoryImageUpdated {
 
     private final CategoryId categoryId;
 
+    @Nullable
     private final CategoryImageKey newImageKey;
 
     @Nullable
