@@ -6,7 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
+import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
+import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryInfoUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.PublishCategoryEventPort;
@@ -22,28 +24,31 @@ import vn.edu.uit.msshop.product.shared.application.dto.Change;
 public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
     private final LoadCategoryPort loadPort;
     private final SaveCategoryPort savePort;
+    private final CategoryViewMapper mapper;
     private final PublishCategoryEventPort eventPort;
 
     @Override
     @Transactional
-    public void updateInfo(
+    public CategoryView updateInfo(
             final UpdateCategoryInfoCommand command) {
-        final var nameSet = command.name().getSet();
-
-        if (nameSet == null) {
-            return;
-        }
-
         final var category = this.loadPort.loadById(command.id())
                 .orElseThrow(() -> new CategoryNotFoundException(command.id()));
 
+        final var nameSet = command.name().getSet();
+
+        if (nameSet == null) {
+            return this.mapper.toView(category);
+        }
+
         final var next = this.applyChanges(category, nameSet, command.expectedVersion());
         if (next == null) {
-            return;
+            return this.mapper.toView(category);
         }
 
         final var saved = this.savePort.save(next);
         this.eventPort.publish(new CategoryUpdated(saved.getId()));
+
+        return this.mapper.toView(saved);
     }
 
     private @Nullable Category applyChanges(

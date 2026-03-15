@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryImageCommand;
+import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryImageKeyNotFoundException;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
+import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.CategoryImageStoragePort;
@@ -27,25 +29,26 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
     private final LoadCategoryPort loadPort;
     private final SaveCategoryPort savePort;
     private final CategoryImageStoragePort imageStoragePort;
+    private final CategoryViewMapper mapper;
     private final PublishCategoryEventPort eventPort;
 
     @Override
     @Transactional
-    public void updateImage(
+    public CategoryImageView updateImage(
             final UpdateCategoryImageCommand command) {
+        final var category = this.loadPort.loadById(command.id())
+                .orElseThrow(() -> new CategoryNotFoundException(command.id()));
+
         final var imageKeySet = command.imageKey().getSet();
         if (imageKeySet == null) {
-            return;
+            return this.mapper.toImageView(category);
         }
 
         this.ensureImageKeyExistsInTemp(imageKeySet.value());
 
-        final var category = this.loadPort.loadById(command.id())
-                .orElseThrow(() -> new CategoryNotFoundException(command.id()));
-
         final var next = this.applyChanges(category, imageKeySet, command.expectedVersion());
         if (next == null) {
-            return;
+            return this.mapper.toImageView(category);
         }
 
         final var saved = this.publishImageAndSave(next);
@@ -57,6 +60,8 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
         this.eventPort.publish(event);
 
         this.deleteOldImage(category.getImageKey());
+
+        return this.mapper.toImageView(saved);
     }
 
     private void ensureImageKeyExistsInTemp(

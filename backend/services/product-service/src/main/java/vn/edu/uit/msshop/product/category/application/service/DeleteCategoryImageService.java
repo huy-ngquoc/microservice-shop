@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.category.application.dto.command.DeleteCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
+import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.DeleteCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.LoadCategoryPort;

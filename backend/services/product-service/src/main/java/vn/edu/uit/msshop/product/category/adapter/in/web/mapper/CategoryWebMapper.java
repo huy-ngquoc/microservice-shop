@@ -10,10 +10,13 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.CreateCategoryRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryImageRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryInfoRequest;
+import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
 import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategoryCommand;
+import vn.edu.uit.msshop.product.category.application.dto.command.DeleteCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
+import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
@@ -26,17 +29,15 @@ import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
 public class CategoryWebMapper {
     private final Cloudinary cloudinary;
 
-    public CreateCategoryCommand toCommand(
+    public CreateCategoryCommand toCreateCommand(
             final CreateCategoryRequest request) {
         final var name = new CategoryName(request.name());
-        final var imageKey = this.extractKeyFromTempPublicId(request.imageKey());
 
         return new CreateCategoryCommand(
-                name,
-                imageKey);
+                name);
     }
 
-    public UpdateCategoryInfoCommand toCommand(
+    public UpdateCategoryInfoCommand toUpdateInfoCommand(
             final UUID id,
             final UpdateCategoryInfoRequest request) {
         final var categoryId = new CategoryId(id);
@@ -50,7 +51,7 @@ public class CategoryWebMapper {
                 version);
     }
 
-    public UpdateCategoryImageCommand toCommand(
+    public UpdateCategoryImageCommand toCategoryImageCommand(
             final UUID id,
             final UpdateCategoryImageRequest request) {
         final var categoryId = new CategoryId(id);
@@ -88,6 +89,17 @@ public class CategoryWebMapper {
         return new CategoryResponse(
                 view.id(),
                 view.name(),
+                imageUrl,
+                view.version());
+    }
+
+    public CategoryImageResponse toImageResponse(
+            final CategoryImageView view) {
+        final var imageUrl = this.cloudinary.url()
+                .generate("categories/" + view.imageKey());
+
+        return new CategoryImageResponse(
+                view.id(),
                 imageUrl,
                 view.version());
     }
