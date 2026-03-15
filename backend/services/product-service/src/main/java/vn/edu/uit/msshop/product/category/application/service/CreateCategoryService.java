@@ -35,8 +35,7 @@ public class CreateCategoryService implements CreateCategoryUseCase {
                 command.name(),
                 command.imageKey());
 
-        this.imageStoragePort.publishImage(command.imageKey());
-        final var saved = this.saveWithCompensation(category, command.imageKey());
+        final var saved = this.publishImageAndSave(category);
 
         this.eventPort.publish(new CategoryCreated(saved.getId()));
     }
@@ -48,17 +47,18 @@ public class CreateCategoryService implements CreateCategoryUseCase {
         }
     }
 
-    private Category saveWithCompensation(
-            final Category category,
-            final CategoryImageKey imageKey) {
+    private Category publishImageAndSave(
+            final Category category) {
+        this.imageStoragePort.publishImage(category.getImageKey());
+
         try {
             return this.savePort.save(category);
         } catch (final RuntimeException e) {
             try {
-                this.imageStoragePort.unpublishImage(imageKey);
+                this.imageStoragePort.unpublishImage(category.getImageKey());
             } catch (final RuntimeException compensateEx) {
                 e.addSuppressed(compensateEx);
-                log.error("Compensation failed for key '{}'", imageKey.value(), compensateEx);
+                log.error("Compensation failed for key '{}'", category.getImageKey().value(), compensateEx);
             }
             throw e;
         }

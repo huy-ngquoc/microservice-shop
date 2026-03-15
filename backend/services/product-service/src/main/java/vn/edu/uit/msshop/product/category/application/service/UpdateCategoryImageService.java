@@ -48,8 +48,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
             return;
         }
 
-        this.imageStoragePort.publishImage(imageKeySet.value());
-        final var saved = this.saveWithCompensation(next, imageKeySet.value());
+        final var saved = this.publishImageAndSave(next);
 
         final var event = new CategoryImageUpdated(
                 saved.getId(),
@@ -82,17 +81,18 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
                 expectedVersion);
     }
 
-    private Category saveWithCompensation(
-            final Category next,
-            final CategoryImageKey newKey) {
+    private Category publishImageAndSave(
+            final Category next) {
+        this.imageStoragePort.publishImage(next.getImageKey());
+
         try {
             return this.savePort.save(next);
         } catch (final RuntimeException e) {
             try {
-                this.imageStoragePort.unpublishImage(newKey);
+                this.imageStoragePort.unpublishImage(next.getImageKey());
             } catch (final RuntimeException compensateEx) {
                 e.addSuppressed(compensateEx);
-                log.error("Compensation failed for key '{}'", newKey.value(), compensateEx);
+                log.error("Compensation failed for key '{}'", next.getImageKey().value(), compensateEx);
             }
             throw e;
         }
