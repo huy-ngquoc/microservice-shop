@@ -1,9 +1,10 @@
 package vn.edu.uit.msshop.product.category.domain.model;
 
-import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import vn.edu.uit.msshop.product.shared.domain.exception.Domains;
 
 @Getter
 @EqualsAndHashCode(
@@ -16,12 +17,29 @@ public final class Category {
 
     private final CategoryImageKey imageKey;
 
+    // ===== Metadata =====
+
+    @Nullable
+    private final CategoryVersion version;
+
     public Category(
-            CategoryId id,
-            CategoryName name,
-            CategoryImageKey imageKey) {
-        this.id = Objects.requireNonNull(id, "Id must NOT be null");
-        this.name = Objects.requireNonNull(name, "Name must NOT be null");
-        this.imageKey = Objects.requireNonNull(imageKey, "Image key must NOT be null");
+            final CategoryId id,
+            final CategoryName name,
+            final CategoryImageKey imageKey,
+
+            @Nullable
+            final CategoryVersion version) {
+        this.id = Domains.requireNonNull(id, "Id must NOT be null");
+        this.name = Domains.requireNonNull(name, "Name must NOT be null");
+        this.imageKey = Domains.requireNonNull(imageKey, "Image key must NOT be null");
+
+        this.version = version;
+    }
+
+    public Category(
+            final CategoryId id,
+            final CategoryName name,
+            final CategoryImageKey imageKey) {
+        this(id, name, imageKey, null);
     }
 }

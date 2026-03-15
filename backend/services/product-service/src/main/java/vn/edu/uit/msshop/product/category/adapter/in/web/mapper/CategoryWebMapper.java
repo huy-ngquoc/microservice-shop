@@ -18,6 +18,7 @@ import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
+import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
 
 @Component
@@ -39,24 +40,28 @@ public class CategoryWebMapper {
             final UUID id,
             final UpdateCategoryInfoRequest request) {
         final var categoryId = new CategoryId(id);
+        final var version = new CategoryVersion(request.version());
 
         final var name = ChangeRequest.toChange(request.name(), CategoryName::new);
 
         return new UpdateCategoryInfoCommand(
                 categoryId,
-                name);
+                name,
+                version);
     }
 
     public UpdateCategoryImageCommand toCommand(
             final UUID id,
             final UpdateCategoryImageRequest request) {
         final var categoryId = new CategoryId(id);
+        final var version = new CategoryVersion(request.version());
 
         final var imageKey = ChangeRequest.toChange(request.imageKey(), this::extractKeyFromTempPublicId);
 
         return new UpdateCategoryImageCommand(
                 categoryId,
-                imageKey);
+                imageKey,
+                version);
     }
 
     public CategoryId toCategoryId(
@@ -72,7 +77,8 @@ public class CategoryWebMapper {
         return new CategoryResponse(
                 view.id(),
                 view.name(),
-                imageUrl);
+                imageUrl,
+                view.version());
     }
 
     private CategoryImageKey extractKeyFromTempPublicId(

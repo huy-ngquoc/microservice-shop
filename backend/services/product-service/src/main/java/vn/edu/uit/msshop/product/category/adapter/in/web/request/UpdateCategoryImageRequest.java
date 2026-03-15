@@ -6,5 +6,7 @@ import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
 
 public record UpdateCategoryImageRequest(
         @Valid
-        ChangeRequest<@NotBlank String> imageKey) {
+        ChangeRequest<@NotBlank String> imageKey,
+
+        long version) {
 }

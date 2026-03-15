@@ -2,8 +2,13 @@ package vn.edu.uit.msshop.product.category.adapter.in.web.response;
 
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
+
 public record CategoryResponse(
         UUID id,
         String name,
-        String imageUrl) {
+        String imageUrl,
+
+        @Nullable
+        Long version) {
 }

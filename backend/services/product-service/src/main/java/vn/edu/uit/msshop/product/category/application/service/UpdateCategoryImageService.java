@@ -17,6 +17,7 @@ import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
+import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
 
 @Service
@@ -42,7 +43,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
         final var category = this.loadPort.loadById(command.id())
                 .orElseThrow(() -> new CategoryNotFoundException(command.id()));
 
-        final var next = this.applyChanges(category, imageKeySet);
+        final var next = this.applyChanges(category, imageKeySet, command.expectedVersion());
         if (next == null) {
             return;
         }
@@ -68,7 +69,8 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
 
     private @Nullable Category applyChanges(
             final Category current,
-            final Change.Set<CategoryImageKey> imageKeySet) {
+            final Change.Set<CategoryImageKey> imageKeySet,
+            final CategoryVersion expectedVersion) {
         if (imageKeySet.value().equals(current.getImageKey())) {
             return null;
         }
@@ -76,7 +78,8 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
         return new Category(
                 current.getId(),
                 current.getName(),
-                imageKeySet.value());
+                imageKeySet.value(),
+                expectedVersion);
     }
 
     private Category saveWithCompensation(

@@ -14,6 +14,7 @@ import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
+import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
 
 @Service
@@ -36,7 +37,7 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
         final var category = this.loadPort.loadById(command.id())
                 .orElseThrow(() -> new CategoryNotFoundException(command.id()));
 
-        final var next = this.applyChanges(category, nameSet);
+        final var next = this.applyChanges(category, nameSet, command.expectedVersion());
         if (next == null) {
             return;
         }
@@ -47,7 +48,8 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
 
     private @Nullable Category applyChanges(
             final Category current,
-            final Change.Set<CategoryName> nameSet) {
+            final Change.Set<CategoryName> nameSet,
+            final CategoryVersion expectedVersion) {
         if (nameSet.value().equals(current.getName())) {
             return null;
         }
@@ -55,6 +57,7 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
         return new Category(
                 current.getId(),
                 nameSet.value(),
-                current.getImageKey());
+                current.getImageKey(),
+                expectedVersion);
     }
 }

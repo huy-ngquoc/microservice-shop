@@ -9,5 +9,7 @@ import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
 public record UpdateCategoryInfoRequest(
         @Valid
         ChangeRequest<@NotBlank @Size(
-                max = CategoryName.MAX_LENGTH) String> name) {
+                max = CategoryName.MAX_LENGTH) String> name,
+
+        long version) {
 }

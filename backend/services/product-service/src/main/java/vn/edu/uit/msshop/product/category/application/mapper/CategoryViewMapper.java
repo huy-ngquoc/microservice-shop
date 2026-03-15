@@ -9,9 +9,17 @@ import vn.edu.uit.msshop.product.category.domain.model.Category;
 public class CategoryViewMapper {
     public CategoryView toView(
             final Category category) {
+        final Long versionRawValue;
+        if (category.getVersion() != null) {
+            versionRawValue = category.getVersion().value();
+        } else {
+            versionRawValue = null;
+        }
+
         return new CategoryView(
                 category.getId().value(),
                 category.getName().value(),
-                category.getImageKey().value());
+                category.getImageKey().value(),
+                versionRawValue);
     }
 }
