@@ -22,6 +22,7 @@ public class CategoryDocument {
 
     private final String name;
 
+    @Nullable
     private final String imageKey;
 
     @Version
@@ -32,6 +33,8 @@ public class CategoryDocument {
     public CategoryDocument(
             final UUID id,
             final String name,
+
+            @Nullable
             final String imageKey,
 
             @Nullable
@@ -45,6 +48,8 @@ public class CategoryDocument {
     public CategoryDocument(
             final UUID id,
             final String name,
+
+            @Nullable
             final String image) {
         this(
                 id,

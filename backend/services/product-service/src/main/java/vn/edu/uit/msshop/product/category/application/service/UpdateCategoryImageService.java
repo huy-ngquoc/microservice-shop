@@ -83,23 +83,29 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
 
     private Category publishImageAndSave(
             final Category next) {
-        this.imageStoragePort.publishImage(next.getImageKey());
+        final var imageKey = next.getImageKey();
+        this.imageStoragePort.publishImage(imageKey);
 
         try {
             return this.savePort.save(next);
         } catch (final RuntimeException e) {
             try {
-                this.imageStoragePort.unpublishImage(next.getImageKey());
+                this.imageStoragePort.unpublishImage(imageKey);
             } catch (final RuntimeException compensateEx) {
                 e.addSuppressed(compensateEx);
-                log.error("Compensation failed for key '{}'", next.getImageKey().value(), compensateEx);
+                log.error("Compensation failed for key '{}'", imageKey.value(), compensateEx);
             }
             throw e;
         }
     }
 
     private void deleteOldImage(
+            @Nullable
             final CategoryImageKey oldKey) {
+        if (oldKey == null) {
+            return;
+        }
+
         try {
             this.imageStoragePort.deleteImage(oldKey);
         } catch (Exception e) {
