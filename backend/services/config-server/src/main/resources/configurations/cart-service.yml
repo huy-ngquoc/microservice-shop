@@ -1,0 +1,12 @@
+server:
+    port: 8089
+spring:
+  data:
+    redis:
+      host: localhost       # Hoặc tên service 'redis' nếu chạy cùng trong docker network
+      port: 6379
+      password: binh123
+      timeout: 60000        # Thời gian chờ kết nối (ms)
+      lettuce:
+        pool:
+          max-active: 8

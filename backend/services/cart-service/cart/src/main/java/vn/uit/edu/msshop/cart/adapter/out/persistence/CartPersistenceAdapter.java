@@ -34,7 +34,7 @@ public class CartPersistenceAdapter implements LoadCartPort, SaveCartPort, Delet
     @Override
     public Cart save(Cart cart) {
         String key = KEY_PREFIX + cart.getUserId().value().toString();
-        redisTemplate.opsForValue().set(key, cart, CART_LIFE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(key, mapper.toModel(cart), CART_LIFE_TIME, TimeUnit.DAYS);
         return cart;
     }
 
