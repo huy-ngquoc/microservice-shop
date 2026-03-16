@@ -56,9 +56,8 @@ public class CategoryWebMapper {
             final UUID id,
             final UpdateCategoryImageRequest request) {
         final var categoryId = new CategoryId(id);
+        final var imageKey = this.extractKeyFromTempPublicId(request.newImageKey());
         final var version = new CategoryVersion(request.version());
-
-        final var imageKey = ChangeRequest.toChange(request.imageKey(), this::extractKeyFromTempPublicId);
 
         return new UpdateCategoryImageCommand(
                 categoryId,

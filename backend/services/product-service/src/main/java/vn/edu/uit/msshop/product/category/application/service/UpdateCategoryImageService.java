@@ -40,12 +40,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var imageKeySet = command.imageKey().getSet();
-        if (imageKeySet == null) {
-            return this.mapper.toImageView(category);
-        }
-
-        final var saved = this.commitImageChange(category, imageKeySet, command.expectedVersion());
+        final var saved = this.commitImageChange(category, command.newImageKey(), command.expectedVersion());
         if (saved == null) {
             return this.mapper.toImageView(category);
         }
@@ -63,19 +58,21 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
 
     private @Nullable Category commitImageChange(
             final Category current,
-            final Change.Set<CategoryImageKey> imageKeySet,
+            final CategoryImageKey newImageKey,
             final CategoryVersion expectedVersion) {
-        final var next = this.applyChanges(current, imageKeySet, expectedVersion);
-        if (next == null) {
+        if (newImageKey.equals(current.getImageKey())) {
             return null;
         }
-
-        final var newImageKey = imageKeySet.value();
 
         this.ensureImageKeyExistsInTemp(newImageKey);
         this.imageStoragePort.publishImage(newImageKey);
 
         try {
+            final var next = new Category(
+                    current.getId(),
+                    current.getName(),
+                    newImageKey,
+                    expectedVersion);
             return this.savePort.save(next);
         } catch (final RuntimeException e) {
             try {
@@ -86,21 +83,6 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
             }
             throw e;
         }
-    }
-
-    private @Nullable Category applyChanges(
-            final Category current,
-            final Change.Set<CategoryImageKey> imageKeySet,
-            final CategoryVersion expectedVersion) {
-        if (imageKeySet.value().equals(current.getImageKey())) {
-            return null;
-        }
-
-        return new Category(
-                current.getId(),
-                current.getName(),
-                imageKeySet.value(),
-                expectedVersion);
     }
 
     private void ensureImageKeyExistsInTemp(

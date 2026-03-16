@@ -56,9 +56,8 @@ public class BrandWebMapper {
             final UUID id,
             final UpdateBrandLogoRequest request) {
         final var brandId = new BrandId(id);
+        final var logoKey = this.extractKeyFromTempPublicId(request.newLogoKey());
         final var version = new BrandVersion(request.version());
-
-        final var logoKey = ChangeRequest.toChange(request.logoKey(), this::extractKeyFromTempPublicId);
 
         return new UpdateBrandLogoCommand(
                 brandId,

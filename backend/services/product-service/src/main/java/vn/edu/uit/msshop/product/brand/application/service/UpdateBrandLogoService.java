@@ -20,7 +20,6 @@ import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
-import vn.edu.uit.msshop.product.shared.application.dto.Change;
 
 @Service
 @RequiredArgsConstructor
@@ -40,12 +39,7 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
-        final var logoKeySet = command.logoKey().getSet();
-        if (logoKeySet == null) {
-            return this.mapper.toLogoView(brand);
-        }
-
-        final var saved = this.commitImageChange(brand, logoKeySet, command.expectedVersion());
+        final var saved = this.commitImageChange(brand, command.newLogoKey(), command.expectedVersion());
         if (saved == null) {
             return this.mapper.toLogoView(brand);
         }
@@ -63,19 +57,21 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
 
     private @Nullable Brand commitImageChange(
             final Brand current,
-            final Change.Set<BrandLogoKey> logoKeySet,
+            final BrandLogoKey newLogoKey,
             final BrandVersion expectedVersion) {
-        final var next = this.applyChanges(current, logoKeySet, expectedVersion);
-        if (next == null) {
+        if (newLogoKey.equals(current.getLogoKey())) {
             return null;
         }
-
-        final var newLogoKey = logoKeySet.value();
 
         this.ensureLogoKeyExistsInTemp(newLogoKey);
         this.logoStoragePort.publishLogo(newLogoKey);
 
         try {
+            final var next = new Brand(
+                    current.getId(),
+                    current.getName(),
+                    newLogoKey,
+                    expectedVersion);
             return this.savePort.save(next);
         } catch (final RuntimeException e) {
             try {
@@ -86,21 +82,6 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
             }
             throw e;
         }
-    }
-
-    private @Nullable Brand applyChanges(
-            final Brand current,
-            final Change.Set<BrandLogoKey> logoKeySet,
-            final BrandVersion expectedVersion) {
-        if (logoKeySet.value().equals(current.getLogoKey())) {
-            return null;
-        }
-
-        return new Brand(
-                current.getId(),
-                current.getName(),
-                logoKeySet.value(),
-                expectedVersion);
     }
 
     private void ensureLogoKeyExistsInTemp(
