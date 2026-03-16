@@ -169,6 +169,17 @@ services:
             - microservices-net
         command:
             - "start-dev"
+    redis:
+        image: redis:7.2-alpine  
+        container_name: redis_cart
+        restart: always
+        ports:
+            - "6379:6379"
+        command: redis-server --save 60 1 --loglevel warning --requirepass binh123 --appendonly yes
+        volumes:
+            - redis_data:/data
+        networks:
+            - microservices-net
 
 networks:
     microservices-net:
@@ -182,3 +193,4 @@ volumes:
     mongo_rating:
     postgres_payment:
     mongo_order:
+    redis_data:

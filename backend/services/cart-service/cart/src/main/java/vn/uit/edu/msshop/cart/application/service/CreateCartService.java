@@ -22,7 +22,8 @@ public class CreateCartService implements CreateCartUseCase {
     public CartView create(CreateCartCommand command) {
         Cart cart = loadCartPort.loadByUserId(command.userId());
         if(cart==null) {
-            return mapper.toView(savePort.save(cart));
+        
+            cart=Cart.createEmpty(command.userId());
         }
         cart = cart.addItems(command.details());
         return mapper.toView(savePort.save(cart));

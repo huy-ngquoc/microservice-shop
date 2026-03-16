@@ -14,5 +14,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateCartRequest {
     private UUID userId;
-    private List<CreateCartItemRequest> detailReuests;
+    private List<CreateCartItemRequest> detailRequests;
 }

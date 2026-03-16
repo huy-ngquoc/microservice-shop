@@ -1,7 +1,9 @@
 package vn.uit.edu.msshop.cart.adapter.out.persistence.mapper;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -33,7 +35,7 @@ public class CartRedisModelMapper {
     
     public Cart toDomain(CartRedisModel model) {
         final var draft = Cart.Draft.builder().userId(new UserId(UUID.fromString(model.getUserId())))
-        .detailDrafts(model.getItems().stream().map(item->toDraft(item)).toList()).build();
+        .detailDrafts(model.getItems().stream().map(item->toDraft(item)).collect(Collectors.toCollection(ArrayList::new))).build();
         return Cart.create(draft);
     }
     public CartItemRedisModel toModel(CartDetail domain) {
