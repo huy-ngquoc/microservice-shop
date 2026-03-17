@@ -21,4 +21,16 @@ public final class Domains {
 
         return obj;
     }
+
+    public static String requireNonBlank(
+            @Nullable
+            final String str,
+
+            final String msg) {
+        if ((str == null) || str.isBlank()) {
+            throw new DomainException(msg);
+        }
+
+        return str;
+    }
 }
