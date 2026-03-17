@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.brand.application.dto.command.DeleteBrandLogoCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.query.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
+import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.DeleteBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.LoadBrandPort;
@@ -26,11 +28,12 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
     private final LoadBrandPort loadPort;
     private final SaveBrandPort savePort;
     private final BrandLogoStoragePort logoStoragePort;
+    private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
 
     @Override
     @Transactional
-    public void deleteLogo(
+    public BrandLogoView deleteLogo(
             final DeleteBrandLogoCommand command) {
         final var brandId = command.id();
         final var brand = this.loadPort.loadById(brandId)
@@ -38,7 +41,7 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
 
         final var oldKey = brand.getLogoKey();
         if (oldKey == null) {
-            return;
+            return this.mapper.toLogoView(brand);
         }
 
         final var expectedVersion = command.expectedVersion();
@@ -66,6 +69,8 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
         this.eventPort.publish(event);
 
         this.deleteOldLogo(oldKey);
+
+        return this.mapper.toLogoView(saved);
     }
 
     private void deleteOldLogo(

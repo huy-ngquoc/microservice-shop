@@ -108,15 +108,16 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}/image")
-    public ResponseEntity<Void> deleteImageById(
+    public ResponseEntity<CategoryImageResponse> deleteImageById(
             @PathVariable
             final UUID id,
 
             @RequestParam
             final long version) {
         final var command = this.mapper.toDeleteImageCommand(id, version);
-        this.deleteImageUseCase.deleteImage(command);
+        final var view = this.deleteImageUseCase.deleteImage(command);
 
-        return ResponseEntity.noContent().build();
+        final var response = this.mapper.toImageResponse(view);
+        return ResponseEntity.ok(response);
     }
 }

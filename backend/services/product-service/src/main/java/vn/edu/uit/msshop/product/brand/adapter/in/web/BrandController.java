@@ -108,15 +108,16 @@ public class BrandController {
     }
 
     @DeleteMapping("/{id}/logo")
-    public ResponseEntity<Void> deleteLogoById(
+    public ResponseEntity<BrandLogoResponse> deleteLogoById(
             @PathVariable
             final UUID id,
 
             @RequestParam
             final long version) {
         final var command = this.mapper.toDeleteLogoCommand(id, version);
-        this.deleteLogoUseCase.deleteLogo(command);
+        final var view = this.deleteLogoUseCase.deleteLogo(command);
 
-        return ResponseEntity.noContent().build();
+        final var response = this.mapper.toLogoResponse(view);
+        return ResponseEntity.ok(response);
     }
 }
