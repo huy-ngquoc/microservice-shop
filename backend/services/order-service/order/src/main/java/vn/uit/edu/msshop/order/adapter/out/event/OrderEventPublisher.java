@@ -11,6 +11,7 @@ import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
 import vn.uit.edu.msshop.order.domain.event.OrderCreated;
+import vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
 
 @Component
@@ -20,8 +21,10 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     private final KafkaTemplate<String,OrderCreated> orderCreatedTemplate;
     private final KafkaTemplate<String,CodPaymentCancelled> codPaymentCancelledTemplate;
     private final KafkaTemplate<String,CodPaymentReceived> codPaymentReceivedTemplate;
+    private final KafkaTemplate<String, OrderCreatedSuccess> clearCartTemplate;
     private static final String ORDER_CREATED_TOPIC = "order-topic";
     private static final String PAYMENT_STATUS_TOPIC="payment-cod-topic";
+    private static final String CLEAR_CART_TOPIC="cart-topic";
    
 
     @Override
@@ -45,6 +48,13 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     public void publishCodPaymentReceived(CodPaymentReceived event) {
         Message<CodPaymentReceived> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_STATUS_TOPIC).build();
         codPaymentReceivedTemplate.send(message);
+    }
+
+    @Override
+    public void publishClearCartEvent(OrderCreatedSuccess event) {
+        Message<OrderCreatedSuccess> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, CLEAR_CART_TOPIC).build();
+        clearCartTemplate.send(message);
+
     }
 
 }

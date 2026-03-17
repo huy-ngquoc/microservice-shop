@@ -4,6 +4,7 @@ package vn.uit.edu.msshop.order.application.port.out;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
 import vn.uit.edu.msshop.order.domain.event.OrderCreated;
+import vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
 
 public interface PublishOrderEventPort {
@@ -14,6 +15,7 @@ public interface PublishOrderEventPort {
 
     public void publishCodPaymentCancelled(CodPaymentCancelled event);
     public void publishCodPaymentReceived(CodPaymentReceived event);
+    public void publishClearCartEvent(OrderCreatedSuccess event);
 
     
 }

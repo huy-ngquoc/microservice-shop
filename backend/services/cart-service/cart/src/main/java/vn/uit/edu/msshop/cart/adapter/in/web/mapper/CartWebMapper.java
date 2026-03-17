@@ -18,6 +18,7 @@ import vn.uit.edu.msshop.cart.application.dto.command.UpdateCartAmountCommand;
 import vn.uit.edu.msshop.cart.application.dto.query.CartDetailView;
 import vn.uit.edu.msshop.cart.application.dto.query.CartView;
 import vn.uit.edu.msshop.cart.application.port.out.LoadVariantPort;
+import vn.uit.edu.msshop.cart.domain.event.OrderCreatedSuccess;
 import vn.uit.edu.msshop.cart.domain.model.CartDetail;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.Amount;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.UserId;
@@ -46,5 +47,8 @@ public class CartWebMapper {
     }
     public DeleteCartItemCommand toCommand(String userId, String variantId) {
         return new DeleteCartItemCommand(new UserId(UUID.fromString(userId)), new VariantId(UUID.fromString(variantId)));
+    }
+    public List<DeleteCartItemCommand> toCommand(OrderCreatedSuccess event) {
+        return event.variantIds().stream().map(item->new DeleteCartItemCommand(new UserId(event.userId()),new VariantId(item))).toList();
     }
 }

@@ -3,10 +3,22 @@ server:
 spring:
   data:
     redis:
-      host: localhost       # Hoặc tên service 'redis' nếu chạy cùng trong docker network
+      host: localhost       
       port: 6379
       password: binh123
-      timeout: 60000        # Thời gian chờ kết nối (ms)
+      timeout: 60000        
       lettuce:
         pool:
           max-active: 8
+  kafka:
+        bootstrap-servers: localhost:9092 
+        consumer:
+            group-id: order-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.json.trusted.packages: "*"
+                spring.json.type.mapping: 
+                    OrderCreatedSuccess:vn.uit.edu.msshop.cart.domain.event.OrderCreatedSuccess
+                    
+       

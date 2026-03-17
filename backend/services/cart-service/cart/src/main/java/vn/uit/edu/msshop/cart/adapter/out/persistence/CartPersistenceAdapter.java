@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.cart.adapter.out.persistence;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -49,6 +50,18 @@ public class CartPersistenceAdapter implements LoadCartPort, SaveCartPort, Delet
     @Override
     public void clearCart(ClearCartCommand command) {
         redisTemplate.delete(KEY_PREFIX+command.userId().value().toString());
+    }
+
+    @Override
+    public void deleteManyCartItems(List<DeleteCartItemCommand> commands) {
+        if(commands.isEmpty()) return;
+        UserId userId = commands.get(0).userId();
+        Cart cart = loadByUserId(userId);
+        if(cart==null) throw new CartNotFoundException(userId);
+        for(DeleteCartItemCommand command: commands) {
+            cart.removeByVariantId(command.variantId());
+        }
+        save(cart);
     }
 
 }
