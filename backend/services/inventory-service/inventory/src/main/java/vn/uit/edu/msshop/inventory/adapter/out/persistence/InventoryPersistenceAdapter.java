@@ -1,0 +1,51 @@
+package vn.uit.edu.msshop.inventory.adapter.out.persistence;
+
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import vn.uit.edu.msshop.inventory.adapter.out.persistence.mapper.InventoryJpaMapper;
+import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
+import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
+import vn.uit.edu.msshop.inventory.domain.model.Inventory;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
+
+@Component
+@RequiredArgsConstructor
+public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInventoryPort {
+    private final InventoryJpaMapper mapper;
+    private final SpringDataInventoryJpaRepository repository;
+
+    @Override
+    public Optional<Inventory> loadById(InventoryId id) {
+        Optional<InventoryJpaEntity> result = repository.findById(id.value());
+        if(result.isEmpty()) return Optional.empty();
+        return Optional.of(mapper.toDomain(result.get()));
+    }
+
+    @Override
+    public Optional<Inventory> loadByVariantId(VariantId id) {
+        Optional<InventoryJpaEntity> result = repository.findByVariantId(id.value());
+        if(result.isEmpty()) return Optional.empty();
+        return Optional.of(mapper.toDomain(result.get()));
+    }
+
+    @Override
+    public Page<Inventory> loadAll(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<InventoryJpaEntity> result = repository.findAll(pageable);
+        return result.map(mapper::toDomain);
+    }
+
+    @Override
+    public Inventory save(Inventory inventory) {
+        InventoryJpaEntity toSave = mapper.toEntity(inventory);
+        InventoryJpaEntity result = repository.save(toSave);
+        return mapper.toDomain(result);
+    }
+}
