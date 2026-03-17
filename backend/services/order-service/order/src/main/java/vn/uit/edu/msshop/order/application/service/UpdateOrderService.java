@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
+import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
@@ -25,10 +26,15 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     private final LoadOrderPort loadOrderPort;
     private final SaveOrderPort saveOrderPort;
     private final PublishOrderEventPort publishEventPort;
+    private final CheckPermissionUseCase checkPermission;
 
     @Override
-    public void update(UpdateOrderCommand command) {
+    public void update(UpdateOrderCommand command, String userIdFromHeader, String role) {
+        
         Order order = loadOrderPort.loadById(command.id()).orElseThrow(()->new OrderNotFoundException(command.id()));
+        if(!checkPermission.isAdmin(role)&&!checkPermission.isSameUser(userIdFromHeader, order.getUserId().value().toString())) {
+            throw new RuntimeException("Unauthorized");
+        }
         final var updateInfo = Order.UpdateInfo.builder().id(command.id()).shippingInfo(command.shippingInfo().apply(order.getShippingInfo())).orderStatus(command.status().apply(order.getStatus())).build();
         final var next = order.applyUpdateInfo(updateInfo);
         final var saved = saveOrderPort.save(next);
@@ -43,8 +49,12 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     }
 
     @Override
-    public void codOrderSuccess(OrderId orderId) {
+    public void codOrderSuccess(OrderId orderId, String userIdFromHeader) {
+
         Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
+        if(!checkPermission.isSameUser(userIdFromHeader, order.getUserId().value().toString())) {
+            throw new RuntimeException("Unauthorized");
+        }
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("RECEIVED")).build();
         final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
         publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(order.getId().value()));
@@ -53,6 +63,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     @Override
     public void codOrderCancelled(OrderId orderId) {
        Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
+       
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
         final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
         publishEventPort.publishCodPaymentCancelled(new CodPaymentCancelled(order.getId().value()));
