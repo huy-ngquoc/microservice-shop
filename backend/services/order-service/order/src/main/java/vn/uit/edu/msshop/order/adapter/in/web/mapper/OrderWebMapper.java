@@ -16,6 +16,7 @@ import vn.uit.edu.msshop.order.application.dto.command.CreateOrderCommand;
 import vn.uit.edu.msshop.order.application.dto.command.OrderDetailCommand;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.dto.query.OrderView;
+import vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess;
 import vn.uit.edu.msshop.order.domain.model.valueobject.Discount;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
@@ -62,6 +63,9 @@ public class OrderWebMapper {
     public OrderResponse toResponse(OrderView orderView) {
         List<OrderDetailResponse> detailResponses = orderView.details().stream().map(item->toResponse(item)).toList();
         return new OrderResponse(orderView.orderId().toString(),orderView.shippingInfo().fullName(),orderView.shippingInfo().address(),orderView.shippingInfo().email(),orderView.shippingInfo().phone(),detailResponses,orderView.shippingFee().value(),orderView.discount().value(),orderView.status().value(),orderView.createAt().value());
+    }
+    public OrderCreatedSuccess toEvent(CreateOrderRequest request) {
+        return new OrderCreatedSuccess(request.userId(),request.detailRequests().stream().map(item->item.variantId()).toList());
     }
     
 }

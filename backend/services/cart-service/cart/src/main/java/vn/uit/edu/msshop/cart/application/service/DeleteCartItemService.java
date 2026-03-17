@@ -1,5 +1,7 @@
 package vn.uit.edu.msshop.cart.application.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -15,5 +17,10 @@ public class DeleteCartItemService implements DeleteCartItemUseCase {
     @Override
     public void deleteCartItem(DeleteCartItemCommand command) {
         deletePort.deleteCartItem(command);
+    }
+
+    @Override
+    public void deleteManyItems(List<DeleteCartItemCommand> commands) {
+        deletePort.deleteManyCartItems(commands);
     }
 }

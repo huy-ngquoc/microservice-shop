@@ -59,6 +59,7 @@ public class OrderController {
         
         final var result= this.createService.create(command);
         eventPublisher.publishOrderCreatedEvent(new OrderCreated(request.currency(),result,request.paymentMethod(),request.totalPrice()));
+        eventPublisher.publishClearCartEvent(mapper.toEvent(request));
         return ResponseEntity.ok(result);
     } 
 
