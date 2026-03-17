@@ -54,7 +54,7 @@ public class DeleteVariantImageService implements DeleteVariantImageUseCase {
                 variant.getId(),
                 variant.getProductId(),
                 variant.getPrice(),
-                variant.getSold(),
+                variant.getSoldCount(),
                 variant.getTraits(),
                 null,
                 expectedVersion);

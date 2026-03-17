@@ -2,17 +2,17 @@ package vn.edu.uit.msshop.product.variant.domain.model;
 
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
-public record VariantSold(
+public record VariantSoldCount(
         int value) {
-    private static final VariantSold ZERO = new VariantSold(0);
+    private static final VariantSoldCount ZERO = new VariantSoldCount(0);
 
-    public VariantSold {
+    public VariantSoldCount {
         if (value < 0) {
             throw new DomainException("Variant sold must NOT be negative");
         }
     }
 
-    public static VariantSold zero() {
-        return VariantSold.ZERO;
+    public static VariantSoldCount zero() {
+        return VariantSoldCount.ZERO;
     }
 }

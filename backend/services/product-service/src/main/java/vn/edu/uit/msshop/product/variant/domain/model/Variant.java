@@ -17,7 +17,7 @@ public final class Variant {
 
     private final VariantPrice price;
 
-    private final VariantSold sold;
+    private final VariantSoldCount soldCount;
 
     private final VariantTraits traits;
 
@@ -35,7 +35,7 @@ public final class Variant {
 
             final VariantPrice price,
 
-            final VariantSold sold,
+            final VariantSoldCount soldCount,
 
             final VariantTraits traits,
 
@@ -46,7 +46,7 @@ public final class Variant {
         this.id = Domains.requireNonNull(id, "Variant ID must not be null");
         this.productId = Domains.requireNonNull(productId, "Variant Product ID must not be null");
         this.price = Domains.requireNonNull(price, "Variant price must not be null");
-        this.sold = Domains.requireNonNull(sold, "Variant sold must not be null");
+        this.soldCount = Domains.requireNonNull(soldCount, "Variant sold must not be null");
         this.traits = Domains.requireNonNull(traits, "Variant traits must not be null");
         this.imageKey = imageKey;
 

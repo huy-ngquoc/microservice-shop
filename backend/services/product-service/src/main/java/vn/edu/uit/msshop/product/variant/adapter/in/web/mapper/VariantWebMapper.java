@@ -95,7 +95,7 @@ public class VariantWebMapper {
                 view.id(),
                 view.productId(),
                 view.price(),
-                view.sold(),
+                view.soldCount(),
                 view.traits(),
                 view.imageKey(),
                 view.version());

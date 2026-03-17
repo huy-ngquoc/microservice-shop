@@ -12,7 +12,7 @@ public record VariantView(
 
         int price,
 
-        int sold,
+        int soldCount,
 
         List<String> traits,
 

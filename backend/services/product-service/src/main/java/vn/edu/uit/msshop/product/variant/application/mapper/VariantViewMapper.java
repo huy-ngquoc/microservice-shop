@@ -19,7 +19,7 @@ public class VariantViewMapper {
                 variant.getId().value(),
                 variant.getProductId().value(),
                 variant.getPrice().value(),
-                variant.getSold().value(),
+                variant.getSoldCount().value(),
                 traits,
                 VariantImageKey.unwrap(variant.getImageKey()),
                 variant.getVersion().value());

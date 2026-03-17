@@ -80,7 +80,7 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
                     current.getId(),
                     current.getProductId(),
                     current.getPrice(),
-                    current.getSold(),
+                    current.getSoldCount(),
                     current.getTraits(),
                     newImageKey,
                     expectedVersion);

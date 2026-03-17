@@ -12,7 +12,7 @@ public record VariantResponse(
 
         int price,
 
-        int sold,
+        int soldCount,
 
         List<String> traits,
 
