@@ -41,15 +41,4 @@ public final class Brand {
 
         this.version = version;
     }
-
-    public Brand(
-            final BrandId id,
-
-            final BrandName name) {
-        this(
-                id,
-                name,
-                null,
-                null);
-    }
 }

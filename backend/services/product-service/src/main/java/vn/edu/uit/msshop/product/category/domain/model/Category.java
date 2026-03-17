@@ -39,11 +39,4 @@ public final class Category {
 
         this.version = version;
     }
-
-    public Category(
-            final CategoryId id,
-
-            final CategoryName name) {
-        this(id, name, null, null);
-    }
 }

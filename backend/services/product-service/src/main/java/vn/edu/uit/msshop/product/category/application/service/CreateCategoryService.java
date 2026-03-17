@@ -29,7 +29,9 @@ public class CreateCategoryService implements CreateCategoryUseCase {
             final CreateCategoryCommand command) {
         final var category = new Category(
                 CategoryId.newId(),
-                command.name());
+                command.name(),
+                null,
+                null);
 
         final var saved = this.savePort.save(category);
 
