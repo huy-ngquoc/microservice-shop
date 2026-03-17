@@ -43,10 +43,7 @@ public final class Category {
     public Category(
             final CategoryId id,
 
-            final CategoryName name,
-
-            @Nullable
-            final CategoryImageKey imageKey) {
-        this(id, name, imageKey, null);
+            final CategoryName name) {
+        this(id, name, null, null);
     }
 }

@@ -45,14 +45,11 @@ public final class Brand {
     public Brand(
             final BrandId id,
 
-            final BrandName name,
-
-            @Nullable
-            final BrandLogoKey logoKey) {
+            final BrandName name) {
         this(
                 id,
                 name,
-                logoKey,
+                null,
                 null);
     }
 }

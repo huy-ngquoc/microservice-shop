@@ -29,8 +29,7 @@ public class CreateBrandService implements CreateBrandUseCase {
             final CreateBrandCommand command) {
         final var brand = new Brand(
                 BrandId.newId(),
-                command.name(),
-                null);
+                command.name());
 
         final var saved = this.savePort.save(brand);
         this.eventPort.publish(new BrandCreated(saved.getId()));
