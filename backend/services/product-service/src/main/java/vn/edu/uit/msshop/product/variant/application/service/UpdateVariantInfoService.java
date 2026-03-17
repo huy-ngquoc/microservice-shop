@@ -5,12 +5,15 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
+import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
+import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.UpdateVariantInfoUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.PublishVariantEventPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.SaveVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantPrice;
@@ -20,29 +23,40 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantTraits;
 @RequiredArgsConstructor
 public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
     private final LoadVariantPort loadPort;
-    private final SaveVariantPort savePort;
+    private final UpdateVariantPort updatePort;
+    private final VariantViewMapper mapper;
     private final PublishVariantEventPort eventPort;
 
     @Override
-    public void updateInfo(
+    public VariantView updateInfo(
             final UpdateVariantInfoCommand command) {
+        final var variant = this.loadPort.loadById(command.id())
+                .orElseThrow(() -> new VariantNotFoundException(command.id()));
+
         final var priceSet = command.price().getSet();
         final var traitsSet = command.traits().getSet();
 
         if ((priceSet == null) && (traitsSet == null)) {
-            return;
+            return this.mapper.toView(variant);
         }
 
-        final var variant = this.loadPort.loadById(command.id())
-                .orElseThrow(() -> new VariantNotFoundException(command.id()));
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = variant.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
 
         final var next = this.applyChanges(variant, priceSet, traitsSet);
         if (next == null) {
-            return;
+            return this.mapper.toView(variant);
         }
 
-        final var saved = this.savePort.save(next);
+        final var saved = this.updatePort.update(next);
         this.eventPort.publish(new VariantUpdated(saved.getId()));
+
+        return this.mapper.toView(saved);
     }
 
     private @Nullable Variant applyChanges(
@@ -76,9 +90,10 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         return new Variant(
                 current.getId(),
                 current.getProductId(),
-                current.getImageKey(),
                 newPrice,
                 current.getSold(),
-                newTraits);
+                newTraits,
+                current.getImageKey(),
+                current.getVersion());
     }
 }

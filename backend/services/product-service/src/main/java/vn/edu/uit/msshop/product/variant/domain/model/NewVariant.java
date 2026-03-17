@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.variant.domain.model;
 
-import org.jspecify.annotations.Nullable;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
@@ -9,7 +7,7 @@ import vn.edu.uit.msshop.product.shared.domain.Domains;
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-public final class Variant {
+public final class NewVariant {
     @EqualsAndHashCode.Include
     private final VariantId id;
 
@@ -17,39 +15,16 @@ public final class Variant {
 
     private final VariantPrice price;
 
-    private final VariantSold sold;
-
     private final VariantTraits traits;
 
-    @Nullable
-    private final VariantImageKey imageKey;
-
-    // ===== Metadata =====
-
-    private final VariantVersion version;
-
-    public Variant(
+    public NewVariant(
             final VariantId id,
-
             final VariantProductId productId,
-
             final VariantPrice price,
-
-            final VariantSold sold,
-
-            final VariantTraits traits,
-
-            @Nullable
-            final VariantImageKey imageKey,
-
-            final VariantVersion version) {
+            final VariantTraits traits) {
         this.id = Domains.requireNonNull(id, "Variant ID must not be null");
         this.productId = Domains.requireNonNull(productId, "Variant Product ID must not be null");
         this.price = Domains.requireNonNull(price, "Variant price must not be null");
-        this.sold = Domains.requireNonNull(sold, "Variant sold must not be null");
         this.traits = Domains.requireNonNull(traits, "Variant traits must not be null");
-        this.imageKey = imageKey;
-
-        this.version = Domains.requireNonNull(version, "Variant version must not be null");
     }
 }

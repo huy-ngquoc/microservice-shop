@@ -2,8 +2,10 @@ package vn.edu.uit.msshop.product.variant.application.mapper;
 
 import org.springframework.stereotype.Component;
 
+import vn.edu.uit.msshop.product.variant.application.dto.query.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantTrait;
 
 @Component
@@ -16,9 +18,18 @@ public class VariantViewMapper {
         return new VariantView(
                 variant.getId().value(),
                 variant.getProductId().value(),
-                variant.getImageKey().value(),
                 variant.getPrice().value(),
                 variant.getSold().value(),
-                traits);
+                traits,
+                VariantImageKey.unwrap(variant.getImageKey()),
+                variant.getVersion().value());
+    }
+
+    public VariantImageView toImageView(
+            final Variant variant) {
+        return new VariantImageView(
+                variant.getId().value(),
+                VariantImageKey.unwrap(variant.getImageKey()),
+                variant.getVersion().value());
     }
 }

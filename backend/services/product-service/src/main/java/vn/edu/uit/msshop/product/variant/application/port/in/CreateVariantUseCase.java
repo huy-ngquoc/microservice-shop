@@ -1,8 +1,9 @@
 package vn.edu.uit.msshop.product.variant.application.port.in;
 
 import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 
 public interface CreateVariantUseCase {
-    void create(
+    VariantView create(
             final CreateVariantCommand command);
 }

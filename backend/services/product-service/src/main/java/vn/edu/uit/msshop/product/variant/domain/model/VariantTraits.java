@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.variant.domain.model;
 
+import java.util.Collection;
 import java.util.List;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
@@ -18,4 +19,16 @@ public record VariantTraits(
 
         values = List.copyOf(values);
     }
+
+    public static VariantTraits of(
+            final Collection<String> rawStrings) {
+        final var traitsList = rawStrings.stream().map(VariantTrait::new).toList();
+        return new VariantTraits(traitsList);
+    }
+
+    public static List<String> unwrap(
+            final VariantTraits traits) {
+        return traits.values().stream().map(VariantTrait::value).toList();
+    }
+
 }

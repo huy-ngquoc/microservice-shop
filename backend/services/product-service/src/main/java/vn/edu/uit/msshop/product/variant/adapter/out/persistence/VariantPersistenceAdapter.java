@@ -6,15 +6,17 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantPersistenceMapper;
+import vn.edu.uit.msshop.product.variant.application.port.out.CreateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.SaveVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantPort;
+import vn.edu.uit.msshop.product.variant.domain.model.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
 
 @Component
 @RequiredArgsConstructor
 public class VariantPersistenceAdapter
-        implements LoadVariantPort, SaveVariantPort {
+        implements LoadVariantPort, CreateVariantPort, UpdateVariantPort {
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
 
@@ -26,7 +28,15 @@ public class VariantPersistenceAdapter
     }
 
     @Override
-    public Variant save(
+    public Variant create(
+            final NewVariant newVariant) {
+        final var toSave = this.mapper.toPersistence(newVariant);
+        final var saved = this.repository.save(toSave);
+        return this.mapper.toDomain(saved);
+    }
+
+    @Override
+    public Variant update(
             final Variant variant) {
         final var toSave = this.mapper.toPersistence(variant);
         final var saved = this.repository.save(toSave);

@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.variant.application.port.out;
 
 import vn.edu.uit.msshop.product.variant.domain.event.VariantCreated;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdated;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
 
 public interface PublishVariantEventPort {
@@ -9,4 +10,7 @@ public interface PublishVariantEventPort {
 
     void publish(
             final VariantUpdated event);
+
+    void publish(
+            final VariantImageUpdated event);
 }
