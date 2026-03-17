@@ -10,6 +10,5 @@ public record BrandLogoResponse(
         @Nullable
         String logoUrl,
 
-        @Nullable
-        Long version) {
+        long version) {
 }

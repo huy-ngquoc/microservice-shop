@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.brand.application.service;
 
-import java.util.ConcurrentModificationException;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,18 +13,18 @@ import vn.edu.uit.msshop.product.brand.application.port.in.DeleteBrandLogoUseCas
 import vn.edu.uit.msshop.product.brand.application.port.out.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.SaveBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
+import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
     private final LoadBrandPort loadPort;
-    private final SaveBrandPort savePort;
+    private final UpdateBrandPort updatePort;
     private final BrandLogoStoragePort logoStoragePort;
     private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
@@ -47,20 +45,17 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
         final var expectedVersion = command.expectedVersion();
         final var currentVersion = brand.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
-            throw new ConcurrentModificationException(
-                    String.format(
-                            "Brand version mismatched while trying to deleting logo "
-                                    + "(Expected: %s, Current: %s).",
-                            expectedVersion.value(),
-                            BrandVersion.unwrap(currentVersion)));
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
         }
 
         final var next = new Brand(
                 brand.getId(),
                 brand.getName(),
                 null,
-                command.expectedVersion());
-        final var saved = this.savePort.save(next);
+                expectedVersion);
+        final var saved = this.updatePort.update(next);
 
         final var event = new BrandLogoUpdated(
                 saved.getId(),

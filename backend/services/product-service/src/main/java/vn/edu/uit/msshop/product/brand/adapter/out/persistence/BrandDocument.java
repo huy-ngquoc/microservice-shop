@@ -45,18 +45,4 @@ public class BrandDocument {
         this.logoKey = logoKey;
         this.version = version;
     }
-
-    public BrandDocument(
-            final UUID id,
-
-            final String name,
-
-            @Nullable
-            final String logoKey) {
-        this(
-                id,
-                name,
-                logoKey,
-                null);
-    }
 }

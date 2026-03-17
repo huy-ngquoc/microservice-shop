@@ -12,18 +12,19 @@ import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.UpdateBrandInfoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.SaveBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandName;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
+import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
     private final LoadBrandPort loadPort;
-    private final SaveBrandPort savePort;
+    private final UpdateBrandPort updatePort;
     private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
 
@@ -39,12 +40,20 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
             return this.mapper.toView(brand);
         }
 
-        final var next = this.applyChanges(brand, nameSet, command.expectedVersion());
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = brand.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        final var next = this.applyChanges(brand, nameSet, expectedVersion);
         if (next == null) {
             return this.mapper.toView(brand);
         }
 
-        final var saved = this.savePort.save(next);
+        final var saved = this.updatePort.update(next);
         this.eventPort.publish(new BrandUpdated(saved.getId()));
 
         return this.mapper.toView(saved);

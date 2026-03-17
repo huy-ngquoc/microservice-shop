@@ -6,7 +6,6 @@ import vn.edu.uit.msshop.product.brand.application.dto.query.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.dto.query.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
 
 @Component
 public class BrandViewMapper {
@@ -16,7 +15,7 @@ public class BrandViewMapper {
                 brand.getId().value(),
                 brand.getName().value(),
                 BrandLogoKey.unwrap(brand.getLogoKey()),
-                BrandVersion.unwrap(brand.getVersion()));
+                brand.getVersion().value());
     }
 
     public BrandLogoView toLogoView(
@@ -24,6 +23,6 @@ public class BrandViewMapper {
         return new BrandLogoView(
                 brand.getId().value(),
                 BrandLogoKey.unwrap(brand.getLogoKey()),
-                BrandVersion.unwrap(brand.getVersion()));
+                brand.getVersion().value());
     }
 }

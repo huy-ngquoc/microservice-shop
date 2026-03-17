@@ -9,17 +9,17 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.CreateBrandComman
 import vn.edu.uit.msshop.product.brand.application.dto.query.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.CreateBrandUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.out.CreateBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.SaveBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandCreated;
-import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.NewBrand;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CreateBrandService implements CreateBrandUseCase {
-    private final SaveBrandPort savePort;
+    private final CreateBrandPort createPort;
     private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
 
@@ -27,13 +27,11 @@ public class CreateBrandService implements CreateBrandUseCase {
     @Transactional
     public BrandView create(
             final CreateBrandCommand command) {
-        final var brand = new Brand(
+        final var brand = new NewBrand(
                 BrandId.newId(),
-                command.name(),
-                null,
-                null);
+                command.name());
 
-        final var saved = this.savePort.save(brand);
+        final var saved = this.createPort.create(brand);
         this.eventPort.publish(new BrandCreated(saved.getId()));
 
         return this.mapper.toView(saved);

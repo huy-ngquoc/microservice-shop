@@ -22,7 +22,6 @@ public final class Brand {
 
     // ===== Metadata =====
 
-    @Nullable
     private final BrandVersion version;
 
     public Brand(
@@ -33,12 +32,11 @@ public final class Brand {
             @Nullable
             final BrandLogoKey logoKey,
 
-            @Nullable
             final BrandVersion version) {
         this.id = Domains.requireNonNull(id, "Id must NOT be null");
         this.name = Domains.requireNonNull(name, "Name must NOT be null");
         this.logoKey = logoKey;
 
-        this.version = version;
+        this.version = Domains.requireNonNull(version, "Version must NOT be null");
     }
 }

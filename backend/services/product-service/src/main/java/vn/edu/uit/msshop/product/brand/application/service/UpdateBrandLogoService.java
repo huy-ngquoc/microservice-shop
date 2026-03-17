@@ -15,18 +15,19 @@ import vn.edu.uit.msshop.product.brand.application.port.in.UpdateBrandLogoUseCas
 import vn.edu.uit.msshop.product.brand.application.port.out.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.SaveBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
+import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
     private final LoadBrandPort loadPort;
-    private final SaveBrandPort savePort;
+    private final UpdateBrandPort updatePort;
     private final BrandLogoStoragePort logoStoragePort;
     private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
@@ -39,7 +40,15 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
-        final var saved = this.commitImageChange(brand, command.newLogoKey(), command.expectedVersion());
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = brand.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        final var saved = this.commitImageChange(brand, command.newLogoKey(), expectedVersion);
         if (saved == null) {
             return this.mapper.toLogoView(brand);
         }
@@ -72,7 +81,7 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
                     current.getName(),
                     newLogoKey,
                     expectedVersion);
-            return this.savePort.save(next);
+            return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {
                 this.logoStoragePort.unpublishLogo(newLogoKey);

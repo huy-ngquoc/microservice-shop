@@ -12,6 +12,5 @@ public record BrandView(
         @Nullable
         String logoKey,
 
-        @Nullable
-        Long version) {
+        long version) {
 }
