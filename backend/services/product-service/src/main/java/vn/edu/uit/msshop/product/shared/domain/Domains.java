@@ -1,6 +1,8 @@
-package vn.edu.uit.msshop.product.shared.domain.exception;
+package vn.edu.uit.msshop.product.shared.domain;
 
 import org.jspecify.annotations.Nullable;
+
+import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
 public final class Domains {
     private Domains() {

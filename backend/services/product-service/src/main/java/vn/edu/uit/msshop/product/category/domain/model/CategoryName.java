@@ -2,8 +2,8 @@ package vn.edu.uit.msshop.product.category.domain.model;
 
 import java.util.regex.Pattern;
 
+import vn.edu.uit.msshop.product.shared.domain.Domains;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
-import vn.edu.uit.msshop.product.shared.domain.exception.Domains;
 
 public record CategoryName(
         String value) {

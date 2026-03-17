@@ -4,7 +4,7 @@ import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import vn.edu.uit.msshop.product.shared.domain.exception.Domains;
+import vn.edu.uit.msshop.product.shared.domain.Domains;
 
 @Getter
 @EqualsAndHashCode(

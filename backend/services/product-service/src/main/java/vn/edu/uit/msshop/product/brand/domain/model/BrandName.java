@@ -2,8 +2,8 @@ package vn.edu.uit.msshop.product.brand.domain.model;
 
 import java.util.regex.Pattern;
 
+import vn.edu.uit.msshop.product.shared.domain.Domains;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
-import vn.edu.uit.msshop.product.shared.domain.exception.Domains;
 
 public record BrandName(
         String value) {
