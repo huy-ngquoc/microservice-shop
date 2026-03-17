@@ -23,4 +23,7 @@ public class InventoryJpaMapper {
         .lastUpdate(new LastUpdate(entity.getLastUpdate())).build();
         return Inventory.reconstitue(snapshot);
     }
+    public InventoryJpaEntity toNew(VariantId variantId) {
+        return InventoryJpaEntity.of(variantId.value(), 0, 0, null);
+    }
 }

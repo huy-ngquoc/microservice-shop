@@ -48,6 +48,7 @@ public class Inventory {
 
     }
 
+    
     @Builder
     public static record UpdateInfo (
         InventoryId inventoryId,

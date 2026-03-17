@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.inventory.adapter.out.persistence;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,5 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface SpringDataInventoryJpaRepository extends JpaRepository<InventoryJpaEntity, UUID> {
     public Optional<InventoryJpaEntity> findByVariantId(UUID variantId);
     public Page<InventoryJpaEntity> findAll(Pageable pageable);
+    public List<InventoryJpaEntity> findByVariantIdIn(List<UUID> variantIds);
 
 }

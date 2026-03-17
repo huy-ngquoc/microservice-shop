@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.inventory.adapter.out.persistence;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -47,5 +48,24 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         InventoryJpaEntity toSave = mapper.toEntity(inventory);
         InventoryJpaEntity result = repository.save(toSave);
         return mapper.toDomain(result);
+    }
+
+    @Override
+    public Inventory createNew(VariantId variantId) {
+        InventoryJpaEntity newEntity = mapper.toNew(variantId);
+        InventoryJpaEntity result = repository.save(newEntity);
+        return mapper.toDomain(result);
+    }
+
+    @Override
+    public List<Inventory> findByListVariantId(List<VariantId> variantIds) {
+        List<InventoryJpaEntity> result = repository.findByVariantIdIn(variantIds.stream().map(item->item.value()).toList());
+        return result.stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Inventory> saveAll(List<Inventory> inventories) {
+        List<InventoryJpaEntity> result = repository.saveAll(inventories.stream().map(mapper::toEntity).toList());
+        return result.stream().map(mapper::toDomain).toList();
     }
 }

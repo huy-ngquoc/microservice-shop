@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.inventory.domain.event;
+package vn.uit.edu.msshop.inventory.application.dto.command;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderCreated {
+public class OrderCancelledCommand {
+    private List<OrderDetailCommand> detailCommands;
     private UUID orderId;
-    private List<OrderDetail> details;
 }
