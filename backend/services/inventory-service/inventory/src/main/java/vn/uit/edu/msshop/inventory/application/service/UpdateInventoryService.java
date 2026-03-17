@@ -19,6 +19,7 @@ import vn.uit.edu.msshop.inventory.application.port.out.PublishInventoryEventPor
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.event.ForceCancellOrder;
 import vn.uit.edu.msshop.inventory.domain.event.InventoryUpdated;
+import vn.uit.edu.msshop.inventory.domain.event.UpdateManyInventoriesEvent;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
@@ -46,6 +47,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     public List<InventoryView> updateWhenOrderCreated(OrderCreateCommand commands) {
         List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         List<Inventory> toSaves = new ArrayList<>();
+        List<InventoryUpdated> events = new ArrayList<>();
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
             Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
             if(inventory==null) throw new RuntimeException("Invalid variant id");
@@ -58,9 +60,10 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             int newReservedQuantity = inventory.getReservedQuantity().value()+detailCommand.getQuantity().value();
             final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity)).build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
-            publishEventPort.publishInventoryUpdateEvent(new InventoryUpdated(toSave.getVariantId().value(), toSave.getQuantity().value(), toSave.getReservedQuantity().value()));
+            events.add(new InventoryUpdated(toSave.getVariantId().value(), toSave.getQuantity().value(), toSave.getReservedQuantity().value()));
             toSaves.add(toSave);
         }
+        publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
         return savePort.saveAll(toSaves).stream().map(mapper::toView).toList();
     }
 
@@ -68,6 +71,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     public List<InventoryView> updateWhenOrderCancelled(OrderCancelledCommand commands) {
         List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         List<Inventory> toSaves = new ArrayList<>();
+        List<InventoryUpdated> events = new ArrayList<>();
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
             Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
             if(inventory==null) throw new RuntimeException("Invalid variant id");
@@ -77,9 +81,11 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             if(newReservedQuantity<0) throw new RuntimeException("Invalid info");
             final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity)).build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
-            publishEventPort.publishInventoryUpdateEvent(new InventoryUpdated(toSave.getVariantId().value(), toSave.getQuantity().value(), toSave.getReservedQuantity().value()));
+            events.add(new InventoryUpdated(toSave.getVariantId().value(), toSave.getQuantity().value(), toSave.getReservedQuantity().value()));
+
             toSaves.add(toSave);
         }
+        publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
         return savePort.saveAll(toSaves).stream().map(mapper::toView).toList();
     }
     private Inventory findByVariantIdInList(VariantId id, List<Inventory> inventories) {
