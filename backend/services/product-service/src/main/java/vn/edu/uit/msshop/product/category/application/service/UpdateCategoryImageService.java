@@ -15,19 +15,19 @@ import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryImag
 import vn.edu.uit.msshop.product.category.application.port.out.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.PublishCategoryEventPort;
-import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.UpdateCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
-import vn.edu.uit.msshop.product.shared.application.dto.Change;
+import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
     private final LoadCategoryPort loadPort;
-    private final SaveCategoryPort savePort;
+    private final UpdateCategoryPort updatePort;
     private final CategoryImageStoragePort imageStoragePort;
     private final CategoryViewMapper mapper;
     private final PublishCategoryEventPort eventPort;
@@ -40,7 +40,15 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var saved = this.commitImageChange(category, command.newImageKey(), command.expectedVersion());
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = category.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        final var saved = this.commitImageChange(category, command.newImageKey(), expectedVersion);
         if (saved == null) {
             return this.mapper.toImageView(category);
         }
@@ -73,7 +81,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
                     current.getName(),
                     newImageKey,
                     expectedVersion);
-            return this.savePort.save(next);
+            return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {
                 this.imageStoragePort.unpublishImage(newImageKey);

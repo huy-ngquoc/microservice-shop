@@ -12,18 +12,19 @@ import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryInfoUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.PublishCategoryEventPort;
-import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.UpdateCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
+import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
     private final LoadCategoryPort loadPort;
-    private final SaveCategoryPort savePort;
+    private final UpdateCategoryPort updatePort;
     private final CategoryViewMapper mapper;
     private final PublishCategoryEventPort eventPort;
 
@@ -40,12 +41,20 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
             return this.mapper.toView(category);
         }
 
-        final var next = this.applyChanges(category, nameSet, command.expectedVersion());
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = category.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        final var next = this.applyChanges(category, nameSet, expectedVersion);
         if (next == null) {
             return this.mapper.toView(category);
         }
 
-        final var saved = this.savePort.save(next);
+        final var saved = this.updatePort.update(next);
         this.eventPort.publish(new CategoryUpdated(saved.getId()));
 
         return this.mapper.toView(saved);

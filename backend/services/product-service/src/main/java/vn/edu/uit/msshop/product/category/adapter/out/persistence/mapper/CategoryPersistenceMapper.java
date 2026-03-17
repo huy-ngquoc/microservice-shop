@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.category.adapter.out.persistence.mapper;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.category.adapter.out.persistence.CategoryDocument;
@@ -9,6 +10,7 @@ import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
+import vn.edu.uit.msshop.product.category.domain.model.NewCategory;
 
 @Component
 public class CategoryPersistenceMapper {
@@ -18,7 +20,10 @@ public class CategoryPersistenceMapper {
         final var name = new CategoryName(entity.getName());
         final var imageKey = CategoryImageKey.ofNullable(entity.getImageKey());
 
-        final var version = CategoryVersion.ofNullable(entity.getVersion());
+        final var versionValue = Objects.requireNonNull(
+                entity.getVersion(),
+                "Persisted category must have a version");
+        final var version = new CategoryVersion(versionValue);
 
         return new Category(
                 id,
@@ -33,6 +38,15 @@ public class CategoryPersistenceMapper {
                 category.getId().value(),
                 category.getName().value(),
                 CategoryImageKey.unwrap(category.getImageKey()),
-                CategoryVersion.unwrap(category.getVersion()));
+                category.getVersion().value());
+    }
+
+    public CategoryDocument toPersistence(
+            final NewCategory newCategory) {
+        return new CategoryDocument(
+                newCategory.getId().value(),
+                newCategory.getName().value(),
+                null,
+                null);
     }
 }

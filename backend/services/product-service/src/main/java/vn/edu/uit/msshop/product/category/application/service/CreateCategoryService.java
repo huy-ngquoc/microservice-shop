@@ -9,17 +9,17 @@ import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategory
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.CreateCategoryUseCase;
+import vn.edu.uit.msshop.product.category.application.port.out.CreateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.PublishCategoryEventPort;
-import vn.edu.uit.msshop.product.category.application.port.out.SaveCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryCreated;
-import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.NewCategory;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CreateCategoryService implements CreateCategoryUseCase {
-    private final SaveCategoryPort savePort;
+    private final CreateCategoryPort createPort;
     private final CategoryViewMapper mapper;
     private final PublishCategoryEventPort eventPort;
 
@@ -27,13 +27,11 @@ public class CreateCategoryService implements CreateCategoryUseCase {
     @Transactional
     public CategoryView create(
             final CreateCategoryCommand command) {
-        final var category = new Category(
+        final var newCategory = new NewCategory(
                 CategoryId.newId(),
-                command.name(),
-                null,
-                null);
+                command.name());
 
-        final var saved = this.savePort.save(category);
+        final var saved = this.createPort.create(newCategory);
 
         this.eventPort.publish(new CategoryCreated(saved.getId()));
 

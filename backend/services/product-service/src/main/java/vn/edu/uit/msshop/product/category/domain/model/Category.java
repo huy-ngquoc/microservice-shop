@@ -20,7 +20,6 @@ public final class Category {
 
     // ===== Metadata =====
 
-    @Nullable
     private final CategoryVersion version;
 
     public Category(
@@ -31,12 +30,11 @@ public final class Category {
             @Nullable
             final CategoryImageKey imageKey,
 
-            @Nullable
             final CategoryVersion version) {
         this.id = Domains.requireNonNull(id, "Id must NOT be null");
         this.name = Domains.requireNonNull(name, "Name must NOT be null");
         this.imageKey = imageKey;
 
-        this.version = version;
+        this.version = Domains.requireNonNull(version, "Version must NOT be null");
     }
 }

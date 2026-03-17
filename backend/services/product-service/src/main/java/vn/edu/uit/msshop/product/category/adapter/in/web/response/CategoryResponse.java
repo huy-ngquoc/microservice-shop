@@ -11,6 +11,5 @@ public record CategoryResponse(
         @Nullable
         String imageUrl,
 
-        @Nullable
-        Long version) {
+        long version) {
 }

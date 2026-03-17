@@ -45,18 +45,4 @@ public class CategoryDocument {
         this.imageKey = imageKey;
         this.version = version;
     }
-
-    public CategoryDocument(
-            final UUID id,
-
-            final String name,
-
-            @Nullable
-            final String image) {
-        this(
-                id,
-                name,
-                image,
-                null);
-    }
 }

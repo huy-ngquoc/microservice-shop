@@ -1,13 +1,13 @@
 package vn.edu.uit.msshop.product.category.application.mapper;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
 
 @Component
 public class CategoryViewMapper {
@@ -17,7 +17,7 @@ public class CategoryViewMapper {
                 category.getId().value(),
                 category.getName().value(),
                 CategoryImageKey.unwrap(category.getImageKey()),
-                CategoryVersion.unwrap(category.getVersion()));
+                category.getVersion().value());
     }
 
     public CategoryImageView toImageView(
@@ -25,6 +25,6 @@ public class CategoryViewMapper {
         return new CategoryImageView(
                 category.getId().value(),
                 CategoryImageKey.unwrap(category.getImageKey()),
-                CategoryVersion.unwrap(category.getVersion()));
+                category.getVersion().value());
     }
 }

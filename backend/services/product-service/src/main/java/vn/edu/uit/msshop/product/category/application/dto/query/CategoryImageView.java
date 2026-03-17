@@ -10,6 +10,5 @@ public record CategoryImageView(
         @Nullable
         String imageKey,
 
-        @Nullable
-        Long version) {
+        long version) {
 }
