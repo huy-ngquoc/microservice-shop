@@ -25,6 +25,7 @@ import org.jspecify.annotations.NullMarked;
     // ========= Web (Spring MVC + Servlet) =========
     requires spring.web;
     requires spring.webmvc;
+    requires spring.hateoas;
 
     // requires jakarta.servlet;
     requires jakarta.validation;
