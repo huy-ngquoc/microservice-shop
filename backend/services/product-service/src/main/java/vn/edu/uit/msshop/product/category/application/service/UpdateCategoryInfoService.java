@@ -16,7 +16,6 @@ import vn.edu.uit.msshop.product.category.application.port.out.UpdateCategoryPor
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
@@ -49,7 +48,7 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
                     currentVersion.value());
         }
 
-        final var next = this.applyChanges(category, nameSet, expectedVersion);
+        final var next = this.applyChanges(category, nameSet);
         if (next == null) {
             return this.mapper.toView(category);
         }
@@ -62,8 +61,7 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
 
     private @Nullable Category applyChanges(
             final Category current,
-            final Change.Set<CategoryName> nameSet,
-            final CategoryVersion expectedVersion) {
+            final Change.Set<CategoryName> nameSet) {
         if (nameSet.value().equals(current.getName())) {
             return null;
         }
@@ -72,6 +70,6 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
                 current.getId(),
                 nameSet.value(),
                 current.getImageKey(),
-                expectedVersion);
+                current.getVersion());
     }
 }

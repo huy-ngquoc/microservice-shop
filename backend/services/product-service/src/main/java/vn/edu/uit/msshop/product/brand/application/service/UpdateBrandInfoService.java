@@ -16,7 +16,6 @@ import vn.edu.uit.msshop.product.brand.application.port.out.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandName;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
@@ -48,7 +47,7 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
                     currentVersion.value());
         }
 
-        final var next = this.applyChanges(brand, nameSet, expectedVersion);
+        final var next = this.applyChanges(brand, nameSet);
         if (next == null) {
             return this.mapper.toView(brand);
         }
@@ -61,8 +60,7 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
 
     private @Nullable Brand applyChanges(
             final Brand current,
-            final Change.Set<BrandName> nameSet,
-            final BrandVersion expectedVersion) {
+            final Change.Set<BrandName> nameSet) {
         if (nameSet.value().equals(current.getName())) {
             return null;
         }
@@ -71,6 +69,6 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
                 current.getId(),
                 nameSet.value(),
                 current.getLogoKey(),
-                expectedVersion);
+                current.getVersion());
     }
 }

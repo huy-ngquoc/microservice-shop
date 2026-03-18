@@ -19,7 +19,6 @@ import vn.edu.uit.msshop.product.brand.application.port.out.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Service
@@ -48,7 +47,7 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
                     currentVersion.value());
         }
 
-        final var saved = this.commitImageChange(brand, command.newLogoKey(), expectedVersion);
+        final var saved = this.commitImageChange(brand, command.newLogoKey());
         if (saved == null) {
             return this.mapper.toLogoView(brand);
         }
@@ -66,8 +65,7 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
 
     private @Nullable Brand commitImageChange(
             final Brand current,
-            final BrandLogoKey newLogoKey,
-            final BrandVersion expectedVersion) {
+            final BrandLogoKey newLogoKey) {
         if (newLogoKey.equals(current.getLogoKey())) {
             return null;
         }
@@ -80,7 +78,7 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
                     current.getId(),
                     current.getName(),
                     newLogoKey,
-                    expectedVersion);
+                    current.getVersion());
             return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {

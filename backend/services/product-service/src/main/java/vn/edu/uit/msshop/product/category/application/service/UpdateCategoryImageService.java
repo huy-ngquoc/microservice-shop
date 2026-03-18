@@ -19,7 +19,6 @@ import vn.edu.uit.msshop.product.category.application.port.out.UpdateCategoryPor
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Service
@@ -48,7 +47,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
                     currentVersion.value());
         }
 
-        final var saved = this.commitImageChange(category, command.newImageKey(), expectedVersion);
+        final var saved = this.commitImageChange(category, command.newImageKey());
         if (saved == null) {
             return this.mapper.toImageView(category);
         }
@@ -66,8 +65,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
 
     private @Nullable Category commitImageChange(
             final Category current,
-            final CategoryImageKey newImageKey,
-            final CategoryVersion expectedVersion) {
+            final CategoryImageKey newImageKey) {
         if (newImageKey.equals(current.getImageKey())) {
             return null;
         }
@@ -80,7 +78,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
                     current.getId(),
                     current.getName(),
                     newImageKey,
-                    expectedVersion);
+                    current.getVersion());
             return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {

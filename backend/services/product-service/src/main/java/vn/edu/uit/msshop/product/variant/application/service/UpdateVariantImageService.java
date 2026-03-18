@@ -18,7 +18,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdated;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantImageKey;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantVersion;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.port.in.UpdateVariantImageUseCase;
 
@@ -48,7 +47,7 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
                     currentVersion.value());
         }
 
-        final var saved = this.commitImageChange(variant, command.newImageKey(), expectedVersion);
+        final var saved = this.commitImageChange(variant, command.newImageKey());
         if (saved == null) {
             return this.mapper.toImageView(variant);
         }
@@ -66,8 +65,7 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
 
     private @Nullable Variant commitImageChange(
             final Variant current,
-            final VariantImageKey newImageKey,
-            final VariantVersion expectedVersion) {
+            final VariantImageKey newImageKey) {
         if (newImageKey.equals(current.getImageKey())) {
             return null;
         }
@@ -83,7 +81,7 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
                     current.getSoldCount(),
                     current.getTraits(),
                     newImageKey,
-                    expectedVersion);
+                    current.getVersion());
             return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {
