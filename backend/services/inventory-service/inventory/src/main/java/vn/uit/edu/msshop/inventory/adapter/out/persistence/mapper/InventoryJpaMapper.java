@@ -26,4 +26,7 @@ public class InventoryJpaMapper {
     public InventoryJpaEntity toNew(VariantId variantId) {
         return InventoryJpaEntity.of(variantId.value(), 0, 0, null);
     }
+    public InventoryJpaEntity toNewFromCommand(VariantId variantId, Quantity quantity) {
+        return InventoryJpaEntity.of(variantId.value(), quantity.value(), 0, null);
+    }
 }

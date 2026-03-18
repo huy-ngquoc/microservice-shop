@@ -1,5 +1,4 @@
-package vn.uit.edu.msshop.inventory.domain.event;
-
+package vn.uit.edu.msshop.order.domain.event.inventory;
 import java.util.List;
 import java.util.UUID;
 

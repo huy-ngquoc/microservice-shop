@@ -7,12 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderCancelled {
+public class OrderShipped{
     private UUID orderId;
     private List<OrderDetail> details;
-    private String oldStatus;
 }

@@ -13,6 +13,9 @@ import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
+import vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled;
+import vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail;
+import vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
@@ -35,15 +38,20 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         if(!checkPermission.isAdmin(role)&&!checkPermission.isSameUser(userIdFromHeader, order.getUserId().value().toString())) {
             throw new RuntimeException("Unauthorized");
         }
+        String oldStatus = order.getStatus().value();
         final var updateInfo = Order.UpdateInfo.builder().id(command.id()).shippingInfo(command.shippingInfo().apply(order.getShippingInfo())).orderStatus(command.status().apply(order.getStatus())).build();
         final var next = order.applyUpdateInfo(updateInfo);
         final var saved = saveOrderPort.save(next);
-        
+        final var listEvent = saved.getDetails().stream().map(item->new OrderDetail(item.variantId(),item.amount())).toList();
         if(saved.getStatus().value().equals("CANCELLED")) {
             publishEventPort.publishCodPaymentCancelled(new CodPaymentCancelled(saved.getId().value()));
+            publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
         }
         if(saved.getStatus().value().equals("RECEIVED")) {
             publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(saved.getId().value()));
+        }
+        if(saved.getStatus().value().equals("SHIPPING")) {
+            publishEventPort.publishOrderShipped_InventoryEvent(new OrderShipped(saved.getId().value(),listEvent));
         }
         publishEventPort.publish(new OrderUpdated(saved.getId()));
     }
@@ -63,10 +71,19 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     @Override
     public void codOrderCancelled(OrderId orderId) {
        Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
-       
+       String oldStatus = order.getStatus().value();
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
         final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
+        final var listEvent = saved.getDetails().stream().map(item->new OrderDetail(item.variantId(),item.amount())).toList();
         publishEventPort.publishCodPaymentCancelled(new CodPaymentCancelled(order.getId().value()));
+        publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
+    }
+
+    @Override
+    public void forceCancellOrder(OrderId orderId) {
+        Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
+        final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
+        saveOrderPort.save(order.applyUpdateInfo(updateInfo));
     }
 
 }
