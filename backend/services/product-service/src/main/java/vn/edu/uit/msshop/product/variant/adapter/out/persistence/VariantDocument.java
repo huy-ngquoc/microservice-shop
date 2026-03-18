@@ -23,7 +23,7 @@ public class VariantDocument {
 
     private final UUID productId;
 
-    private final int price;
+    private final long price;
 
     private final int sold;
 
@@ -42,7 +42,7 @@ public class VariantDocument {
 
             final UUID productId,
 
-            final int price,
+            final long price,
 
             final int sold,
 

@@ -10,7 +10,7 @@ public record VariantResponse(
 
         UUID productId,
 
-        int price,
+        long price,
 
         int soldCount,
 

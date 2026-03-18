@@ -10,7 +10,7 @@ public record VariantView(
 
         UUID productId,
 
-        int price,
+        long price,
 
         int soldCount,
 

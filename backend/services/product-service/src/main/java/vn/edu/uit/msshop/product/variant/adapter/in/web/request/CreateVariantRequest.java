@@ -6,7 +6,7 @@ import java.util.UUID;
 public record CreateVariantRequest(
         UUID productId,
         String imageKey,
-        int price,
+        long price,
         int sold,
         List<String> traits) {
     public CreateVariantRequest {
