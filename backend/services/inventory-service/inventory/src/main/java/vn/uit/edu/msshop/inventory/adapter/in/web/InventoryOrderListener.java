@@ -9,6 +9,7 @@ import vn.uit.edu.msshop.inventory.adapter.in.web.mapper.InventoryWebMapper;
 import vn.uit.edu.msshop.inventory.application.port.in.UpdateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.domain.event.OrderCancelled;
 import vn.uit.edu.msshop.inventory.domain.event.OrderCreated;
+import vn.uit.edu.msshop.inventory.domain.event.OrderShipped;
 
 @Component
 @RequiredArgsConstructor
@@ -26,5 +27,10 @@ public class InventoryOrderListener {
     public void onOrderCancelled(OrderCancelled event) {
         final var command = mapper.toCommand(event);
         updateInventoryUseCase.updateWhenOrderCancelled(command);
+    }
+    @KafkaHandler
+    public void onOrderShipped(OrderShipped event) {
+        final var command = mapper.toCommand(event);
+        
     }
 }

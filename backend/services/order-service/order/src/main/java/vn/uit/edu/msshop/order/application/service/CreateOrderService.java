@@ -13,6 +13,7 @@ import vn.uit.edu.msshop.order.application.port.out.CheckUserPort;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderDetailPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
+import vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.CreateAt;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
@@ -70,6 +71,9 @@ public class CreateOrderService implements CreateOrderUseCase {
         for(OrderDetail d : listDetails) {
             originPrice+=d.amount()*d.unitPrice();
         }
+        List<vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail> event_details = listDetails.stream().map(item->new vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail(
+            item.variantId(), item.amount()
+        )).toList();
         final var draft = Order.Draft.builder().id(command.id()).shippingInfo(command.shippingInfo())
         .details(listDetails)
         .status(new OrderStatus("PENDING"))
@@ -83,7 +87,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         .build();
         final var order = Order.create(draft);
         final var saved = savePort.save(order);
-        
+        publishPort.publishOrderCreated_InventoryEvent(new OrderCreated(saved.getId().value(),event_details));
         return saved.getId().value();
     }
 

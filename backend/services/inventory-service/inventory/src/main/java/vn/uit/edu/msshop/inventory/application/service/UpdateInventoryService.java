@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderCancelledCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderCreateCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderDetailCommand;
+import vn.uit.edu.msshop.inventory.application.dto.command.OrderShippedCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.UpdateInventoryCommand;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
@@ -78,6 +79,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             
             int newQuantity = inventory.getQuantity().value()+detailCommand.getQuantity().value();
             int newReservedQuantity = inventory.getReservedQuantity().value()-detailCommand.getQuantity().value();
+            if(commands.getOrderStatus().value().equals("SHIPPING")) newReservedQuantity=inventory.getReservedQuantity().value();
             if(newReservedQuantity<0) throw new RuntimeException("Invalid info");
             final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity)).build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
@@ -93,6 +95,28 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             if(id.value().toString().equals(inventory.getId().value().toString())) return inventory;
         }
         return null;
+    }
+
+    @Override
+    public List<InventoryView> updateWhenOrderShipped(OrderShippedCommand commands) {
+        List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
+        List<Inventory> toSaves = new ArrayList<>();
+        List<InventoryUpdated> events = new ArrayList<>();
+        for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
+            Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
+            if(inventory==null) throw new RuntimeException("Invalid variant id");
+            
+            
+            int newReservedQuantity = inventory.getReservedQuantity().value()-detailCommand.getQuantity().value();
+            if(newReservedQuantity<0) throw new RuntimeException("Invalid info");
+            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(inventory.getQuantity()).reservedQuantity(new ReservedQuantity(newReservedQuantity)).build();
+            final var toSave = inventory.applyUpdateInfo(updateInfo);
+            events.add(new InventoryUpdated(toSave.getVariantId().value(), toSave.getQuantity().value(), toSave.getReservedQuantity().value()));
+
+            toSaves.add(toSave);
+        }
+        publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
+        return savePort.saveAll(toSaves).stream().map(mapper::toView).toList();
     }
 
 }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.in.web.mapper.InventoryWebMapper;
+import vn.uit.edu.msshop.inventory.adapter.in.web.request.CreateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.response.InventoryResponse;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.application.port.in.CheckPermissionUseCase;
+import vn.uit.edu.msshop.inventory.application.port.in.CreateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.FindInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.UpdateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
@@ -33,6 +36,7 @@ public class InventoryController {
     private final FindInventoryUseCase findUseCase;
     private final UpdateInventoryUseCase updateUseCase;
     private final CheckPermissionUseCase checkPermission;
+    private final CreateInventoryUseCase createUseCase;
 
     @GetMapping("/")
     public ResponseEntity<Page<InventoryResponse>> getAll(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestParam(defaultValue="7") int pageSize, @RequestParam(defaultValue="0") int pageNumber) {
@@ -67,6 +71,15 @@ public class InventoryController {
         }
         final var command = mapper.toCommand(request);
         InventoryView result = updateUseCase.update(command);
+        return ResponseEntity.ok(mapper.toResponse(result));
+    }
+    @PostMapping("/")
+    public ResponseEntity<InventoryResponse> create(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestBody CreateInventoryRequest request) {
+         if(!checkPermission.isAdmin(role)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        final var command = mapper.toCommand(request);
+        InventoryView result = createUseCase.create(command);
         return ResponseEntity.ok(mapper.toResponse(result));
     }
 

@@ -13,6 +13,8 @@ import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
 import vn.uit.edu.msshop.order.domain.event.OrderCreated;
 import vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
+import vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled;
+import vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped;
 
 @Component
 @RequiredArgsConstructor
@@ -22,9 +24,13 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     private final KafkaTemplate<String,CodPaymentCancelled> codPaymentCancelledTemplate;
     private final KafkaTemplate<String,CodPaymentReceived> codPaymentReceivedTemplate;
     private final KafkaTemplate<String, OrderCreatedSuccess> clearCartTemplate;
+    private final KafkaTemplate<String, vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated> inventoryOrderCreatedTemplate; 
+    private final KafkaTemplate<String, OrderCancelled> orderCancelledTemplate;
+    private final KafkaTemplate<String, OrderShipped> orderShippedTemplate;
     private static final String ORDER_CREATED_TOPIC = "order-topic";
     private static final String PAYMENT_STATUS_TOPIC="payment-cod-topic";
     private static final String CLEAR_CART_TOPIC="cart-topic";
+    private static final String INVENTORY_TOPIC="";
    
 
     @Override
@@ -55,6 +61,24 @@ public class OrderEventPublisher implements PublishOrderEventPort{
         Message<OrderCreatedSuccess> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, CLEAR_CART_TOPIC).build();
         clearCartTemplate.send(message);
 
+    }
+
+    @Override
+    public void publishOrderCreated_InventoryEvent(vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated event) {
+        Message<vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated > message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
+        inventoryOrderCreatedTemplate.send(message);
+    }
+
+    @Override
+    public void publishOrderCancelled_InventoryEvent(OrderCancelled event) {
+        Message<OrderCancelled> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
+        orderCancelledTemplate.send(message);
+    }
+
+    @Override
+    public void publishOrderShipped_InventoryEvent(OrderShipped event) {
+         Message<OrderShipped> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
+        orderShippedTemplate.send(message);
     }
 
 }

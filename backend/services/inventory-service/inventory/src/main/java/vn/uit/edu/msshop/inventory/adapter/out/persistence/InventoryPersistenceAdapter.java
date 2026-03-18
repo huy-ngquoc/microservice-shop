@@ -14,6 +14,7 @@ import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @Component
@@ -67,5 +68,12 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
     public List<Inventory> saveAll(List<Inventory> inventories) {
         List<InventoryJpaEntity> result = repository.saveAll(inventories.stream().map(mapper::toEntity).toList());
         return result.stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public Inventory createFromCommand(VariantId variantId, Quantity quantity) {
+        InventoryJpaEntity newEntity = mapper.toNewFromCommand(variantId, quantity);
+        InventoryJpaEntity result = repository.save(newEntity);
+        return mapper.toDomain(result);
     }
 }
