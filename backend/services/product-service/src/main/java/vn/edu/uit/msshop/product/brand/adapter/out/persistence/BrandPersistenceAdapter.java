@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.out.persistence.mapper.BrandPersistenceMapper;
+import vn.edu.uit.msshop.product.brand.application.port.out.CheckBrandExistsPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.CreateBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.UpdateBrandPort;
@@ -16,7 +17,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.NewBrand;
 @Component
 @RequiredArgsConstructor
 public class BrandPersistenceAdapter
-        implements LoadBrandPort, CreateBrandPort, UpdateBrandPort {
+        implements LoadBrandPort, CheckBrandExistsPort, CreateBrandPort, UpdateBrandPort {
     private final BrandMongoRepository repository;
     private final BrandPersistenceMapper mapper;
 
@@ -25,6 +26,13 @@ public class BrandPersistenceAdapter
             final BrandId id) {
         final var jpaId = id.value();
         return this.repository.findById(jpaId).map(this.mapper::toDomain);
+    }
+
+    @Override
+    public boolean existsById(
+            final BrandId id) {
+        final var jpaId = id.value();
+        return this.repository.existsById(jpaId);
     }
 
     @Override

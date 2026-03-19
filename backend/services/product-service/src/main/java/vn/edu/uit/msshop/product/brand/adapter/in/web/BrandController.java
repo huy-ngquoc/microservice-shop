@@ -28,6 +28,7 @@ import vn.edu.uit.msshop.product.brand.application.port.in.FindBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.FindBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.UpdateBrandInfoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.UpdateBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.out.CheckBrandExistsPort;
 
 @RestController
 @RequestMapping("/brands")
@@ -35,6 +36,7 @@ import vn.edu.uit.msshop.product.brand.application.port.in.UpdateBrandLogoUseCas
 public class BrandController {
     private final FindBrandUseCase findUseCase;
     private final FindBrandLogoUseCase findLogoUseCase;
+    private final CheckBrandExistsPort checkExistsPort;
     private final CreateBrandUseCase createUseCase;
     private final UpdateBrandInfoUseCase updateInfoUseCase;
     private final UpdateBrandLogoUseCase updateLogoUseCase;
@@ -59,6 +61,18 @@ public class BrandController {
 
         final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Void> existsById(
+            @PathVariable
+            final UUID id) {
+        final var existed = this.checkExistsPort.existsById(this.mapper.toBrandId(id));
+        if (!existed) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
