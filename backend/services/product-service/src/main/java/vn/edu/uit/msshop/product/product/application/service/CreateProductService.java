@@ -1,63 +1,78 @@
 package vn.edu.uit.msshop.product.product.application.service;
 
-import java.util.ArrayList;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
+import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
+import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFoundException;
+import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
+import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.CreateProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.out.CheckProductBrandExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CheckProductCategoryExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.SaveProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.UploadProductImagePort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
-import vn.edu.uit.msshop.product.product.domain.model.Product;
+import vn.edu.uit.msshop.product.product.domain.model.NewProduct;
+import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
+import vn.edu.uit.msshop.product.product.domain.model.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.ProductImage;
-import vn.edu.uit.msshop.product.product.domain.model.ProductImages;
-import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
-import vn.edu.uit.msshop.product.product.domain.model.ProductPriceRange;
-import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
-import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 
 @Service
 @RequiredArgsConstructor
 public class CreateProductService implements CreateProductUseCase {
-    private final UploadProductImagePort uploadImagePort;
-    private final SaveProductPort savePort;
+    private final CreateProductPort createPort;
+    private final ProductViewMapper mapper;
+    private final CheckProductCategoryExistsPort checkCategoryExistsPort;
+    private final CheckProductBrandExistsPort checkBrandExistsPort;
     private final PublishProductEventPort eventPort;
 
     @Override
-    public void create(
-            CreateProductCommand command) {
-        final var productId = ProductId.newId();
+    @Transactional
+    public ProductView create(
+            final CreateProductCommand command) {
 
-        final var imageList = new ArrayList<ProductImage>(command.images().size());
-        for (final var imageCommand : command.images()) {
-            final var productImage = this.uploadImagePort.upload(
-                    productId,
-                    imageCommand.bytes(),
-                    imageCommand.originalFilename(),
-                    imageCommand.contentType());
-            imageList.add(productImage);
-        }
-        final var productImages = new ProductImages(imageList);
+        this.validateCategoryExists(command.categoryId());
+        this.validateBrandExists(command.brandId());
 
-        final var product = new Product(
-                productId,
+        final var productVariants = new ProductVariants(
+                command.variants().stream()
+                        .map(v -> new ProductVariant(
+                                ProductVariantId.newId(),
+                                v.price(),
+                                v.traits()))
+                        .toList());
+
+        final var newProduct = new NewProduct(
+                ProductId.newId(),
                 command.name(),
-                productImages,
-                ProductPriceRange.zero(),
-                ProductSoldCount.zero(),
-                ProductRating.zero(),
                 command.categoryId(),
                 command.brandId(),
-                ProductVariants.empty(),
-                ProductOptions.empty());
+                command.options(),
+                productVariants);
 
-        final var saved = this.savePort.save(product);
+        final var saved = this.createPort.create(newProduct);
+
         this.eventPort.publish(new ProductCreated(saved.getId()));
+        return this.mapper.toView(saved);
     }
 
+    private void validateCategoryExists(
+            final ProductCategoryId newCategoryId) {
+        if (!this.checkCategoryExistsPort.existsById(newCategoryId)) {
+            throw new ProductCategoryNotFoundException(newCategoryId);
+        }
+    }
+
+    private void validateBrandExists(
+            final ProductBrandId newBrandId) {
+        if (!this.checkBrandExistsPort.existsById(newBrandId)) {
+            throw new ProductBrandNotFoundException(newBrandId);
+        }
+    }
 }

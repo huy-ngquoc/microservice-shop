@@ -1,16 +1,13 @@
 package vn.edu.uit.msshop.product.product.domain.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
 public record ProductVariants(
-        List<ProductVariantSummary> values) {
-    public static final int MAX_AMOUNT = ProductOptions.MAX_TIERS * ProductOption.MAX_AMOUNT_VALUES;
-
-    private static final ProductVariants EMPTY = new ProductVariants(List.of());
+        List<ProductVariant> values) {
+    public static final int MAX_AMOUNT = ProductOptions.MAX_AMOUNT * ProductVariantTraits.MAX_TRAITS_AMOUNT;
 
     public ProductVariants {
         if (values == null) {
@@ -21,38 +18,32 @@ public record ProductVariants(
             throw new DomainException("Variants CANNOT exceed " + MAX_AMOUNT);
         }
 
-        final var uniqueCombinationSet = HashSet.<String>newHashSet(values.size());
-        final var processedVariants = new ArrayList<ProductVariantSummary>(values.size());
+        final var uniqueCombinationSet = HashSet.<List<String>>newHashSet(values.size());
 
         for (final var variant : values) {
             if (variant == null) {
-                throw new DomainException("Variant summary in list CANNOT be null");
+                throw new DomainException("Variant in list CANNOT be null");
             }
 
-            final var normalizedOptionValues = variant.optionValues().stream()
+            final var normalizedTraitValues = variant.traits().values()
+                    .stream()
+                    .map(ProductVariantTrait::value)
                     .map(String::toLowerCase)
                     .toList();
 
-            final var combinationSignature = String.join("|", normalizedOptionValues);
-            if (!uniqueCombinationSet.add(combinationSignature)) {
-                throw new DomainException("Duplicate variant option combination found: " + variant.optionValues());
+            if (!uniqueCombinationSet.add(normalizedTraitValues)) {
+                throw new DomainException("Duplicate variant traits combination found: " + variant.traits());
             }
-
-            processedVariants.add(variant);
         }
 
-        values = List.copyOf(processedVariants);
-    }
-
-    public static ProductVariants empty() {
-        return ProductVariants.EMPTY;
+        values = List.copyOf(values);
     }
 
     public boolean isEmpty() {
         return this.values.isEmpty();
     }
 
-    public int getCount() {
+    public int size() {
         return this.values.size();
     }
 }

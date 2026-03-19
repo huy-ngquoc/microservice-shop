@@ -1,0 +1,55 @@
+package vn.edu.uit.msshop.product.product.domain.model;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+
+import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+
+public record ProductVariantTraits(
+        List<ProductVariantTrait> values) {
+    public static final int MAX_TRAITS_AMOUNT = 3;
+
+    public ProductVariantTraits {
+        if (values == null) {
+            throw new DomainException("Product variant trait list CANNOT be null");
+        }
+
+        if (values.size() > MAX_TRAITS_AMOUNT) {
+            throw new DomainException("Product variant trait list can have maximum " + MAX_TRAITS_AMOUNT + " traits");
+        }
+
+        final var uniqueNames = HashSet.<String>newHashSet(values.size());
+        for (final var trait : values) {
+            if (trait == null) {
+                throw new DomainException("Variant trait CANNOT be null");
+            }
+
+            final var lowercaseTrait = trait.value().toLowerCase(Locale.ROOT);
+            if (!uniqueNames.add(lowercaseTrait)) {
+                throw new DomainException("Duplicate product variant trait found: " + trait.value());
+            }
+        }
+
+        values = List.copyOf(values);
+    }
+
+    public static ProductVariantTraits of(
+            final Collection<String> rawTraitsList) {
+        final var traitsList = rawTraitsList.stream().map(ProductVariantTrait::new).toList();
+        return new ProductVariantTraits(traitsList);
+    }
+
+    public List<String> unwrap() {
+        return this.values.stream().map(ProductVariantTrait::value).toList();
+    }
+
+    public boolean isEmpty() {
+        return this.values.isEmpty();
+    }
+
+    public int size() {
+        return this.values.size();
+    }
+}

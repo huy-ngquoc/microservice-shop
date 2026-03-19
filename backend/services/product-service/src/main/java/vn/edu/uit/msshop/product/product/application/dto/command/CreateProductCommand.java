@@ -5,11 +5,12 @@ import java.util.List;
 import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductName;
+import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 
-// TODO: check images.size() <= MAX_SIZE
 public record CreateProductCommand(
         ProductName name,
         ProductCategoryId categoryId,
-        List<ProductImageCommand> images,
-        ProductBrandId brandId) {
+        ProductBrandId brandId,
+        ProductOptions options,
+        List<CreateProductVariantCommand> variants) {
 }

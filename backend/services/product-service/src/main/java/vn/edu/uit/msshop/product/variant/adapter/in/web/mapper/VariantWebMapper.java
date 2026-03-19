@@ -30,7 +30,6 @@ public class VariantWebMapper {
     public CreateVariantCommand toCreateCommand(
             final CreateVariantRequest request) {
         final var productId = new VariantProductId(request.productId());
-        final var imageKey = new VariantImageKey(request.imageKey());
         final var price = new VariantPrice(request.price());
 
         final var traitsList = request.traits().stream()
@@ -39,7 +38,6 @@ public class VariantWebMapper {
 
         return new CreateVariantCommand(
                 productId,
-                imageKey,
                 price,
                 traits);
     }

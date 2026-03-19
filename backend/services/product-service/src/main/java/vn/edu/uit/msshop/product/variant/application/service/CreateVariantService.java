@@ -13,9 +13,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.CreateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantCreated;
 import vn.edu.uit.msshop.product.variant.domain.model.NewVariant;
-import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 
 @Service
 @RequiredArgsConstructor

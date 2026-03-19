@@ -5,44 +5,57 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
+import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
+import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.UpdateProductInfoUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.CheckProductBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CheckProductCategoryExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.SaveProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductName;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
+import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class UpdateProductInfoService implements UpdateProductInfoUseCase {
     private final LoadProductPort loadPort;
-    private final SaveProductPort savePort;
+    private final UpdateProductPort updatePort;
     private final CheckProductCategoryExistsPort checkCategoryExistsPort;
     private final CheckProductBrandExistsPort checkBrandExistsPort;
+    private final ProductViewMapper mapper;
     private final PublishProductEventPort eventPort;
 
     @Override
-    public void updateInfo(
+    public ProductView updateInfo(
             final UpdateProductInfoCommand command) {
+        final var productId = command.id();
+        final var product = this.loadPort.loadById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+
         final var nameSet = command.name().getSet();
         final var categoryIdSet = command.categoryId().getSet();
         final var brandIdSet = command.brandId().getSet();
 
         if ((nameSet == null) && (categoryIdSet == null) && (brandIdSet == null)) {
-            return;
+            return this.mapper.toView(product);
         }
 
-        final var product = this.loadPort.loadById(command.id())
-                .orElseThrow(() -> new ProductNotFoundException(command.id()));
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = product.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
 
         final var next = this.applyChanges(
                 product,
@@ -50,11 +63,13 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
                 categoryIdSet,
                 brandIdSet);
         if (next == null) {
-            return;
+            return this.mapper.toView(product);
         }
 
-        final var saved = this.savePort.save(next);
+        final var saved = this.updatePort.update(next);
         this.eventPort.publish(new ProductCreated(saved.getId()));
+
+        return this.mapper.toView(saved);
     }
 
     private @Nullable Product applyChanges(
@@ -100,17 +115,19 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
             return null;
         }
 
+        // FIXME: what if the sold updated right before updating info?
         return new Product(
                 current.getId(),
                 newName,
-                current.getImages(),
+                newCategoryId,
+                newBrandId,
                 current.getPriceRange(),
                 current.getSoldCount(),
                 current.getRating(),
-                newCategoryId,
-                newBrandId,
+                current.getOptions(),
                 current.getVariants(),
-                current.getOptions());
+                current.getImageKeys(),
+                current.getVersion());
     }
 
     private void validateCategoryExists(
