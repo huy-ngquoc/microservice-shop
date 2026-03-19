@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.category.application.mapper;
 
-import java.util.Objects;
-
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;

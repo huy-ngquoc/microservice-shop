@@ -22,6 +22,7 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryI
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryInfoRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
+import vn.edu.uit.msshop.product.category.application.port.in.CheckCategoryExistsUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.CreateCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.DeleteCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.FindCategoryImageUseCase;
@@ -35,6 +36,7 @@ import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryInfo
 public class CategoryController {
     private final FindCategoryUseCase findUseCase;
     private final FindCategoryImageUseCase findImageUseCase;
+    private final CheckCategoryExistsUseCase checkExistsUseCase;
     private final CreateCategoryUseCase createUseCase;
     private final UpdateCategoryInfoUseCase updateInfoUseCase;
     private final UpdateCategoryImageUseCase updateImageUseCase;
@@ -59,6 +61,18 @@ public class CategoryController {
 
         final var response = this.mapper.toImageResponse(view);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Void> existsById(
+            @PathVariable
+            final UUID id) {
+        final var existed = this.checkExistsUseCase.existsById(this.mapper.toCategoryId(id));
+        if (!existed) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
