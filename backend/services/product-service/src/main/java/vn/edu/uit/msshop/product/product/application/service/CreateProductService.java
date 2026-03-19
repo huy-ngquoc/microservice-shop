@@ -14,6 +14,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.CheckProductBrandE
 import vn.edu.uit.msshop.product.product.application.port.out.CheckProductCategoryExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.RegisterProductVariantsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
 import vn.edu.uit.msshop.product.product.domain.model.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
@@ -27,9 +28,10 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 @RequiredArgsConstructor
 public class CreateProductService implements CreateProductUseCase {
     private final CreateProductPort createPort;
-    private final ProductViewMapper mapper;
     private final CheckProductCategoryExistsPort checkCategoryExistsPort;
     private final CheckProductBrandExistsPort checkBrandExistsPort;
+    private final RegisterProductVariantsPort registerVariantsPort;
+    private final ProductViewMapper mapper;
     private final PublishProductEventPort eventPort;
 
     @Override
@@ -57,6 +59,10 @@ public class CreateProductService implements CreateProductUseCase {
                 productVariants);
 
         final var saved = this.createPort.create(newProduct);
+
+        this.registerVariantsPort.registerAll(
+                saved.getId(),
+                saved.getVariants().values());
 
         this.eventPort.publish(new ProductCreated(saved.getId()));
         return this.mapper.toView(saved);

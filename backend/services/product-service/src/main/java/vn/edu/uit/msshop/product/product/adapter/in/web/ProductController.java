@@ -18,6 +18,7 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
+import vn.edu.uit.msshop.product.product.application.port.in.CheckProductExistsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.FindProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.UpdateProductInfoUseCase;
@@ -27,6 +28,7 @@ import vn.edu.uit.msshop.product.product.application.port.in.UpdateProductInfoUs
 @RequiredArgsConstructor
 public class ProductController {
     private final FindProductUseCase findUseCase;
+    private final CheckProductExistsUseCase checkExistsUseCase;
     private final CreateProductUseCase createUseCase;
     private final UpdateProductInfoUseCase updateInfoUseCase;
     private final ProductWebMapper mapper;
@@ -39,6 +41,18 @@ public class ProductController {
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Void> existsById(
+            @PathVariable
+            final UUID id) {
+        final var existed = this.checkExistsUseCase.existsById(this.mapper.toProductId(id));
+        if (!existed) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping

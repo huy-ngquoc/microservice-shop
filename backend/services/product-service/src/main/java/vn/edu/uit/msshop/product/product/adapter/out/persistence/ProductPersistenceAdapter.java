@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductPersistenceMapper;
+import vn.edu.uit.msshop.product.product.application.port.out.CheckProductExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.UpdateProductPort;
@@ -16,7 +17,7 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductId;
 @Component
 @RequiredArgsConstructor
 public class ProductPersistenceAdapter
-        implements LoadProductPort, CreateProductPort, UpdateProductPort {
+        implements LoadProductPort, CheckProductExistsPort, CreateProductPort, UpdateProductPort {
     private final ProductMongoRepository repository;
     private final ProductPersistenceMapper mapper;
 
@@ -25,6 +26,13 @@ public class ProductPersistenceAdapter
             final ProductId id) {
         final var jpaId = id.value();
         return this.repository.findById(jpaId).map(this.mapper::toDomain);
+    }
+
+    @Override
+    public boolean existsById(
+            final ProductId id) {
+        final var jpaId = id.value();
+        return this.repository.existsById(jpaId);
     }
 
     @Override
