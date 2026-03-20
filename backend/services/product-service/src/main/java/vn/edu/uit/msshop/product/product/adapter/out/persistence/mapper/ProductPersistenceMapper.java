@@ -99,6 +99,9 @@ public class ProductPersistenceMapper {
 
     public ProductDocument toPersistence(
             final NewProduct newProduct) {
+        final var variantDocs = newProduct.getVariants().values()
+                .stream().map(this::toPersistence).toList();
+
         return new ProductDocument(
                 newProduct.getId().value(),
                 newProduct.getName().value(),
@@ -109,8 +112,8 @@ public class ProductPersistenceMapper {
                 0,
                 0,
                 0,
-                List.of(),
-                List.of(),
+                newProduct.getOptions().unwrap(),
+                variantDocs,
                 List.of(),
                 null);
     }

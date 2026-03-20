@@ -20,8 +20,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
 public class CreateVariantService implements CreateVariantUseCase {
     private final CheckVariantProductExistsPort checkProductExistsPort;
     private final CreateVariantPort createPort;
-    private final VariantViewMapper mapper;
     private final PublishVariantEventPort eventPort;
+    private final VariantViewMapper mapper;
 
     @Override
     public VariantView create(

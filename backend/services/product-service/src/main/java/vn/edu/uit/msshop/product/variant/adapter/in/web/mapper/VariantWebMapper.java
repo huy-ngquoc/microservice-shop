@@ -1,8 +1,6 @@
 package vn.edu.uit.msshop.product.variant.adapter.in.web.mapper;
 
 import java.util.UUID;
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
