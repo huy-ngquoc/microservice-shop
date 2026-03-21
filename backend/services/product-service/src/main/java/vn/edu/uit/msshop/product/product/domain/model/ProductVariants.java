@@ -39,6 +39,21 @@ public record ProductVariants(
         values = List.copyOf(values);
     }
 
+    public ProductPriceRange getPriceRange() {
+        if (this.values.isEmpty()) {
+            return ProductPriceRange.zero();
+        }
+
+        var min = Long.MAX_VALUE;
+        var max = Long.MIN_VALUE;
+        for (final var variant : this.values) {
+            final var price = variant.price().value();
+            min = Math.min(min, price);
+            max = Math.max(max, price);
+        }
+        return new ProductPriceRange(new ProductPrice(min), new ProductPrice(max));
+    }
+
     public boolean isEmpty() {
         return this.values.isEmpty();
     }
