@@ -39,6 +39,10 @@ spring:
                         uri: lb:http://ORDER-SERVICE
                         predicates:
                         - Path=/order/**
+                      - id: inventory-service
+                        uri: lb:http://INVENTORY-SERVICE
+                        predicates:
+                        - Path=/inventory/**
 
 management:
   endpoints:

@@ -88,6 +88,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         final var order = Order.create(draft);
         final var saved = savePort.save(order);
         publishPort.publishOrderCreated_InventoryEvent(new OrderCreated(saved.getId().value(),event_details));
+        System.out.println(event_details.size());
         return saved.getId().value();
     }
 
