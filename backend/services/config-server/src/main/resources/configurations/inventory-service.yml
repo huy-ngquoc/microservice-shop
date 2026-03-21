@@ -1,0 +1,39 @@
+server:
+    port: 8090
+spring:
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5440/inventory
+        username: alibou
+        password: alibou
+    jpa:
+        hibernate:
+            ddl-auto: update
+        database: postgresql
+        show-sql: true
+        properties:
+            hibernate:
+                "[globally_quoted_identifiers]": true
+                "[globally_quoted_identifiers_skip_column_definitions]": true
+    kafka:
+        bootstrap-servers: localhost:9092 
+        consumer:
+            group-id: order-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.json.trusted.packages: "*"
+                spring.json.type.mapping: 
+                    OrderCancelled:vn.uit.edu.msshop.inventory.domain.event.OrderCancelled,
+                    OrderCreated_Inventory:vn.uit.edu.msshop.inventory.domain.event.OrderCreated,
+                    OrderShipped:vn.uit.edu.msshop.inventory.domain.event.OrderShipped
+                    
+        producer:
+            bootstrap-servers: localhost:9092
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                spring.json.type.mapping: 
+                    ForceCancellOrder:vn.uit.edu.msshop.inventory.domain.event.ForceCancellOrder,
+                    InventoryUpdated:vn.uit.edu.msshop.inventory.domain.event.InventoryUpdated,
+                    UpdateManyInventoriesEvent:vn.uit.edu.msshop.inventory.domain.event.UpdateManyInventoriesEvent

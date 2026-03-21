@@ -11,7 +11,7 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 
 @Component
 @RequiredArgsConstructor
-@KafkaListener(topics="",groupId="")
+@KafkaListener(topics="inventory-order",groupId="order-group")
 public class OrderInventoryListener {
     private final UpdateOrderUseCase updateUseCase;
     @KafkaHandler

@@ -13,7 +13,7 @@ import vn.uit.edu.msshop.inventory.domain.event.OrderShipped;
 
 @Component
 @RequiredArgsConstructor
-@KafkaListener(topics="",groupId="")
+@KafkaListener(topics="order-inventory",groupId="order-group")
 public class InventoryOrderListener {
     private final InventoryWebMapper mapper;
     private final UpdateInventoryUseCase updateInventoryUseCase;

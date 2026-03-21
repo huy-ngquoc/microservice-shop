@@ -11,7 +11,7 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @RestController
 @RequiredArgsConstructor
-@KafkaListener(topics="",groupId="")
+@KafkaListener(topics="product-inventory",groupId="product-group")
 public class InventoryProductListener {
     private final CreateInventoryUseCase createUseCase;
     @KafkaHandler

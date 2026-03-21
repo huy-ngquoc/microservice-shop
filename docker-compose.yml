@@ -30,6 +30,21 @@ services:
         networks:
             - microservices-net
         restart: unless-stopped
+    postgresql_inventory:
+        container_name: ms_pg_sql_inventory
+        image: postgres:18
+        environment:
+            POSTGRES_USER: alibou
+            POSTGRES_PASSWORD: alibou
+            PGDATA: /data/postgres
+            TZ: UTC
+            POSTGRES_DB: inventory
+        volumes:
+            - postgres_inventory:/data/postgres
+        ports:
+            - "5440:5432"
+        networks:
+            - microservices-net
     postgresql_payment:
         container_name: ms_pg_sql_payment
         image: postgres:18
@@ -194,3 +209,4 @@ volumes:
     postgres_payment:
     mongo_order:
     redis_data:
+    postgres_inventory:
