@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.adapter.in.web.mapper;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductVariantResponse;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductVariantView;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
@@ -19,6 +21,7 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
+import vn.edu.uit.msshop.product.product.domain.model.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVersion;
@@ -41,6 +44,23 @@ public class ProductWebMapper {
                 brandId,
                 options,
                 variantsList);
+    }
+
+    public CreateSimpleProductCommand toCreateSimpleCommand(
+            final CreateProductRequest request) {
+        final var name = new ProductName(request.name());
+        final var categoryId = new ProductCategoryId(request.categoryId());
+        final var brandId = new ProductBrandId(request.brandId());
+
+        final var rawPrice = Objects.requireNonNull(request.price(),
+                "Price must not be null for simple product");
+        final var price = new ProductPrice(rawPrice);
+
+        return new CreateSimpleProductCommand(
+                name,
+                categoryId,
+                brandId,
+                price);
     }
 
     public CreateProductVariantCommand toCreateVariantCommand(

@@ -1,10 +1,14 @@
 package vn.edu.uit.msshop.product.product.application.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
@@ -20,6 +24,10 @@ import vn.edu.uit.msshop.product.product.domain.model.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.ProductName;
+import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariantPrice;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariantTraits;
 
 @Service
 @RequiredArgsConstructor
@@ -35,22 +43,50 @@ public class CreateProductService implements CreateProductUseCase {
     @Transactional
     public ProductView create(
             final CreateProductCommand command) {
+        return this.create(
+                command.categoryId(),
+                command.brandId(),
+                command.name(),
+                command.variants(),
+                command.options());
+    }
 
-        this.validateCategoryExists(command.categoryId());
-        this.validateBrandExists(command.brandId());
+    @Override
+    @Transactional
+    public ProductView createSimple(
+            final CreateSimpleProductCommand command) {
+        final var defaultVariant = new CreateProductVariantCommand(
+                new ProductVariantPrice(command.price().value()),
+                ProductVariantTraits.empty());
+
+        return this.create(
+                command.categoryId(),
+                command.brandId(),
+                command.name(),
+                List.of(defaultVariant),
+                ProductOptions.empty());
+    }
+
+    private ProductView create(
+            final ProductCategoryId categoryId,
+            final ProductBrandId brandId,
+            final ProductName name,
+            final List<CreateProductVariantCommand> variants,
+            final ProductOptions options) {
+
+        this.validateCategoryExists(categoryId);
+        this.validateBrandExists(brandId);
 
         final var productId = ProductId.newId();
 
-        final var savedVariants = this.createVariantsPort.create(
-                productId,
-                command.variants());
+        final var savedVariants = this.createVariantsPort.create(productId, variants);
 
         final var newProduct = new NewProduct(
                 productId,
-                command.name(),
-                command.categoryId(),
-                command.brandId(),
-                command.options(),
+                name,
+                categoryId,
+                brandId,
+                options,
                 savedVariants);
 
         final var saved = this.createPort.create(newProduct);
@@ -72,4 +108,5 @@ public class CreateProductService implements CreateProductUseCase {
             throw new ProductBrandNotFoundException(newBrandId);
         }
     }
+
 }

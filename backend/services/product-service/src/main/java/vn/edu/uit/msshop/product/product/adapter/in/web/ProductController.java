@@ -18,6 +18,7 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
+import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
 import vn.edu.uit.msshop.product.product.application.port.in.CheckProductExistsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.FindProductUseCase;
@@ -60,8 +61,12 @@ public class ProductController {
             @RequestBody
             @Valid
             final CreateProductRequest request) {
-        final var command = this.mapper.toCreateCommand(request);
-        final var view = this.createUseCase.create(command);
+        final ProductView view;
+        if (request.variants().isEmpty() && request.options().isEmpty()) {
+            view = this.createUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
+        } else {
+            view = this.createUseCase.create(this.mapper.toCreateCommand(request));
+        }
 
         final var response = this.mapper.toResponse(view);
         final var location = WebMvcLinkBuilder

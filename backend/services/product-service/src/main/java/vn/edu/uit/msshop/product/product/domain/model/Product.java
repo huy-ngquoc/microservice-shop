@@ -81,16 +81,16 @@ public final class Product {
             throw new DomainException("Product with configurable options MUST have at least one variant");
         }
 
-        final var expectedTierCount = this.options.size();
+        final var expectedOptionsCount = this.options.size();
         for (final var variant : this.variants.values()) {
-            if (variant.traits().size() != expectedTierCount) {
+            if (variant.traits().size() != expectedOptionsCount) {
                 throw new DomainException(
                         String.format(
                                 "Cross-Validation failed: Variant '%s' provides %d traits, " +
                                         "but Product defines %d options",
                                 variant.id().value(),
                                 variant.traits().size(),
-                                expectedTierCount));
+                                expectedOptionsCount));
             }
         }
     }

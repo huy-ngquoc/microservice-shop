@@ -9,7 +9,9 @@ import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
 public record ProductVariantTraits(
         List<ProductVariantTrait> values) {
-    public static final int MAX_TRAITS_AMOUNT = 3;
+    public static final int MAX_TRAITS_AMOUNT = ProductOptions.MAX_AMOUNT;
+
+    private static final ProductVariantTraits EMPTY = new ProductVariantTraits(List.of());
 
     public ProductVariantTraits {
         if (values == null) {
@@ -39,6 +41,10 @@ public record ProductVariantTraits(
             final Collection<String> rawTraitsList) {
         final var traitsList = rawTraitsList.stream().map(ProductVariantTrait::new).toList();
         return new ProductVariantTraits(traitsList);
+    }
+
+    public static ProductVariantTraits empty() {
+        return ProductVariantTraits.EMPTY;
     }
 
     public List<String> unwrap() {
