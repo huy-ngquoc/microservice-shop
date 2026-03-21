@@ -18,8 +18,8 @@ public class InventoryEventPublisher implements PublishInventoryEventPort {
     private final KafkaTemplate<String, InventoryUpdated> inventoryUpdateTemplate;
     private final KafkaTemplate<String, ForceCancellOrder> forceCancellOrderTemplate;
     private final KafkaTemplate<String, UpdateManyInventoriesEvent> updateManyTemplate;
-    private static final String INVENTORY_TOPIC="";
-    private static final String ORDER_TOPIC="";
+    private static final String INVENTORY_TOPIC="inventory-topic";
+    private static final String ORDER_TOPIC="inventory-order";
 
     @Override
     public void publishInventoryUpdateEvent(InventoryUpdated event) {

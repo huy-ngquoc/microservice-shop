@@ -30,7 +30,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     private static final String ORDER_CREATED_TOPIC = "order-topic";
     private static final String PAYMENT_STATUS_TOPIC="payment-cod-topic";
     private static final String CLEAR_CART_TOPIC="cart-topic";
-    private static final String INVENTORY_TOPIC="";
+    private static final String INVENTORY_TOPIC="order-inventory";
    
 
     @Override

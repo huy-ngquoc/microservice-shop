@@ -5,7 +5,7 @@ spring:
   kafka:
         bootstrap-servers: localhost:9092 
         consumer:
-            group-id: account-group
+            group-id: order-group
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
             properties:
@@ -13,7 +13,9 @@ spring:
                 spring.json.type.mapping: 
                     OnlinePaymentExpired:vn.uit.edu.msshop.order.domain.event.OnlinePaymentExpired,
                     OnlinePaymentCancelled:vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled,
-                    CodPaymentCreated:vn.uit.edu.msshop.order.domain.event.CodPaymentCreated
+                    CodPaymentCreated:vn.uit.edu.msshop.order.domain.event.CodPaymentCreated,
+                    ForceCancellOrder:vn.uit.edu.msshop.order.domain.event.inventory.ForceCancellOrder
+
                     
         producer:
             bootstrap-servers: localhost:9092
@@ -24,4 +26,7 @@ spring:
                     OrderCreated:vn.uit.edu.msshop.order.domain.event.OrderCreated,
                     CodPaymentCancelled:vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled,
                     CodPaymentReceived:vn.uit.edu.msshop.order.domain.event.CodPaymentReceived,
-                    OrderCreatedSuccess:vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess
+                    OrderCreatedSuccess:vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess,
+                    OrderCreated_Inventory:vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated,
+                    OrderCancelled:vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled,
+                    OrderShipped:vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped
