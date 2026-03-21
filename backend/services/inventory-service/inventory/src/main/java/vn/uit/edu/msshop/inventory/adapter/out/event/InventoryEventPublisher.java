@@ -18,7 +18,7 @@ public class InventoryEventPublisher implements PublishInventoryEventPort {
     private final KafkaTemplate<String, InventoryUpdated> inventoryUpdateTemplate;
     private final KafkaTemplate<String, ForceCancellOrder> forceCancellOrderTemplate;
     private final KafkaTemplate<String, UpdateManyInventoriesEvent> updateManyTemplate;
-    private static final String INVENTORY_TOPIC="inventory-topic";
+    private static final String INVENTORY_TOPIC="inventory-product";
     private static final String ORDER_TOPIC="inventory-order";
 
     @Override
@@ -35,7 +35,7 @@ public class InventoryEventPublisher implements PublishInventoryEventPort {
 
     @Override
     public void publicUpdateManyInventoriesEvent(UpdateManyInventoriesEvent event) {
-        Message<UpdateManyInventoriesEvent> message= MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, ORDER_TOPIC).build();
+        Message<UpdateManyInventoriesEvent> message= MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
         updateManyTemplate.send(message);
     }
 

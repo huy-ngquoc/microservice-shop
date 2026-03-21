@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderCancelledCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderCreateCommand;
@@ -45,11 +46,14 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     }
 
     @Override
+    @Transactional
     public List<InventoryView> updateWhenOrderCreated(OrderCreateCommand commands) {
         List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
+        System.out.println("Inventories size "+inventories.get(0).getVariantId().value().toString() );
         List<Inventory> toSaves = new ArrayList<>();
         List<InventoryUpdated> events = new ArrayList<>();
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
+            System.out.println(detailCommand.getVariantId().value());
             Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
             if(inventory==null) throw new RuntimeException("Invalid variant id");
             if(inventory.getQuantity().value()<detailCommand.getQuantity().value()) {
@@ -69,6 +73,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     }
 
     @Override
+    @Transactional
     public List<InventoryView> updateWhenOrderCancelled(OrderCancelledCommand commands) {
         List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         List<Inventory> toSaves = new ArrayList<>();
@@ -92,7 +97,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     }
     private Inventory findByVariantIdInList(VariantId id, List<Inventory> inventories) {
         for(Inventory inventory:inventories) {
-            if(id.value().toString().equals(inventory.getId().value().toString())) return inventory;
+            if(id.value().equals(inventory.getVariantId().value())) return inventory;
         }
         return null;
     }

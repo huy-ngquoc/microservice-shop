@@ -37,3 +37,7 @@ spring:
                     ForceCancellOrder:vn.uit.edu.msshop.inventory.domain.event.ForceCancellOrder,
                     InventoryUpdated:vn.uit.edu.msshop.inventory.domain.event.InventoryUpdated,
                     UpdateManyInventoriesEvent:vn.uit.edu.msshop.inventory.domain.event.UpdateManyInventoriesEvent
+logging:
+  level:
+    org.apache.kafka: ERROR
+    org.springframework.kafka: ERROR

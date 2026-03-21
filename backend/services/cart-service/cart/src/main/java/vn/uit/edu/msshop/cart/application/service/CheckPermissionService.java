@@ -8,8 +8,8 @@ import vn.uit.edu.msshop.cart.application.port.in.CheckPermissionUseCase;
 
 @Service
 public class CheckPermissionService implements CheckPermissionUseCase {
-    private static final String ROLE_USER = "ROLE_client_user";
-    private static final String ROLE_ADMIN= "ADMIN_client_user";
+    private static final String ROLE_USER = "ROLE_Client_user";
+    private static final String ROLE_ADMIN= "ROLE_Client_admin";
     @Override
     public boolean isSameUser(String userIdHeader, String userIdFromCart) {
         return userIdHeader.equals(userIdFromCart);

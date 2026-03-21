@@ -12,6 +12,7 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.LastUpdate;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.Version;
 
 @Getter
 @EqualsAndHashCode(
@@ -26,6 +27,7 @@ public class Inventory {
     private Quantity quantity;
     private ReservedQuantity reservedQuantity;
     private LastUpdate lastUpdate;
+    private Version version;
 
     @Builder
     public static record Draft (
@@ -43,7 +45,8 @@ public class Inventory {
         VariantId variantId,
         Quantity quantity,
         ReservedQuantity reservedQuantity,
-        LastUpdate lastUpdate
+        LastUpdate lastUpdate,
+        Version version
     ) {
 
     }
@@ -58,12 +61,12 @@ public class Inventory {
 
     public static Inventory create(Draft draft) {
         if(draft==null) throw new IllegalArgumentException("Invalid draft");
-        return Inventory.builder().id(draft.id()).variantId(draft.variantId()).quantity(draft.quantity()).reservedQuantity(draft.reservedQuantity()).lastUpdate(new LastUpdate(null)).build();
+        return Inventory.builder().id(draft.id()).variantId(draft.variantId()).quantity(draft.quantity()).reservedQuantity(draft.reservedQuantity()).lastUpdate(new LastUpdate(null)).version(new Version(0)).build();
     }
 
     public static Inventory reconstitue(Snapshot s) {
         if(s==null) throw new IllegalArgumentException("Invalid snapshot");
-        return Inventory.builder().id(s.id()).variantId(s.variantId()).quantity(s.quantity()).reservedQuantity(s.reservedQuantity()).lastUpdate(new LastUpdate(null)).build();
+        return Inventory.builder().id(s.id()).variantId(s.variantId()).quantity(s.quantity()).reservedQuantity(s.reservedQuantity()).lastUpdate(new LastUpdate(null)).version(s.version()).build();
     }
 
     public Snapshot snapshot() {
@@ -72,7 +75,7 @@ public class Inventory {
     public Inventory applyUpdateInfo(UpdateInfo u) {
         if(u==null) throw new IllegalArgumentException("Update info must not be null");
         if(isTheSameInfoWithUpdate(u)) return this;
-        return Inventory.builder().id(this.id).variantId(this.variantId).quantity(u.quantity()).reservedQuantity(u.reservedQuantity()).lastUpdate(new LastUpdate(Instant.now())).build();
+        return Inventory.builder().id(this.id).variantId(this.variantId).quantity(u.quantity()).reservedQuantity(u.reservedQuantity()).lastUpdate(new LastUpdate(Instant.now())).version(this.version).build();
     }
     private boolean isTheSameInfoWithUpdate(UpdateInfo u) {
         return u.quantity().value()==this.quantity.value()&&u.reservedQuantity().value()==this.reservedQuantity.value();

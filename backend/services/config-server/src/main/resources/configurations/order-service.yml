@@ -30,3 +30,7 @@ spring:
                     OrderCreated_Inventory:vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated,
                     OrderCancelled:vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled,
                     OrderShipped:vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped
+logging:
+  level:
+    org.apache.kafka: ERROR
+    org.springframework.kafka: ERROR

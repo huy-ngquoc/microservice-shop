@@ -31,6 +31,6 @@ public class InventoryOrderListener {
     @KafkaHandler
     public void onOrderShipped(OrderShipped event) {
         final var command = mapper.toCommand(event);
-        
+        updateInventoryUseCase.updateWhenOrderShipped(command);
     }
 }

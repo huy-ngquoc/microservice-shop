@@ -75,6 +75,7 @@ public class InventoryController {
     }
     @PostMapping("/")
     public ResponseEntity<InventoryResponse> create(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestBody CreateInventoryRequest request) {
+        System.out.println("Roleeee " +role);
          if(!checkPermission.isAdmin(role)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
