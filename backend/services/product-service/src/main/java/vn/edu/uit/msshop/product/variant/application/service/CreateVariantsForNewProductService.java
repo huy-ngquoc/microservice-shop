@@ -6,38 +6,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.dto.command.CreateAllVariantsCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.command.CreateAllVariantsCommand.VariantCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantsForNewProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
-import vn.edu.uit.msshop.product.variant.application.exception.VariantProductNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
-import vn.edu.uit.msshop.product.variant.application.port.in.CreateAllVariantsForNewProductUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.CheckVariantProductExistsPort;
+import vn.edu.uit.msshop.product.variant.application.port.in.CreateVariantsForNewProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantCreated;
 import vn.edu.uit.msshop.product.variant.domain.model.NewVariant;
+import vn.edu.uit.msshop.product.variant.domain.model.NewVariantForNewProduct;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantProductId;
 
 @Service
 @RequiredArgsConstructor
-public class CreateAllVariantsForNewProductService implements CreateAllVariantsForNewProductUseCase {
+public class CreateVariantsForNewProductService implements CreateVariantsForNewProductUseCase {
     private final CreateAllVariantsPort createAllPort;
     private final PublishVariantEventPort eventPort;
     private final VariantViewMapper mapper;
 
     @Override
     @Transactional
-    public List<VariantView> createAllForNewProduct(
-            final CreateAllVariantsCommand command) {
-        final var newVariantsList = command.variants()
+    public List<VariantView> create(
+            final CreateVariantsForNewProductCommand command) {
+        final var newVariantsList = command.newVariantsForNewProduct().values()
                 .stream()
-                .map((
-                        final VariantCommand variant) -> new NewVariant(
-                                VariantId.newId(),
-                                command.productId(),
-                                variant.price(),
-                                variant.traits()))
+                .map(v -> this.toNewVariant(command.productId(), v))
                 .toList();
 
         final var saved = this.createAllPort.createAll(newVariantsList);
@@ -46,5 +40,15 @@ public class CreateAllVariantsForNewProductService implements CreateAllVariantsF
         }
 
         return saved.stream().map(this.mapper::toView).toList();
+    }
+
+    private NewVariant toNewVariant(
+            final VariantProductId productId,
+            final NewVariantForNewProduct newInputs) {
+        return new NewVariant(
+                VariantId.newId(),
+                productId,
+                newInputs.price(),
+                newInputs.traits());
     }
 }

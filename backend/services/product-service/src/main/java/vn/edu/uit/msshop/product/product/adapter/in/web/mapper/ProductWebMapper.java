@@ -6,24 +6,23 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductVariantResponse;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductVariantView;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
+import vn.edu.uit.msshop.product.product.domain.model.NewProductConfiguration;
+import vn.edu.uit.msshop.product.product.domain.model.NewProductVariant;
+import vn.edu.uit.msshop.product.product.domain.model.NewProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.ProductPrice;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVariantPrice;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVersion;
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
 
@@ -34,16 +33,21 @@ public class ProductWebMapper {
         final var name = new ProductName(request.name());
         final var categoryId = new ProductCategoryId(request.categoryId());
         final var brandId = new ProductBrandId(request.brandId());
+
         final var options = ProductOptions.of(request.options());
         final var variantsList = request.variants().stream()
-                .map(this::toCreateVariantCommand).toList();
+                .map(v -> NewProductVariant.of(v.price(), v.traits()))
+                .toList();
+        final var newVariants = new NewProductVariants(variantsList);
+        final var newConfiguration = new NewProductConfiguration(
+                options,
+                newVariants);
 
         return new CreateProductCommand(
                 name,
                 categoryId,
                 brandId,
-                options,
-                variantsList);
+                newConfiguration);
     }
 
     public CreateSimpleProductCommand toCreateSimpleCommand(
@@ -61,16 +65,6 @@ public class ProductWebMapper {
                 categoryId,
                 brandId,
                 price);
-    }
-
-    public CreateProductVariantCommand toCreateVariantCommand(
-            final CreateProductVariantRequest request) {
-        final var price = new ProductVariantPrice(request.price());
-        final var traits = ProductVariantTraits.of(request.traits());
-
-        return new CreateProductVariantCommand(
-                price,
-                traits);
     }
 
     public UpdateProductInfoCommand toUpdateInfoCommand(

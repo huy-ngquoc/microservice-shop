@@ -1,13 +1,18 @@
 package vn.edu.uit.msshop.product.product.domain.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
 public record ProductVariants(
         List<ProductVariant> values) {
-    public static final int MAX_AMOUNT = ProductOptions.MAX_AMOUNT * ProductVariantTraits.MAX_TRAITS_AMOUNT;
+    public static final int MAX_AMOUNT = Math.powExact(
+            ProductOptions.MAX_AMOUNT,
+            ProductVariantTraits.MAX_TRAITS_AMOUNT);
 
     public ProductVariants {
         if (values == null) {
@@ -60,5 +65,74 @@ public record ProductVariants(
 
     public int size() {
         return this.values.size();
+    }
+
+    public ProductVariants add(
+            final ProductVariant variant) {
+        final var newValues = new ArrayList<>(this.values);
+        newValues.add(variant);
+        return new ProductVariants(newValues);
+    }
+
+    public ProductVariants removeById(
+            final ProductVariantId variantId) {
+        final var newValues = this.values.stream()
+                .filter(v -> !v.id().equals(variantId))
+                .toList();
+        if (newValues.size() == this.values.size()) {
+            throw new DomainException("Variant not found: " + variantId.value());
+        }
+        return new ProductVariants(newValues);
+    }
+
+    public Optional<ProductVariant> findById(
+            final ProductVariantId variantId) {
+        return this.values.stream()
+                .filter(v -> v.id().equals(variantId))
+                .findFirst();
+    }
+
+    public ProductVariants removeTraitAt(
+            final int optionIndex) {
+        final var newValues = this.values.stream()
+                .map(v -> new ProductVariant(
+                        v.id(),
+                        v.price(),
+                        v.traits().removeAt(optionIndex)))
+                .toList();
+
+        return new ProductVariants(newValues);
+    }
+
+    public ProductVariants replaceById(
+            final ProductVariantId id,
+            final ProductVariant newVariant) {
+        final var newValues = this.values.stream()
+                .map(v -> v.id().equals(id) ? newVariant : v)
+                .toList();
+        return new ProductVariants(newValues);
+    }
+
+    public ProductVariants appendTraitToAll(
+            final Map<ProductVariantId, ProductVariantTrait> traitAssignments) {
+        final var newValues = this.values.stream()
+                .map(variant -> ProductVariants.appendAssignedTrait(variant, traitAssignments))
+                .toList();
+        return new ProductVariants(newValues);
+    }
+
+    private static ProductVariant appendAssignedTrait(
+            final ProductVariant variant,
+            final Map<ProductVariantId, ProductVariantTrait> traitAssignments) {
+        final var trait = traitAssignments.get(variant.id());
+        if (trait == null) {
+            throw new DomainException(
+                    "Missing trait assignment for variant: " + variant.id().value());
+        }
+
+        return new ProductVariant(
+                variant.id(),
+                variant.price(),
+                variant.traits().add(trait));
     }
 }

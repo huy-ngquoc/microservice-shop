@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.domain.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -53,5 +54,35 @@ public record ProductOptions(
 
     public int size() {
         return values.size();
+    }
+
+    public ProductOptions add(
+            final ProductOption option) {
+        final var newValues = new ArrayList<>(this.values);
+        newValues.add(option);
+        return new ProductOptions(newValues);
+    }
+
+    public ProductOptions removeAt(
+            final int index) {
+        if ((index < 0) || (index >= this.values.size())) {
+            throw new DomainException("Option index out of bounds: " + index);
+        }
+
+        final var newValues = new ArrayList<>(this.values);
+        newValues.remove(index);
+        return new ProductOptions(newValues);
+    }
+
+    public ProductOptions replaceAt(
+            final int index,
+            final ProductOption newOption) {
+        if (index < 0 || index >= this.values.size()) {
+            throw new DomainException("Option index out of bounds: " + index);
+        }
+
+        final var newValues = new ArrayList<>(this.values);
+        newValues.set(index, newOption);
+        return new ProductOptions(newValues);
     }
 }

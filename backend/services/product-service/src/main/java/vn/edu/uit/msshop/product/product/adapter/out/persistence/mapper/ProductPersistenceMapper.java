@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.product.domain.model.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductCategoryId;
+import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductImageKeys;
 import vn.edu.uit.msshop.product.product.domain.model.ProductName;
@@ -42,11 +43,17 @@ public class ProductPersistenceMapper {
         final var rating = new ProductRating(
                 entity.getRatingAverage(),
                 entity.getRatingCount());
+
         final var options = ProductOptions.of(entity.getOptions());
-        final var imageKeys = ProductImageKeys.of(entity.getImageKeys());
 
         final var variantsList = entity.getVariants().stream().map(this::toDomain).toList();
         final var variants = new ProductVariants(variantsList);
+
+        final var configuration = new ProductConfiguration(
+                options,
+                variants);
+
+        final var imageKeys = ProductImageKeys.of(entity.getImageKeys());
 
         final var versionValue = Objects.requireNonNull(
                 entity.getVersion(),
@@ -61,8 +68,7 @@ public class ProductPersistenceMapper {
                 priceRange,
                 soldCount,
                 rating,
-                options,
-                variants,
+                configuration,
                 imageKeys,
                 version);
     }

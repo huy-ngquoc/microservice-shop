@@ -22,14 +22,14 @@ public record ProductVariantTraits(
             throw new DomainException("Product variant trait list can have maximum " + MAX_TRAITS_AMOUNT + " traits");
         }
 
-        final var uniqueNames = HashSet.<String>newHashSet(values.size());
+        final var uniqueValues = HashSet.<String>newHashSet(values.size());
         for (final var trait : values) {
             if (trait == null) {
                 throw new DomainException("Variant trait CANNOT be null");
             }
 
             final var lowercaseTrait = trait.value().toLowerCase(Locale.ROOT);
-            if (!uniqueNames.add(lowercaseTrait)) {
+            if (!uniqueValues.add(lowercaseTrait)) {
                 throw new DomainException("Duplicate product variant trait found: " + trait.value());
             }
         }
@@ -57,5 +57,23 @@ public record ProductVariantTraits(
 
     public int size() {
         return this.values.size();
+    }
+
+    public ProductVariantTraits add(
+            final ProductVariantTrait trait) {
+        final var newValues = new java.util.ArrayList<>(this.values);
+        newValues.add(trait);
+        return new ProductVariantTraits(newValues);
+    }
+
+    public ProductVariantTraits removeAt(
+            final int index) {
+        if ((index < 0) || (index >= this.values.size())) {
+            throw new DomainException("Trait index out of bounds: " + index);
+        }
+
+        final var newValues = new java.util.ArrayList<>(this.values);
+        newValues.remove(index);
+        return new ProductVariantTraits(newValues);
     }
 }

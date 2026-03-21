@@ -124,8 +124,7 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
                 current.getPriceRange(),
                 current.getSoldCount(),
                 current.getRating(),
-                current.getOptions(),
-                current.getVariants(),
+                current.getConfiguration(),
                 current.getImageKeys(),
                 current.getVersion());
     }
