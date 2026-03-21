@@ -49,7 +49,7 @@ public class VariantPersistenceMapper {
                 variant.getProductId().value(),
                 variant.getPrice().value(),
                 variant.getSoldCount().value(),
-                VariantTraits.unwrap(variant.getTraits()),
+                variant.getTraits().unwrap(),
                 VariantImageKey.unwrap(variant.getImageKey()),
                 variant.getVersion().value());
     }
@@ -61,7 +61,7 @@ public class VariantPersistenceMapper {
                 newVariant.getProductId().value(),
                 newVariant.getPrice().value(),
                 VariantSoldCount.zero().value(),
-                VariantTraits.unwrap(newVariant.getTraits()),
+                newVariant.getTraits().unwrap(),
                 null,
                 null);
     }
