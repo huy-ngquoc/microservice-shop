@@ -11,8 +11,8 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNo
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.UpdateProductInfoUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.CheckProductBrandExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.CheckProductCategoryExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CheckBrandExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CheckCategoryExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.UpdateProductPort;
@@ -29,8 +29,8 @@ import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockExce
 public class UpdateProductInfoService implements UpdateProductInfoUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
-    private final CheckProductCategoryExistsPort checkCategoryExistsPort;
-    private final CheckProductBrandExistsPort checkBrandExistsPort;
+    private final CheckCategoryExistsPort checkCategoryExistsPort;
+    private final CheckBrandExistsPort checkBrandExistsPort;
     private final ProductViewMapper mapper;
     private final PublishProductEventPort eventPort;
 

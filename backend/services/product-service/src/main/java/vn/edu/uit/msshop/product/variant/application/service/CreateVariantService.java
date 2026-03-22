@@ -8,7 +8,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantProductNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.CreateVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.CheckVariantProductExistsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.CheckProductExistsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.CreateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantCreated;
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
 @Service
 @RequiredArgsConstructor
 public class CreateVariantService implements CreateVariantUseCase {
-    private final CheckVariantProductExistsPort checkProductExistsPort;
+    private final CheckProductExistsPort checkProductExistsPort;
     private final CreateVariantPort createPort;
     private final PublishVariantEventPort eventPort;
     private final VariantViewMapper mapper;

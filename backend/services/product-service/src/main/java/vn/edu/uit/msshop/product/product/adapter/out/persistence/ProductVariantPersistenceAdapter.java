@@ -27,7 +27,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantTraits;
 @RequiredArgsConstructor
 public class ProductVariantPersistenceAdapter
         implements CreateProductVariantsPort {
-    private final CreateVariantsForNewProductUseCase createorNewProductUseCase;
+    private final CreateVariantsForNewProductUseCase createForNewProductUseCase;
 
     @Override
     public ProductVariants create(
@@ -42,7 +42,7 @@ public class ProductVariantPersistenceAdapter
                 variantProductId,
                 newVariantInputs);
 
-        final var variantViewsList = this.createorNewProductUseCase.create(command);
+        final var variantViewsList = this.createForNewProductUseCase.create(command);
 
         final var productVariantsList = variantViewsList.stream()
                 .map(this::toProductVariant).toList();
