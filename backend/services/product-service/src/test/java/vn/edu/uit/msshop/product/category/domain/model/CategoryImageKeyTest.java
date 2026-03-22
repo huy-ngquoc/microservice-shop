@@ -12,6 +12,7 @@ final class CategoryImageKeyTest {
 
     @Test
     @DisplayName("Throw DomainException when instantiated with null key")
+    @SuppressWarnings("NullAway")
     void constructor_NullValue_ThrowsException() {
         // When & Then
         Assertions.assertThatThrownBy(() -> new CategoryImageKey(null))

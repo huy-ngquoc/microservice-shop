@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 final class CategoryNameTest {
     @Test
     @DisplayName("Throw DomainException when instantiated with null name")
+    @SuppressWarnings("NullAway")
     void constructor_NullValue_ThrowsException() {
         // When & Then
         Assertions.assertThatThrownBy(() -> new CategoryName(null))
