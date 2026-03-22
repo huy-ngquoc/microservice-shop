@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.domain.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -61,7 +62,7 @@ public record ProductVariantTraits(
 
     public ProductVariantTraits add(
             final ProductVariantTrait trait) {
-        final var newValues = new java.util.ArrayList<>(this.values);
+        final var newValues = new ArrayList<>(this.values);
         newValues.add(trait);
         return new ProductVariantTraits(newValues);
     }
@@ -72,7 +73,7 @@ public record ProductVariantTraits(
             throw new DomainException("Trait index out of bounds: " + index);
         }
 
-        final var newValues = new java.util.ArrayList<>(this.values);
+        final var newValues = new ArrayList<>(this.values);
         newValues.remove(index);
         return new ProductVariantTraits(newValues);
     }

@@ -81,7 +81,8 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
                     current.getSoldCount(),
                     current.getTraits(),
                     newImageKey,
-                    current.getVersion());
+                    current.getVersion(),
+                    current.getDeletionTime());
             return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {

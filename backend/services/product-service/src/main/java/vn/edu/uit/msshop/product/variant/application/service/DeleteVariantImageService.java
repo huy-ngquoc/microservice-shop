@@ -57,7 +57,8 @@ public class DeleteVariantImageService implements DeleteVariantImageUseCase {
                 variant.getSoldCount(),
                 variant.getTraits(),
                 null,
-                expectedVersion);
+                expectedVersion,
+                variant.getDeletionTime());
         final var saved = this.updatePort.update(next);
 
         final var event = new VariantImageUpdated(

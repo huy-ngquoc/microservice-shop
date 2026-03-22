@@ -9,11 +9,11 @@ public record NewProductVariant(
         ProductVariantTraits traits) {
     public NewProductVariant {
         if (price == null) {
-            throw new DomainException("Variant price cannot be null in summary");
+            throw new DomainException("Variant price cannot be null");
         }
 
         if (traits == null) {
-            throw new DomainException("Variant traits cannot be null in summary");
+            throw new DomainException("Variant traits cannot be null");
         }
     }
 

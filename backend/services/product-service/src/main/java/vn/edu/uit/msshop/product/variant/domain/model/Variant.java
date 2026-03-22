@@ -28,6 +28,9 @@ public final class Variant {
 
     private final VariantVersion version;
 
+    @Nullable
+    private final VariantDeletionTime deletionTime;
+
     public Variant(
             final VariantId id,
 
@@ -42,7 +45,10 @@ public final class Variant {
             @Nullable
             final VariantImageKey imageKey,
 
-            final VariantVersion version) {
+            final VariantVersion version,
+
+            @Nullable
+            final VariantDeletionTime deletionTime) {
         this.id = Domains.requireNonNull(id, "Variant ID must not be null");
         this.productId = Domains.requireNonNull(productId, "Variant Product ID must not be null");
         this.price = Domains.requireNonNull(price, "Variant price must not be null");
@@ -51,5 +57,6 @@ public final class Variant {
         this.imageKey = imageKey;
 
         this.version = Domains.requireNonNull(version, "Variant version must not be null");
+        this.deletionTime = deletionTime;
     }
 }

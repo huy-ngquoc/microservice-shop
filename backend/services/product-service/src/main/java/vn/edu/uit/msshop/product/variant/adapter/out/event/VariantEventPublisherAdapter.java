@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.port.out.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantCreated;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdated;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
 
 @Component
@@ -30,6 +31,12 @@ public class VariantEventPublisherAdapter
     @Override
     public void publish(
             final VariantImageUpdated event) {
+        this.publisher.publishEvent(event);
+    }
+
+    @Override
+    public void publish(
+            final VariantSoftDeleted event) {
         this.publisher.publishEvent(event);
     }
 }

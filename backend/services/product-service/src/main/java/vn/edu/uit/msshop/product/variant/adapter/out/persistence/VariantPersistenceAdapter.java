@@ -11,15 +11,23 @@ import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantP
 import vn.edu.uit.msshop.product.variant.application.port.out.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.CreateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantsForProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.UpdateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.model.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantProductId;
 
 @Component
 @RequiredArgsConstructor
 public class VariantPersistenceAdapter
-        implements LoadVariantPort, CreateVariantPort, CreateAllVariantsPort, UpdateVariantPort {
+        implements LoadVariantPort,
+        LoadVariantsForProductPort,
+        CreateVariantPort,
+        CreateAllVariantsPort,
+        UpdateVariantPort,
+        UpdateAllVariantsPort {
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
 
@@ -28,6 +36,15 @@ public class VariantPersistenceAdapter
             final VariantId id) {
         final var jpaId = id.value();
         return this.repository.findById(jpaId).map(this.mapper::toDomain);
+    }
+
+    @Override
+    public List<Variant> loadByProductId(
+            final VariantProductId productId) {
+        final var jpaProductId = productId.value();
+        return this.repository.findByProductId(jpaProductId).stream()
+                .map(this.mapper::toDomain)
+                .toList();
     }
 
     @Override
@@ -41,9 +58,13 @@ public class VariantPersistenceAdapter
     @Override
     public List<Variant> createAll(
             final Collection<NewVariant> newVariants) {
-        final var toSave = newVariants.stream().map(this.mapper::toPersistence).toList();
+        final var toSave = newVariants.stream()
+                .map(this.mapper::toPersistence)
+                .toList();
         final var saved = this.repository.saveAll(toSave);
-        return saved.stream().map(this.mapper::toDomain).toList();
+        return saved.stream()
+                .map(this.mapper::toDomain)
+                .toList();
     }
 
     @Override
@@ -52,5 +73,17 @@ public class VariantPersistenceAdapter
         final var toSave = this.mapper.toPersistence(variant);
         final var saved = this.repository.save(toSave);
         return this.mapper.toDomain(saved);
+    }
+
+    @Override
+    public List<Variant> updateAll(
+            final Collection<Variant> variants) {
+        final var toSave = variants.stream()
+                .map(this.mapper::toPersistence)
+                .toList();
+        final var saved = this.repository.saveAll(toSave);
+        return saved.stream()
+                .map(this.mapper::toDomain)
+                .toList();
     }
 }

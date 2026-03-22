@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.variant.adapter.out.persistence.VariantDocument;
 import vn.edu.uit.msshop.product.variant.domain.model.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantDeletionTime;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantPrice;
@@ -32,6 +33,8 @@ public class VariantPersistenceMapper {
                 "Persisted brand must have a version");
         final var version = new VariantVersion(versionValue);
 
+        final var deletionTime = VariantDeletionTime.ofNullable(entity.getDeletionTime());
+
         return new Variant(
                 id,
                 productId,
@@ -39,7 +42,8 @@ public class VariantPersistenceMapper {
                 sold,
                 traits,
                 imageKey,
-                version);
+                version,
+                deletionTime);
     }
 
     public VariantDocument toPersistence(
@@ -51,7 +55,8 @@ public class VariantPersistenceMapper {
                 variant.getSoldCount().value(),
                 variant.getTraits().unwrap(),
                 VariantImageKey.unwrap(variant.getImageKey()),
-                variant.getVersion().value());
+                variant.getVersion().value(),
+                null);
     }
 
     public VariantDocument toPersistence(
@@ -62,6 +67,7 @@ public class VariantPersistenceMapper {
                 newVariant.getPrice().value(),
                 VariantSoldCount.zero().value(),
                 newVariant.getTraits().unwrap(),
+                null,
                 null,
                 null);
     }

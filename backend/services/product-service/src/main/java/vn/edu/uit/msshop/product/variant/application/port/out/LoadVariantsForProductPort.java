@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.variant.application.port.out;
 
+import java.util.List;
+
+import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantProductId;
 
-// TODO: name is too long?
-public interface DeleteAllVariantsByProductIdPort {
-    void deleteByProductId(
+public interface LoadVariantsForProductPort {
+    List<Variant> loadByProductId(
             final VariantProductId id);
 }
