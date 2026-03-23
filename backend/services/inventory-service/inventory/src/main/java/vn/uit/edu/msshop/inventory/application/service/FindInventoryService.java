@@ -1,5 +1,7 @@
 package vn.uit.edu.msshop.inventory.application.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,7 @@ import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundExcept
 import vn.uit.edu.msshop.inventory.application.mapper.InventoryViewMapper;
 import vn.uit.edu.msshop.inventory.application.port.in.FindInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
+import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
@@ -33,6 +36,12 @@ public class FindInventoryService implements FindInventoryUseCase{
     public Page<InventoryView> findAll(int pageNumber, int pageSize) {
         final var result = loadPort.loadAll(pageNumber, pageSize);
         return result.map(mapper::toView);
+    }
+
+    @Override
+    public List<InventoryView> findByListVariantId(List<VariantId> listVariantIds) {
+        List<Inventory> listInventories = loadPort.findByListVariantId(listVariantIds);
+        return listInventories.stream().map(mapper::toView).toList();
     }
      
 }

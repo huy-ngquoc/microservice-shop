@@ -20,4 +20,5 @@ public class CartDetailView {
     private String size;
     private long price;
     private int amount;
+    private int inventoryAmount;
 }
