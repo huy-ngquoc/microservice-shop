@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.EqualsAndHashCode;
@@ -42,6 +43,7 @@ public class ProductDocument {
 
     private final List<String> imageKeys;
 
+    @Version
     @Nullable
     private final Long version;
 
