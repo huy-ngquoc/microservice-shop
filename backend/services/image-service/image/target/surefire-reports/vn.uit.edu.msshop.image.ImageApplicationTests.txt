@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: vn.uit.edu.msshop.image.ImageApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.611 s -- in vn.uit.edu.msshop.image.ImageApplicationTests
