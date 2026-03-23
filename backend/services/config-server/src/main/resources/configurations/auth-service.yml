@@ -43,6 +43,10 @@ spring:
                         uri: lb:http://INVENTORY-SERVICE
                         predicates:
                         - Path=/inventory/**
+                      - id: account-service
+                        uri: lb:http://ACCOUNT-SERVICE
+                        predicates:
+                        - Path=/account/**
 
 management:
   endpoints:
@@ -65,7 +69,7 @@ app:
             server-url: http://localhost:9098
             realm: ms_shop
             client-id: ms_shop_rest_api
-            client-secret: CUKAVq8UFZ8gxav1JyfeT69WaEO5zekG
+            client-secret: 4pzCHL2IbARbQqb2ICrIY7XzlTHw0Vnq
 logging:
   level:
     org.apache.kafka: ERROR

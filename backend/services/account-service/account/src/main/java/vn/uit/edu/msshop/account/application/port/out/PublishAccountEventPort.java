@@ -14,5 +14,6 @@ public interface PublishAccountEventPort {
     public void sendAccountCreationFailEvent(AccountId accountId);
     public void sendDeleteOldImageEvent(DeleteOldImageEvent event);
     public void sendRollbackImageEvent(RollbackImageEvent event);
+    public void sendAccountCreated(vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated event);
     
 }

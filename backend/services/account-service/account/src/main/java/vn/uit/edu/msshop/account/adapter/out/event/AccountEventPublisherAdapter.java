@@ -23,9 +23,10 @@ public class AccountEventPublisherAdapter implements PublishAccountEventPort {
     private final KafkaTemplate<String,AccountId> kafkaTemplate;
     private final KafkaTemplate<String,DeleteOldImageEvent> kafkaDeleteOldAvatarTemplate;
     private final KafkaTemplate<String,RollbackImageEvent> kafkaRollbackAvatarTemplate;
-    
+    private final KafkaTemplate<String,vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated> accountCreatedTemplate;
     private static final String PUBLISH_TOPIC = "account-topic-fail";
     private static final String PUBLISH_AVATAR_EVENT_TOPIC = "image-account-topic";
+    private static final String PUBLISH_ACCOUNT_CREATED_TOPIC="account-profile";
     
 
     @Override
@@ -54,6 +55,12 @@ public class AccountEventPublisherAdapter implements PublishAccountEventPort {
     public void sendRollbackImageEvent(RollbackImageEvent event) {
         Message<RollbackImageEvent> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PUBLISH_AVATAR_EVENT_TOPIC).build();
         kafkaRollbackAvatarTemplate.send(message);
+    }
+
+    @Override
+    public void sendAccountCreated(vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated event) {
+        Message<vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC,  PUBLISH_ACCOUNT_CREATED_TOPIC).build();
+        accountCreatedTemplate.send(message);;
     }
 
     
