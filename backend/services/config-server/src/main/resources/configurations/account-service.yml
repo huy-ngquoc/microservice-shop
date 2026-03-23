@@ -31,6 +31,7 @@ spring:
                     AccountId:vn.uit.edu.msshop.account.domain.event.kafka.AccountId,
                     DeleteOldImageEvent:vn.uit.edu.msshop.account.domain.event.kafka.DeleteOldImageEvent,
                     RollbackImageEvent:vn.uit.edu.msshop.account.domain.event.kafka.RollbackImageEvent
+                    AccountCreated:vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated
 
 server:
     port: 8071
@@ -38,3 +39,15 @@ logging:
   level:
     org.apache.kafka: ERROR
     org.springframework.kafka: ERROR
+jwt:
+    auth:
+        converter:
+            resource-id: ms_shop_rest_api
+            principle-attribute: preferred_username
+app:
+    keycloak:
+        admin:
+            server-url: http://localhost:9098
+            realm: ms_shop
+            client-id: ms_shop_rest_api
+            client-secret: 4pzCHL2IbARbQqb2ICrIY7XzlTHw0Vnq

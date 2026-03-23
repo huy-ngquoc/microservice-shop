@@ -44,7 +44,7 @@ public class AccountController {
     }
     @PostMapping("/create") 
     public ResponseEntity<Void> create(@RequestBody CreateAccountRequest request) {
-        System.out.println("Id "+request.id()+" vewrwevwevwevwewe");
+        
 
         final var createAccountCommand = webMapper.toCommand(request);
         this.createUseCase.create(createAccountCommand);

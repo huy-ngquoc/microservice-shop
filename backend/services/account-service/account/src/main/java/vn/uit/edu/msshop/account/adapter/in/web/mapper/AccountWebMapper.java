@@ -27,15 +27,15 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.ShippingAddress;
 @Component
 public class AccountWebMapper {
     public CreateAccountCommand toCommand(CreateAccountRequest request) {
-        final var id = new AccountId(request.id());
+       
         final var name = new AccountName(request.name());
         final var email = new AccountEmail(request.email());
         final var password = new AccountPassword(request.password());
         final var role = new AccountRole(request.role());
-        final var status = new AccountStatus(request.status());
+        
         final var shippingAddress = new ShippingAddress(request.shippingAddress());
         final var phoneNumber = new PhoneNumber(request.phoneNumber());
-        return new CreateAccountCommand(id,name,email,password,role,status,shippingAddress,phoneNumber);
+        return new CreateAccountCommand(name, email, password, shippingAddress, phoneNumber,role);
     }
     public UpdateAccountCommand toCommand(UpdateAccountRequest request) {
         final var id = new AccountId(request.id());
@@ -56,15 +56,15 @@ public class AccountWebMapper {
         return new AccountResponse(view.id(),view.name(),view.email(),view.password(),view.role(),view.status(),view.avatarUrl(),view.phoneNumber(),view.shippingAddress());
     }
     public CreateAccountCommand toCommand(AccountCreated accountCreated) {
-         final var id = new AccountId(accountCreated.id());
+        
         final var name = new AccountName(accountCreated.name());
         final var email = new AccountEmail(accountCreated.email());
         final var password = new AccountPassword(accountCreated.password());
         final var role = new AccountRole(accountCreated.role());
-        final var status = new AccountStatus("ACTIVE");
+        
         final var shippingAddress = new ShippingAddress(accountCreated.shippingAddress());
         final var phoneNumber = new PhoneNumber(accountCreated.phoneNumber());
-        return new CreateAccountCommand(id,name,email,password,role,status,shippingAddress,phoneNumber);
+        return new CreateAccountCommand(name,email,password,shippingAddress,phoneNumber,role);
     }
     public UpdateAvatarCommand toCommand(ImageRemoveSuccess event) {
         return new UpdateAvatarCommand(new AvatarUrl(event.getUrl()), new AvatarPublicId(event.getPublicId()), new ImageSize(event.getWidth(),event.getHeight()), new AccountId(event.getObjectId()));

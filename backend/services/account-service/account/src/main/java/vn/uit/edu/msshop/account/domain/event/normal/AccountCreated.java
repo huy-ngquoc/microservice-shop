@@ -17,4 +17,5 @@ public class AccountCreated {
     private final UUID eventId = UUID.randomUUID();
     private final Instant occurentTime = Instant.now();
     private final AccountId accountId;
+    
 }

@@ -49,6 +49,14 @@
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
 		<dependency>
+    <groupId>org.keycloak</groupId>
+    <artifactId>keycloak-admin-client</artifactId>
+    <version>26.0.8</version> </dependency>
+	<dependency>
+    <groupId>org.keycloak</groupId>
+    <artifactId>keycloak-core</artifactId>
+    <version>26.5.5</version> </dependency>
+		<dependency>
     <groupId>org.projectlombok</groupId>
     <artifactId>lombok</artifactId>
     <scope>provided</scope>

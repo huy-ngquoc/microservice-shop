@@ -11,6 +11,7 @@ public record AccountCreated(
     String status,
     String shippingAddress,
     String phoneNumber
+    
 ) {
 
 }
