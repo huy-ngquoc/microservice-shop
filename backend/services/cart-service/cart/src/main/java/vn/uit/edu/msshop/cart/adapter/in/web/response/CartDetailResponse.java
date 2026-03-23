@@ -20,5 +20,6 @@ public class CartDetailResponse {
     private String size;
     private long price;
     private int amount;
+    private int inventoryAmount;
     
 }

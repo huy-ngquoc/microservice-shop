@@ -48,7 +48,7 @@ public class CartWebMapper {
         return new CartResponse(view.getUserId(), listDetailResponses);
     } 
     public CartDetailResponse toDetailResponse(CartDetailView view) {
-        return new CartDetailResponse(view.getVariantId(), view.getName(), view.getImageUrls(), view.getColor(), view.getSize(), view.getPrice(), view.getAmount());
+        return new CartDetailResponse(view.getVariantId(), view.getName(), view.getImageUrls(), view.getColor(), view.getSize(), view.getPrice(), view.getAmount(), view.getInventoryAmount());
     }
     public ClearCartCommand toCommand(String userId) {
         return new ClearCartCommand(new UserId(UUID.fromString(userId)));

@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.inventory.adapter.in.web;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -64,6 +65,17 @@ public class InventoryController {
         InventoryView view = findUseCase.findByVariantId(new VariantId(id));
         return ResponseEntity.ok(mapper.toResponse(view));
     }
+    @GetMapping("/public/variant/{id}")
+    public ResponseEntity<InventoryResponse> getByVariantId(@PathVariable UUID id) {
+        InventoryView view = findUseCase.findByVariantId(new VariantId(id));
+        return ResponseEntity.ok(mapper.toResponse(view));
+    }
+    @PostMapping("/public/variants")
+    public ResponseEntity<List<InventoryResponse>> getByVariantIds(@RequestBody List<UUID> variantIds) {
+        List<VariantId> listIds = variantIds.stream().map(item->new VariantId(item)).toList();
+        List<InventoryView> views = findUseCase.findByListVariantId(listIds);
+        return ResponseEntity.ok(views.stream().map(mapper::toResponse).toList());
+    }
     @PutMapping("/")
     public ResponseEntity<InventoryResponse> update(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestBody UpdateInventoryRequest request) {
         if(!checkPermission.isAdmin(role)) {
@@ -83,5 +95,7 @@ public class InventoryController {
         InventoryView result = createUseCase.create(command);
         return ResponseEntity.ok(mapper.toResponse(result));
     }
+
+
 
 }
