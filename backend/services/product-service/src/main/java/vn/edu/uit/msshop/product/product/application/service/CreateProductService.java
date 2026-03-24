@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.CheckBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CheckCategoryExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.CreateProductVariantsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CreateVariantsForNewProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
@@ -28,7 +28,7 @@ public class CreateProductService implements CreateProductUseCase {
     private final CreateProductPort createPort;
     private final CheckCategoryExistsPort checkCategoryExistsPort;
     private final CheckBrandExistsPort checkBrandExistsPort;
-    private final CreateProductVariantsPort createVariantsPort;
+    private final CreateVariantsForNewProductPort createVariantsForNewProductPort;
     private final PublishProductEventPort eventPort;
 
     private final ProductViewMapper mapper;
@@ -42,7 +42,7 @@ public class CreateProductService implements CreateProductUseCase {
 
         final var productId = ProductId.newId();
 
-        final var savedVariants = this.createVariantsPort.create(
+        final var savedVariants = this.createVariantsForNewProductPort.create(
                 productId,
                 command.newConfiguration().newVariants());
 

@@ -24,6 +24,7 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariantTraits;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariantVersion;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVersion;
 
@@ -79,10 +80,13 @@ public class ProductPersistenceMapper {
         final var price = new ProductVariantPrice(entity.getPrice());
         final var traits = ProductVariantTraits.of(entity.getTraits());
 
+        final var version = new ProductVariantVersion(entity.getVersion());
+
         return new ProductVariant(
                 id,
                 price,
-                traits);
+                traits,
+                version);
     }
 
     public ProductDocument toPersistence(
@@ -130,6 +134,7 @@ public class ProductPersistenceMapper {
         return new ProductVariantDocument(
                 variant.id().value(),
                 variant.price().value(),
-                variant.traits().unwrap());
+                variant.traits().unwrap(),
+                variant.version().value());
     }
 }

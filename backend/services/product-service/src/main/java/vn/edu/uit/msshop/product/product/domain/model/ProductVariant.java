@@ -1,22 +1,16 @@
 package vn.edu.uit.msshop.product.product.domain.model;
 
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.product.shared.domain.Domains;
 
 public record ProductVariant(
         ProductVariantId id,
         ProductVariantPrice price,
-        ProductVariantTraits traits) {
+        ProductVariantTraits traits,
+        ProductVariantVersion version) {
     public ProductVariant {
-        if (id == null) {
-            throw new DomainException("Variant ID cannot be null in summary");
-        }
-
-        if (price == null) {
-            throw new DomainException("Variant price cannot be null in summary");
-        }
-
-        if (traits == null) {
-            throw new DomainException("Variant traits cannot be null in summary");
-        }
+        Domains.requireNonNull(id, "Variant ID cannot be null");
+        Domains.requireNonNull(price, "Variant price cannot be null");
+        Domains.requireNonNull(traits, "Variant traits cannot be null");
+        Domains.requireNonNull(version, "Variant version cannot be null");
     }
 }

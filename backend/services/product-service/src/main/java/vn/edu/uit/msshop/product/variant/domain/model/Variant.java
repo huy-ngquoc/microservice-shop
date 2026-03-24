@@ -17,6 +17,7 @@ public final class Variant {
 
     private final VariantPrice price;
 
+    // TODO: update each hour... resolve version conflict.
     private final VariantSoldCount soldCount;
 
     private final VariantTraits traits;

@@ -98,7 +98,8 @@ public record ProductVariants(
                 .map(v -> new ProductVariant(
                         v.id(),
                         v.price(),
-                        v.traits().removeAt(optionIndex)))
+                        v.traits().removeAt(optionIndex),
+                        v.version()))
                 .toList();
 
         return new ProductVariants(newValues);
@@ -133,6 +134,7 @@ public record ProductVariants(
         return new ProductVariant(
                 variant.id(),
                 variant.price(),
-                variant.traits().add(trait));
+                variant.traits().add(trait),
+                variant.version());
     }
 }
