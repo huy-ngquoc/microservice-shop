@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.mapper.InventoryJpaMapper;
+import vn.uit.edu.msshop.inventory.application.port.out.DeleteInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
@@ -20,7 +21,7 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @Component
 @RequiredArgsConstructor
-public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInventoryPort {
+public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInventoryPort, DeleteInventoryPort {
     private final InventoryJpaMapper mapper;
     private final SpringDataInventoryJpaRepository repository;
 
@@ -84,5 +85,11 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         InventoryJpaEntity newEntity = mapper.toNewFromCommand(variantId, quantity);
         InventoryJpaEntity result = repository.save(newEntity);
         return mapper.toDomain(result);
+    }
+
+    @Override
+    public void delete(Inventory inventory) {
+        InventoryJpaEntity jpaEntity = mapper.toEntity(inventory);
+        repository.delete(jpaEntity);
     }
 }

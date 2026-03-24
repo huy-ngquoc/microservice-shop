@@ -7,6 +7,10 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
+import vn.uit.edu.msshop.order.adapter.exception.VariantNotFoundException;
+import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
+import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.dto.command.CreateOrderCommand;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.CheckUserPort;
@@ -60,6 +64,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     private final LoadOrderDetailPort loadOrderDetailPort;
     private final CheckUserPort checkUserPort;
     private final PublishOrderEventPort publishPort;
+    private final InventoryChecker inventoryChecker;
 
     @Override
     public UUID create(CreateOrderCommand command) {
@@ -67,6 +72,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         List<OrderDetail> listDetails = command.details().stream().map(item->{
             return loadOrderDetailPort.loadOrderDetail(item.variantId(), item.quantity());
         }).toList();
+        canPlaceOrder(listDetails);
         long originPrice =0;
         for(OrderDetail d : listDetails) {
             originPrice+=d.amount()*d.unitPrice();
@@ -90,6 +96,27 @@ public class CreateOrderService implements CreateOrderUseCase {
         publishPort.publishOrderCreated_InventoryEvent(new OrderCreated(saved.getId().value(),event_details));
         System.out.println(event_details.size());
         return saved.getId().value();
+    }
+    private void canPlaceOrder(List<OrderDetail> details) {
+        List<UUID> variantIds = details.stream().map(item->item.variantId()).toList();
+        List<InventoryResponse> responses = inventoryChecker.getInventoryBatch(variantIds);
+        for(OrderDetail orderDetail: details) {
+            InventoryResponse inventoryResponse = findInListByVariantId(responses, orderDetail.variantId());
+            if(inventoryResponse==null) {
+                throw new VariantNotFoundException(orderDetail.variantId());
+            }
+            if(inventoryResponse.getQuantity()<orderDetail.amount()) {
+                throw new VariantNotEnoughException(orderDetail.variantId());
+            }
+        }
+    }
+    private InventoryResponse findInListByVariantId(List<InventoryResponse> responses, UUID variantId) {
+        for(InventoryResponse response:responses) {
+            if(response.getId().equals(variantId)) {
+                return response;
+            }
+        }
+        return null;
     }
 
 }
