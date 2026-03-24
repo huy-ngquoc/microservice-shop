@@ -19,8 +19,8 @@ spring:
             properties:
                 spring.json.trusted.packages: "*"
                 spring.json.type.mapping: 
-                    OrderCreatedSuccess:vn.uit.edu.msshop.cart.domain.event.OrderCreatedSuccess
-                    ProductUpdated:vn.uit.edu.msshhop.cart.domain.event.ProductUpdated
+                    OrderCreatedSuccess:vn.uit.edu.msshop.cart.domain.event.OrderCreatedSuccess,
+                    ProductUpdated:vn.uit.edu.msshop.cart.domain.event.ProductUpdated,
                     ProductDeleted:vn.uit.edu.msshop.cart.domain.event.ProductDeleted
                     
        

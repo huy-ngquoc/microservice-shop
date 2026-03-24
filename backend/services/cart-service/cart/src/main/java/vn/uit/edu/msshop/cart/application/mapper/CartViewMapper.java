@@ -23,8 +23,9 @@ public class CartViewMapper {
     }
     public CartView toView(Cart cart) {
         CartView result=  new CartView(cart.getUserId().value(),new ArrayList<>());
-        List<UUID> variantIds = result.getDetailViews().stream().map(item->item.getVariantId()).toList();
+        List<UUID> variantIds = cart.getDetails().stream().map(item->item.getVariantId().value()).toList();
         List<InventoryResponse> inventoryResponses = loadInventoryService.getInventoryBatch(variantIds);
+        System.out.println(inventoryResponses.size());
         for(CartDetail detail:cart.getDetails()) {
             InventoryResponse i = findByVariantIdInList(inventoryResponses, detail.getVariantId().value());
             int inventoryAmount = i==null?0:i.getQuantity();
