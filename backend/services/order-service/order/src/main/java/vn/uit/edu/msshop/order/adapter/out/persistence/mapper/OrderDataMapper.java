@@ -55,7 +55,7 @@ public class OrderDataMapper {
         List<OrderDetailDocument> details = order.getDetails().stream().map(this::toOrderDetailDocument).toList();
         return new OrderDocument(order.getId().value(), shippingInfoDocument, details, order.getStatus().value(), 
         order.getUserId().value(), order.getOriginPrice().value(), order.getShippingFee().value(),
-        order.getDiscount().value(), order.getTotalPrice().value(), order.getCreateAt().value(), order.getUpdateAt().value(),order.getVersion().value());
+        order.getDiscount().value(), order.getTotalPrice().value(), order.getCreateAt().value(), order.getUpdateAt().value(),order.getVersion()==null ? null:order.getVersion().value());
     }
     public ShippingInfoDocument toShippingInfoDocument(ShippingInfo shippingInfo) {
         return new ShippingInfoDocument(shippingInfo.fullName(), shippingInfo.address(), shippingInfo.email(), shippingInfo.phone());

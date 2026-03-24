@@ -166,7 +166,7 @@ public final class Order {
         }
 
         return Order.builder().id(d.id()).shippingInfo(d.shippingInfo()).details(d.details()).status(d.status()).userId(d.userId())
-        .originPrice(d.originPrice()).shippingFee(d.shippingFee()).discount(d.discount()).totalPrice(d.totalPrice()).createAt(d.createAt()).updateAt(d.updateAt()).version(new Version(0)).build();
+        .originPrice(d.originPrice()).shippingFee(d.shippingFee()).discount(d.discount()).totalPrice(d.totalPrice()).createAt(d.createAt()).updateAt(d.updateAt()).version(null).build();
     }
     @NullMarked
     public static Order reconstitue(final SnapShot s) {

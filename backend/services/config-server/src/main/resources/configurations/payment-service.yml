@@ -46,6 +46,6 @@ logging:
     org.apache.kafka: ERROR
     org.springframework.kafka: ERROR
 payos:
-    client-id: 
-    api-key: 
-    checksum-key: 
+    client-id: 12c6330d-6619-407c-ab25-6a2e7eaf8f0a
+    api-key: 3d007e3b-9f27-46e4-b469-6be53e180181
+    checksum-key: e989cd5d9989a981d49da94f9d9a363f5886ba4568edca3a52fc1cc1b51b7699
