@@ -42,15 +42,16 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         final var updateInfo = Order.UpdateInfo.builder().id(command.id()).shippingInfo(command.shippingInfo().apply(order.getShippingInfo())).orderStatus(command.status().apply(order.getStatus())).build();
         final var next = order.applyUpdateInfo(updateInfo);
         final var saved = saveOrderPort.save(next);
+        boolean isSendEvent = !oldStatus.equals(saved.getStatus().value());
         final var listEvent = saved.getDetails().stream().map(item->new OrderDetail(item.variantId(),item.amount())).toList();
-        if(saved.getStatus().value().equals("CANCELLED")) {
+        if(saved.getStatus().value().equals("CANCELLED")&&isSendEvent) {
             publishEventPort.publishCodPaymentCancelled(new CodPaymentCancelled(saved.getId().value()));
             publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
         }
-        if(saved.getStatus().value().equals("RECEIVED")) {
+        if(saved.getStatus().value().equals("RECEIVED")&&isSendEvent) {
             publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(saved.getId().value()));
         }
-        if(saved.getStatus().value().equals("SHIPPING")) {
+        if(saved.getStatus().value().equals("SHIPPING")&&isSendEvent) {
             publishEventPort.publishOrderShipped_InventoryEvent(new OrderShipped(saved.getId().value(),listEvent));
         }
         publishEventPort.publish(new OrderUpdated(saved.getId()));
