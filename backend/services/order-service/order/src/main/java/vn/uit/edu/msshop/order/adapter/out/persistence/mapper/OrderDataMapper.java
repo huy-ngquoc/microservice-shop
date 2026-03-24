@@ -19,6 +19,7 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 import vn.uit.edu.msshop.order.domain.model.valueobject.TotalPrice;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UpdateAt;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
+import vn.uit.edu.msshop.order.domain.model.valueobject.Version;
 
 @Component
 public class OrderDataMapper {
@@ -35,7 +36,9 @@ public class OrderDataMapper {
         .discount(new Discount(document.getDiscount()))
         .totalPrice(new TotalPrice(document.getTotalPrice()))
         .createAt(new CreateAt(document.getCreateAt()))
-        .updateAt(new UpdateAt(document.getUpdateAt())).build();
+        .updateAt(new UpdateAt(document.getUpdateAt()))
+        .version(new Version(document.getVersion()))
+        .build();
         return Order.reconstitue(snapShot);
     }
     public ShippingInfo toShippingInfoDomain(ShippingInfoDocument document) {
@@ -52,7 +55,7 @@ public class OrderDataMapper {
         List<OrderDetailDocument> details = order.getDetails().stream().map(this::toOrderDetailDocument).toList();
         return new OrderDocument(order.getId().value(), shippingInfoDocument, details, order.getStatus().value(), 
         order.getUserId().value(), order.getOriginPrice().value(), order.getShippingFee().value(),
-        order.getDiscount().value(), order.getTotalPrice().value(), order.getCreateAt().value(), order.getUpdateAt().value());
+        order.getDiscount().value(), order.getTotalPrice().value(), order.getCreateAt().value(), order.getUpdateAt().value(),order.getVersion().value());
     }
     public ShippingInfoDocument toShippingInfoDocument(ShippingInfo shippingInfo) {
         return new ShippingInfoDocument(shippingInfo.fullName(), shippingInfo.address(), shippingInfo.email(), shippingInfo.phone());

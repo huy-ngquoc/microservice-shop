@@ -22,6 +22,7 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 import vn.uit.edu.msshop.order.domain.model.valueobject.TotalPrice;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UpdateAt;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
+import vn.uit.edu.msshop.order.domain.model.valueobject.Version;
 
 @Getter
 @EqualsAndHashCode(
@@ -64,6 +65,8 @@ public final class Order {
 
     @NonNull
     private UpdateAt updateAt;
+
+    private Version version;
 
     @Builder
     public static record UpdateInfo(
@@ -146,7 +149,9 @@ public final class Order {
     CreateAt createAt,
 
     @NonNull
-    UpdateAt updateAt
+    UpdateAt updateAt,
+    @NonNull
+    Version version
     ) {
 
     }
@@ -161,7 +166,7 @@ public final class Order {
         }
 
         return Order.builder().id(d.id()).shippingInfo(d.shippingInfo()).details(d.details()).status(d.status()).userId(d.userId())
-        .originPrice(d.originPrice()).shippingFee(d.shippingFee()).discount(d.discount()).totalPrice(d.totalPrice()).createAt(d.createAt()).updateAt(d.updateAt()).build();
+        .originPrice(d.originPrice()).shippingFee(d.shippingFee()).discount(d.discount()).totalPrice(d.totalPrice()).createAt(d.createAt()).updateAt(d.updateAt()).version(new Version(0)).build();
     }
     @NullMarked
     public static Order reconstitue(final SnapShot s) {
@@ -174,7 +179,7 @@ public final class Order {
         }
 
         return Order.builder().id(s.id()).shippingInfo(s.shippingInfo()).details(s.details()).status(s.status()).userId(s.userId())
-        .originPrice(s.originPrice()).shippingFee(s.shippingFee()).discount(s.discount()).totalPrice(s.totalPrice()).createAt(s.createAt()).updateAt(s.updateAt()).build();
+        .originPrice(s.originPrice()).shippingFee(s.shippingFee()).discount(s.discount()).totalPrice(s.totalPrice()).createAt(s.createAt()).updateAt(s.updateAt()).version(s.version()).build();
     
     }
     @NullMarked
@@ -191,13 +196,13 @@ public final class Order {
         ShippingInfo newShippingInfo = u.shippingInfo()!=null?u.shippingInfo():this.shippingInfo;
         Instant updateTime = (u.orderStatus()==null&&u.shippingInfo()==null)?this.updateAt.value():Instant.now();
         return Order.builder().id(this.id).shippingInfo(newShippingInfo).details(this.details).status(newStatus).userId(this.userId)
-        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(updateTime)).build();
+        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(updateTime)).version(this.version).build();
     }
 
     @NullMarked
     public SnapShot snapShot() {
         return SnapShot.builder().id(this.id).shippingInfo(this.shippingInfo).details(this.details).status(this.status).userId(this.userId)
-        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(this.updateAt).build();
+        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(this.updateAt).version(this.version).build();
     }
     @NullMarked
     @SuppressWarnings("java:S1067")
