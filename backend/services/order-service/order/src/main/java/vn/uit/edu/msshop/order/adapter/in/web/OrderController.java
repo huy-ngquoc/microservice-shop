@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
+import vn.uit.edu.msshop.order.adapter.exception.VariantNotFoundException;
 import vn.uit.edu.msshop.order.adapter.in.web.mapper.OrderWebMapper;
 import vn.uit.edu.msshop.order.adapter.in.web.request.CreateOrderRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateOrderRequest;
@@ -71,11 +73,17 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         final var command = this.mapper.toCommand(request);
-        
+        try {
         final var result= this.createService.create(command);
         eventPublisher.publishOrderCreatedEvent(new OrderCreated(request.currency(),result,request.paymentMethod(),request.totalPrice()));
         eventPublisher.publishClearCartEvent(mapper.toEvent(request));
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(result);}
+        catch(VariantNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        catch(VariantNotEnoughException e) {
+            return ResponseEntity.badRequest().build();
+        }
     } 
 
     @PutMapping("/update")

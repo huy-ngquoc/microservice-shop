@@ -72,6 +72,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         List<OrderDetail> listDetails = command.details().stream().map(item->{
             return loadOrderDetailPort.loadOrderDetail(item.variantId(), item.quantity());
         }).toList();
+        System.out.println(listDetails.get(0).variantId());
         canPlaceOrder(listDetails);
         long originPrice =0;
         for(OrderDetail d : listDetails) {
@@ -100,6 +101,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     private void canPlaceOrder(List<OrderDetail> details) {
         List<UUID> variantIds = details.stream().map(item->item.variantId()).toList();
         List<InventoryResponse> responses = inventoryChecker.getInventoryBatch(variantIds);
+        
         for(OrderDetail orderDetail: details) {
             InventoryResponse inventoryResponse = findInListByVariantId(responses, orderDetail.variantId());
             if(inventoryResponse==null) {
@@ -112,7 +114,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     }
     private InventoryResponse findInListByVariantId(List<InventoryResponse> responses, UUID variantId) {
         for(InventoryResponse response:responses) {
-            if(response.getId().equals(variantId)) {
+            if(response.getVariantId().equals(variantId)) {
                 return response;
             }
         }
