@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.port.out.CreateVariantsForNewProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.SoftDeleteVariantPort;
+import vn.edu.uit.msshop.product.product.application.port.out.SoftDeleteProductVariantPort;
 import vn.edu.uit.msshop.product.product.application.port.out.SoftDeleteVariantsForProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.UpdateVariantInfoPort;
+import vn.edu.uit.msshop.product.product.application.port.out.UpdateProductVariantInfoPort;
 import vn.edu.uit.msshop.product.product.domain.model.NewProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.NewProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.ProductId;
@@ -39,8 +39,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantVersion;
 @RequiredArgsConstructor
 public class VariantPersistenceAdapter
         implements CreateVariantsForNewProductPort,
-        UpdateVariantInfoPort,
-        SoftDeleteVariantPort,
+        UpdateProductVariantInfoPort,
+        SoftDeleteProductVariantPort,
         SoftDeleteVariantsForProductPort {
     private final CreateVariantsForNewProductUseCase createForNewProductUseCase;
     private final UpdateVariantInfoUseCase updateInfoUseCase;

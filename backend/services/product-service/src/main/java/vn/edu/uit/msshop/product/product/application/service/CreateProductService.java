@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFo
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.CreateProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.CheckBrandExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CheckProductBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CheckCategoryExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CreateVariantsForNewProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CreateProductPort;
@@ -27,7 +27,7 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductId;
 public class CreateProductService implements CreateProductUseCase {
     private final CreateProductPort createPort;
     private final CheckCategoryExistsPort checkCategoryExistsPort;
-    private final CheckBrandExistsPort checkBrandExistsPort;
+    private final CheckProductBrandExistsPort checkBrandExistsPort;
     private final CreateVariantsForNewProductPort createVariantsForNewProductPort;
     private final PublishProductEventPort eventPort;
 
