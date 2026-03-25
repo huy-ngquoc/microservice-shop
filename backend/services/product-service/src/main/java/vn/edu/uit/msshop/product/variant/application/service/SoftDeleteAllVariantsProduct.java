@@ -1,38 +1,39 @@
 package vn.edu.uit.msshop.product.variant.application.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.exception.VariantProductNotFoundException;
-import vn.edu.uit.msshop.product.variant.application.port.in.SoftDeleteVariantsForProductUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantsForProductPort;
+import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
+import vn.edu.uit.msshop.product.variant.application.port.in.SoftDeleteAllVariantsUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.out.LoadAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.UpdateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantDeletionTime;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
 
-// TODO: should delete image?
 @Service
 @RequiredArgsConstructor
-public class SoftDeleteVariantsForProductService implements SoftDeleteVariantsForProductUseCase {
-    private final LoadVariantsForProductPort loadForProductPort;
+public class SoftDeleteAllVariantsProduct implements SoftDeleteAllVariantsUseCase {
+    private final LoadAllVariantsPort loadAllPort;
     private final UpdateAllVariantsPort updateAllPort;
     private final PublishVariantEventPort eventPort;
 
     @Override
     @Transactional
-    public void deleteByProductId(
-            final VariantProductId productId) {
-        final var variants = this.loadForProductPort.loadByProductId(productId);
-        if (variants.isEmpty()) {
-            throw new VariantProductNotFoundException(productId);
-        }
+    public void deleteByIds(
+            final List<VariantId> ids) {
+        final var variants = this.loadAllPort.loadByIds(ids);
 
         final var next = variants.stream()
-                .map(this::toSoftDeleted).toList();
+                .map(this::toSoftDeleted)
+                .toList();
 
         final var saved = this.updateAllPort.updateAll(next);
 

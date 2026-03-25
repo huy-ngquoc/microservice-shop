@@ -1,9 +1,12 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
+import java.util.Collection;
+
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.out.CreateVariantsForNewProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CreateProductVariantsForProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.SoftDeleteAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.SoftDeleteProductVariantPort;
 import vn.edu.uit.msshop.product.product.application.port.out.SoftDeleteVariantsForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.UpdateProductVariantInfoPort;
@@ -25,6 +28,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 import vn.edu.uit.msshop.product.variant.application.port.in.CreateVariantsForNewProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.SoftDeleteVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.SoftDeleteVariantsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.SoftDeleteAllVariantsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.UpdateVariantInfoUseCase;
 import vn.edu.uit.msshop.product.variant.domain.model.NewVariantForNewProduct;
 import vn.edu.uit.msshop.product.variant.domain.model.NewVariantsForNewProduct;
@@ -38,13 +42,15 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantVersion;
 @Component
 @RequiredArgsConstructor
 public class VariantPersistenceAdapter
-        implements CreateVariantsForNewProductPort,
+        implements CreateProductVariantsForProductPort,
         UpdateProductVariantInfoPort,
         SoftDeleteProductVariantPort,
+        SoftDeleteAllProductVariantsPort,
         SoftDeleteVariantsForProductPort {
     private final CreateVariantsForNewProductUseCase createForNewProductUseCase;
     private final UpdateVariantInfoUseCase updateInfoUseCase;
     private final SoftDeleteVariantUseCase softDeleteUseCase;
+    private final SoftDeleteAllVariantsUseCase softDeleteAllUseCase;
     private final SoftDeleteVariantsForProductUseCase softDeleteForProductUseCase;
 
     @Override
@@ -110,6 +116,16 @@ public class VariantPersistenceAdapter
                 version);
 
         this.softDeleteUseCase.delete(command);
+    }
+
+    @Override
+    public void deleteByIds(
+            final Collection<ProductVariantId> variantIds) {
+        final var ids = variantIds.stream()
+                .map(ProductVariantId::value)
+                .map(VariantId::new)
+                .toList();
+        this.softDeleteAllUseCase.deleteByIds(ids);
     }
 
     private NewVariantForNewProduct toNewVariantInput(

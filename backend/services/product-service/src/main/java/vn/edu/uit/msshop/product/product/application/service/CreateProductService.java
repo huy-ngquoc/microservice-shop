@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.CheckProductBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CheckCategoryExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.CreateVariantsForNewProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CreateProductVariantsForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
@@ -28,7 +28,7 @@ public class CreateProductService implements CreateProductUseCase {
     private final CreateProductPort createPort;
     private final CheckCategoryExistsPort checkCategoryExistsPort;
     private final CheckProductBrandExistsPort checkBrandExistsPort;
-    private final CreateVariantsForNewProductPort createVariantsForNewProductPort;
+    private final CreateProductVariantsForProductPort createVariantsForNewProductPort;
     private final PublishProductEventPort eventPort;
 
     private final ProductViewMapper mapper;

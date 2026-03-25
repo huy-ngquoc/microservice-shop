@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.variant.application.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantCommand;
@@ -24,6 +25,7 @@ public class CreateVariantService implements CreateVariantUseCase {
     private final VariantViewMapper mapper;
 
     @Override
+    @Transactional
     public VariantView create(
             final CreateVariantCommand command) {
         if (!this.checkProductExistsPort.existsById(command.productId())) {

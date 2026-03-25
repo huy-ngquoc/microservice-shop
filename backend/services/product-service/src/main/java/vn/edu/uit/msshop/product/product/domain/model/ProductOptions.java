@@ -63,6 +63,15 @@ public record ProductOptions(
         return new ProductOptions(newValues);
     }
 
+    public ProductOption getAt(
+            final int index) {
+        if ((index < 0) || (index >= this.values.size())) {
+            throw new DomainException("Option index out of bounds: " + index);
+        }
+
+        return this.values.get(index);
+    }
+
     public ProductOptions removeAt(
             final int index) {
         if ((index < 0) || (index >= this.values.size())) {

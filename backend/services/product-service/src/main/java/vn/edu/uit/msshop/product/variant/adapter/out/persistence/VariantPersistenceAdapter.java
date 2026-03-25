@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantPersistenceMapper;
 import vn.edu.uit.msshop.product.variant.application.port.out.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.CreateVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.LoadAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantsForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.UpdateAllVariantsPort;
@@ -23,6 +24,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantProductId;
 @RequiredArgsConstructor
 public class VariantPersistenceAdapter
         implements LoadVariantPort,
+        LoadAllVariantsPort,
         LoadVariantsForProductPort,
         CreateVariantPort,
         CreateAllVariantsPort,
@@ -36,6 +38,17 @@ public class VariantPersistenceAdapter
             final VariantId id) {
         final var jpaId = id.value();
         return this.repository.findById(jpaId).map(this.mapper::toDomain);
+    }
+
+    @Override
+    public List<Variant> loadByIds(
+            final Collection<VariantId> ids) {
+        final var jpaIds = ids.stream()
+                .map(VariantId::value)
+                .toList();
+        return this.repository.findAllById(jpaIds).stream()
+                .map(this.mapper::toDomain)
+                .toList();
     }
 
     @Override

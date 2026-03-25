@@ -4,7 +4,7 @@ import vn.edu.uit.msshop.product.product.domain.model.NewProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 
-public interface CreateVariantsForNewProductPort {
+public interface CreateProductVariantsForProductPort {
     ProductVariants create(
             final ProductId id,
             final NewProductVariants newVariants);

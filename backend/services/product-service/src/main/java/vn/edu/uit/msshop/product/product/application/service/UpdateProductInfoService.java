@@ -2,6 +2,7 @@ package vn.edu.uit.msshop.product.product.application.service;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
@@ -35,6 +36,7 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
     private final PublishProductEventPort eventPort;
 
     @Override
+    @Transactional
     public ProductView updateInfo(
             final UpdateProductInfoCommand command) {
         final var productId = command.id();

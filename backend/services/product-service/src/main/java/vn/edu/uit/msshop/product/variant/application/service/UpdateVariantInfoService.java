@@ -2,6 +2,7 @@ package vn.edu.uit.msshop.product.variant.application.service;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
@@ -28,6 +29,7 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
     private final PublishVariantEventPort eventPort;
 
     @Override
+    @Transactional
     public VariantView updateInfo(
             final UpdateVariantInfoCommand command) {
         final var variant = this.loadPort.loadById(command.id())

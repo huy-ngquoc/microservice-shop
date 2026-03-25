@@ -67,6 +67,13 @@ public record ProductVariants(
         return this.values.size();
     }
 
+    public ProductVariants addAll(
+            final ProductVariants variants) {
+        final var newValues = new ArrayList<>(this.values);
+        newValues.addAll(variants.values());
+        return new ProductVariants(newValues);
+    }
+
     public ProductVariants add(
             final ProductVariant variant) {
         final var newValues = new ArrayList<>(this.values);
