@@ -19,10 +19,10 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductReq
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
-import vn.edu.uit.msshop.product.product.application.port.in.CheckProductExistsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.CreateProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.FindProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.UpdateProductInfoUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.CreateProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductInfoUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.FindProductUseCase;
 
 @RestController
 @RequestMapping("/products")

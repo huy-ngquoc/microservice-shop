@@ -3,10 +3,10 @@ package vn.edu.uit.msshop.product.product.adapter.out.validation;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.application.port.in.CheckBrandExistsUseCase;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
-import vn.edu.uit.msshop.product.product.application.port.out.CheckProductBrandExistsPort;
-import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.CheckBrandExistsUseCase;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 
 @Component
 @RequiredArgsConstructor

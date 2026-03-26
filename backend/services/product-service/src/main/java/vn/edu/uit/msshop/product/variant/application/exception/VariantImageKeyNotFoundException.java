@@ -1,7 +1,7 @@
 package vn.edu.uit.msshop.product.variant.application.exception;
 
 import vn.edu.uit.msshop.product.shared.application.exception.NotFoundException;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantImageKey;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
 public final class VariantImageKeyNotFoundException extends NotFoundException {
     public VariantImageKeyNotFoundException(

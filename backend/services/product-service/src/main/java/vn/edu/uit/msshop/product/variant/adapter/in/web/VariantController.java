@@ -11,12 +11,12 @@ import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantIma
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
-import vn.edu.uit.msshop.product.variant.application.port.in.DeleteVariantImageUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.FindVariantImageUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.FindVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.SoftDeleteVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.UpdateVariantImageUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.UpdateVariantInfoUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.DeleteVariantImageUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantImageUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantInfoUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantImageUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantUseCase;
 
 import java.util.UUID;
 

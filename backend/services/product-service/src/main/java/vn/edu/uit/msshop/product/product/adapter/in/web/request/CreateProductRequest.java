@@ -10,7 +10,7 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import vn.edu.uit.msshop.product.product.domain.model.ProductOption;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 
 public record CreateProductRequest(
         @NotBlank

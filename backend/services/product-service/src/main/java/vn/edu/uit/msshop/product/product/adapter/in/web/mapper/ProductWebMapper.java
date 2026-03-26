@@ -14,16 +14,16 @@ import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimplePro
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductVariantView;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
-import vn.edu.uit.msshop.product.product.domain.model.NewProductConfiguration;
-import vn.edu.uit.msshop.product.product.domain.model.NewProductVariant;
-import vn.edu.uit.msshop.product.product.domain.model.NewProductVariants;
-import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
-import vn.edu.uit.msshop.product.product.domain.model.ProductCategoryId;
-import vn.edu.uit.msshop.product.product.domain.model.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
-import vn.edu.uit.msshop.product.product.domain.model.ProductPrice;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVersion;
+import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductConfiguration;
+import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
+import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
 
 @Component

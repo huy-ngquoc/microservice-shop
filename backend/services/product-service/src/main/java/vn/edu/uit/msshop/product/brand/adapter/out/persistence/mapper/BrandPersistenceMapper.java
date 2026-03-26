@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.brand.adapter.out.persistence.BrandDocument;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandName;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
-import vn.edu.uit.msshop.product.brand.domain.model.NewBrand;
+import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 
 @Component
 public class BrandPersistenceMapper {

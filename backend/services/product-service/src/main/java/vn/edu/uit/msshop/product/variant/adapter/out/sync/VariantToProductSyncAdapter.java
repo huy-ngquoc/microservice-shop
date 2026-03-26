@@ -3,11 +3,11 @@ package vn.edu.uit.msshop.product.variant.adapter.out.sync;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.port.out.RemoveVariantFromProductPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantInProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 @Component
 @RequiredArgsConstructor

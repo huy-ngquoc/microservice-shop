@@ -1,9 +1,0 @@
-package vn.edu.uit.msshop.product.category.application.port.in;
-
-import vn.edu.uit.msshop.product.category.application.dto.command.DeleteCategoryImageCommand;
-import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
-
-public interface DeleteCategoryImageUseCase {
-    CategoryImageView deleteImage(
-            final DeleteCategoryImageCommand command);
-}

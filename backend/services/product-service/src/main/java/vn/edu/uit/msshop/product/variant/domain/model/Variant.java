@@ -5,6 +5,14 @@ import org.jspecify.annotations.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Getter
 @EqualsAndHashCode(

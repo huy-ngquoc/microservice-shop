@@ -5,16 +5,16 @@ import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.variant.adapter.out.persistence.VariantDocument;
-import vn.edu.uit.msshop.product.variant.domain.model.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantDeletionTime;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantImageKey;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantPrice;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantProductId;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantTraits;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantVersion;
+import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Component
 public class VariantPersistenceMapper {

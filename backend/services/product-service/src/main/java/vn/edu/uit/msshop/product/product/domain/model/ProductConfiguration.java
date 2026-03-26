@@ -2,6 +2,9 @@ package vn.edu.uit.msshop.product.product.domain.model;
 
 import java.util.Map;
 
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 

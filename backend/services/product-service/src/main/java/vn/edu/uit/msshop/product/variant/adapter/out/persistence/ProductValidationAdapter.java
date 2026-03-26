@@ -3,10 +3,10 @@ package vn.edu.uit.msshop.product.variant.adapter.out.persistence;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.in.CheckProductExistsUseCase;
-import vn.edu.uit.msshop.product.product.domain.model.ProductId;
-import vn.edu.uit.msshop.product.variant.application.port.out.CheckProductExistsPort;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantProductId;
+import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckProductExistsPort;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 @Component
 @RequiredArgsConstructor

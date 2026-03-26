@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantImageKey;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantTrait;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
 
 @Component
 public class VariantViewMapper {

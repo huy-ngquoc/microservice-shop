@@ -1,5 +1,8 @@
 package vn.edu.uit.msshop.product.product.domain.model;
 
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
 
 public record ProductVariant(

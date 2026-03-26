@@ -1,6 +1,6 @@
 package vn.edu.uit.msshop.product.brand.application.exception;
 
-import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.product.shared.application.exception.NotFoundException;
 
 public final class BrandLogoKeyNotFoundException extends NotFoundException {

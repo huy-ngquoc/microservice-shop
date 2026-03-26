@@ -2,9 +2,9 @@ package vn.edu.uit.msshop.product.category.application.dto.command;
 
 import org.jspecify.annotations.NullMarked;
 
-import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
 
 @NullMarked

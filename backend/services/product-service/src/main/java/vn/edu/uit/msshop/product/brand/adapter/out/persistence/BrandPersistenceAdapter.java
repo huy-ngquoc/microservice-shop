@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.out.persistence.mapper.BrandPersistenceMapper;
-import vn.edu.uit.msshop.product.brand.application.port.out.CheckBrandExistsPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.CreateBrandPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.LoadBrandPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.UpdateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBrandExistsPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CreateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
-import vn.edu.uit.msshop.product.brand.domain.model.NewBrand;
+import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Component
 @RequiredArgsConstructor

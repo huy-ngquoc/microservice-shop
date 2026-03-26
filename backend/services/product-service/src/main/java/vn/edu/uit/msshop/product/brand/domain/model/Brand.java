@@ -5,6 +5,10 @@ import org.jspecify.annotations.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
 
 @Getter

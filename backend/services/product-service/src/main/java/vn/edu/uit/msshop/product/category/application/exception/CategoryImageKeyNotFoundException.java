@@ -1,6 +1,6 @@
 package vn.edu.uit.msshop.product.category.application.exception;
 
-import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 import vn.edu.uit.msshop.product.shared.application.exception.NotFoundException;
 
 public final class CategoryImageKeyNotFoundException extends NotFoundException {

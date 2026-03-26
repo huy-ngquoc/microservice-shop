@@ -22,13 +22,13 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryI
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryInfoRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
-import vn.edu.uit.msshop.product.category.application.port.in.CheckCategoryExistsUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.CreateCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.DeleteCategoryImageUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.FindCategoryImageUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.FindCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryImageUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.UpdateCategoryInfoUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.CreateCategoryUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.DeleteCategoryImageUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.UpdateCategoryImageUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.UpdateCategoryInfoUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.CheckCategoryExistsUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryImageUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryUseCase;
 
 @RestController
 @RequestMapping("/categories")

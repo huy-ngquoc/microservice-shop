@@ -2,6 +2,15 @@ package vn.edu.uit.msshop.product.product.domain.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKeys;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRating;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductSoldCount;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
 
 @Getter

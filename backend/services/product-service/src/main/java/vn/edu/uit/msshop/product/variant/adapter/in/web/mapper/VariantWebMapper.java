@@ -16,13 +16,13 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantIm
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantImageKey;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantPrice;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantProductId;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantTrait;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantTraits;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantVersion;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Component
 public class VariantWebMapper {

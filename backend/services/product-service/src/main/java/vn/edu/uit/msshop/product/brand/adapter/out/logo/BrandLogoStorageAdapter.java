@@ -8,8 +8,8 @@ import com.cloudinary.Cloudinary;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.brand.application.port.out.BrandLogoStoragePort;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
+import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 
 @Component
 @RequiredArgsConstructor

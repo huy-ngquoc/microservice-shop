@@ -19,10 +19,10 @@ import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategory
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
 
 @Component

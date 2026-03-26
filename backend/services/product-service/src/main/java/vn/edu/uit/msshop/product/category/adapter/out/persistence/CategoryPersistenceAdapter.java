@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.adapter.out.persistence.mapper.CategoryPersistenceMapper;
-import vn.edu.uit.msshop.product.category.application.port.out.CheckCategoryExistsPort;
-import vn.edu.uit.msshop.product.category.application.port.out.CreateCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.LoadCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.UpdateCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.CheckCategoryExistsPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
-import vn.edu.uit.msshop.product.category.domain.model.NewCategory;
+import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Component
 @RequiredArgsConstructor

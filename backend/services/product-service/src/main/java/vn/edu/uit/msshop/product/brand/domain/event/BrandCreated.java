@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @RequiredArgsConstructor
 @Getter

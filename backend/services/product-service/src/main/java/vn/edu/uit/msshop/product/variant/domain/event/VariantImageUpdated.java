@@ -8,8 +8,8 @@ import org.jspecify.annotations.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantImageKey;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
 @RequiredArgsConstructor
 @Getter

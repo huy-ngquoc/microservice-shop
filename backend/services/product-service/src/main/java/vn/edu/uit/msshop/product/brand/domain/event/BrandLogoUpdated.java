@@ -8,8 +8,8 @@ import org.jspecify.annotations.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 
 @RequiredArgsConstructor
 @Getter

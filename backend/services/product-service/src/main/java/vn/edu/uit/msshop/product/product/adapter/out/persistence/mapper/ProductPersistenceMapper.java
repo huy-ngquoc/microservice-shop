@@ -7,25 +7,25 @@ import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.ProductDocument;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.ProductVariantDocument;
-import vn.edu.uit.msshop.product.product.domain.model.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
-import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
-import vn.edu.uit.msshop.product.product.domain.model.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
-import vn.edu.uit.msshop.product.product.domain.model.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.ProductImageKeys;
-import vn.edu.uit.msshop.product.product.domain.model.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
-import vn.edu.uit.msshop.product.product.domain.model.ProductPrice;
-import vn.edu.uit.msshop.product.product.domain.model.ProductPriceRange;
-import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
-import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVariantId;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVariantPrice;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVersion;
+import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKeys;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRating;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductSoldCount;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 @Component
 public class ProductPersistenceMapper {

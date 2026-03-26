@@ -22,13 +22,13 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoReq
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
-import vn.edu.uit.msshop.product.brand.application.port.in.CreateBrandUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.DeleteBrandLogoUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.FindBrandLogoUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.FindBrandUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.UpdateBrandInfoUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.UpdateBrandLogoUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.CheckBrandExistsPort;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.CreateBrandUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.DeleteBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandInfoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBrandExistsPort;
 
 @RestController
 @RequestMapping("/brands")

@@ -19,10 +19,10 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandInfoCo
 import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandLogoCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.query.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.dto.query.BrandView;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandLogoKey;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandName;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
 
 @Component

@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.category.adapter.out.persistence.CategoryDocument;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryName;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryVersion;
-import vn.edu.uit.msshop.product.category.domain.model.NewCategory;
+import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 
 @Component
 public class CategoryPersistenceMapper {

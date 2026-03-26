@@ -4,7 +4,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.category.application.port.out.PublishCategoryEventPort;
+import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCategoryEventPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryCreated;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdated;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;

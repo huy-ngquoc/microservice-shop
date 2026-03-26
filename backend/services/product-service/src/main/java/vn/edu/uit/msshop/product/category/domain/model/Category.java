@@ -4,6 +4,10 @@ import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
 
 @Getter

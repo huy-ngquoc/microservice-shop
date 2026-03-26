@@ -2,9 +2,9 @@ package vn.edu.uit.msshop.product.brand.application.dto.command;
 
 import org.jspecify.annotations.NullMarked;
 
-import vn.edu.uit.msshop.product.brand.domain.model.BrandId;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandName;
-import vn.edu.uit.msshop.product.brand.domain.model.BrandVersion;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
 
 @NullMarked

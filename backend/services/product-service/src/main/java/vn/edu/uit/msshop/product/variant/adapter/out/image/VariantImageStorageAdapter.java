@@ -8,8 +8,8 @@ import com.cloudinary.Cloudinary;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.variant.application.port.out.VariantImageStoragePort;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantImageKey;
+import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
 @Component
 @RequiredArgsConstructor

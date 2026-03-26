@@ -8,8 +8,8 @@ import com.cloudinary.Cloudinary;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.category.application.port.out.CategoryImageStoragePort;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
+import vn.edu.uit.msshop.product.category.application.port.out.image.CategoryImageStoragePort;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 
 @Component
 @RequiredArgsConstructor

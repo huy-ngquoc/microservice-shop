@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 
 @Component
 public class CategoryViewMapper {

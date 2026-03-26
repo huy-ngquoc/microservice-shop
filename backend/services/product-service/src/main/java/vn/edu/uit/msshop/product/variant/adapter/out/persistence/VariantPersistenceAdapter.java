@@ -8,17 +8,17 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantPersistenceMapper;
-import vn.edu.uit.msshop.product.variant.application.port.out.CreateAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.CreateVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.LoadAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantsForProductPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.UpdateAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantPort;
-import vn.edu.uit.msshop.product.variant.domain.model.NewVariant;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 @Component
 @RequiredArgsConstructor

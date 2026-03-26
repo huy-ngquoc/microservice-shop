@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
 public record ProductVariants(

@@ -1,7 +1,7 @@
 package vn.edu.uit.msshop.product.category.application.exception;
 
 import vn.edu.uit.msshop.product.category.domain.model.Category;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.shared.application.exception.NotFoundException;
 
 public final class CategoryNotFoundException extends NotFoundException {

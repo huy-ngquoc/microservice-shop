@@ -8,8 +8,8 @@ import org.jspecify.annotations.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryId;
-import vn.edu.uit.msshop.product.category.domain.model.CategoryImageKey;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 
 @RequiredArgsConstructor
 @Getter
