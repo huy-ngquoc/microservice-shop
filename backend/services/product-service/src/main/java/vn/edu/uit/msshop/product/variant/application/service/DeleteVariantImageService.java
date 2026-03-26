@@ -26,8 +26,8 @@ public class DeleteVariantImageService implements DeleteVariantImageUseCase {
     private final LoadVariantPort loadPort;
     private final UpdateVariantPort updatePort;
     private final VariantImageStoragePort imageStoragePort;
-    private final VariantViewMapper mapper;
     private final PublishVariantEventPort eventPort;
+    private final VariantViewMapper mapper;
 
     @Override
     @Transactional

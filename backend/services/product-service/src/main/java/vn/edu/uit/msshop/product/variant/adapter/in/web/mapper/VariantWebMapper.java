@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageRes
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
 import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantImageView;
@@ -76,6 +77,17 @@ public class VariantWebMapper {
         final var version = new VariantVersion(expectedVersion);
 
         return new DeleteVariantImageCommand(
+                variantId,
+                version);
+    }
+
+    public SoftDeleteVariantCommand toSoftDeleteVariantCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var variantId = new VariantId(id);
+        final var version = new VariantVersion(expectedVersion);
+
+        return new SoftDeleteVariantCommand(
                 variantId,
                 version);
     }

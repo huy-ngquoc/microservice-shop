@@ -5,12 +5,10 @@ import vn.edu.uit.msshop.product.shared.domain.Domains;
 public record ProductVariant(
         ProductVariantId id,
         ProductVariantPrice price,
-        ProductVariantTraits traits,
-        ProductVariantVersion version) {
+        ProductVariantTraits traits) {
     public ProductVariant {
         Domains.requireNonNull(id, "Variant ID cannot be null");
         Domains.requireNonNull(price, "Variant price cannot be null");
         Domains.requireNonNull(traits, "Variant traits cannot be null");
-        Domains.requireNonNull(version, "Variant version cannot be null");
     }
 }

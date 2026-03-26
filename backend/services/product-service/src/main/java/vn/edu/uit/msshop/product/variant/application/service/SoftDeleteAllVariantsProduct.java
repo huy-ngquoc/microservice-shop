@@ -6,13 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.SoftDeleteAllVariantsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.LoadAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.UpdateAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantDeletionTime;
@@ -29,7 +26,7 @@ public class SoftDeleteAllVariantsProduct implements SoftDeleteAllVariantsUseCas
     @Transactional
     public void deleteByIds(
             final List<VariantId> ids) {
-        final var variants = this.loadAllPort.loadByIds(ids);
+        final var variants = this.loadAllPort.loadAllByIds(ids);
 
         final var next = variants.stream()
                 .map(this::toSoftDeleted)

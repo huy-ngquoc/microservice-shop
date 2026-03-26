@@ -14,6 +14,7 @@ import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.UpdateVariantInfoUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantInProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -25,8 +26,9 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantTraits;
 public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
     private final LoadVariantPort loadPort;
     private final UpdateVariantPort updatePort;
-    private final VariantViewMapper mapper;
+    private final UpdateVariantInProductPort updateInProductPort;
     private final PublishVariantEventPort eventPort;
+    private final VariantViewMapper mapper;
 
     @Override
     @Transactional
@@ -54,6 +56,8 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         if (next == null) {
             return this.mapper.toView(variant);
         }
+
+        this.updateInProductPort.updateInProduct(next);
 
         final var saved = this.updatePort.update(next);
         this.eventPort.publish(new VariantUpdated(saved.getId()));

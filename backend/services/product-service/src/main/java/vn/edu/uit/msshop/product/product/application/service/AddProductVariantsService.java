@@ -9,7 +9,7 @@ import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.AddProductVariantsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.CreateProductVariantsForProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CreateAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.UpdateProductPort;
@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockExce
 public class AddProductVariantsService implements AddProductVariantsUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
-    private final CreateProductVariantsForProductPort createVariantsForProductPort;
+    private final CreateAllProductVariantsPort createAllVariantsPort;
     private final PublishProductEventPort eventPort;
 
     private final ProductViewMapper mapper;
@@ -49,7 +49,7 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
             }
         }
 
-        final var createdVariants = this.createVariantsForProductPort.create(
+        final var createdVariants = this.createAllVariantsPort.create(
                 productId,
                 command.newVariants());
 

@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.product.adapter.out.persistence;
+package vn.edu.uit.msshop.product.product.adapter.out.validation;
 
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,8 @@ public class BrandValidationAdapter
 
     @Override
     public boolean existsById(
-            final ProductBrandId id) {
-        return this.checkExistsUseCase.existsById(new BrandId(id.value()));
+            final ProductBrandId brandId) {
+        final var id = new BrandId(brandId.value());
+        return this.checkExistsUseCase.existsById(id);
     }
 }

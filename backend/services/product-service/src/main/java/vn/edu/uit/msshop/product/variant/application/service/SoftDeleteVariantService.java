@@ -10,6 +10,7 @@ import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundEx
 import vn.edu.uit.msshop.product.variant.application.port.in.SoftDeleteVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.RemoveVariantFromProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -20,6 +21,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantDeletionTime;
 public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
     private final LoadVariantPort loadPort;
     private final UpdateVariantPort updatePort;
+    private final RemoveVariantFromProductPort removeFromProductPort;
     private final PublishVariantEventPort eventPort;
 
     @Override
@@ -37,6 +39,10 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
                     expectedVersion.value(),
                     currentVersion.value());
         }
+
+        this.removeFromProductPort.removeFromProduct(
+                variantId,
+                variant.getProductId());
 
         final var next = new Variant(
                 variant.getId(),

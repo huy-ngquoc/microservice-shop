@@ -4,5 +4,5 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductBrandId;
 
 public interface CheckProductBrandExistsPort {
     boolean existsById(
-            final ProductBrandId id);
+            final ProductBrandId brandId);
 }

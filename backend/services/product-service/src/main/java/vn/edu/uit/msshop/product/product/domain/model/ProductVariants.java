@@ -105,13 +105,13 @@ public record ProductVariants(
                 .map(v -> new ProductVariant(
                         v.id(),
                         v.price(),
-                        v.traits().removeAt(optionIndex),
-                        v.version()))
+                        v.traits().removeAt(optionIndex)))
                 .toList();
 
         return new ProductVariants(newValues);
     }
 
+    // TODO: do we need id as param?
     public ProductVariants replaceById(
             final ProductVariantId id,
             final ProductVariant newVariant) {
@@ -141,7 +141,6 @@ public record ProductVariants(
         return new ProductVariant(
                 variant.id(),
                 variant.price(),
-                variant.traits().add(trait),
-                variant.version());
+                variant.traits().add(trait));
     }
 }

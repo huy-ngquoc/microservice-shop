@@ -41,7 +41,7 @@ public class VariantPersistenceAdapter
     }
 
     @Override
-    public List<Variant> loadByIds(
+    public List<Variant> loadAllByIds(
             final Collection<VariantId> ids) {
         final var jpaIds = ids.stream()
                 .map(VariantId::value)

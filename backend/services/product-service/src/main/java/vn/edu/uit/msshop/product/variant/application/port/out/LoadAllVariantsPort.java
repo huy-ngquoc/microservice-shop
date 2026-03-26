@@ -7,6 +7,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantId;
 
 public interface LoadAllVariantsPort {
-    List<Variant> loadByIds(
+    // TODO: method name is good?
+    List<Variant> loadAllByIds(
             final Collection<VariantId> ids);
 }

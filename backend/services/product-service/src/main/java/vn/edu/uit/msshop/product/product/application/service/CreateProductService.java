@@ -11,8 +11,8 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNo
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.CheckProductBrandExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.CheckCategoryExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.CreateProductVariantsForProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CheckProductCategoryExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.CreateAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
@@ -26,9 +26,9 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductId;
 @RequiredArgsConstructor
 public class CreateProductService implements CreateProductUseCase {
     private final CreateProductPort createPort;
-    private final CheckCategoryExistsPort checkCategoryExistsPort;
+    private final CheckProductCategoryExistsPort checkCategoryExistsPort;
     private final CheckProductBrandExistsPort checkBrandExistsPort;
-    private final CreateProductVariantsForProductPort createVariantsForNewProductPort;
+    private final CreateAllProductVariantsPort createVariantsForNewProductPort;
     private final PublishProductEventPort eventPort;
 
     private final ProductViewMapper mapper;
