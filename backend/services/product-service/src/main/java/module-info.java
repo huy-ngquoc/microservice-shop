@@ -3,8 +3,9 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked open module vn.uit.edu.msshop.product {
 
     // ========= Compile-time only =========
-    requires static org.jspecify;
     requires static lombok;
+
+    requires org.jspecify;
 
     // ========= JDK =========
     requires java.sql;

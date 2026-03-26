@@ -2,7 +2,9 @@ spring:
     application:
         name: product-service
     config:
-        import: optional:configserver:http://localhost:8888
+        import:
+          - optional:configserver:http://localhost:8888
+          - optional:file:.env[.properties]
     cloud:
         config:
             fail-fast: true
@@ -10,7 +12,7 @@ spring:
                 max-attempts: 5
 
 cloudinary:
-    cloud-name: ${CLOUDINARY_CLOUD_NAME}
-    api-key: ${CLOUDINARY_API_KEY}
-    api-secret: ${CLOUDINARY_API_SECRET}
+    cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+    api-key: ${CLOUDINARY_API_KEY:}
+    api-secret: ${CLOUDINARY_API_SECRET:}
                 
