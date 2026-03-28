@@ -1,13 +1,19 @@
 {
     "cSpell.words": [
+        "Dcompile",
         "Duser",
+        "errorprone",
+        "javac",
+        "jspecify",
         "msshop",
+        "nullaway",
         "pgadmin",
         "PGDATA",
         "projectlombok",
         "projectreactor",
         "springframework",
-        "webflux"
+        "webflux",
+        "Xplugin"
     ],
     "java.import.maven.enabled": true,
     "java.autobuild.enabled": true,
