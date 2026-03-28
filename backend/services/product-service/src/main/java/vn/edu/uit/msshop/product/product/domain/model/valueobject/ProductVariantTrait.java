@@ -2,14 +2,13 @@ package vn.edu.uit.msshop.product.product.domain.model.valueobject;
 
 import java.util.regex.Pattern;
 
-import vn.edu.uit.msshop.product.shared.domain.Domains;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
 
 public record ProductVariantTrait(
         String value) {
     public static final int MAX_LENGTH = VariantTrait.MAX_LENGTH;
-    public static final int MAX_RAW_LENGTH = (int) (MAX_LENGTH * Domains.RAW_LENGTH_TOLERANCE_FACTOR);
+    public static final int MAX_RAW_LENGTH = VariantTrait.MAX_RAW_LENGTH;
 
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\p{IsWhite_Space}+");
 

@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
@@ -45,6 +47,7 @@ public record CreateProductRequest(
 
     @AssertTrue(
             message = "Price is required when no options and no variants are provided")
+    @JsonIgnore
     public boolean isPriceValidForProductType() {
         return !options.isEmpty() || !variants.isEmpty() || (price != null);
     }
