@@ -13,4 +13,5 @@ import lombok.NoArgsConstructor;
 public class OrderShipped{
     private UUID orderId;
     private List<OrderDetail> details;
+    private UUID eventId;
 }

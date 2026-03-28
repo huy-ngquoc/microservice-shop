@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class OrderDetail {
     private UUID variantId;
     private int amount;
+    private UUID eventId;
 }
