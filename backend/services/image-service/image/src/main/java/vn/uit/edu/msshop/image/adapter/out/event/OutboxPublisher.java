@@ -1,9 +1,9 @@
-package vn.uit.edu.msshop.auth.adapter.out.event;
-
+package vn.uit.edu.msshop.image.adapter.out.event;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -11,26 +11,28 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.image.domain.event.ImageRemoveSuccess;
 
-import vn.uit.edu.msshop.auth.domain.event.AccountCreated;
+
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class OutboxPublisher {
-    private final AccountCreatedDocumentRepository accountCreatedDocumentRepo;
-    private final KafkaTemplate<String,AccountCreated> kafkaTemplate;
+    private final ImageRemoveSuccessDocumentRepository imageRemoveSuccessDocumentRepo;
+    private final KafkaTemplate<String,ImageRemoveSuccess> kafkaTemplate;
     private final EventDocumentRepository eventDocumentRepo;
+    private static final String PUBLISH_TOPIC = "image-topic";
     @Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
-        List<AccountCreatedDocument> pendingEvents = accountCreatedDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<ImageRemoveSuccessDocument> pendingEvents = imageRemoveSuccessDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
 
-        for (AccountCreatedDocument event : pendingEvents) {
+        for (ImageRemoveSuccessDocument event : pendingEvents) {
             try {
-                AccountCreated accountCreated = new AccountCreated(event.getEventId().toString(),event.getAccountId().toString(),
-                 event.getName(), event.getEmail(), event.getPassword(), event.getRole(), event.getStatus(), event.getShippingAddress(), event.getPhoneNumber());
-                kafkaTemplate.send("account-topic", accountCreated)
+                ImageRemoveSuccess imageRemoveSuccess = new ImageRemoveSuccess(event.getEventId(), event.getUrl(), event.getPublicId()
+                , event.getFileName(), event.getWidth(), event.getHeight(), event.getSize(), event.getObjectId());
+                kafkaTemplate.send(PUBLISH_TOPIC, imageRemoveSuccess)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
                             
@@ -46,13 +48,13 @@ public class OutboxPublisher {
         }
     }
 
-    private void updateStatus(AccountCreatedDocument event, String status, String error) {
+    private void updateStatus(ImageRemoveSuccessDocument event, String status, String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
-        accountCreatedDocumentRepo.save(event);
+        imageRemoveSuccessDocumentRepo.save(event);
     }
-    private void handleFailure(AccountCreatedDocument event, String error) {
+    private void handleFailure(ImageRemoveSuccessDocument event, String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
@@ -65,7 +67,7 @@ public class OutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    accountCreatedDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    imageRemoveSuccessDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 

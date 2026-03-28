@@ -12,6 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ImageRemoveSuccess {
+    private UUID eventId;
     private String url;
     private String publicId;
     private String fileName;
