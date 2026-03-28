@@ -5,6 +5,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
   workflow_dispatch:
     inputs:
       reason:
@@ -15,6 +16,7 @@ on:
 jobs:
   analyze:
     name: Analyze
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     
     # Grant permissions to write security events to the repository
