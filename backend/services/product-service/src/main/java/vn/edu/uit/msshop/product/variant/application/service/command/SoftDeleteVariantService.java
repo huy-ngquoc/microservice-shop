@@ -40,10 +40,6 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
                     currentVersion.value());
         }
 
-        this.removeFromProductPort.removeFromProduct(
-                variantId,
-                variant.getProductId());
-
         final var next = new Variant(
                 variant.getId(),
                 variant.getProductId(),
@@ -55,7 +51,10 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
                 VariantDeletionTime.now());
 
         final var saved = this.updatePort.update(next);
-
         this.eventPort.publish(new VariantSoftDeleted(saved.getId()));
+
+        this.removeFromProductPort.removeFromProduct(
+                variantId,
+                variant.getProductId());
     }
 }

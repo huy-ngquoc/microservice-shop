@@ -127,25 +127,11 @@ public record ProductVariants(
     }
 
     public ProductVariants appendTraitToAll(
-            final Map<ProductVariantId, ProductVariantTrait> traitAssignments) {
+            final ProductVariantTrait trait) {
         final var newValues = this.values.stream()
-                .map(variant -> ProductVariants.appendAssignedTrait(variant, traitAssignments))
+                .map(v -> new ProductVariant(
+                        v.id(), v.price(), v.traits().add(trait)))
                 .toList();
         return new ProductVariants(newValues);
-    }
-
-    private static ProductVariant appendAssignedTrait(
-            final ProductVariant variant,
-            final Map<ProductVariantId, ProductVariantTrait> traitAssignments) {
-        final var trait = traitAssignments.get(variant.id());
-        if (trait == null) {
-            throw new DomainException(
-                    "Missing trait assignment for variant: " + variant.id().value());
-        }
-
-        return new ProductVariant(
-                variant.id(),
-                variant.price(),
-                variant.traits().add(trait));
     }
 }

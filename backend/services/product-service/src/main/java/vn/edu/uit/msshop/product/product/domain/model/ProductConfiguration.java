@@ -19,10 +19,10 @@ public record ProductConfiguration(
 
     public ProductConfiguration addOption(
             final ProductOption option,
-            final Map<ProductVariantId, ProductVariantTrait> traitAssignments) {
+            final ProductVariantTrait defaultTrait) {
         return new ProductConfiguration(
                 options.add(option),
-                variants.appendTraitToAll(traitAssignments));
+                variants.appendTraitToAll(defaultTrait));
     }
 
     public ProductConfiguration removeOptionAt(

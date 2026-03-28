@@ -57,10 +57,10 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
             return this.mapper.toView(variant);
         }
 
-        this.updateInProductPort.updateInProduct(next);
-
         final var saved = this.updatePort.update(next);
         this.eventPort.publish(new VariantUpdated(saved.getId()));
+
+        this.updateInProductPort.updateInProduct(next);
 
         return this.mapper.toView(saved);
     }
