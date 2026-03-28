@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.variant.application.dto.command;
+package vn.edu.uit.msshop.product.product.application.dto.command;
 
 import org.jspecify.annotations.Nullable;
 
