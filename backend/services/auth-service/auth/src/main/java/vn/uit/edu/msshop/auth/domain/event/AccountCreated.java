@@ -1,6 +1,7 @@
 package vn.uit.edu.msshop.auth.domain.event;
 
 public record AccountCreated(
+    String eventId,
     String id,
     String name, 
     String email,

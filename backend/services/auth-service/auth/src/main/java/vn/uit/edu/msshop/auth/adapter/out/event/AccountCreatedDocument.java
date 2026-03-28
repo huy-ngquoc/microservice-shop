@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.auth.adapter.out.event;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
@@ -25,4 +26,8 @@ public class AccountCreatedDocument {
     private String shippingAddress;
     private String phoneNumber;
     private String eventStatus;
+    private Integer retryCount; 
+    private Instant createdAt;
+    private Instant updatedAt; 
+    private String lastError;
 }
