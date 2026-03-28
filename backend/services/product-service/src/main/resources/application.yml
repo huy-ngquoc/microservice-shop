@@ -10,6 +10,11 @@ spring:
             fail-fast: true
             retry:
                 max-attempts: 5
+        
+eureka:
+    client:
+        http-client:
+            strategy: restclient
 
 cloudinary:
     cloud-name: ${CLOUDINARY_CLOUD_NAME:}

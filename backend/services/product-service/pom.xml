@@ -67,6 +67,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents.client5</groupId>
+                    <artifactId>httpclient5</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -143,7 +149,7 @@
                     </annotationProcessorPaths>
                     <compilerArgs>
                         <arg>--add-modules</arg>
-                        <arg>jdk.compiler</arg>
+                        <arg>jdk.compiler,jdk.net</arg>
                         <arg>-XDcompilePolicy=simple</arg>
                         <arg>--should-stop=ifError=FLOW</arg>
                         <arg>
@@ -166,6 +172,10 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <jvmArguments>
+                        --add-modules jdk.net 
+                        -Duser.timezone=UTC
+                    </jvmArguments>
                 </configuration>
             </plugin>
             <plugin>
@@ -174,6 +184,7 @@
                 <configuration>
                     <argLine>
                         @{argLine}
+                        --add-modules jdk.net
                         -Duser.timezone=UTC
                         -javaagent:${org.mockito:mockito-core:jar}
                     </argLine>
