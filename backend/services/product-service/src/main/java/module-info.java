@@ -7,6 +7,8 @@ import org.jspecify.annotations.NullMarked;
 
     requires org.jspecify;
 
+    requires jdk.net;
+
     // ========= JDK =========
     requires java.sql;
     requires java.naming;
