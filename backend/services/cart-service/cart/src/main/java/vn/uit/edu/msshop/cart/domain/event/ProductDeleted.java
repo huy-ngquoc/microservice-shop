@@ -12,5 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 public class ProductDeleted {
+    private UUID eventId;
     private UUID variantId;
 }
