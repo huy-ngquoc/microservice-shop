@@ -13,4 +13,5 @@ public class InventoryUpdated {
     private UUID variantId;
     private int newQuantity;
     private int newReservedQuantity;
+    private UUID eventId;
 }

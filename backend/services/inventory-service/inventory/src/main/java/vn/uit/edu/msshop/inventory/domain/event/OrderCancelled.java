@@ -15,4 +15,5 @@ public class OrderCancelled {
     private UUID orderId;
     private List<OrderDetail> details;
     private String oldStatus;
+    private UUID eventId;
 }

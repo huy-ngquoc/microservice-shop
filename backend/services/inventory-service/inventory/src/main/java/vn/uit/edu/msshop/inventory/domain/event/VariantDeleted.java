@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VariantDeleted {
     private UUID variantId;
+    private UUID eventId;
 }
