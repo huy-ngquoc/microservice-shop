@@ -13,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductUpdated {
+    private UUID eventId;
     private UUID variantId;
     private List<String> imageUrls;
     private long unitPrice;
