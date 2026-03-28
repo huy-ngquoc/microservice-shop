@@ -4,23 +4,34 @@ import java.util.UUID;
 
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductOptionRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.RemoveProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
+import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductOptionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.CreateProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductOptionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductInfoUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductOptionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.FindProductUseCase;
 
@@ -31,7 +42,11 @@ public class ProductController {
     private final FindProductUseCase findUseCase;
     private final CheckProductExistsUseCase checkExistsUseCase;
     private final CreateProductUseCase createUseCase;
+    private final AddProductOptionUseCase addOptionUseCase;
+    private final AddProductVariantsUseCase addVariantsUseCase;
     private final UpdateProductInfoUseCase updateInfoUseCase;
+    private final UpdateProductOptionUseCase updateOptionUseCase;
+    private final RemoveProductOptionUseCase removeOptionUseCase;
     private final ProductWebMapper mapper;
 
     @GetMapping("/{id}")
@@ -76,6 +91,43 @@ public class ProductController {
         return ResponseEntity.created(location).body(response);
     }
 
+    @PostMapping("/{id}/options")
+    public ResponseEntity<ProductResponse> addOption(
+            @PathVariable
+            UUID id,
+
+            @RequestBody
+            @Valid
+            AddProductOptionRequest request) {
+        final var command = this.mapper.toAddOptionCommand(id, request);
+        final var view = this.addOptionUseCase.addOption(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
+
+    @PostMapping("/{id}/variants")
+    public ResponseEntity<ProductResponse> addVariant(
+            @PathVariable
+            UUID id,
+            @RequestBody
+            @Valid
+            AddProductVariantRequest request) {
+        final var command = this.mapper.toAddVariantsCommand(id, request);
+        final var view = this.addVariantsUseCase.addVariants(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
+
+    @PostMapping("/{id}/variants/batch")
+    public ResponseEntity<ProductResponse> addAllVariants(
+            @PathVariable
+            UUID id,
+            @RequestBody
+            @Valid
+            AddProductVariantsRequest request) {
+        final var command = this.mapper.toAddVariantsCommand(id, request);
+        final var view = this.addVariantsUseCase.addVariants(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<ProductResponse> updateInfo(
             @PathVariable
@@ -89,5 +141,35 @@ public class ProductController {
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/options/{index}")
+    public ResponseEntity<ProductResponse> updateOption(
+            @PathVariable
+            UUID id,
+            @PathVariable
+            int index,
+            @RequestBody
+            @Valid
+            UpdateProductOptionRequest request) {
+        final var command = this.mapper.toUpdateOptionCommand(id, index, request);
+        final var view = this.updateOptionUseCase.updateOption(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
+
+    @DeleteMapping("/{id}/options/{index}")
+    public ResponseEntity<ProductResponse> removeOption(
+            @PathVariable
+            UUID id,
+
+            @PathVariable
+            int index,
+
+            @RequestBody
+            @Valid
+            RemoveProductOptionRequest request) {
+        final var command = this.mapper.toRemoveOptionCommand(id, index, request);
+        final var view = this.removeOptionUseCase.removeOption(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
     }
 }

@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.product.domain.model.valueobject;
 
+import org.jspecify.annotations.Nullable;
+
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
 public record ProductPrice(
@@ -10,6 +12,16 @@ public record ProductPrice(
         if (value < 0) {
             throw new DomainException("Price must not be negative");
         }
+    }
+
+    public static @Nullable ProductPrice ofNullable(
+            @Nullable
+            final Long value) {
+        if (value == null) {
+            return null;
+        }
+
+        return new ProductPrice(value);
     }
 
     public static ProductPrice zero() {

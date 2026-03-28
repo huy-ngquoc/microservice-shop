@@ -25,6 +25,7 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
@@ -81,7 +82,7 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
             final Product product,
             final int optionIndex,
             @Nullable
-            final ProductVariantPrice defaultPrice) {
+            final ProductPrice defaultPrice) {
         final var optionsSize = product.getOptions().size();
 
         if (optionsSize <= 0) {
@@ -110,7 +111,8 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
         this.softDeleteVariantsForProductPort.deleteByProductId(productId);
 
         final var newVariant = new NewProductVariant(
-                defaultPrice, ProductVariantTraits.empty());
+                new ProductVariantPrice(defaultPrice.value()),
+                ProductVariantTraits.empty());
         final var newVariants = this.createVariantsPort.create(
                 productId, new NewProductVariants(List.of(newVariant)));
 

@@ -32,6 +32,7 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
 
     @Override
     @Transactional
+    // TODO: traits size must be the same
     public VariantView updateInfo(
             final UpdateVariantInfoCommand command) {
         final var variant = this.loadPort.loadById(command.id())
@@ -60,7 +61,7 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         final var saved = this.updatePort.update(next);
         this.eventPort.publish(new VariantUpdated(saved.getId()));
 
-        this.updateInProductPort.updateInProduct(next);
+        this.updateInProductPort.updateInProduct(saved);
 
         return this.mapper.toView(saved);
     }

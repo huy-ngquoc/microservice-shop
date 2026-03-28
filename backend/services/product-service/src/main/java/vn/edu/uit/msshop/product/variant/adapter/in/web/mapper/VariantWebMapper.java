@@ -4,12 +4,10 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
-import vn.edu.uit.msshop.product.variant.adapter.in.web.request.CreateVariantRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
-import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantImageCommand;
@@ -19,28 +17,11 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Component
 public class VariantWebMapper {
-    public CreateVariantCommand toCreateCommand(
-            final CreateVariantRequest request) {
-        final var productId = new VariantProductId(request.productId());
-        final var price = new VariantPrice(request.price());
-
-        final var traitsList = request.traits().stream()
-                .map(VariantTrait::new).toList();
-        final var traits = new VariantTraits(traitsList);
-
-        return new CreateVariantCommand(
-                productId,
-                price,
-                traits);
-    }
-
     public UpdateVariantInfoCommand toUpdateInfoCommand(
             final UUID id,
             final UpdateVariantInfoRequest request) {
