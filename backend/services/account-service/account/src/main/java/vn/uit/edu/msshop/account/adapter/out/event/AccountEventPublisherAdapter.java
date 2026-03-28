@@ -7,7 +7,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.RollbackException;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.account.application.port.out.PublishAccountEventPort;
 import vn.uit.edu.msshop.account.domain.event.kafka.AccountId;
@@ -41,7 +40,7 @@ public class AccountEventPublisherAdapter implements PublishAccountEventPort {
 
     @Override
     public void sendAccountCreationFailEvent(AccountId accountId) {
-         Message<AccountId> message = MessageBuilder.withPayload(accountId).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+        Message<AccountId> message = MessageBuilder.withPayload(accountId).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
         kafkaTemplate.send(message);
     }
 
