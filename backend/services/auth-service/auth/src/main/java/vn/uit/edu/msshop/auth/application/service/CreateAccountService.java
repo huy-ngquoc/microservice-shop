@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.auth.application.service;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import org.keycloak.admin.client.CreatedResponseUtil;
@@ -46,7 +47,12 @@ public class CreateAccountService implements CreateAccountUseCase  {
                 .role(role)
                 .status("ACTIVE")
                 .shippingAddress(shippingAddress)
-                .phoneNumber(phoneNumber).eventStatus("PENDING").build();
+                .phoneNumber(phoneNumber).eventStatus("PENDING")
+                .retryCount(0)
+                .createdAt(Instant.now())
+                .updatedAt(null)
+                .lastError(null)
+                .build();
                 accountCreatedDocumentRepo.save(eventDocument);
 
             }
