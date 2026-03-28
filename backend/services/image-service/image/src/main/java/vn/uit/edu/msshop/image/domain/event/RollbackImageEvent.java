@@ -1,4 +1,7 @@
 package vn.uit.edu.msshop.image.domain.event;
-public record RollbackImageEvent(String imagePublicId) {
+
+import java.util.UUID;
+
+public record RollbackImageEvent(String imagePublicId, UUID eventId) {
 
 }

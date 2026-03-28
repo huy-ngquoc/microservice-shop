@@ -1,4 +1,7 @@
 package vn.uit.edu.msshop.image.domain.event;
-public record DeleteOldImageEvent(String oldImagePublicId) {
+
+import java.util.UUID;
+
+public record DeleteOldImageEvent(String oldImagePublicId, UUID eventId) {
 
 }
