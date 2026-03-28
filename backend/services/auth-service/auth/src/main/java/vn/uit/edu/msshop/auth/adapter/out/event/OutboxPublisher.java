@@ -20,6 +20,7 @@ import vn.uit.edu.msshop.auth.domain.event.AccountCreated;
 public class OutboxPublisher {
     private final AccountCreatedDocumentRepository accountCreatedDocumentRepo;
     private final KafkaTemplate<String,AccountCreated> kafkaTemplate;
+    private final EventDocumentRepository eventDocumentRepo;
     @Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
@@ -67,4 +68,10 @@ public class OutboxPublisher {
     accountCreatedDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
+
+    @Scheduled(cron="0 0 0 * * ?")
+    public void cleanUpOldReceivedEvent() {
+        Instant threshold = Instant.now().minus(7, ChronoUnit.DAYS);
+        eventDocumentRepo.deleteByReceiveAtBefore(threshold);
+    }
 }
