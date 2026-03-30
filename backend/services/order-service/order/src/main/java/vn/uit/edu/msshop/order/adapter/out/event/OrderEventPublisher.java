@@ -35,6 +35,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     private static final String INVENTORY_TOPIC="order-inventory";
     private final OrderCreatedOutboxPublisher orderCreatedOutboxPublisher;
     private final CodPaymentCancelledOutboxPublisher codPaymentCancelledOutboxPublisher;
+    private final CodPaymentReceivedOutboxPublisher codPaymentReceivedOutboxPublisher;
    
     /*UUID eventId,
     String currency,
@@ -77,9 +78,18 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     }
 
     @Override
-    public void publishCodPaymentReceived(CodPaymentReceived event) {
+    public void publishCodPaymentReceived(CodPaymentReceivedDocument outboxEvent) {
+        CodPaymentReceived event = new CodPaymentReceived(outboxEvent.getOrderId(), outboxEvent.getEventId());
         Message<CodPaymentReceived> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_STATUS_TOPIC).build();
-        codPaymentReceivedTemplate.send(message);
+        codPaymentReceivedTemplate.send(message)
+        .whenComplete((result,ex)->{
+            if(ex==null) {
+                codPaymentReceivedOutboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                log.error("Fail, wait 5 seconds");
+            }
+        });
     }
 
     @Override
