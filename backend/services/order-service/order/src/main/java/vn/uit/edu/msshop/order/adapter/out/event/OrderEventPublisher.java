@@ -8,6 +8,12 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderCancelledDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderCancelledOutboxPublisher;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderCreatedInventoryDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderCreatedInventoryOutboxPublisher;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderShippedDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderShippedOutboxPublisher;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
@@ -15,6 +21,7 @@ import vn.uit.edu.msshop.order.domain.event.OrderCreated;
 import vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled;
+import vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped;
 
 @Component
@@ -36,7 +43,10 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     private final OrderCreatedOutboxPublisher orderCreatedOutboxPublisher;
     private final CodPaymentCancelledOutboxPublisher codPaymentCancelledOutboxPublisher;
     private final CodPaymentReceivedOutboxPublisher codPaymentReceivedOutboxPublisher;
-   
+    private final OrderCreatedSuccessOutboxPublisher orderCreatedSuccessOutboxPublisher;
+    private final OrderCreatedInventoryOutboxPublisher orderCreatedInventoryOutboxPublisher;
+    private final OrderCancelledOutboxPublisher orderCancelledOutboxPublisher;
+    private final OrderShippedOutboxPublisher orderShippedOutboxPublisher;
     /*UUID eventId,
     String currency,
     UUID orderId,
@@ -93,28 +103,67 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     }
 
     @Override
-    public void publishClearCartEvent(OrderCreatedSuccess event) {
+    public void publishClearCartEvent(OrderCreatedSuccessDocument outboxEvent) {
+        OrderCreatedSuccess event = new OrderCreatedSuccess(outboxEvent.getEventId(), outboxEvent.getUserId(), outboxEvent.getVariantIds());
         Message<OrderCreatedSuccess> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, CLEAR_CART_TOPIC).build();
-        clearCartTemplate.send(message);
+        clearCartTemplate.send(message)
+        .whenComplete((result,ex)->{
+            if(ex==null) {
+                orderCreatedSuccessOutboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                log.error("Fail, wait 5 seconds");
+            }
+        });
 
     }
 
     @Override
-    public void publishOrderCreated_InventoryEvent(vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated event) {
+    public void publishOrderCreated_InventoryEvent(OrderCreatedInventoryDocument outboxEvent) {
+        vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated event = new vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated(
+            outboxEvent.getEventId(),outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList()
+        );
         Message<vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated > message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
-        inventoryOrderCreatedTemplate.send(message);
+        inventoryOrderCreatedTemplate.send(message)
+        .whenComplete((result,ex)->{
+            if(ex==null) {
+                orderCreatedInventoryOutboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                log.error("Fail, wait 5 seconds");
+            }
+        });
     }
 
     @Override
-    public void publishOrderCancelled_InventoryEvent(OrderCancelled event) {
+    public void publishOrderCancelled_InventoryEvent(OrderCancelledDocument outboxEvent) {
+        OrderCancelled event = new OrderCancelled(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList(),outboxEvent.getOldStatus());
         Message<OrderCancelled> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
-        orderCancelledTemplate.send(message);
+        orderCancelledTemplate.send(message)
+        .whenComplete((result,ex)->{
+            if(ex==null) {
+                orderCancelledOutboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                log.error("Fail, wait 5 seconds");
+            }
+        });
     }
 
     @Override
-    public void publishOrderShipped_InventoryEvent(OrderShipped event) {
+    public void publishOrderShipped_InventoryEvent(OrderShippedDocument outboxEvent) {
+         OrderShipped event = new OrderShipped(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList());
          Message<OrderShipped> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
-        orderShippedTemplate.send(message);
+        orderShippedTemplate.send(message)
+        .whenComplete((result,ex)->{
+            if(ex==null) {
+                orderShippedOutboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                log.error("Fail, wait 5 seconds");
+            }
+        })
+        ;
     }
 
 }
