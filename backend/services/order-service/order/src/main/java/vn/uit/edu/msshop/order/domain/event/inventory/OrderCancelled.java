@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderCancelled {
+    private UUID eventId;
     private UUID orderId;
     private List<OrderDetail> details;
     private String oldStatus;

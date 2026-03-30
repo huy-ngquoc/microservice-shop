@@ -11,6 +11,11 @@ import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentCancelledDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentReceivedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentReceivedDocumentRepository;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderCancelledDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderCancelledDocumentRepository;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderDetailDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderShippedDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderShippedDocumentRepository;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
 import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
@@ -19,9 +24,7 @@ import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
-import vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail;
-import vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
@@ -38,6 +41,8 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     private final CheckPermissionUseCase checkPermission;
     private final CodPaymentCancelledDocumentRepository codPaymentCancelledDocumentRepo;
     private final CodPaymentReceivedDocumentRepository codPaymentReceivedDocumentRepo;
+    private final OrderCancelledDocumentRepository orderCancelledDocumentRepo;
+    private final OrderShippedDocumentRepository orderShippedDocumentRepo;
 
     @Override
     public void update(UpdateOrderCommand command, String userIdFromHeader, String role) {
@@ -67,7 +72,23 @@ public class UpdateOrderService implements UpdateOrderUseCase {
                 publishEventPort.publishCodPaymentCancelled(savedEvent);
             }
         });
-            publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
+        OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder()
+        .orderId(saved.getId().value())
+        .oldStatus(oldStatus)
+        .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        final var savedOutboxOrderCancelled = orderCancelledDocumentRepo.save(outboxOrderCancelled);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishOrderCancelled_InventoryEvent(savedOutboxOrderCancelled);
+            }
+        });
+           // publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
         }
         if(saved.getStatus().value().equals("RECEIVED")&&isSendEvent) {
             CodPaymentReceivedDocument outboxEvent = CodPaymentReceivedDocument.builder()
@@ -87,7 +108,22 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             //publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(saved.getId().value()));
         }
         if(saved.getStatus().value().equals("SHIPPING")&&isSendEvent) {
-            publishEventPort.publishOrderShipped_InventoryEvent(new OrderShipped(saved.getId().value(),listEvent));
+            OrderShippedDocument orderShippedDocument = OrderShippedDocument.builder()
+            .orderId(saved.getId().value())
+            .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
+            .eventStatus("PENDING")
+            .retryCount(0)
+            .createdAt(Instant.now())
+            .updatedAt(null)
+            .lastError(null).build();
+            final var savedOrderShippedDocument = orderShippedDocumentRepo.save(orderShippedDocument);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishOrderShipped_InventoryEvent(savedOrderShippedDocument);
+            }
+        });
+            //publishEventPort.publishOrderShipped_InventoryEvent(new OrderShipped(saved.getId().value(),listEvent));
         }
         publishEventPort.publish(new OrderUpdated(saved.getId()));
     }
@@ -124,7 +160,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
        String oldStatus = order.getStatus().value();
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
         final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
-        final var listEvent = saved.getDetails().stream().map(item->new OrderDetail(item.variantId(),item.amount())).toList();
+        //final var listEvent = saved.getDetails().stream().map(item->new OrderDetail(item.variantId(),item.amount())).toList();
         CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder()
             .orderId(saved.getId().value())
             .eventStatus("PENDING")
@@ -139,7 +175,23 @@ public class UpdateOrderService implements UpdateOrderUseCase {
                 publishEventPort.publishCodPaymentCancelled(savedEvent);
             }
         });
-        publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
+        OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder()
+        .orderId(saved.getId().value())
+        .oldStatus(oldStatus)
+        .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        final var savedOutboxOrderCancelled = orderCancelledDocumentRepo.save(outboxOrderCancelled);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishOrderCancelled_InventoryEvent(savedOutboxOrderCancelled);
+            }
+        });
+        //publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
     }
 
     @Override
