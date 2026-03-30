@@ -11,24 +11,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.msshop.order.domain.event.OrderCreated;
+import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class OrderCreatedOutboxPublisher {
-
-    private final OrderCreatedDocumentRepository orderCreatedDocumentRepo;
-    private final KafkaTemplate<String, OrderCreated> kafkaTemplate;
-    private static final String PUBLISH_TOPIC="order-topic";
+public class CodPaymentCancelledOutboxPublisher {
+    
+    private final CodPaymentCancelledDocumentRepository codPaymentCancelledDocumentRepo;
+    private final KafkaTemplate<String, CodPaymentCancelled> kafkaTemplate;
+    private static final String PUBLISH_TOPIC="payment-cod-topic";
     @Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
-        List<OrderCreatedDocument> pendingEvents =orderCreatedDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<CodPaymentCancelledDocument> pendingEvents =codPaymentCancelledDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
 
-        for (OrderCreatedDocument event : pendingEvents) {
+        for (CodPaymentCancelledDocument event : pendingEvents) {
             try {
-                OrderCreated orderCreated = new OrderCreated(event.getEventId(),event.getCurrency(), event.getOrderId(),event.getPaymentMethod(), event.getPaymentValue());
+                CodPaymentCancelled orderCreated = new CodPaymentCancelled(event.getOrderId(), event.getEventId());
                 kafkaTemplate.send(PUBLISH_TOPIC, orderCreated)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
@@ -45,13 +45,13 @@ public class OrderCreatedOutboxPublisher {
         }
     }
 
-    private void updateStatus(OrderCreatedDocument event, String status, String error) {
+    private void updateStatus(CodPaymentCancelledDocument event, String status, String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
-        orderCreatedDocumentRepo.save(event);
+        codPaymentCancelledDocumentRepo.save(event);
     }
-    private void handleFailure(OrderCreatedDocument event, String error) {
+    private void handleFailure(CodPaymentCancelledDocument event, String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
@@ -61,14 +61,14 @@ public class OrderCreatedOutboxPublisher {
         }
     }
     @Transactional
-    public void markAsSent(OrderCreatedDocument event) {
+    public void markAsSent(CodPaymentCancelledDocument event) {
         updateStatus(event, "SENT", null);
     }
     @Scheduled(cron = "0 0 0 * * ?") 
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    orderCreatedDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    codPaymentCancelledDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

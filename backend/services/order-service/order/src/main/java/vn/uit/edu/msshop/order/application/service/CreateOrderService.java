@@ -5,11 +5,16 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotFoundException;
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
+import vn.uit.edu.msshop.order.adapter.out.event.OrderCreatedDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.OrderCreatedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.dto.command.CreateOrderCommand;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
@@ -65,8 +70,18 @@ public class CreateOrderService implements CreateOrderUseCase {
     private final CheckUserPort checkUserPort;
     private final PublishOrderEventPort publishPort;
     private final InventoryChecker inventoryChecker;
-
+    private final OrderCreatedDocumentRepository orderCreatedDocumentRepo;
+/*private String currency;
+    private UUID orderId;
+    private String paymentMethod;
+    private long paymentValue;
+    private String eventStatus;
+    private Integer retryCount; 
+    private Instant createdAt;
+    private Instant updatedAt; 
+    private String lastError; */
     @Override
+    @Transactional
     public UUID create(CreateOrderCommand command) {
         this.checkUserPort.isUserAvailable(command.userId().value());
         List<OrderDetail> listDetails = command.details().stream().map(item->{
@@ -95,7 +110,23 @@ public class CreateOrderService implements CreateOrderUseCase {
         final var order = Order.create(draft);
         final var saved = savePort.save(order);
         publishPort.publishOrderCreated_InventoryEvent(new OrderCreated(saved.getId().value(),event_details));
+        OrderCreatedDocument outboxEventOrderCreated = OrderCreatedDocument.builder().currency(command.currency().value())
+        .orderId(saved.getId().value())
+        .paymentMethod(command.paymentMethod().value())
+        .paymentValue(saved.getTotalPrice().value())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        final var savedEvent=orderCreatedDocumentRepo.save(outboxEventOrderCreated);
         System.out.println(event_details.size());
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishPort.publishOrderCreatedEvent(savedEvent);
+            }
+        });
         return saved.getId().value();
     }
     private void canPlaceOrder(List<OrderDetail> details) {
