@@ -9,6 +9,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentCancelledDocumentRepository;
+import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentReceivedDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentReceivedDocumentRepository;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
 import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
@@ -16,7 +18,6 @@ import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
-import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail;
@@ -36,6 +37,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     private final PublishOrderEventPort publishEventPort;
     private final CheckPermissionUseCase checkPermission;
     private final CodPaymentCancelledDocumentRepository codPaymentCancelledDocumentRepo;
+    private final CodPaymentReceivedDocumentRepository codPaymentReceivedDocumentRepo;
 
     @Override
     public void update(UpdateOrderCommand command, String userIdFromHeader, String role) {
@@ -68,7 +70,21 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
         }
         if(saved.getStatus().value().equals("RECEIVED")&&isSendEvent) {
-            publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(saved.getId().value()));
+            CodPaymentReceivedDocument outboxEvent = CodPaymentReceivedDocument.builder()
+        .orderId(saved.getId().value())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        final var savedEvent = codPaymentReceivedDocumentRepo.save(outboxEvent);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishCodPaymentReceived(savedEvent);
+            }
+        });
+            //publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(saved.getId().value()));
         }
         if(saved.getStatus().value().equals("SHIPPING")&&isSendEvent) {
             publishEventPort.publishOrderShipped_InventoryEvent(new OrderShipped(saved.getId().value(),listEvent));
@@ -85,7 +101,21 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         }
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("RECEIVED")).build();
         final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
-        publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(order.getId().value()));
+        CodPaymentReceivedDocument outboxEvent = CodPaymentReceivedDocument.builder()
+        .orderId(saved.getId().value())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        final var savedEvent = codPaymentReceivedDocumentRepo.save(outboxEvent);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishCodPaymentReceived(savedEvent);
+            }
+        });
+        
     }
 
     @Override
