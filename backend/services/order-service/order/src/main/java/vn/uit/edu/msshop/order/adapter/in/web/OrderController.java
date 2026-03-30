@@ -29,7 +29,6 @@ import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.FindOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
-import vn.uit.edu.msshop.order.domain.event.OrderCreated;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
@@ -75,7 +74,7 @@ public class OrderController {
         final var command = this.mapper.toCommand(request);
         try {
         final var result= this.createService.create(command);
-        eventPublisher.publishOrderCreatedEvent(new OrderCreated(request.currency(),result,request.paymentMethod(),request.totalPrice()));
+        //eventPublisher.publishOrderCreatedEvent(new OrderCreated(request.currency(),result,request.paymentMethod(),request.totalPrice()));
         eventPublisher.publishClearCartEvent(mapper.toEvent(request));
         return ResponseEntity.ok(result);}
         catch(VariantNotFoundException e) {

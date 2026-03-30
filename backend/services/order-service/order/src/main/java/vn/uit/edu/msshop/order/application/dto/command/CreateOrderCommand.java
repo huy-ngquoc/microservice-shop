@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.jspecify.annotations.NonNull;
 
+import vn.uit.edu.msshop.order.domain.model.valueobject.Currency;
 import vn.uit.edu.msshop.order.domain.model.valueobject.Discount;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingFee;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
@@ -17,7 +19,9 @@ public record CreateOrderCommand(
     List<OrderDetailCommand> details,
     UserId userId,
     ShippingFee shippingFee,
-    Discount discount
+    Discount discount,
+    Currency currency,
+    PaymentMethod paymentMethod
 ) {
 
 }

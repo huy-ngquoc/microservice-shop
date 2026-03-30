@@ -17,10 +17,12 @@ import vn.uit.edu.msshop.order.application.dto.command.OrderDetailCommand;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.dto.query.OrderView;
 import vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess;
+import vn.uit.edu.msshop.order.domain.model.valueobject.Currency;
 import vn.uit.edu.msshop.order.domain.model.valueobject.Discount;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingFee;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
@@ -40,7 +42,7 @@ public class OrderWebMapper {
     public CreateOrderCommand toCommand(CreateOrderRequest request) {
         ShippingInfo shippingInfo = new ShippingInfo(request.fullName(), request.address(), request.phone(), request.email());
         List<OrderDetailCommand> details = request.detailRequests().stream().map(this::toOrderDetailCommand).toList();
-        return new CreateOrderCommand(new OrderId(UUID.randomUUID()), shippingInfo, details, new UserId(request.userId()), new ShippingFee(request.shippingFee()), new Discount(request.discount()));
+        return new CreateOrderCommand(new OrderId(UUID.randomUUID()), shippingInfo, details, new UserId(request.userId()), new ShippingFee(request.shippingFee()), new Discount(request.discount()), new Currency(request.currency()), new PaymentMethod(request.paymentMethod()));
     }
     public OrderDetailCommand toOrderDetailCommand(OrderDetailRequest detailRequest) {
         return new OrderDetailCommand(detailRequest.variantId(), detailRequest.quantity());

@@ -17,15 +17,9 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class OrderCreatedDocument extends OutboxEvent {
+public class CodPaymentCancelledDocument extends OutboxEvent {
     @Id
     private UUID eventId;
-    private String currency;
     private UUID orderId;
-    private String paymentMethod;
-    private long paymentValue;
-
-   
     
-
 }

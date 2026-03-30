@@ -1,8 +1,14 @@
 package vn.uit.edu.msshop.order.application.service;
 
+import java.time.Instant;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
+import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentCancelledDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentCancelledDocumentRepository;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
 import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
@@ -10,7 +16,6 @@ import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
-import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled;
@@ -30,6 +35,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     private final SaveOrderPort saveOrderPort;
     private final PublishOrderEventPort publishEventPort;
     private final CheckPermissionUseCase checkPermission;
+    private final CodPaymentCancelledDocumentRepository codPaymentCancelledDocumentRepo;
 
     @Override
     public void update(UpdateOrderCommand command, String userIdFromHeader, String role) {
@@ -45,7 +51,20 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         boolean isSendEvent = !oldStatus.equals(saved.getStatus().value());
         final var listEvent = saved.getDetails().stream().map(item->new OrderDetail(item.variantId(),item.amount())).toList();
         if(saved.getStatus().value().equals("CANCELLED")&&isSendEvent) {
-            publishEventPort.publishCodPaymentCancelled(new CodPaymentCancelled(saved.getId().value()));
+            CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder()
+            .orderId(saved.getId().value())
+            .eventStatus("PENDING")
+            .retryCount(0)
+            .createdAt(Instant.now())
+            .updatedAt(null)
+            .lastError(null).build();
+            final var savedEvent = codPaymentCancelledDocumentRepo.save(outboxEvent);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishCodPaymentCancelled(savedEvent);
+            }
+        });
             publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
         }
         if(saved.getStatus().value().equals("RECEIVED")&&isSendEvent) {
@@ -76,7 +95,20 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
         final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
         final var listEvent = saved.getDetails().stream().map(item->new OrderDetail(item.variantId(),item.amount())).toList();
-        publishEventPort.publishCodPaymentCancelled(new CodPaymentCancelled(order.getId().value()));
+        CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder()
+            .orderId(saved.getId().value())
+            .eventStatus("PENDING")
+            .retryCount(0)
+            .createdAt(Instant.now())
+            .updatedAt(null)
+            .lastError(null).build();
+            final var savedEvent = codPaymentCancelledDocumentRepo.save(outboxEvent);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishCodPaymentCancelled(savedEvent);
+            }
+        });
         publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
     }
 
