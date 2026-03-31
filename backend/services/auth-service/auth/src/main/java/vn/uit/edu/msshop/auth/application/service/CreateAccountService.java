@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +55,13 @@ public class CreateAccountService implements CreateAccountUseCase  {
                 .updatedAt(null)
                 .lastError(null)
                 .build();
-                accountCreatedDocumentRepo.save(eventDocument);
+                final var savedEvent = accountCreatedDocumentRepo.save(eventDocument);
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                eventProducer.sendAccountCreateEvent(savedEvent);
+            }
+        });
 
             }
             catch(Exception e) {

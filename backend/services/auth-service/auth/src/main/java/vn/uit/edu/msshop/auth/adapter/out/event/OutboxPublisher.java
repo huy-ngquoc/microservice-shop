@@ -2,16 +2,15 @@ package vn.uit.edu.msshop.auth.adapter.out.event;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import vn.uit.edu.msshop.auth.domain.event.AccountCreated;
 
 @Component
@@ -51,6 +50,10 @@ public class OutboxPublisher {
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
         accountCreatedDocumentRepo.save(event);
+    }
+    @Transactional
+    public void markAsSent(AccountCreatedDocument event) {
+        updateStatus(event,"SENT", null);
     }
     private void handleFailure(AccountCreatedDocument event, String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
