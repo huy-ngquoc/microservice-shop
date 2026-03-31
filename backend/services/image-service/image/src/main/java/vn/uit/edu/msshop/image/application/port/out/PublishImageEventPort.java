@@ -1,9 +1,9 @@
 package vn.uit.edu.msshop.image.application.port.out;
 
-import vn.uit.edu.msshop.image.domain.event.ImageRemoveSuccess;
+import vn.uit.edu.msshop.image.adapter.out.event.ImageRemoveSuccessDocument;
 
 
 
 public interface PublishImageEventPort {
-    public void publishImageRemoveSuccess(ImageRemoveSuccess event);
+    public void publishImageRemoveSuccess(ImageRemoveSuccessDocument outboxEvent);
 }

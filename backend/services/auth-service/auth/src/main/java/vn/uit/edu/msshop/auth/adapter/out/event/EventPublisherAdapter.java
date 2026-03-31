@@ -16,10 +16,21 @@ import vn.uit.edu.msshop.auth.domain.event.AccountCreated;
 @Slf4j
 public class EventPublisherAdapter implements PublishAccountEventPort {
     private final KafkaTemplate<String,AccountCreated> kafkaTemplate;
+    private final OutboxPublisher outboxPublisher;
     @Override
-    public void sendAccountCreateEvent(AccountCreated accountCreated) {
+    public void sendAccountCreateEvent(AccountCreatedDocument outboxEvent) {
+        AccountCreated accountCreated = new AccountCreated(outboxEvent.getAccountId().toString(), outboxEvent.getName(), outboxEvent.getEmail(), 
+                outboxEvent.getPassword(), outboxEvent.getRole(), outboxEvent.getStatus(), outboxEvent.getShippingAddress(), outboxEvent.getPhoneNumber(), outboxEvent.getEventId().toString());
         Message<AccountCreated> message = MessageBuilder.withPayload(accountCreated).setHeader(KafkaHeaders.TOPIC, "account-topic").build();
-        kafkaTemplate.send(message); 
+        kafkaTemplate.send(message)
+        .whenComplete((result,ex)->{
+            if(ex==null) {
+                outboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                log.error("Error sending event");
+            }
+        }); 
     }
 
 }

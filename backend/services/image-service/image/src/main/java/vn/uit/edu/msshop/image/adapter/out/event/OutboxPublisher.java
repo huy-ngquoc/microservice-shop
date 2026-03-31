@@ -1,13 +1,12 @@
 package vn.uit.edu.msshop.image.adapter.out.event;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,6 +69,10 @@ public class OutboxPublisher {
     imageRemoveSuccessDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
+    @Transactional
+    public void markAsSent(ImageRemoveSuccessDocument event) {
+        updateStatus(event, "SENT", null);
+    }
 
     @Scheduled(cron="0 0 0 * * ?")
     public void cleanUpOldReceivedEvent() {
