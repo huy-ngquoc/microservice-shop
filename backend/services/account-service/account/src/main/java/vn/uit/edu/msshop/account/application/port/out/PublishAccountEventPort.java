@@ -2,18 +2,19 @@ package vn.uit.edu.msshop.account.application.port.out;
 
 
 
-import vn.uit.edu.msshop.account.domain.event.kafka.AccountId;
-import vn.uit.edu.msshop.account.domain.event.kafka.DeleteOldImageEvent;
-import vn.uit.edu.msshop.account.domain.event.kafka.RollbackImageEvent;
+import vn.uit.edu.msshop.account.adapter.out.event.AccountCreatedDocument;
+import vn.uit.edu.msshop.account.adapter.out.event.AccountIdDocument;
+import vn.uit.edu.msshop.account.adapter.out.event.DeleteOldImageEventDocument;
+import vn.uit.edu.msshop.account.adapter.out.event.RollbackImageEventDocument;
 import vn.uit.edu.msshop.account.domain.event.normal.AccountCreated;
 import vn.uit.edu.msshop.account.domain.event.normal.AccountUpdate;
 
 public interface PublishAccountEventPort {
     public void publish(AccountCreated event);
     public void publish(AccountUpdate event);
-    public void sendAccountCreationFailEvent(AccountId accountId);
-    public void sendDeleteOldImageEvent(DeleteOldImageEvent event);
-    public void sendRollbackImageEvent(RollbackImageEvent event);
-    public void sendAccountCreated(vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated event);
+    public void sendAccountCreationFailEvent(AccountIdDocument outboxEvent);
+    public void sendDeleteOldImageEvent(DeleteOldImageEventDocument outboxEvent);
+    public void sendRollbackImageEvent(RollbackImageEventDocument outboxEvent);
+    public void sendAccountCreated(AccountCreatedDocument outboxEvent);
     
 }

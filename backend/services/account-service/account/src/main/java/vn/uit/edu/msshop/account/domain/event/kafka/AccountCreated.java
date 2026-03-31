@@ -10,7 +10,8 @@ public record AccountCreated(
     String role,
     String status,
     String shippingAddress,
-    String phoneNumber
+    String phoneNumber,
+    UUID eventId
     
 ) {
 
