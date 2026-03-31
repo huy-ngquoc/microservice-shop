@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateVariantEvent {
+    private UUID eventId;
     private UUID variantId;
     private List<String> images;
     private List<String> targets;

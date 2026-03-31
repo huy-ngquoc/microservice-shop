@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeleteVariantEvent {
+    private UUID eventId;
     private UUID variantId;
 }
