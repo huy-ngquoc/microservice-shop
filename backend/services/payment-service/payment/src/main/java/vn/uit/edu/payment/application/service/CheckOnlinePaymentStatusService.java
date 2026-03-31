@@ -7,15 +7,18 @@ import java.util.List;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
 import vn.payos.PayOS;
+import vn.uit.edu.payment.adapter.out.event.OnlinePaymentExpiredDocument;
+import vn.uit.edu.payment.adapter.out.event.OnlinePaymentExpiredDocumentRepository;
 import vn.uit.edu.payment.application.port.in.LoadPaymentUseCase;
 import vn.uit.edu.payment.application.port.out.CheckOnlinePaymentStatusPort;
 import vn.uit.edu.payment.application.port.out.LoadOnlinePaymentInfoPort;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.application.port.out.SavePaymentPort;
-import vn.uit.edu.payment.domain.event.OnlinePaymentExpired;
 import vn.uit.edu.payment.domain.model.OnlinePaymentInfo;
 import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
@@ -28,6 +31,7 @@ public class CheckOnlinePaymentStatusService implements CheckOnlinePaymentStatus
     private final PublishPaymentEventPort publishEventPort;
     private final SavePaymentPort savePort;
     private final PayOS payOS;
+    private final OnlinePaymentExpiredDocumentRepository onlinePaymentExpiredDocumentRepo;
     
 
     @Override
@@ -42,11 +46,28 @@ public class CheckOnlinePaymentStatusService implements CheckOnlinePaymentStatus
             
                 Payment p = findPaymentInList(i.getPaymentId(), payments);
                 p.setPaymentStatus(new PaymentStatus("EXPIRED"));
-                publishEventPort.publishPaymentExpired(new OnlinePaymentExpired(p.getOrderId().value()));
+
+                OnlinePaymentExpiredDocument outboxEvent = OnlinePaymentExpiredDocument.builder()
+        .orderId(p.getOrderId().value())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        final var savedOutboxEvent = onlinePaymentExpiredDocumentRepo.save(outboxEvent);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishPaymentExpired(savedOutboxEvent);
+            }
+        });
+
+                //publishEventPort.publishPaymentExpired(new OnlinePaymentExpired(p.getOrderId().value()));
                 savedPayment.add(p);
-                savePort.saveAll(savedPayment);
+                
             
         }
+        savePort.saveAll(savedPayment);
         
     }
     private Payment findPaymentInList(PaymentId paymentId, List<Payment> payments) {
