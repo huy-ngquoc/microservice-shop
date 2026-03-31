@@ -22,6 +22,9 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
     private final KafkaTemplate<String,OnlinePaymentCancelled> paymentCancelledTemplate;
     private final KafkaTemplate<String,OnlinePaymentExpired> paymentExpiredTemplate;
     private final KafkaTemplate<String, CodPaymentCreated> codPaymentCreatedTemplate;
+    private final OnlinePaymentCancelledOutboxPublisher onlinePaymentCancelledOutboxPublisher;
+    private final OnlinePaymentExpiredOutboxPublisher onlinePaymentExpiredOutboxPublisher;
+    private final CodPaymentCreatedOutboxPublisher codPaymentCreatedOutboxPublisher;
     private static final String PAYMENT_TOPIC="payment-online-topic";
     @Override
     public void publish(PaymentCreated event) {
@@ -44,22 +47,46 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
     }
 
     @Override
-    public void publishPaymentCancelled(OnlinePaymentCancelled cancelled) {
+    public void publishPaymentCancelled(OnlinePaymentCancelledDocument outboxEvent) {
+        OnlinePaymentCancelled cancelled = new OnlinePaymentCancelled(outboxEvent.getOrderId(), outboxEvent.getEventId());
         Message<OnlinePaymentCancelled> message = MessageBuilder.withPayload(cancelled).setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
-        paymentCancelledTemplate.send(message);
+        paymentCancelledTemplate.send(message).whenComplete((result,ex)->{
+            if(ex==null) {
+                onlinePaymentCancelledOutboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                System.out.println("Send fail");
+            }
+        });
         
     }
 
     @Override
-    public void publishPaymentExpired(OnlinePaymentExpired event) {
+    public void publishPaymentExpired(OnlinePaymentExpiredDocument outboxEvent) {
+        OnlinePaymentExpired event = new OnlinePaymentExpired(outboxEvent.getOrderId(), outboxEvent.getEventId());
         Message<OnlinePaymentExpired> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
-        paymentExpiredTemplate.send(message);
+        paymentExpiredTemplate.send(message).whenComplete((result,ex)->{
+            if(ex==null) {
+                onlinePaymentExpiredOutboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                System.out.println("Send fail");
+            }
+        });
     }
 
     @Override
-    public void publishPaymentCodCreated(CodPaymentCreated event) {
+    public void publishPaymentCodCreated(CodPaymentCreatedDocument outboxEvent) {
+        CodPaymentCreated event = new CodPaymentCreated(outboxEvent.getOrderId(), outboxEvent.getEventId());
         Message<CodPaymentCreated> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
-        codPaymentCreatedTemplate.send(message);
+        codPaymentCreatedTemplate.send(message).whenComplete((result,ex)->{
+            if(ex==null) {
+                codPaymentCreatedOutboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                System.out.println("Send fail");
+            }
+        });
     }
 
 }

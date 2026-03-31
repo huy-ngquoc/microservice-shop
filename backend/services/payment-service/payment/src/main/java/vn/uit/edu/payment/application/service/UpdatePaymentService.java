@@ -1,9 +1,17 @@
 package vn.uit.edu.payment.application.service;
 
+import java.time.Instant;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import vn.uit.edu.payment.adapter.out.event.OnlinePaymentCancelledDocument;
+import vn.uit.edu.payment.adapter.out.event.OnlinePaymentCancelledDocumentRepository;
+import vn.uit.edu.payment.adapter.out.event.OnlinePaymentExpiredDocument;
+import vn.uit.edu.payment.adapter.out.event.OnlinePaymentExpiredDocumentRepository;
 import vn.uit.edu.payment.application.dto.command.UpdatePaymentCommand;
 import vn.uit.edu.payment.application.dto.query.PaymentView;
 import vn.uit.edu.payment.application.exception.PaymentNotFoundException;
@@ -12,8 +20,6 @@ import vn.uit.edu.payment.application.port.in.UpdatePaymentUseCase;
 import vn.uit.edu.payment.application.port.out.LoadPaymentPort;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.application.port.out.SavePaymentPort;
-import vn.uit.edu.payment.domain.event.OnlinePaymentCancelled;
-import vn.uit.edu.payment.domain.event.OnlinePaymentExpired;
 import vn.uit.edu.payment.domain.event.PaymentUpdated;
 import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.OrderId;
@@ -26,6 +32,8 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
     private final SavePaymentPort savePort;
     private final PublishPaymentEventPort eventPort;
     private final PaymentViewMapper mapper;
+    private final OnlinePaymentCancelledDocumentRepository onlinePaymentCancelledDocumentRepo;
+    private final OnlinePaymentExpiredDocumentRepository onlinePaymentExpiredDocumentRepo;
 
     @Override
     @Transactional
@@ -49,7 +57,21 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
         .build();
         final var next = payment.applyUpdateInfo(update);
         final Payment saved = savePort.save(next);
-        eventPort.publishPaymentExpired(new OnlinePaymentExpired(orderId.value()));
+        OnlinePaymentExpiredDocument outboxEvent = OnlinePaymentExpiredDocument.builder()
+        .orderId(saved.getOrderId().value())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        final var savedOutboxEvent = onlinePaymentExpiredDocumentRepo.save(outboxEvent);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                eventPort.publishPaymentExpired(savedOutboxEvent);
+            }
+        });
+        //eventPort.publishPaymentExpired(new OnlinePaymentExpired(orderId.value()));
     }
 
     @Override
@@ -61,7 +83,21 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
         .build();
         final var next = payment.applyUpdateInfo(update);
         final Payment saved = savePort.save(next);
-        eventPort.publishPaymentCancelled(new OnlinePaymentCancelled(orderId.value()));
+        OnlinePaymentCancelledDocument outboxEvent = OnlinePaymentCancelledDocument.builder()
+        .orderId(saved.getOrderId().value())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        final var savedOutboxEvent = onlinePaymentCancelledDocumentRepo.save(outboxEvent);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                eventPort.publishPaymentCancelled(savedOutboxEvent);
+            }
+        });
+        
     }
 
 }
