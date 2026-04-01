@@ -23,7 +23,7 @@ public class OrderCreatedSuccessOutboxPublisher {
     @Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
-        List<OrderCreatedSuccessDocument> pendingEvents =orderCreatedSuccessDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<OrderCreatedSuccessDocument> pendingEvents =orderCreatedSuccessDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (OrderCreatedSuccessDocument event : pendingEvents) {
             try {
@@ -67,7 +67,7 @@ public class OrderCreatedSuccessOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    orderCreatedSuccessDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    orderCreatedSuccessDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

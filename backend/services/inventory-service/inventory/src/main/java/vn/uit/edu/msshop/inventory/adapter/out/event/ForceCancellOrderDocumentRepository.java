@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface ForceCancellOrderDocumentRepository extends MongoRepository<ForceCancellOrderDocument, UUID>{
     public List<ForceCancellOrderDocument> findByEventStatus(String eventStatus);
 
-    public List<ForceCancellOrderDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<ForceCancellOrderDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

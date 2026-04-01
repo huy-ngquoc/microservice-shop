@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface InventoryUpdatedDocumentRepository extends MongoRepository<InventoryUpdatedDocument, UUID> {
     public List<InventoryUpdatedDocument> findByEventStatus(String eventStatus);
 
-    public List<InventoryUpdatedDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<InventoryUpdatedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

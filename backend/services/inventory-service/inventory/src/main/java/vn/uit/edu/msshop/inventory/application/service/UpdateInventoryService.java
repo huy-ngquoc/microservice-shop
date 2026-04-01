@@ -3,8 +3,10 @@ package vn.uit.edu.msshop.inventory.application.service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -41,13 +43,14 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     private final ForceCancellOrderDocumentRepository forceCancellOrderDocumentRepo;
 
     @Override
+    @Transactional
     public InventoryView update(UpdateInventoryCommand command) {
         Inventory inventory = loadPort.loadByVariantId(command.variantId()).orElseThrow(()->new InventoryNotFoundException(command.variantId()));
         final var u = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(command.quantity().apply(inventory.getQuantity())).reservedQuantity(command.reservedQuantity().apply(inventory.getReservedQuantity())).build();
         final var next = inventory.applyUpdateInfo(u);
         final var saved = savePort.save(next);
         //publishEventPort.publishInventoryUpdateEvent(new InventoryUpdated(saved.getVariantId().value(), saved.getQuantity().value(), saved.getReservedQuantity().value()));
-        InventoryUpdatedDocument event = InventoryUpdatedDocument.builder()
+        InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
         .variantId(saved.getVariantId().value())
         .newQuantity(saved.getQuantity().value())
         .newReservedQuantity(saved.getReservedQuantity().value())
@@ -81,13 +84,13 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             if(inventory.getQuantity().value()<detailCommand.getQuantity().value()) {
 
                 //publishEventPort.publishForceCancellOrderEvent(new ForceCancellOrder(commands.getOrderId()));
-                final var outboxEvent = forceCancellOrderDocumentRepo.save(ForceCancellOrderDocument.builder().orderId(commands.getOrderId()).build());
+                final var outboxEvent = forceCancellOrderDocumentRepo.save(ForceCancellOrderDocument.builder().orderId(commands.getOrderId()).eventId(UUID.randomUUID()).build());
                 TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                for(final var event:events) {
-                    publishEventPort.publishForceCancellOrderEvent(outboxEvent);
-                }
+                
+                publishEventPort.publishForceCancellOrderEvent(outboxEvent);
+                
             }
         });
                 return null;
@@ -96,7 +99,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             int newReservedQuantity = inventory.getReservedQuantity().value()+detailCommand.getQuantity().value();
             final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity)).build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
-            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder()
+            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
         .variantId(toSave.getVariantId().value())
         .newQuantity(toSave.getQuantity().value())
         .newReservedQuantity(0)

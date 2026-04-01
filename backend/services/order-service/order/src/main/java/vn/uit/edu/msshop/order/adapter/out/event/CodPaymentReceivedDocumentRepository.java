@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface CodPaymentReceivedDocumentRepository extends MongoRepository<CodPaymentReceivedDocument, UUID> {
     public List<CodPaymentReceivedDocument> findByEventStatus(String eventStatus);
 
-    public List<CodPaymentReceivedDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<CodPaymentReceivedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

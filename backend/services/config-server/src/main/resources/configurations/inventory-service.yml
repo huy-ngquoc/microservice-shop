@@ -6,6 +6,8 @@ spring:
         url: jdbc:postgresql://localhost:5440/inventory
         username: alibou
         password: alibou
+    mongodb:
+        uri: mongodb://alibou:alibou@localhost:27022/inventory_db?authSource=admin&uuidRepresentation=STANDARD
     jpa:
         hibernate:
             ddl-auto: update

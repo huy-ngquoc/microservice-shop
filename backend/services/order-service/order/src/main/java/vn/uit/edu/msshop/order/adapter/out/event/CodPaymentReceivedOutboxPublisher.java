@@ -22,7 +22,7 @@ public class CodPaymentReceivedOutboxPublisher {
     private static final String PUBLISH_TOPIC="payment-cod-topic";
     @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<CodPaymentReceivedDocument> pendingEvents =codPaymentReceivedDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<CodPaymentReceivedDocument> pendingEvents =codPaymentReceivedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (CodPaymentReceivedDocument event : pendingEvents) {
             try {
@@ -66,7 +66,7 @@ public class CodPaymentReceivedOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    codPaymentReceivedDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    codPaymentReceivedDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }
