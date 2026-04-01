@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.auth.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -11,11 +12,12 @@ import reactor.core.publisher.Mono;
 @Configuration
 @EnableWebFluxSecurity 
 public class SecurityConfig {
-
     private final JwtAuthConverter jwtAuthConverter;
-
+    @Value("${spring.mongodb.uri}")
+	private String mongoDBUri;
     public SecurityConfig(JwtAuthConverter jwtAuthConverter) {
         this.jwtAuthConverter = jwtAuthConverter;
+        System.out.println("Mongo db uri "+mongoDBUri);
     }
 
     @Bean

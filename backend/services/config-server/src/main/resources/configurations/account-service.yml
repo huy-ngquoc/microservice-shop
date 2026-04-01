@@ -32,7 +32,8 @@ spring:
                     DeleteOldImageEvent:vn.uit.edu.msshop.account.domain.event.kafka.DeleteOldImageEvent,
                     RollbackImageEvent:vn.uit.edu.msshop.account.domain.event.kafka.RollbackImageEvent
                     AccountCreated:vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated
-
+    mongodb:
+        uri: mongodb://alibou:alibou@localhost:27021/account_db?authSource=admin&uuidRepresentation=STANDARD
 server:
     port: 8071
 logging:

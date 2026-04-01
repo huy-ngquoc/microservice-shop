@@ -8,3 +8,5 @@ spring:
             fail-fast: true
             retry:
                 max-attempts: 5
+    mongodb:
+        uri: mongodb://alibou:alibou@localhost:27020/auth_db?authSource=admin&uuidRepresentation=STANDARD

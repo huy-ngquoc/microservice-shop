@@ -23,7 +23,7 @@ public class DeleteOldImageOutboxEventPublisher {
 
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<DeleteOldImageEventDocument> pendingEvents = deleteOldImageRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<DeleteOldImageEventDocument> pendingEvents = deleteOldImageRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (DeleteOldImageEventDocument event : pendingEvents) {
             try {
@@ -67,7 +67,7 @@ public class DeleteOldImageOutboxEventPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    deleteOldImageRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    deleteOldImageRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

@@ -22,7 +22,7 @@ public class AccountIdOutboxEventPublisher {
     private final KafkaTemplate<String, AccountId> kafkaTemplate;
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<AccountIdDocument> pendingEvents = accountIdDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<AccountIdDocument> pendingEvents = accountIdDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (AccountIdDocument event : pendingEvents) {
             try {
@@ -66,7 +66,7 @@ public class AccountIdOutboxEventPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    accountIdDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    accountIdDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

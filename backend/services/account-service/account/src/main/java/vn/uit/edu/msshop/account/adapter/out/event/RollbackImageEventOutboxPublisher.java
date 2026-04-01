@@ -23,7 +23,7 @@ public class RollbackImageEventOutboxPublisher {
 
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<RollbackImageEventDocument> pendingEvents = rollbackImageEventRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<RollbackImageEventDocument> pendingEvents = rollbackImageEventRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (RollbackImageEventDocument event : pendingEvents) {
             try {
@@ -67,7 +67,7 @@ public class RollbackImageEventOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    rollbackImageEventRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    rollbackImageEventRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }
