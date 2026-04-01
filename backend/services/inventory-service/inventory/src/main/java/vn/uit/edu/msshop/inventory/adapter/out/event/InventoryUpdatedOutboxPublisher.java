@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,10 @@ public class InventoryUpdatedOutboxPublisher {
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
         inventoryUpdatedDocumentRepo.save(event);
+    }
+    @Transactional
+    public void markAsSent(InventoryUpdatedDocument outboxEvent) {
+        updateStatus(outboxEvent,"SENT", null);
     }
     private void handleFailure(InventoryUpdatedDocument event, String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
