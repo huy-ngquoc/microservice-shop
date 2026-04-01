@@ -116,7 +116,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         final var order = Order.create(draft);
         final var saved = savePort.save(order);
 
-        OrderCreatedInventoryDocument outboxEventOrderCreatedInventory= OrderCreatedInventoryDocument.builder()
+        OrderCreatedInventoryDocument outboxEventOrderCreatedInventory= OrderCreatedInventoryDocument.builder().eventId(UUID.randomUUID())
         .orderId(saved.getId().value())
         .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList()).build();
         final var savedOutboxEventOrderCreatedInventory = orderCreatedInventoryDocumentRepository.save(outboxEventOrderCreatedInventory);
@@ -134,7 +134,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())
-        .updatedAt(null)
+        .updatedAt(null).eventId(UUID.randomUUID())
         .lastError(null).build();
         final var savedEvent=orderCreatedDocumentRepo.save(outboxEventOrderCreated);
         System.out.println(event_details.size());
@@ -145,7 +145,7 @@ public class CreateOrderService implements CreateOrderUseCase {
             }
         });
 
-        OrderCreatedSuccessDocument outboxOrderCreatedSuccess = OrderCreatedSuccessDocument.builder()
+        OrderCreatedSuccessDocument outboxOrderCreatedSuccess = OrderCreatedSuccessDocument.builder().eventId(UUID.randomUUID())
         .userId(command.userId().value())
         .variantIds(command.details().stream().map(item->item.variantId()).toList())
         .eventStatus("PENDING")

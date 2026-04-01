@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface OrderCancelledDocumentRepository extends MongoRepository<OrderCancelledDocument, UUID>{
     public List<OrderCancelledDocument> findByEventStatus(String eventStatus);
 
-    public List<OrderCancelledDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<OrderCancelledDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

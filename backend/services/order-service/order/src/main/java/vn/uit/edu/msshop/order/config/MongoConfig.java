@@ -2,7 +2,10 @@ package vn.uit.edu.msshop.order.config;
 
 import org.bson.UuidRepresentation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
 import com.mongodb.ConnectionString;
@@ -30,5 +33,10 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
         builder
             .applyConnectionString(new ConnectionString(mongoUri))
             .uuidRepresentation(UuidRepresentation.STANDARD);
+    }
+
+    @Bean
+    MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
+        return new MongoTransactionManager(dbFactory);
     }
 }

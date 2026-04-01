@@ -22,7 +22,7 @@ public class ForceCancellOrderOutboxPublisher {
 
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<ForceCancellOrderDocument> pendingEvents = forceCancellOrderDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<ForceCancellOrderDocument> pendingEvents = forceCancellOrderDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (ForceCancellOrderDocument event : pendingEvents) {
             try {
@@ -67,7 +67,7 @@ public class ForceCancellOrderOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    forceCancellOrderDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    forceCancellOrderDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

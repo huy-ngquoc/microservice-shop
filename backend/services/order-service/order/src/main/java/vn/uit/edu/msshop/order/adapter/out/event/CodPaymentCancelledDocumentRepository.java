@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface CodPaymentCancelledDocumentRepository extends MongoRepository<CodPaymentCancelledDocument, UUID> {
     public List<CodPaymentCancelledDocument> findByEventStatus(String eventStatus);
 
-    public List<CodPaymentCancelledDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<CodPaymentCancelledDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

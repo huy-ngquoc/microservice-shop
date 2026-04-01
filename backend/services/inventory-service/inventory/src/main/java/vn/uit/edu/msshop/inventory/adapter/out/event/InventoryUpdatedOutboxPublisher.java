@@ -22,7 +22,7 @@ public class InventoryUpdatedOutboxPublisher {
     private final KafkaTemplate<String, InventoryUpdated> kafkaTemplate;
     @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<InventoryUpdatedDocument> pendingEvents = inventoryUpdatedDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<InventoryUpdatedDocument> pendingEvents = inventoryUpdatedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (InventoryUpdatedDocument event : pendingEvents) {
             try {
@@ -66,7 +66,7 @@ public class InventoryUpdatedOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    inventoryUpdatedDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    inventoryUpdatedDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

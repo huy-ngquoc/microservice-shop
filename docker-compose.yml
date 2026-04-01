@@ -137,6 +137,19 @@ services:
             - TZ=UTC
         networks:
             - microservices-net
+    mongodb_inventory:
+        container_name: ms_mongo_db_inventory
+        image: mongo:8
+        ports:
+            - 27022:27017
+        volumes:
+            - mongo_inventory:/data
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+        networks:
+            - microservices-net
     mongodb_order:
         container_name: ms_mongo_db_order
         image: mongo:8
@@ -144,10 +157,15 @@ services:
             - 27019:27017
         volumes:
             - mongo_order:/data
+            - ./mongodb.key:/data/configdb/mongodb.key
         environment:
             - MONGO_INITDB_ROOT_USERNAME=alibou
             - MONGO_INITDB_ROOT_PASSWORD=alibou
             - TZ=UTC
+        command: mongod --replSet rs0 
+             --keyFile /data/configdb/mongodb.key 
+             --bind_ip_all
+        entrypoint: [ "/bin/sh", "-c", "chown 999:999 /data/configdb/mongodb.key && chmod 400 /data/configdb/mongodb.key && exec docker-entrypoint.sh $$@" ]
         networks:
             - microservices-net
     mongo-express:
@@ -238,3 +256,4 @@ volumes:
     postgres_inventory:
     mongo_auth:
     mongo_account:
+    mongo_inventory:
