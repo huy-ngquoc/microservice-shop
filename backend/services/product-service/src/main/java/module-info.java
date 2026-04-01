@@ -76,4 +76,5 @@ import org.jspecify.annotations.NullMarked;
     requires cloudinary.core;
     requires cloudinary.http5;
     requires io.swagger.v3.oas.models;
+    requires org.apache.tomcat.embed.core;
 }

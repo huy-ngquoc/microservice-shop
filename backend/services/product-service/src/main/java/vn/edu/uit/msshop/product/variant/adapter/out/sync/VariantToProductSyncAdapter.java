@@ -17,15 +17,15 @@ public class VariantToProductSyncAdapter
 
     @Override
     public void updateInProduct(
-            Variant variant) {
+            final Variant variant) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'updateInProduct'");
     }
 
     @Override
     public void removeFromProduct(
-            VariantId id,
-            VariantProductId productId) {
+            final VariantId id,
+            final VariantProductId productId) {
 
     }
 }

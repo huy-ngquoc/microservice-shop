@@ -29,8 +29,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
+import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
 @Service
 @RequiredArgsConstructor
@@ -86,7 +86,7 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
         final var optionsSize = product.getOptions().size();
 
         if (optionsSize <= 0) {
-            throw new DomainException("Product has no options to remove");
+            throw new BusinessRuleException("Product has no options to remove");
         }
 
         if (optionsSize > 1) {
@@ -103,7 +103,7 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
         }
 
         if (defaultPrice == null) {
-            throw new DomainException(
+            throw new BusinessRuleException(
                     "Default price is required when removing the last option");
         }
 

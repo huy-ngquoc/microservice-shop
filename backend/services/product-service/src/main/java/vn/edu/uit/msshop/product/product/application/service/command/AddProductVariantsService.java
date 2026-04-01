@@ -16,6 +16,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProd
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
+import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Service
@@ -44,8 +45,7 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
 
         for (final var variant : command.newVariants().values()) {
             if (product.getOptions().size() != variant.traits().size()) {
-                // TODO: use specified exception.
-                throw new RuntimeException("Inconsistent traits size");
+                throw new BusinessRuleException("Inconsistent traits size");
             }
         }
 

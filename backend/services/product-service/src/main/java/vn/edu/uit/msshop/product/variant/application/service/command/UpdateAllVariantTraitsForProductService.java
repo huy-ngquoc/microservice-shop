@@ -7,8 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
-import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
+import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateAllVariantTraitsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
@@ -48,7 +47,7 @@ public class UpdateAllVariantTraitsForProductService
             @Nullable
             final VariantTraits newTraits) {
         if (newTraits == null) {
-            throw new DomainException("Missing traits for variant: " + variant.getId().value());
+            throw new BusinessRuleException("Missing traits for variant: " + variant.getId().value());
         }
 
         return new Variant(
