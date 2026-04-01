@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface RollbackImageEventDocumentRepository extends MongoRepository<RollbackImageEventDocument, UUID> {
     public List<RollbackImageEventDocument> findByEventStatus(String eventStatus);
 
-    public List<RollbackImageEventDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<RollbackImageEventDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

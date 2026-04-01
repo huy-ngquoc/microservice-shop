@@ -12,6 +12,7 @@ spring:
           uri: lb://AUTH-SERVICE
           predicates:
             - Path=/auth/**
+  
 logging:
   level:
     org.springframework.cloud.gateway: TRACE

@@ -111,6 +111,32 @@ services:
             - TZ=UTC
         networks:
             - microservices-net
+    mongodb_auth:
+        container_name: ms_mongo_db_auth
+        image: mongo:8 
+        ports:
+            - 27020:27017
+        volumes:
+            - mongo_auth:/data
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+        networks:
+            - microservices-net
+    mongodb_account:
+        container_name: ms_mongo_db_account
+        image: mongo:8 
+        ports:
+            - 27021:27017
+        volumes:
+            - mongo_account:/data
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+        networks:
+            - microservices-net
     mongodb_order:
         container_name: ms_mongo_db_order
         image: mongo:8
@@ -210,3 +236,5 @@ volumes:
     mongo_order:
     redis_data:
     postgres_inventory:
+    mongo_auth:
+    mongo_account:

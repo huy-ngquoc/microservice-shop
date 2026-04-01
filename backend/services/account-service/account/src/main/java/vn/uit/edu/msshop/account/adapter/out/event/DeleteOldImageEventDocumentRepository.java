@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface DeleteOldImageEventDocumentRepository extends MongoRepository<DeleteOldImageEventDocument, UUID> {
     public List<DeleteOldImageEventDocument> findByEventStatus(String eventStatus);
 
-    public List<DeleteOldImageEventDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<DeleteOldImageEventDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }
