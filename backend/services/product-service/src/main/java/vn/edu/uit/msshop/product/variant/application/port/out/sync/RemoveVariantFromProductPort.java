@@ -5,6 +5,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 
 public interface RemoveVariantFromProductPort {
     void removeFromProduct(
-            VariantId id,
-            VariantProductId productId);
+            VariantId variantId,
+            VariantProductId variantProductId);
 }
