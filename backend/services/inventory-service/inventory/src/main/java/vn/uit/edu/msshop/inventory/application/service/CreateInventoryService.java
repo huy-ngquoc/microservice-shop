@@ -61,7 +61,7 @@ public class CreateInventoryService implements CreateInventoryUseCase {
         .updatedAt(null)
         .lastError(null)
         .build();
-        inventoryUpdatedDocumentRepo.save(event);
+        final var savedEvent=inventoryUpdatedDocumentRepo.save(event);
         return mapper.toView(result);
 
     }

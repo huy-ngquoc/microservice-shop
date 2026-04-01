@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.out.event.ForceCancellOrderDocument;
 import vn.uit.edu.msshop.inventory.adapter.out.event.ForceCancellOrderDocumentRepository;
@@ -56,12 +57,18 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         .updatedAt(null)
         .lastError(null)
         .build();
-        inventoryUpdatedDocumentRepo.save(event);
+        final var savedEvent=inventoryUpdatedDocumentRepo.save(event);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishInventoryUpdateEvent(savedEvent);
+            }
+        });
         return mapper.toView(saved);
     }
 
     @Override
-    @Transactional
+    @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderCreated(OrderCreateCommand commands) {
         List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         System.out.println("Inventories size "+inventories.get(0).getVariantId().value().toString() );
@@ -74,7 +81,15 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             if(inventory.getQuantity().value()<detailCommand.getQuantity().value()) {
 
                 //publishEventPort.publishForceCancellOrderEvent(new ForceCancellOrder(commands.getOrderId()));
-                forceCancellOrderDocumentRepo.save(ForceCancellOrderDocument.builder().orderId(commands.getOrderId()).build());
+                final var outboxEvent = forceCancellOrderDocumentRepo.save(ForceCancellOrderDocument.builder().orderId(commands.getOrderId()).build());
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                for(final var event:events) {
+                    publishEventPort.publishForceCancellOrderEvent(outboxEvent);
+                }
+            }
+        });
                 return null;
             }
             int newQuantity = inventory.getQuantity().value()-detailCommand.getQuantity().value();
@@ -94,13 +109,21 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             events.add(event);
             toSaves.add(toSave);
         }
+         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                for(final var event:events) {
+                    publishEventPort.publishInventoryUpdateEvent(event);
+                }
+            }
+        });
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
         inventoryUpdatedDocumentRepo.saveAll(events);
         return savePort.saveAll(toSaves).stream().map(mapper::toView).toList();
     }
 
     @Override
-    @Transactional
+    @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderCancelled(OrderCancelledCommand commands) {
         List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         List<Inventory> toSaves = new ArrayList<>();
@@ -128,6 +151,14 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             events.add(event);
             toSaves.add(toSave);
         }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                for(final var event:events) {
+                    publishEventPort.publishInventoryUpdateEvent(event);
+                }
+            }
+        });
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
         inventoryUpdatedDocumentRepo.saveAll(events);
         return savePort.saveAll(toSaves).stream().map(mapper::toView).toList();
@@ -140,6 +171,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderShipped(OrderShippedCommand commands) {
         List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         List<Inventory> toSaves = new ArrayList<>();
@@ -167,6 +199,14 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
 
             toSaves.add(toSave);
         }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                for(final var event:events) {
+                    publishEventPort.publishInventoryUpdateEvent(event);
+                }
+            }
+        });
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
         inventoryUpdatedDocumentRepo.saveAll(events);
         return savePort.saveAll(toSaves).stream().map(mapper::toView).toList();

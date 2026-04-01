@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,7 @@ public class ForceCancellOrderOutboxPublisher {
     private void updateStatus(ForceCancellOrderDocument event, String status, String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
+        
         event.setLastError(error);
         forceCancellOrderDocumentRepo.save(event);
     }
@@ -56,6 +58,10 @@ public class ForceCancellOrderOutboxPublisher {
             event.setRetryCount(retries + 1);
             updateStatus(event, "PENDING", error); 
         }
+    }
+    @Transactional
+    public void markAsSent(ForceCancellOrderDocument outboxEvent) {
+        updateStatus(outboxEvent, "PENDING", null);
     }
     @Scheduled(cron = "0 0 0 * * ?") 
     public void cleanupOldEvents() {
