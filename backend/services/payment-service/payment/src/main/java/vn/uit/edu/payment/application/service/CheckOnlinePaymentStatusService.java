@@ -12,8 +12,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import lombok.RequiredArgsConstructor;
 import vn.payos.PayOS;
-import vn.uit.edu.payment.adapter.out.event.OnlinePaymentExpiredDocument;
-import vn.uit.edu.payment.adapter.out.event.OnlinePaymentExpiredDocumentRepository;
+
+import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
+import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentExpiredDocumentRepository;
 import vn.uit.edu.payment.application.port.in.LoadPaymentUseCase;
 import vn.uit.edu.payment.application.port.out.CheckOnlinePaymentStatusPort;
 import vn.uit.edu.payment.application.port.out.LoadOnlinePaymentInfoPort;

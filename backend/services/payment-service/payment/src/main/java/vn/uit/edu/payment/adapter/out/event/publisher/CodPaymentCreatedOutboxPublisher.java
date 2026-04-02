@@ -1,4 +1,4 @@
-package vn.uit.edu.payment.adapter.out.event;
+package vn.uit.edu.payment.adapter.out.event.publisher;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -11,24 +11,26 @@ import org.springframework.stereotype.Component;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.payment.domain.event.OnlinePaymentCancelled;
+import vn.uit.edu.payment.adapter.out.event.documents.CodPaymentCreatedDocument;
+import vn.uit.edu.payment.adapter.out.event.repositories.CodPaymentCreatedDocumentRepository;
+import vn.uit.edu.payment.domain.event.CodPaymentCreated;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class OnlinePaymentCancelledOutboxPublisher {
-    private final OnlinePaymentCancelledDocumentRepository onlinePaymentCancelledDocumentRepo;
+public class CodPaymentCreatedOutboxPublisher {
+    private final CodPaymentCreatedDocumentRepository codPaymentCreatedDocumentRepo;
     private static final String PUBLISH_TOPIC="payment-online-topic";
-    private final KafkaTemplate<String, OnlinePaymentCancelled> kafkaTemplate;
+    private final KafkaTemplate<String, CodPaymentCreated> kafkaTemplate;
 
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<OnlinePaymentCancelledDocument> pendingEvents = onlinePaymentCancelledDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<CodPaymentCreatedDocument> pendingEvents = codPaymentCreatedDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
 
-        for (OnlinePaymentCancelledDocument event : pendingEvents) {
+        for (CodPaymentCreatedDocument event : pendingEvents) {
             try {
-                OnlinePaymentCancelled onlinePaymentCancelled = new OnlinePaymentCancelled(event.getOrderId(), event.getEventId());
-                kafkaTemplate.send(PUBLISH_TOPIC, onlinePaymentCancelled)
+                CodPaymentCreated codPaymentCreated= new CodPaymentCreated(event.getOrderId(), event.getEventId());
+                kafkaTemplate.send(PUBLISH_TOPIC, codPaymentCreated)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
                             
@@ -44,17 +46,17 @@ public class OnlinePaymentCancelledOutboxPublisher {
         }
     }
 
-    private void updateStatus(OnlinePaymentCancelledDocument event, String status, String error) {
+    private void updateStatus(CodPaymentCreatedDocument event, String status, String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
-        onlinePaymentCancelledDocumentRepo.save(event);
+        codPaymentCreatedDocumentRepo.save(event);
     }
     @Transactional
-    public void markAsSent(OnlinePaymentCancelledDocument event) {
+    public void markAsSent(CodPaymentCreatedDocument event) {
         updateStatus(event, "SENT", null);
     }
-    private void handleFailure(OnlinePaymentCancelledDocument event, String error) {
+    private void handleFailure(CodPaymentCreatedDocument event, String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
@@ -67,7 +69,7 @@ public class OnlinePaymentCancelledOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    onlinePaymentCancelledDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    codPaymentCreatedDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

@@ -8,6 +8,12 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import vn.uit.edu.payment.adapter.out.event.documents.CodPaymentCreatedDocument;
+import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentCancelledDocument;
+import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
+import vn.uit.edu.payment.adapter.out.event.publisher.CodPaymentCreatedOutboxPublisher;
+import vn.uit.edu.payment.adapter.out.event.publisher.OnlinePaymentCancelledOutboxPublisher;
+import vn.uit.edu.payment.adapter.out.event.publisher.OnlinePaymentExpiredOutboxPublisher;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.domain.event.CodPaymentCreated;
 import vn.uit.edu.payment.domain.event.OnlinePaymentCancelled;

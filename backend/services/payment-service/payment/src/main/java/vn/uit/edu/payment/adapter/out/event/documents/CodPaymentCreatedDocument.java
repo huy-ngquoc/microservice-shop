@@ -1,4 +1,4 @@
-package vn.uit.edu.payment.adapter.out.event;
+package vn.uit.edu.payment.adapter.out.event.documents;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -17,8 +17,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EventDocument {
+public class CodPaymentCreatedDocument {
     @Id
     private UUID eventId;
-    private Instant receiveAt;
+    private UUID orderId;
+    private String eventStatus;
+    private Integer retryCount; 
+    private Instant createdAt;
+    private Instant updatedAt; 
+    private String lastError;
 }

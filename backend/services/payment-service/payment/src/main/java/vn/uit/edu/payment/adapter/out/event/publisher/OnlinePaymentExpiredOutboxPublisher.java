@@ -1,4 +1,4 @@
-package vn.uit.edu.payment.adapter.out.event;
+package vn.uit.edu.payment.adapter.out.event.publisher;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
+import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentExpiredDocumentRepository;
 import vn.uit.edu.payment.domain.event.OnlinePaymentExpired;
 
 @Component

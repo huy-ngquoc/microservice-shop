@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.payment.adapter.out.event.repositories.EventDocumentRepository;
 @Component
 @RequiredArgsConstructor
 @Slf4j
