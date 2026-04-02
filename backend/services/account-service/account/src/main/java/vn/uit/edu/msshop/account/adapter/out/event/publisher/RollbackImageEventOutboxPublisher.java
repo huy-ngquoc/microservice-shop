@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.account.adapter.out.event;
+package vn.uit.edu.msshop.account.adapter.out.event.publisher;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -11,24 +11,26 @@ import org.springframework.stereotype.Component;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.msshop.account.domain.event.kafka.DeleteOldImageEvent;
+import vn.uit.edu.msshop.account.adapter.out.event.documents.RollbackImageEventDocument;
+import vn.uit.edu.msshop.account.adapter.out.event.repositories.RollbackImageEventDocumentRepository;
+import vn.uit.edu.msshop.account.domain.event.kafka.RollbackImageEvent;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class DeleteOldImageOutboxEventPublisher {
-    private final DeleteOldImageEventDocumentRepository deleteOldImageRepo;
+public class RollbackImageEventOutboxPublisher {
+    private final RollbackImageEventDocumentRepository rollbackImageEventRepo;
     private static final String PUBLISH_TOPIC="image-account-topic";
-    private final KafkaTemplate<String, DeleteOldImageEvent> kafkaTemplate;
+    private final KafkaTemplate<String, RollbackImageEvent> kafkaTemplate;
 
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<DeleteOldImageEventDocument> pendingEvents = deleteOldImageRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        List<RollbackImageEventDocument> pendingEvents = rollbackImageEventRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
-        for (DeleteOldImageEventDocument event : pendingEvents) {
+        for (RollbackImageEventDocument event : pendingEvents) {
             try {
-                DeleteOldImageEvent deleteOldImageEvent = new DeleteOldImageEvent(event.getOldImagePublicId(), event.getEventId());
-                kafkaTemplate.send(PUBLISH_TOPIC, deleteOldImageEvent)
+                RollbackImageEvent rollbackImageEvent = new RollbackImageEvent(event.getImagePublicId(), event.getEventId());
+                kafkaTemplate.send(PUBLISH_TOPIC, rollbackImageEvent)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
                             
@@ -44,17 +46,17 @@ public class DeleteOldImageOutboxEventPublisher {
         }
     }
 
-    private void updateStatus(DeleteOldImageEventDocument event, String status, String error) {
+    private void updateStatus(RollbackImageEventDocument event, String status, String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
-        deleteOldImageRepo.save(event);
+        rollbackImageEventRepo.save(event);
     }
     @Transactional
-    public void markAsSent(DeleteOldImageEventDocument event) {
+    public void markAsSent(RollbackImageEventDocument event) {
         updateStatus(event, "SENT", null);
     }
-    private void handleFailure(DeleteOldImageEventDocument event, String error) {
+    private void handleFailure(RollbackImageEventDocument event, String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
@@ -67,7 +69,7 @@ public class DeleteOldImageOutboxEventPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    deleteOldImageRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+    rollbackImageEventRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

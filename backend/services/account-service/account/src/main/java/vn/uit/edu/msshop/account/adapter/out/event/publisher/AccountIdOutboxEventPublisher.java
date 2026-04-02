@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.account.adapter.out.event;
+package vn.uit.edu.msshop.account.adapter.out.event.publisher;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -7,38 +7,30 @@ import java.util.List;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated;
+import vn.uit.edu.msshop.account.adapter.out.event.documents.AccountIdDocument;
+import vn.uit.edu.msshop.account.adapter.out.event.repositories.AccountIdDocumentRepository;
+import vn.uit.edu.msshop.account.domain.event.kafka.AccountId;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class AccountCreatedOutboxPublisher {
-    private final AccountCreatedDocumentRepository accountCreatedDocumentRepo;
-    private static final String PUBLISH_TOPIC="account-topic";
-    private final KafkaTemplate<String,AccountCreated> kafkaTemplate;
-    /*
-    UUID id,
-    String name, 
-    String email,
-    String password,
-    String role,
-    String status,
-    String shippingAddress,
-    String phoneNumber,
-    UUID eventId */
+public class AccountIdOutboxEventPublisher {
+    private final AccountIdDocumentRepository accountIdDocumentRepo;
+    private static final String PUBLISH_TOPIC="account-topic-fail";
+    private final KafkaTemplate<String, AccountId> kafkaTemplate;
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<AccountCreatedDocument> pendingEvents = accountCreatedDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<AccountIdDocument> pendingEvents;
+        pendingEvents = accountIdDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
-        for (AccountCreatedDocument event : pendingEvents) {
+        for (AccountIdDocument event : pendingEvents) {
             try {
-                AccountCreated accountCreated = new AccountCreated(event.getId(), event.getName(), event.getEmail(), 
-                event.getPassword(), event.getRole(), event.getStatus(), event.getShippingAddress(), event.getPhoneNumber(), event.getEventId());
-                kafkaTemplate.send(PUBLISH_TOPIC, accountCreated)
+                AccountId accountId = new AccountId(event.getAccontId(), event.getEventId());
+                kafkaTemplate.send(PUBLISH_TOPIC, accountId)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
                             
@@ -54,17 +46,17 @@ public class AccountCreatedOutboxPublisher {
         }
     }
 
-    private void updateStatus(AccountCreatedDocument event, String status, String error) {
+    private void updateStatus(AccountIdDocument event, String status, String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
-        accountCreatedDocumentRepo.save(event);
+        accountIdDocumentRepo.save(event);
     }
     @Transactional
-    public void markAsSent(AccountCreatedDocument event) {
+    public void markAsSent(AccountIdDocument event) {
         updateStatus(event, "SENT", null);
     }
-    private void handleFailure(AccountCreatedDocument event, String error) {
+    private void handleFailure(AccountIdDocument event, String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
@@ -77,7 +69,7 @@ public class AccountCreatedOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    accountCreatedDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    accountIdDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

@@ -11,10 +11,10 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.uit.edu.msshop.account.adapter.in.web.mapper.AccountWebMapper;
-import vn.uit.edu.msshop.account.adapter.out.event.AccountIdDocument;
-import vn.uit.edu.msshop.account.adapter.out.event.AccountIdDocumentRepository;
-import vn.uit.edu.msshop.account.adapter.out.event.EventDocument;
-import vn.uit.edu.msshop.account.adapter.out.event.EventDocumentRepository;
+import vn.uit.edu.msshop.account.adapter.out.event.documents.AccountIdDocument;
+import vn.uit.edu.msshop.account.adapter.out.event.documents.EventDocument;
+import vn.uit.edu.msshop.account.adapter.out.event.repositories.AccountIdDocumentRepository;
+import vn.uit.edu.msshop.account.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.msshop.account.application.dto.command.CreateAccountCommand;
 import vn.uit.edu.msshop.account.application.port.in.CreateAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.out.PublishAccountEventPort;
