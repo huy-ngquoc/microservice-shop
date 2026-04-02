@@ -21,6 +21,12 @@ spring:
                 spring.json.type.mapping: AccountId:vn.uit.edu.msshop.auth.domain.event.AccountId
     cloud:
         gateway:
+            discovery:
+                locator:
+                    enabled: true
+            loadbalancer:
+                cache:
+                    ttl: 5s  
             server:
                 webflux:
                     discovery:
