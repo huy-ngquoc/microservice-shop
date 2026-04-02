@@ -11,10 +11,10 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.msshop.inventory.adapter.out.event.ForceCancellOrderDocument;
-import vn.uit.edu.msshop.inventory.adapter.out.event.ForceCancellOrderDocumentRepository;
-import vn.uit.edu.msshop.inventory.adapter.out.event.InventoryUpdatedDocument;
-import vn.uit.edu.msshop.inventory.adapter.out.event.InventoryUpdatedDocumentRepository;
+import vn.uit.edu.msshop.inventory.adapter.out.event.documents.ForceCancellOrderDocument;
+import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedDocument;
+import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.ForceCancellOrderDocumentRepository;
+import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.InventoryUpdatedDocumentRepository;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderCancelledCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderCreateCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderDetailCommand;
@@ -214,5 +214,22 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         inventoryUpdatedDocumentRepo.saveAll(events);
         return savePort.saveAll(toSaves).stream().map(mapper::toView).toList();
     }
+
+    private InventoryUpdatedDocument createUpdateEvent(Inventory inventory) {
+    return InventoryUpdatedDocument.builder()
+        .eventId(UUID.randomUUID())
+        .variantId(inventory.getVariantId().value())
+        .newQuantity(inventory.getQuantity().value())
+        .newReservedQuantity(inventory.getReservedQuantity().value())
+        .eventStatus("PENDING")
+        .createdAt(Instant.now())
+        .build();
+}
+private void handleForceCancel(UUID orderId) {
+    var cancelEvent = ForceCancellOrderDocument.builder()
+            .orderId(orderId).eventId(UUID.randomUUID()).build();
+    forceCancellOrderDocumentRepo.save(cancelEvent);
+    publishEventPort.publishForceCancellOrderEvent(cancelEvent);
+}
 
 }

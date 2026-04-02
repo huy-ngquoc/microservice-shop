@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.inventory.adapter.out.event;
+package vn.uit.edu.msshop.inventory.adapter.out.event.documents;
 
 import java.time.Instant;
 import java.util.UUID;

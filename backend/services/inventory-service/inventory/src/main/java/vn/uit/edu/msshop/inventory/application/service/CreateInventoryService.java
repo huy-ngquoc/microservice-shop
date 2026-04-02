@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.msshop.inventory.adapter.out.event.InventoryUpdatedDocument;
-import vn.uit.edu.msshop.inventory.adapter.out.event.InventoryUpdatedDocumentRepository;
+import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedDocument;
+import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.InventoryUpdatedDocumentRepository;
 import vn.uit.edu.msshop.inventory.application.dto.command.CreateInventoryCommand;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.application.mapper.InventoryViewMapper;
