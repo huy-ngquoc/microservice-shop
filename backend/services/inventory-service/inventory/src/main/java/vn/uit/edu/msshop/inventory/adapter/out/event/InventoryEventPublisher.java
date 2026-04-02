@@ -8,6 +8,10 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.inventory.adapter.out.event.documents.ForceCancellOrderDocument;
+import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedDocument;
+import vn.uit.edu.msshop.inventory.adapter.out.event.publisher.ForceCancellOrderOutboxPublisher;
+import vn.uit.edu.msshop.inventory.adapter.out.event.publisher.InventoryUpdatedOutboxPublisher;
 import vn.uit.edu.msshop.inventory.application.port.out.PublishInventoryEventPort;
 import vn.uit.edu.msshop.inventory.domain.event.ForceCancellOrder;
 import vn.uit.edu.msshop.inventory.domain.event.InventoryUpdated;

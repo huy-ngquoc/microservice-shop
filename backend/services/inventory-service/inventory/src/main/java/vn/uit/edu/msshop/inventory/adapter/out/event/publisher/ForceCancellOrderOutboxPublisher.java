@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.inventory.adapter.out.event;
+package vn.uit.edu.msshop.inventory.adapter.out.event.publisher;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.inventory.adapter.out.event.documents.ForceCancellOrderDocument;
+import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.ForceCancellOrderDocumentRepository;
 import vn.uit.edu.msshop.inventory.domain.event.ForceCancellOrder;
 @Component
 @RequiredArgsConstructor

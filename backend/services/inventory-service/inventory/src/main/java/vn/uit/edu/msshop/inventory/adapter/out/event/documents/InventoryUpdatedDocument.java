@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.inventory.adapter.out.event;
+package vn.uit.edu.msshop.inventory.adapter.out.event.documents;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -10,19 +10,22 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-
+@Document(collection="outbox_events")
 @Getter
 @Setter
 @Builder
-@Document(collection="outbox_events")
-public class ForceCancellOrderDocument {
+public class InventoryUpdatedDocument {
     @Id
     private UUID eventId;
-    private UUID orderId;
+    private UUID variantId;
+    private int newQuantity;
+    private int newReservedQuantity;
     private String eventStatus;
     private Integer retryCount; 
     private Instant createdAt;
     private Instant updatedAt; 
     private String lastError;
+    
 
+    
 }

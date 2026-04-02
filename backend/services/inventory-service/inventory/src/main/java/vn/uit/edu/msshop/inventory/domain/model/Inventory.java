@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import vn.uit.edu.msshop.inventory.application.exception.InsufficientStockException;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.LastUpdate;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
@@ -80,4 +81,16 @@ public class Inventory {
     private boolean isTheSameInfoWithUpdate(UpdateInfo u) {
         return u.quantity().value()==this.quantity.value()&&u.reservedQuantity().value()==this.reservedQuantity.value();
     }
+    public void reserveStock(int amount) {
+    if (this.quantity.value() < amount) {
+        throw new InsufficientStockException(this.variantId);
+    }
+    this.quantity = new Quantity(this.quantity.value() - amount);
+    this.reservedQuantity = new ReservedQuantity(this.reservedQuantity.value() + amount);
+}
+
+public void releaseReservedStock(int amount) {
+    this.reservedQuantity = new ReservedQuantity(this.reservedQuantity.value() - amount);
+    this.quantity = new Quantity(this.quantity.value() + amount);
+}
 }

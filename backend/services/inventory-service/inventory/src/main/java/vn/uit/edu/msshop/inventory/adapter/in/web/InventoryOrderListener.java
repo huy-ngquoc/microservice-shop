@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.in.web.mapper.InventoryWebMapper;
-import vn.uit.edu.msshop.inventory.adapter.out.event.EventDocument;
-import vn.uit.edu.msshop.inventory.adapter.out.event.EventDocumentRepository;
+import vn.uit.edu.msshop.inventory.adapter.out.event.documents.EventDocument;
+import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.msshop.inventory.application.port.in.UpdateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.domain.event.OrderCancelled;
 import vn.uit.edu.msshop.inventory.domain.event.OrderCreated;
