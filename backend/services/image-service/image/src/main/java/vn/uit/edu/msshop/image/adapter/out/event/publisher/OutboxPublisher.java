@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.image.adapter.out.event;
+package vn.uit.edu.msshop.image.adapter.out.event.publisher;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.image.adapter.out.event.documents.ImageRemoveSuccessDocument;
+import vn.uit.edu.msshop.image.adapter.out.event.repositories.EventDocumentRepository;
+import vn.uit.edu.msshop.image.adapter.out.event.repositories.ImageRemoveSuccessDocumentRepository;
 import vn.uit.edu.msshop.image.domain.event.ImageRemoveSuccess;
 
 
