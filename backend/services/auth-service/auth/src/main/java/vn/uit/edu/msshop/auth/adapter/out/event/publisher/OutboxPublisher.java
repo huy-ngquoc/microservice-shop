@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.auth.adapter.out.event;
+package vn.uit.edu.msshop.auth.adapter.out.event.publisher;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.auth.adapter.out.event.documents.AccountCreatedDocument;
+import vn.uit.edu.msshop.auth.adapter.out.event.repositories.AccountCreatedDocumentRepository;
+import vn.uit.edu.msshop.auth.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.msshop.auth.domain.event.AccountCreated;
 
 @Component

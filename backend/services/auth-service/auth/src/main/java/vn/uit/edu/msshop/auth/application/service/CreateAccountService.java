@@ -12,8 +12,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.msshop.auth.adapter.out.event.AccountCreatedDocument;
-import vn.uit.edu.msshop.auth.adapter.out.event.AccountCreatedDocumentRepository;
+import vn.uit.edu.msshop.auth.adapter.out.event.documents.AccountCreatedDocument;
+import vn.uit.edu.msshop.auth.adapter.out.event.repositories.AccountCreatedDocumentRepository;
 import vn.uit.edu.msshop.auth.application.port.in.CreateAccountUseCase;
 import vn.uit.edu.msshop.auth.application.port.out.CreateAccountPort;
 import vn.uit.edu.msshop.auth.application.port.out.PublishAccountEventPort;

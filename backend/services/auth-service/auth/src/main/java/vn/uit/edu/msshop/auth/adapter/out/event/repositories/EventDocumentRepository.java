@@ -1,10 +1,12 @@
-package vn.uit.edu.msshop.auth.adapter.out.event;
+package vn.uit.edu.msshop.auth.adapter.out.event.repositories;
 
 import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
+
+import vn.uit.edu.msshop.auth.adapter.out.event.documents.EventDocument;
 
 @Repository
 public interface EventDocumentRepository extends MongoRepository<EventDocument, UUID> {
