@@ -1,26 +1,24 @@
-package vn.uit.edu.msshop.order.adapter.out.event.inventory;
-import java.util.List;
+package vn.uit.edu.msshop.order.adapter.out.event.documents;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-import vn.uit.edu.msshop.order.adapter.out.event.OutboxEvent;
 
 @Document(collection="outbox_events")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@SuperBuilder
-public class OrderCreatedInventoryDocument extends OutboxEvent {
+@Builder
+public class EventDocument {
     @Id
     private UUID eventId;
-    private UUID orderId;
-    private List<OrderDetailDocument> orderDetails;
+    private Instant receiveAt;
 }

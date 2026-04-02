@@ -1,5 +1,5 @@
-package vn.uit.edu.msshop.order.adapter.out.event.inventory;
-import java.util.List;
+package vn.uit.edu.msshop.order.adapter.out.event.documents;
+
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import vn.uit.edu.msshop.order.adapter.out.event.OutboxEvent;
 
 @Document(collection="outbox_events")
 @AllArgsConstructor
@@ -18,10 +17,8 @@ import vn.uit.edu.msshop.order.adapter.out.event.OutboxEvent;
 @Getter
 @Setter
 @SuperBuilder
-public class OrderShippedDocument extends OutboxEvent {
+public class CodPaymentReceivedDocument extends OutboxEvent {
     @Id
     private UUID eventId;
     private UUID orderId;
-    private List<OrderDetailDocument> orderDetails;
-    
 }

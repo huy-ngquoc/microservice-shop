@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.adapter.out.event.inventory;
+package vn.uit.edu.msshop.order.adapter.out.event.publisher.inventory;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCancelledDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCancelledDocumentRepository;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail;
 

@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.adapter.out.event;
+package vn.uit.edu.msshop.order.adapter.out.event.documents;
 
 import java.util.UUID;
 
@@ -17,8 +17,15 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class CodPaymentReceivedDocument extends OutboxEvent {
+public class OrderCreatedDocument extends OutboxEvent {
     @Id
     private UUID eventId;
+    private String currency;
     private UUID orderId;
+    private String paymentMethod;
+    private long paymentValue;
+
+   
+    
+
 }

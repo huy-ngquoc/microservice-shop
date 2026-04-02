@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.adapter.out.event.inventory;
+package vn.uit.edu.msshop.order.adapter.out.event.documents.inventory;
 
 import java.util.UUID;
 

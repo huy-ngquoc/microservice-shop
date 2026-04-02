@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.adapter.out.event.inventory;
+package vn.uit.edu.msshop.order.adapter.out.event.documents.inventory;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import vn.uit.edu.msshop.order.adapter.out.event.OutboxEvent;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.OutboxEvent;
 
 @Document(collection="outbox_events")
 @AllArgsConstructor

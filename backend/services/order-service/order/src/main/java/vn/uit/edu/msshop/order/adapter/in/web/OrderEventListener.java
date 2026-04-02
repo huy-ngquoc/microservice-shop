@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.msshop.order.adapter.out.event.EventDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.EventDocumentRepository;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.EventDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;

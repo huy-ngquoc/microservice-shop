@@ -1,13 +1,14 @@
 package vn.uit.edu.msshop.order.application.port.out;
 
 
-import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentCancelledDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.CodPaymentReceivedDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.OrderCreatedDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.OrderCreatedSuccessDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderCancelledDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderCreatedInventoryDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.inventory.OrderShippedDocument;
+
+import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentCancelledDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentReceivedDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCancelledDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCreatedInventoryDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderShippedDocument;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
 
 public interface PublishOrderEventPort {
