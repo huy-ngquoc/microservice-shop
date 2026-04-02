@@ -91,6 +91,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     public void publishCodPaymentCancelled(CodPaymentCancelledDocument outboxEvent) {
         CodPaymentCancelled event = new CodPaymentCancelled(outboxEvent.getOrderId(), outboxEvent.getEventId());
         Message<CodPaymentCancelled> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_STATUS_TOPIC).build();
+        try {
         codPaymentCancelledTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
@@ -101,11 +102,16 @@ public class OrderEventPublisher implements PublishOrderEventPort{
             }
         });
     }
+    catch(Exception e) {
+        log.error("Error sending event");
+    }
+    }
 
     @Override
     public void publishCodPaymentReceived(CodPaymentReceivedDocument outboxEvent) {
         CodPaymentReceived event = new CodPaymentReceived(outboxEvent.getOrderId(), outboxEvent.getEventId());
         Message<CodPaymentReceived> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_STATUS_TOPIC).build();
+        try {
         codPaymentReceivedTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
@@ -115,6 +121,10 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 log.error("Fail, wait 5 seconds");
             }
         });
+    }
+    catch(Exception e) {
+        log.error("Error sending event");
+    }
     }
 
     @Override
@@ -165,6 +175,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     public void publishOrderCancelled_InventoryEvent(OrderCancelledDocument outboxEvent) {
         OrderCancelled event = new OrderCancelled(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList(),outboxEvent.getOldStatus());
         Message<OrderCancelled> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
+        try {
         orderCancelledTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
@@ -174,6 +185,10 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 log.error("Fail, wait 5 seconds");
             }
         });
+    }
+    catch(Exception e) {
+        log.error("Error sending event");
+    }
     }
 
     @Override

@@ -34,6 +34,7 @@ public class PublishImageEventAdapter implements PublishImageEventPort {
         final var event = new ImageRemoveSuccess(outboxEvent.getEventId(), outboxEvent.getUrl(), outboxEvent.getPublicId(),
     outboxEvent.getFileName(), outboxEvent.getWidth(), outboxEvent.getHeight(), outboxEvent.getSize(), outboxEvent.getObjectId());
         Message message= MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+        try {
         kafkaTemplate.send(message).whenComplete((result,ex)->{
             if(ex==null) {
                 outboxPublisher.markAsSent(outboxEvent);
@@ -42,6 +43,9 @@ public class PublishImageEventAdapter implements PublishImageEventPort {
                 log.error("Error sending event");
             }
         });
+    }catch(Exception e) {
+        log.error("Error sending event");
+    }
     }
 
 }

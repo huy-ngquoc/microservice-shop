@@ -24,6 +24,7 @@ public class EventPublisherAdapter implements PublishAccountEventPort {
         AccountCreated accountCreated = new AccountCreated(outboxEvent.getAccountId().toString(), outboxEvent.getName(), outboxEvent.getEmail(), 
                 outboxEvent.getPassword(), outboxEvent.getRole(), outboxEvent.getStatus(), outboxEvent.getShippingAddress(), outboxEvent.getPhoneNumber(), outboxEvent.getEventId().toString());
         Message<AccountCreated> message = MessageBuilder.withPayload(accountCreated).setHeader(KafkaHeaders.TOPIC, "account-topic").build();
+        try {
         kafkaTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
@@ -33,6 +34,9 @@ public class EventPublisherAdapter implements PublishAccountEventPort {
                 log.error("Error sending event");
             }
         }); 
+    }catch(Exception e) {
+        log.error("Error sending event");
+    }
     }
 
 }

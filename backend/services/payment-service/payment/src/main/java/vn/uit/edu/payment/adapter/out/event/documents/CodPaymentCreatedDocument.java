@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document
+@Document(collection="outbox_events_cod_payment_created")
 @Getter
 @Setter
 @AllArgsConstructor
