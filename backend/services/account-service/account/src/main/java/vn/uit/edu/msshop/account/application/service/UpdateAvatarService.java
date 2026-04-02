@@ -9,10 +9,10 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.msshop.account.adapter.out.event.DeleteOldImageEventDocument;
-import vn.uit.edu.msshop.account.adapter.out.event.DeleteOldImageEventDocumentRepository;
-import vn.uit.edu.msshop.account.adapter.out.event.RollbackImageEventDocument;
-import vn.uit.edu.msshop.account.adapter.out.event.RollbackImageEventDocumentRepository;
+import vn.uit.edu.msshop.account.adapter.out.event.documents.DeleteOldImageEventDocument;
+import vn.uit.edu.msshop.account.adapter.out.event.documents.RollbackImageEventDocument;
+import vn.uit.edu.msshop.account.adapter.out.event.repositories.DeleteOldImageEventDocumentRepository;
+import vn.uit.edu.msshop.account.adapter.out.event.repositories.RollbackImageEventDocumentRepository;
 import vn.uit.edu.msshop.account.application.dto.command.UpdateAvatarCommand;
 import vn.uit.edu.msshop.account.application.exception.AccountNotFoundException;
 import vn.uit.edu.msshop.account.application.port.in.UpdateAvatarUseCase;

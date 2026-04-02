@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.account.adapter.out.event;
+package vn.uit.edu.msshop.account.adapter.out.event.documents;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -17,13 +17,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AccountIdDocument {
+public class DeleteOldImageEventDocument {
     @Id
     private UUID eventId;
-    private UUID accontId;
+    private String oldImagePublicId;
     private String eventStatus;
     private Integer retryCount; 
     private Instant createdAt;
     private Instant updatedAt; 
     private String lastError;
+
 }
