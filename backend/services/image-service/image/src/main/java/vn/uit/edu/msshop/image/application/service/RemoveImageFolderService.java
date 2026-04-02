@@ -8,11 +8,10 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.uit.edu.msshop.image.adapter.in.web.mapper.ImageWebMapper;
-import vn.uit.edu.msshop.image.adapter.out.event.ImageRemoveSuccessDocument;
-import vn.uit.edu.msshop.image.adapter.out.event.ImageRemoveSuccessDocumentRepository;
+import vn.uit.edu.msshop.image.adapter.out.event.documents.ImageRemoveSuccessDocument;
+import vn.uit.edu.msshop.image.adapter.out.event.repositories.ImageRemoveSuccessDocumentRepository;
 import vn.uit.edu.msshop.image.application.dto.command.RemoveImageFolderCommand;
 import vn.uit.edu.msshop.image.application.dto.command.RollbackImageFolderCommand;
-import vn.uit.edu.msshop.image.application.mapper.ImageEventMapper;
 import vn.uit.edu.msshop.image.application.port.in.RemoveImageFolderUseCase;
 import vn.uit.edu.msshop.image.application.port.out.PublishImageEventPort;
 import vn.uit.edu.msshop.image.application.port.out.RemoveImageFolderPort;
@@ -37,7 +36,7 @@ private UUID eventId;
 public class RemoveImageFolderService implements RemoveImageFolderUseCase {
     private final RemoveImageFolderPort removePort;
     private final PublishImageEventPort publishEventPort;
-    private final ImageEventMapper mapper;
+    //private final ImageEventMapper mapper;
     private final ImageWebMapper webMapper;
     private final ImageRemoveSuccessDocumentRepository imageRemoveSuccessDocumentRepo;
 

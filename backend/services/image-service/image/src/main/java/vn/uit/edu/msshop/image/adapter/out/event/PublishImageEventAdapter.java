@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.image.adapter.out.event.documents.ImageRemoveSuccessDocument;
+import vn.uit.edu.msshop.image.adapter.out.event.publisher.OutboxPublisher;
 import vn.uit.edu.msshop.image.application.port.out.PublishImageEventPort;
 import vn.uit.edu.msshop.image.domain.event.ImageRemoveSuccess;
 
