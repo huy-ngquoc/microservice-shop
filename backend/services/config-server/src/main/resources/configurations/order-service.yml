@@ -22,6 +22,9 @@ spring:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
             properties:
+                max.block.ms: 3000
+                delivery.timeout.ms: 5000
+                request.timeout.ms: 2000
                 spring.json.type.mapping: 
                     OrderCreated:vn.uit.edu.msshop.order.domain.event.OrderCreated,
                     CodPaymentCancelled:vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled,

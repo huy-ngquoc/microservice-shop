@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@Document(collection="outbox_events")
+@Document(collection="outbox_events_cod_payment_received")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

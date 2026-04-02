@@ -1,8 +1,10 @@
 package vn.uit.edu.msshop.order.application.service;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -45,6 +47,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     private final OrderShippedDocumentRepository orderShippedDocumentRepo;
 
     @Override
+    @Transactional
     public void update(UpdateOrderCommand command, String userIdFromHeader, String role) {
         
         Order order = loadOrderPort.loadById(command.id()).orElseThrow(()->new OrderNotFoundException(command.id()));
@@ -56,9 +59,10 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         final var next = order.applyUpdateInfo(updateInfo);
         final var saved = saveOrderPort.save(next);
         boolean isSendEvent = !oldStatus.equals(saved.getStatus().value());
+        
         final var listEvent = saved.getDetails().stream().map(item->new OrderDetail(item.variantId(),item.amount())).toList();
         if(saved.getStatus().value().equals("CANCELLED")&&isSendEvent) {
-            CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder()
+            CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder().eventId(UUID.randomUUID())
             .orderId(saved.getId().value())
             .eventStatus("PENDING")
             .retryCount(0)
@@ -72,7 +76,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
                 publishEventPort.publishCodPaymentCancelled(savedEvent);
             }
         });
-        OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder()
+        OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder().eventId(UUID.randomUUID())
         .orderId(saved.getId().value())
         .oldStatus(oldStatus)
         .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
@@ -91,7 +95,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
            // publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
         }
         if(saved.getStatus().value().equals("RECEIVED")&&isSendEvent) {
-            CodPaymentReceivedDocument outboxEvent = CodPaymentReceivedDocument.builder()
+            CodPaymentReceivedDocument outboxEvent = CodPaymentReceivedDocument.builder().eventId(UUID.randomUUID())
         .orderId(saved.getId().value())
         .eventStatus("PENDING")
         .retryCount(0)
@@ -108,7 +112,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             //publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(saved.getId().value()));
         }
         if(saved.getStatus().value().equals("SHIPPING")&&isSendEvent) {
-            OrderShippedDocument orderShippedDocument = OrderShippedDocument.builder()
+            OrderShippedDocument orderShippedDocument = OrderShippedDocument.builder().eventId(UUID.randomUUID())
             .orderId(saved.getId().value())
             .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
             .eventStatus("PENDING")
@@ -129,6 +133,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     }
 
     @Override
+    @Transactional
     public void codOrderSuccess(OrderId orderId, String userIdFromHeader) {
 
         Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
@@ -137,7 +142,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         }
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("RECEIVED")).build();
         final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
-        CodPaymentReceivedDocument outboxEvent = CodPaymentReceivedDocument.builder()
+        CodPaymentReceivedDocument outboxEvent = CodPaymentReceivedDocument.builder().eventId(UUID.randomUUID())
         .orderId(saved.getId().value())
         .eventStatus("PENDING")
         .retryCount(0)
@@ -155,13 +160,14 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     }
 
     @Override
+    @Transactional
     public void codOrderCancelled(OrderId orderId) {
        Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
        String oldStatus = order.getStatus().value();
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
         final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
         //final var listEvent = saved.getDetails().stream().map(item->new OrderDetail(item.variantId(),item.amount())).toList();
-        CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder()
+        CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder().eventId(UUID.randomUUID())
             .orderId(saved.getId().value())
             .eventStatus("PENDING")
             .retryCount(0)
@@ -175,7 +181,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
                 publishEventPort.publishCodPaymentCancelled(savedEvent);
             }
         });
-        OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder()
+        OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder().eventId(UUID.randomUUID())
         .orderId(saved.getId().value())
         .oldStatus(oldStatus)
         .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
@@ -195,6 +201,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     }
 
     @Override
+    @Transactional
     public void forceCancellOrder(OrderId orderId) {
         Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
