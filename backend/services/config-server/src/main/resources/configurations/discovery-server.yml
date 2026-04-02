@@ -3,6 +3,7 @@ server:
 
 eureka:
     instance:
+        eviction-interval-timer-in-ms: 2000
         hostname: localhost
     client:
         register-with-eureka: false
