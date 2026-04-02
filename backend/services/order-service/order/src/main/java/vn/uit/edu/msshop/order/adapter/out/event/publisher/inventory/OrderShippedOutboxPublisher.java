@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.adapter.out.event;
+package vn.uit.edu.msshop.order.adapter.out.event.publisher.inventory;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -11,23 +11,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderShippedDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderShippedDocumentRepository;
+import vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail;
+import vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
-public class CodPaymentReceivedOutboxPublisher {
-    private final CodPaymentReceivedDocumentRepository codPaymentReceivedDocumentRepo;
-    private final KafkaTemplate<String, CodPaymentReceived> kafkaTemplate;
-    private static final String PUBLISH_TOPIC="payment-cod-topic";
+@RequiredArgsConstructor
+public class OrderShippedOutboxPublisher {
+    private final OrderShippedDocumentRepository orderShippedDocumentRepo;
+    private final KafkaTemplate<String, OrderShipped> kafkaTemplate;
+    private static final String PUBLISH_TOPIC="order-inventory";
     @Scheduled(fixedDelay=5000)
+    
     public void publishPendingEvents() {
-        List<CodPaymentReceivedDocument> pendingEvents =codPaymentReceivedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        List<OrderShippedDocument> pendingEvents =orderShippedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
-        for (CodPaymentReceivedDocument event : pendingEvents) {
+        for (OrderShippedDocument event : pendingEvents) {
             try {
-                CodPaymentReceived codPaymentReceived = new CodPaymentReceived(event.getOrderId(), event.getEventId());
-                kafkaTemplate.send(PUBLISH_TOPIC, codPaymentReceived)
+                OrderShipped orderShipped = new OrderShipped(event.getEventId(),event.getOrderId(), event.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList());
+                kafkaTemplate.send(PUBLISH_TOPIC, orderShipped)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
                             
@@ -43,13 +47,13 @@ public class CodPaymentReceivedOutboxPublisher {
         }
     }
 
-    private void updateStatus(CodPaymentReceivedDocument event, String status, String error) {
+    private void updateStatus(OrderShippedDocument event, String status, String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
-        codPaymentReceivedDocumentRepo.save(event);
+        orderShippedDocumentRepo.save(event);
     }
-    private void handleFailure(CodPaymentReceivedDocument event, String error) {
+    private void handleFailure(OrderShippedDocument event, String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
@@ -59,14 +63,14 @@ public class CodPaymentReceivedOutboxPublisher {
         }
     }
     @Transactional
-    public void markAsSent(CodPaymentReceivedDocument event) {
+    public void markAsSent(OrderShippedDocument event) {
         updateStatus(event, "SENT", null);
     }
     @Scheduled(cron = "0 0 0 * * ?") 
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    codPaymentReceivedDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+    orderShippedDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

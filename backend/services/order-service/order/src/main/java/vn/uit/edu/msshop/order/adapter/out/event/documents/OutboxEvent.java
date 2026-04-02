@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.adapter.out.event;
+package vn.uit.edu.msshop.order.adapter.out.event.documents;
 
 import java.time.Instant;
 

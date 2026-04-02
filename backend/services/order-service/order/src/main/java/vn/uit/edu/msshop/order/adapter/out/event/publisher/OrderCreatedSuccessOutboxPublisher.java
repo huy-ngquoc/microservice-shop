@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.adapter.out.event;
+package vn.uit.edu.msshop.order.adapter.out.event.publisher;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -11,25 +11,26 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.msshop.order.domain.event.OrderCreated;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
+import vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
-public class OrderCreatedOutboxPublisher {
-
-    private final OrderCreatedDocumentRepository orderCreatedDocumentRepo;
-    private final KafkaTemplate<String, OrderCreated> kafkaTemplate;
-    private static final String PUBLISH_TOPIC="order-topic";
+@RequiredArgsConstructor
+public class OrderCreatedSuccessOutboxPublisher {
+     private final OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo;
+    private final KafkaTemplate<String, OrderCreatedSuccess> kafkaTemplate;
+    private static final String PUBLISH_TOPIC="cart-topic";
     @Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
-        List<OrderCreatedDocument> pendingEvents =orderCreatedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        List<OrderCreatedSuccessDocument> pendingEvents =orderCreatedSuccessDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
-        for (OrderCreatedDocument event : pendingEvents) {
+        for (OrderCreatedSuccessDocument event : pendingEvents) {
             try {
-                OrderCreated orderCreated = new OrderCreated(event.getEventId(),event.getCurrency(), event.getOrderId(),event.getPaymentMethod(), event.getPaymentValue());
-                kafkaTemplate.send(PUBLISH_TOPIC, orderCreated)
+                OrderCreatedSuccess orderCreatedSuccess = new OrderCreatedSuccess(event.getEventId(),event.getUserId(), event.getVariantIds());
+                kafkaTemplate.send(PUBLISH_TOPIC, orderCreatedSuccess)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
                             
@@ -45,13 +46,13 @@ public class OrderCreatedOutboxPublisher {
         }
     }
 
-    private void updateStatus(OrderCreatedDocument event, String status, String error) {
+    private void updateStatus(OrderCreatedSuccessDocument event, String status, String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
-        orderCreatedDocumentRepo.save(event);
+        orderCreatedSuccessDocumentRepo.save(event);
     }
-    private void handleFailure(OrderCreatedDocument event, String error) {
+    private void handleFailure(OrderCreatedSuccessDocument event, String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
@@ -61,14 +62,14 @@ public class OrderCreatedOutboxPublisher {
         }
     }
     @Transactional
-    public void markAsSent(OrderCreatedDocument event) {
+    public void markAsSent(OrderCreatedSuccessDocument event) {
         updateStatus(event, "SENT", null);
     }
     @Scheduled(cron = "0 0 0 * * ?") 
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    orderCreatedDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+    orderCreatedSuccessDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }
