@@ -1,8 +1,8 @@
 package vn.uit.edu.payment.application.port.out;
 
-import vn.uit.edu.payment.adapter.out.event.CodPaymentCreatedDocument;
-import vn.uit.edu.payment.adapter.out.event.OnlinePaymentCancelledDocument;
-import vn.uit.edu.payment.adapter.out.event.OnlinePaymentExpiredDocument;
+import vn.uit.edu.payment.adapter.out.event.documents.CodPaymentCreatedDocument;
+import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentCancelledDocument;
+import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
 import vn.uit.edu.payment.domain.event.PaymentCreated;
 import vn.uit.edu.payment.domain.event.PaymentUpdated;
 

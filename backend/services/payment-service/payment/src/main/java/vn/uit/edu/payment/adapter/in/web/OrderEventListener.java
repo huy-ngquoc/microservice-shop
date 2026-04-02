@@ -9,8 +9,9 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.uit.edu.payment.adapter.in.web.mapper.PaymentWebMapper;
-import vn.uit.edu.payment.adapter.out.event.EventDocument;
-import vn.uit.edu.payment.adapter.out.event.EventDocumentRepository;
+import vn.uit.edu.payment.adapter.out.event.documents.EventDocument;
+import vn.uit.edu.payment.adapter.out.event.repositories.EventDocumentRepository;
+
 import vn.uit.edu.payment.application.dto.command.CreatePaymentCommand;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
 import vn.uit.edu.payment.domain.event.OrderCreated;

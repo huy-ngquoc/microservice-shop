@@ -1,4 +1,5 @@
-package vn.uit.edu.payment.adapter.out.event;
+package vn.uit.edu.payment.adapter.out.event.documents;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OnlinePaymentExpiredDocument {
+public class OnlinePaymentCancelledDocument {
     @Id
     private UUID eventId;
     private UUID orderId;
@@ -26,4 +27,5 @@ public class OnlinePaymentExpiredDocument {
     private Instant createdAt;
     private Instant updatedAt; 
     private String lastError;
+
 }

@@ -8,10 +8,11 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.payment.adapter.out.event.OnlinePaymentCancelledDocument;
-import vn.uit.edu.payment.adapter.out.event.OnlinePaymentCancelledDocumentRepository;
-import vn.uit.edu.payment.adapter.out.event.OnlinePaymentExpiredDocument;
-import vn.uit.edu.payment.adapter.out.event.OnlinePaymentExpiredDocumentRepository;
+
+import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentCancelledDocument;
+import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
+import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentCancelledDocumentRepository;
+import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentExpiredDocumentRepository;
 import vn.uit.edu.payment.application.dto.command.UpdatePaymentCommand;
 import vn.uit.edu.payment.application.dto.query.PaymentView;
 import vn.uit.edu.payment.application.exception.PaymentNotFoundException;
