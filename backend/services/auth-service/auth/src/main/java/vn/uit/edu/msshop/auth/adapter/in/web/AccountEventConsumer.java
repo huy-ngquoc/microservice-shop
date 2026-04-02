@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.msshop.auth.adapter.out.event.EventDocument;
-import vn.uit.edu.msshop.auth.adapter.out.event.EventDocumentRepository;
+import vn.uit.edu.msshop.auth.adapter.out.event.documents.EventDocument;
+import vn.uit.edu.msshop.auth.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.msshop.auth.application.port.in.DeleteAccountUseCase;
 import vn.uit.edu.msshop.auth.domain.event.AccountId;
 

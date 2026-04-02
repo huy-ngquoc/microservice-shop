@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.uit.edu.msshop.auth.adapter.out.event.documents.AccountCreatedDocument;
+import vn.uit.edu.msshop.auth.adapter.out.event.publisher.OutboxPublisher;
 import vn.uit.edu.msshop.auth.application.port.out.PublishAccountEventPort;
 import vn.uit.edu.msshop.auth.domain.event.AccountCreated;
 

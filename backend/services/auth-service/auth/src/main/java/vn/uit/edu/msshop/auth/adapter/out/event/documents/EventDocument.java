@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.auth.adapter.out.event;
+package vn.uit.edu.msshop.auth.adapter.out.event.documents;
 
 import java.time.Instant;
 import java.util.UUID;
