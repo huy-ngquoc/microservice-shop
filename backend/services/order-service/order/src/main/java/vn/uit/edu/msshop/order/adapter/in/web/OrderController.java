@@ -91,6 +91,7 @@ public class OrderController {
         try {
         this.updateService.update(command,userFromHeader,role);}
         catch(RuntimeException e) {
+            e.printStackTrace();
              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         return ResponseEntity.noContent().build();

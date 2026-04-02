@@ -12,7 +12,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OutboxEvent;
 
-@Document(collection="outbox_events")
+@Document(collection="outbox_events_order_cancelled_document")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

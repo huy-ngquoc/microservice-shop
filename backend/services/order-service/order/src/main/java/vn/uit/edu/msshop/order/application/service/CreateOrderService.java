@@ -117,9 +117,15 @@ public class CreateOrderService implements CreateOrderUseCase {
         final var saved = savePort.save(order);
 
         OrderCreatedInventoryDocument outboxEventOrderCreatedInventory= OrderCreatedInventoryDocument.builder().eventId(UUID.randomUUID())
-        .orderId(saved.getId().value())
-        .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList()).build();
+        .orderId(saved.getId().value()).eventStatus("PENDING")
+        .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null)
+        .build();
         final var savedOutboxEventOrderCreatedInventory = orderCreatedInventoryDocumentRepository.save(outboxEventOrderCreatedInventory);
+        System.out.println("Created event with id  "+savedOutboxEventOrderCreatedInventory.getEventId() + " with order size "+savedOutboxEventOrderCreatedInventory.getOrderDetails().size());
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
@@ -141,6 +147,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
+                
                 publishPort.publishOrderCreatedEvent(savedEvent);
             }
         });

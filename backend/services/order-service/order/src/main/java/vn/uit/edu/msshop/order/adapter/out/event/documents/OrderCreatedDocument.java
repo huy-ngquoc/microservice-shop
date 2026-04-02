@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@Document(collection="outbox_events")
+@Document(collection="outbox_events_order_created_document")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

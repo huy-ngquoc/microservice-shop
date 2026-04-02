@@ -42,6 +42,7 @@ public class InventoryOrderListener {
     }
     @KafkaHandler
     public void onOrderShipped(OrderShipped event) {
+        System.out.println("Event received with id "+event.getEventId());
         if(!eventDocumentRepo.existsById(event.getEventId())) {
         final var command = mapper.toCommand(event);
         updateInventoryUseCase.updateWhenOrderShipped(command);

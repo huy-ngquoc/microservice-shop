@@ -2,6 +2,7 @@ package vn.uit.edu.msshop.inventory.application.service;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,7 @@ public class CreateInventoryService implements CreateInventoryUseCase {
         final var result = savePort.createFromCommand(command.variantId(), command.quantity());
 
         //publishPort.publishInventoryUpdateEvent(new InventoryUpdated(command.variantId().value(),command.quantity().value(),0));
-        InventoryUpdatedDocument event = InventoryUpdatedDocument.builder()
+        InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
         .variantId(result.getVariantId().value())
         .newQuantity(result.getQuantity().value())
         .newReservedQuantity(0)

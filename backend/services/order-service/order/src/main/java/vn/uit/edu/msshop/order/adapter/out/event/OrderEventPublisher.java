@@ -69,7 +69,9 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     public void publishOrderCreatedEvent( OrderCreatedDocument outboxEvent) {
         OrderCreated event = new OrderCreated(outboxEvent.getEventId(),outboxEvent.getCurrency(), outboxEvent.getOrderId(), outboxEvent.getPaymentMethod(), outboxEvent.getPaymentValue());
         Message<OrderCreated> message=MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, ORDER_CREATED_TOPIC).build();
+        try {
         orderCreatedTemplate.send(message)
+        
         .whenComplete((result,ex)->{
             if(ex==null) {
                 orderCreatedOutboxPublisher.markAsSent(outboxEvent);
@@ -78,6 +80,11 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 log.error("Fail, wait 5 seconds");
             }
         });
+    }
+    catch(Exception e) {
+        System.out.println("Kafka is dead");
+    e.printStackTrace();
+    }
     }
 
     @Override
@@ -114,6 +121,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     public void publishClearCartEvent(OrderCreatedSuccessDocument outboxEvent) {
         OrderCreatedSuccess event = new OrderCreatedSuccess(outboxEvent.getEventId(), outboxEvent.getUserId(), outboxEvent.getVariantIds());
         Message<OrderCreatedSuccess> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, CLEAR_CART_TOPIC).build();
+        try {
         clearCartTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
@@ -123,6 +131,10 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 log.error("Fail, wait 5 seconds");
             }
         });
+    }catch(Exception e) {
+        System.out.println("Kafka is dead");
+    e.printStackTrace();
+    }
 
     }
 
@@ -132,6 +144,8 @@ public class OrderEventPublisher implements PublishOrderEventPort{
             outboxEvent.getEventId(),outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList()
         );
         Message<vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated > message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
+
+        try {
         inventoryOrderCreatedTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
@@ -141,6 +155,10 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 log.error("Fail, wait 5 seconds");
             }
         });
+    }catch(Exception e) {
+        System.out.println("Kafka is dead");
+    e.printStackTrace();
+    }
     }
 
     @Override
@@ -162,16 +180,25 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     public void publishOrderShipped_InventoryEvent(OrderShippedDocument outboxEvent) {
          OrderShipped event = new OrderShipped(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList());
          Message<OrderShipped> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
+         try {
         orderShippedTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
+                System.out.println("Send event with id "+event.getEventId());
                 orderShippedOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
+                System.out.println("Send event fail");
                 log.error("Fail, wait 5 seconds");
             }
         })
         ;
     }
+    catch(Exception e) {
+    System.out.println("Kafka is dead");
+    e.printStackTrace();
+}
+}
+
 
 }

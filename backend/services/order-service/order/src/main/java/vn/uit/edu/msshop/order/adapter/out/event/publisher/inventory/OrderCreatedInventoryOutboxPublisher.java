@@ -26,29 +26,35 @@ public class OrderCreatedInventoryOutboxPublisher {
     @Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
-        List<OrderCreatedInventoryDocument> pendingEvents =orderCreatedInventoryDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
-
+        //System.out.println("Alo alo");
+        List<OrderCreatedInventoryDocument> pendingEvents =orderCreatedInventoryDocumentRepo.findAll();
+        System.out.println("Size " +pendingEvents.size());
         for (OrderCreatedInventoryDocument event : pendingEvents) {
+            
+            if(event.getEventStatus()==null||!event.getEventStatus().equals("PENDING")) continue;
             try {
+                System.out.println(event.getEventStatus());
                 OrderCreated orderCreated = new OrderCreated(event.getEventId(),event.getOrderId(), event.getOrderDetails().stream().map(item->new OrderDetail(
                     item.getVariantId(), item.getAmount()
                 )).toList());
                 kafkaTemplate.send(PUBLISH_TOPIC, orderCreated)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
-                            
+                            System.out.println("Sent event with id "+orderCreated.getEventId());
                             updateStatus(event, "SENT", null);
                         } else {
-                            
+                            System.out.println(ex.getMessage());
                             handleFailure(event, ex.getMessage());
                         }
                     });
             } catch (Exception e) {
+                System.out.println(e.getMessage());
+                System.out.println("Event with id "+event.getEventId());
                 handleFailure(event, e.getMessage());
             }
         }
     }
-
+    @Transactional
     private void updateStatus(OrderCreatedInventoryDocument event, String status, String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
