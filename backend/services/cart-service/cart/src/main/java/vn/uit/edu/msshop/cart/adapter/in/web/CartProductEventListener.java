@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.cart.adapter.in.web.mapper.CartWebMapper;
-import vn.uit.edu.msshop.cart.adapter.out.event.EventDocument;
-import vn.uit.edu.msshop.cart.adapter.out.event.EventDocumentRepository;
+import vn.uit.edu.msshop.cart.adapter.out.event.documents.EventDocument;
+import vn.uit.edu.msshop.cart.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.msshop.cart.application.dto.command.DeleteCartItemCommand;
 import vn.uit.edu.msshop.cart.application.dto.command.UpdateCartInfoCommand;
 import vn.uit.edu.msshop.cart.application.port.in.DeleteCartItemUseCase;
