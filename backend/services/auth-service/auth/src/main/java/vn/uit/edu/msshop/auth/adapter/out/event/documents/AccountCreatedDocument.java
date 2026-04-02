@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Document(collection="outbox_events")
+@Document(collection="outbox_events_account_created")
 @Getter
 @Setter
 @Builder

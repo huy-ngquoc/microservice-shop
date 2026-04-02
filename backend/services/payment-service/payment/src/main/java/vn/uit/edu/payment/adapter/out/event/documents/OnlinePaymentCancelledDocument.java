@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document
+@Document(collection="outbox_events_online_payment_cancelled")
 @Getter
 @Setter
 @AllArgsConstructor

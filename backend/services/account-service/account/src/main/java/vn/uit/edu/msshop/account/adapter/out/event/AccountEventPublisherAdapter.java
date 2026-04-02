@@ -55,6 +55,7 @@ public class AccountEventPublisherAdapter implements PublishAccountEventPort {
     public void sendAccountCreationFailEvent(AccountIdDocument outboxEvent) {
         AccountId accountId = new AccountId(outboxEvent.getAccontId(), outboxEvent.getEventId());
         Message<AccountId> message = MessageBuilder.withPayload(accountId).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+        try {
         kafkaTemplate.send(message).whenComplete((result,ex)->{
             if(ex==null) {
                 accountIdOutboxEventPublisher.markAsSent(outboxEvent);
@@ -64,11 +65,16 @@ public class AccountEventPublisherAdapter implements PublishAccountEventPort {
             }
         });
     }
+    catch(Exception e) {
+        log.error("Error sending event");
+    }
+    }
 
     @Override
     public void sendDeleteOldImageEvent(DeleteOldImageEventDocument outboxEvent) {
         DeleteOldImageEvent event = new DeleteOldImageEvent(outboxEvent.getOldImagePublicId(), outboxEvent.getEventId());
         Message<DeleteOldImageEvent> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PUBLISH_AVATAR_EVENT_TOPIC).build();
+        try {
         kafkaDeleteOldAvatarTemplate.send(message).whenComplete((result,ex)->{
             if(ex==null) {
                 deleteOldImageOutboxEventPublisher.markAsSent(outboxEvent);
@@ -78,12 +84,16 @@ public class AccountEventPublisherAdapter implements PublishAccountEventPort {
             }
         })
         ;
+    }catch(Exception e) {
+        log.error("Error sending event");
+    }
     }
 
     @Override
     public void sendRollbackImageEvent(RollbackImageEventDocument outboxEvent) {
         final var event = new RollbackImageEvent(outboxEvent.getImagePublicId(), outboxEvent.getEventId());
         Message<RollbackImageEvent> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PUBLISH_AVATAR_EVENT_TOPIC).build();
+        try {
         kafkaRollbackAvatarTemplate.send(message).whenComplete((result,ex)->{
             if(ex==null) {
                 rollbackImageOutboxEventPublisher.markAsSent(outboxEvent);
@@ -92,6 +102,9 @@ public class AccountEventPublisherAdapter implements PublishAccountEventPort {
                 log.error("Error sending event");
             }
         });
+    }catch(Exception e) {
+        log.error("Error sending event");
+    }
     }
 
     @Override
@@ -99,6 +112,7 @@ public class AccountEventPublisherAdapter implements PublishAccountEventPort {
         final var event = new vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated(outboxEvent.getId(), outboxEvent.getName(), outboxEvent.getEmail(), 
                 outboxEvent.getPassword(), outboxEvent.getRole(), outboxEvent.getStatus(), outboxEvent.getShippingAddress(), outboxEvent.getPhoneNumber(), outboxEvent.getEventId());
         Message<vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC,  PUBLISH_ACCOUNT_CREATED_TOPIC).build();
+        try {
         accountCreatedTemplate.send(message).whenComplete((result,ex)->{
             if(ex==null) {
                 accountCreatedOutboxPublisher.markAsSent(outboxEvent);
@@ -107,6 +121,9 @@ public class AccountEventPublisherAdapter implements PublishAccountEventPort {
                 log.error("Error sending event");
             }
         });
+    }catch(Exception e) {
+        log.error("Error sending event");
+    }
     }
 
     

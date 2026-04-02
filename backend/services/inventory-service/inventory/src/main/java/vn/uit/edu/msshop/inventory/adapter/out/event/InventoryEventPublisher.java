@@ -33,6 +33,7 @@ public class InventoryEventPublisher implements PublishInventoryEventPort {
     public void publishInventoryUpdateEvent(InventoryUpdatedDocument outboxEvent) {
         InventoryUpdated event = new InventoryUpdated(outboxEvent.getEventId(), outboxEvent.getNewQuantity(), outboxEvent.getNewReservedQuantity(), outboxEvent.getEventId());
         Message<InventoryUpdated> message= MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
+        try {
         inventoryUpdateTemplate.send(message).whenComplete((result,ex)->{
             if(ex==null) {
                 inventoryUpdatedOutboxPublisher.markAsSent(outboxEvent);
@@ -42,12 +43,16 @@ public class InventoryEventPublisher implements PublishInventoryEventPort {
             }
         })
         ;
+    }catch(Exception e) {
+        log.error("Error sending event");
+    }
     }
 
     @Override
     public void publishForceCancellOrderEvent(ForceCancellOrderDocument outboxEvent) {
         final var event = new ForceCancellOrder(outboxEvent.getOrderId(), outboxEvent.getEventId());
         Message<ForceCancellOrder> message= MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, ORDER_TOPIC).build();
+        try {
         forceCancellOrderTemplate.send(message).whenComplete((result,ex)->{
             if(ex==null) {
                 forceCancellOrderOutboxPublisher.markAsSent(outboxEvent);
@@ -56,6 +61,9 @@ public class InventoryEventPublisher implements PublishInventoryEventPort {
                 log.error("Error sending event");
             }
         });
+    }catch(Exception e) {
+        log.error("Error sending event");
+    }
     }
 
     @Override

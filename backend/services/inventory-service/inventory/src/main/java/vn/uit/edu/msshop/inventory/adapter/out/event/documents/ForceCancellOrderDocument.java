@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@Document(collection="outbox_events")
+@Document(collection="outbox_events_force_cancel_order")
 public class ForceCancellOrderDocument {
     @Id
     private UUID eventId;

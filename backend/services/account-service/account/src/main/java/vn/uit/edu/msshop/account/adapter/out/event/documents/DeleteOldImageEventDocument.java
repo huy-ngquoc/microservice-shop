@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document
+@Document(collection="outbox_event_delete_old_image")
 @Getter
 @Setter
 @AllArgsConstructor

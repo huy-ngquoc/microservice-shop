@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document
+@Document(collection="outbox_event_rollback_image_event")
 @Getter
 @Setter
 @AllArgsConstructor
