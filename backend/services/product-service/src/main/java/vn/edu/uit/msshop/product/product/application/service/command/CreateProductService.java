@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
@@ -32,6 +33,13 @@ public class CreateProductService implements CreateProductUseCase {
     private final PublishProductEventPort eventPort;
 
     private final ProductViewMapper mapper;
+
+    @Override
+    @Transactional
+    public ProductView createSimple(
+            final CreateSimpleProductCommand command) {
+        return CreateProductUseCase.super.createSimple(command);
+    }
 
     @Override
     @Transactional
