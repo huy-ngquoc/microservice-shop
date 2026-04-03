@@ -16,7 +16,7 @@ public record AddProductVariantsRequest(
         @NotNull
         Long expectedVersion) {
     public record ProductVariantRequest(
-            @NotBlank
+            @NotNull
             @PositiveOrZero
             Long price,
 
