@@ -56,7 +56,7 @@ public class VariantPersistenceMapper {
                 variant.getTraits().unwrap(),
                 VariantImageKey.unwrap(variant.getImageKey()),
                 variant.getVersion().value(),
-                null);
+                variant.getDeletionTime().value());
     }
 
     public VariantDocument toPersistence(
