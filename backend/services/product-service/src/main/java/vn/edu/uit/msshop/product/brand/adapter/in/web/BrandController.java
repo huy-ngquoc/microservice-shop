@@ -26,9 +26,9 @@ import vn.edu.uit.msshop.product.brand.application.port.in.command.CreateBrandUs
 import vn.edu.uit.msshop.product.brand.application.port.in.command.DeleteBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandInfoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.CheckBrandExistsUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBrandExistsPort;
 
 @RestController
 @RequestMapping("/brands")
@@ -36,7 +36,7 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBra
 public class BrandController {
     private final FindBrandUseCase findUseCase;
     private final FindBrandLogoUseCase findLogoUseCase;
-    private final CheckBrandExistsPort checkExistsPort;
+    private final CheckBrandExistsUseCase checkExistsUseCase;
     private final CreateBrandUseCase createUseCase;
     private final UpdateBrandInfoUseCase updateInfoUseCase;
     private final UpdateBrandLogoUseCase updateLogoUseCase;
@@ -67,7 +67,7 @@ public class BrandController {
     public ResponseEntity<Void> existsById(
             @PathVariable
             final UUID id) {
-        final var existed = this.checkExistsPort.existsById(this.mapper.toBrandId(id));
+        final var existed = this.checkExistsUseCase.existsById(this.mapper.toBrandId(id));
         if (!existed) {
             return ResponseEntity.notFound().build();
         }
