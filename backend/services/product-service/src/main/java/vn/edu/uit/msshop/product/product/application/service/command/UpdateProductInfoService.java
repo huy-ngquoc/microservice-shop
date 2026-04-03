@@ -17,7 +17,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadPr
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
+import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
@@ -69,7 +69,7 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
         }
 
         final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new ProductCreated(saved.getId()));
+        this.eventPort.publish(new ProductUpdated(saved.getId()));
 
         return this.mapper.toView(saved);
     }
