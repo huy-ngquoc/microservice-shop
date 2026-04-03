@@ -200,7 +200,8 @@ public class ProductWebMapper {
                 view.ratingCount(),
                 view.options(),
                 variantsList,
-                view.imageKeys());
+                view.imageKeys(),
+                view.version());
     }
 
     public ProductVariantResponse toVariantResponse(
