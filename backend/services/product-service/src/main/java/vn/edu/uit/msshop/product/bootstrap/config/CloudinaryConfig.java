@@ -16,9 +16,9 @@ public class CloudinaryConfig {
             CloudinaryProperties properties) {
         final var url = String.format(
                 "cloudinary://%s:%s@%s",
-                properties.cloudName(),
                 properties.apiKey(),
-                properties.apiSecret());
+                properties.apiSecret(),
+                properties.cloudName());
 
         return new Cloudinary(url);
     }
