@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.brand.application.service.command;
+package vn.edu.uit.msshop.product.brand.application.service.query;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -5,6 +5,7 @@ import org.jspecify.annotations.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandDeletionTime;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
@@ -28,6 +29,9 @@ public final class Brand {
 
     private final BrandVersion version;
 
+    @Nullable
+    private final BrandDeletionTime deletionTime;
+
     public Brand(
             final BrandId id,
 
@@ -36,11 +40,15 @@ public final class Brand {
             @Nullable
             final BrandLogoKey logoKey,
 
-            final BrandVersion version) {
+            final BrandVersion version,
+
+            @Nullable
+            final BrandDeletionTime deletionTime) {
         this.id = Domains.requireNonNull(id, "Id must NOT be null");
         this.name = Domains.requireNonNull(name, "Name must NOT be null");
         this.logoKey = logoKey;
 
         this.version = Domains.requireNonNull(version, "Version must NOT be null");
+        this.deletionTime = deletionTime;
     }
 }

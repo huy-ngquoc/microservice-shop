@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 
 @Component
 @RequiredArgsConstructor
-public class ProductValidationAdapter
+public class VariantProductValidationAdapter
         implements CheckProductExistsPort {
     private final CheckProductExistsUseCase checkExistsUseCase;
 

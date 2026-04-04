@@ -17,7 +17,10 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 @Component
 @RequiredArgsConstructor
 public class BrandPersistenceAdapter
-        implements LoadBrandPort, CheckBrandExistsPort, CreateBrandPort, UpdateBrandPort {
+        implements LoadBrandPort,
+        CheckBrandExistsPort,
+        CreateBrandPort,
+        UpdateBrandPort {
     private final BrandMongoRepository repository;
     private final BrandPersistenceMapper mapper;
 
@@ -25,14 +28,17 @@ public class BrandPersistenceAdapter
     public Optional<Brand> loadById(
             final BrandId id) {
         final var jpaId = id.value();
-        return this.repository.findById(jpaId).map(this.mapper::toDomain);
+        return this.repository
+                .findByIdAndDeletionTimeIsNull(jpaId)
+                .map(this.mapper::toDomain);
     }
 
     @Override
     public boolean existsById(
             final BrandId id) {
         final var jpaId = id.value();
-        return this.repository.existsById(jpaId);
+        return this.repository
+                .existsByIdAndDeletionTimeIsNull(jpaId);
     }
 
     @Override

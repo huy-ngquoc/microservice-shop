@@ -24,6 +24,7 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.CreateBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.DeleteBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.SoftDeleteBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandInfoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.CheckBrandExistsUseCase;
@@ -36,11 +37,12 @@ import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandUseCas
 public class BrandController {
     private final FindBrandUseCase findUseCase;
     private final FindBrandLogoUseCase findLogoUseCase;
-    private final CheckBrandExistsUseCase checkExistsUseCase;
+    private final CheckBrandExistsUseCase checkActiveExistsUseCase;
     private final CreateBrandUseCase createUseCase;
     private final UpdateBrandInfoUseCase updateInfoUseCase;
     private final UpdateBrandLogoUseCase updateLogoUseCase;
     private final DeleteBrandLogoUseCase deleteLogoUseCase;
+    private final SoftDeleteBrandUseCase softDeleteUseCase;
     private final BrandWebMapper mapper;
 
     @GetMapping("/{id}")
@@ -67,7 +69,7 @@ public class BrandController {
     public ResponseEntity<Void> existsById(
             @PathVariable
             final UUID id) {
-        final var existed = this.checkExistsUseCase.existsById(this.mapper.toBrandId(id));
+        final var existed = this.checkActiveExistsUseCase.existsById(this.mapper.toBrandId(id));
         if (!existed) {
             return ResponseEntity.notFound().build();
         }
@@ -133,5 +135,18 @@ public class BrandController {
 
         final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> softDeleteById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toSoftDeleteCommand(id, version);
+        this.softDeleteUseCase.delete(command);
+
+        return ResponseEntity.noContent().build();
     }
 }

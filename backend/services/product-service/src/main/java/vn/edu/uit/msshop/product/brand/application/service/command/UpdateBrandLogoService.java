@@ -78,7 +78,8 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
                     current.getId(),
                     current.getName(),
                     newLogoKey,
-                    current.getVersion());
+                    current.getVersion(),
+                    current.getDeletionTime());
             return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {

@@ -54,7 +54,8 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
                 brand.getId(),
                 brand.getName(),
                 null,
-                expectedVersion);
+                expectedVersion,
+                brand.getDeletionTime());
         final var saved = this.updatePort.update(next);
 
         final var event = new BrandLogoUpdated(

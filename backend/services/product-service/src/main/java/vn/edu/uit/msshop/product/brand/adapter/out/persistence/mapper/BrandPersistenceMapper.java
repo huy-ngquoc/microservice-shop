@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.brand.adapter.out.persistence.BrandDocument;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandDeletionTime;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
@@ -24,12 +25,14 @@ public class BrandPersistenceMapper {
                 entity.getVersion(),
                 "Persisted brand must have a version");
         final var version = new BrandVersion(versionValue);
+        final var deletionTime = BrandDeletionTime.ofNullable(entity.getDeletionTime());
 
         return new Brand(
                 id,
                 name,
                 logoKey,
-                version);
+                version,
+                deletionTime);
     }
 
     public BrandDocument toPersistence(
@@ -38,7 +41,8 @@ public class BrandPersistenceMapper {
                 brand.getId().value(),
                 brand.getName().value(),
                 BrandLogoKey.unwrap(brand.getLogoKey()),
-                brand.getVersion().value());
+                brand.getVersion().value(),
+                BrandDeletionTime.unwrap(brand.getDeletionTime()));
     }
 
     public BrandDocument toPersistence(
@@ -46,6 +50,7 @@ public class BrandPersistenceMapper {
         return new BrandDocument(
                 newBrand.getId().value(),
                 newBrand.getName().value(),
+                null,
                 null,
                 null);
     }
