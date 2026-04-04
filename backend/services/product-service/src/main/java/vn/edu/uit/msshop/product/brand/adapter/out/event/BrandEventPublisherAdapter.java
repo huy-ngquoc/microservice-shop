@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandCreated;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
+import vn.edu.uit.msshop.product.brand.domain.event.BrandRestored;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandSoftDeleted;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
 
@@ -36,7 +37,13 @@ public class BrandEventPublisherAdapter
 
     @Override
     public void publish(
-            BrandSoftDeleted event) {
+            final BrandSoftDeleted event) {
+        this.publisher.publishEvent(event);
+    }
+
+    @Override
+    public void publish(
+            final BrandRestored event) {
         this.publisher.publishEvent(event);
     }
 }

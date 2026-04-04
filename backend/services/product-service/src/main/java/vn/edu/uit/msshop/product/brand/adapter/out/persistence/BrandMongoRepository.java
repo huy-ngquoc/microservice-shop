@@ -12,6 +12,9 @@ public interface BrandMongoRepository
     Optional<BrandDocument> findByIdAndDeletionTimeIsNull(
             final UUID id);
 
+    Optional<BrandDocument> findByIdAndDeletionTimeIsNotNull(
+            final UUID id);
+
     boolean existsByIdAndDeletionTimeIsNull(
             final UUID id);
 }

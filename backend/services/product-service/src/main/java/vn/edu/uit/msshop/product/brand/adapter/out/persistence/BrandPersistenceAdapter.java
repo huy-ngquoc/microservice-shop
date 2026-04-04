@@ -9,6 +9,7 @@ import vn.edu.uit.msshop.product.brand.adapter.out.persistence.mapper.BrandPersi
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBrandExistsPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CreateBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
@@ -18,6 +19,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 @RequiredArgsConstructor
 public class BrandPersistenceAdapter
         implements LoadBrandPort,
+        LoadSoftDeletedBrandPort,
         CheckBrandExistsPort,
         CreateBrandPort,
         UpdateBrandPort {
@@ -30,6 +32,15 @@ public class BrandPersistenceAdapter
         final var jpaId = id.value();
         return this.repository
                 .findByIdAndDeletionTimeIsNull(jpaId)
+                .map(this.mapper::toDomain);
+    }
+
+    @Override
+    public Optional<Brand> loadSoftDeletedById(
+            final BrandId id) {
+        final var jpaId = id.value();
+        return this.repository
+                .findByIdAndDeletionTimeIsNotNull(jpaId)
                 .map(this.mapper::toDomain);
     }
 
