@@ -24,6 +24,7 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.CreateBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.DeleteBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.HardDeleteBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.RestoreBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.SoftDeleteBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandInfoUseCase;
@@ -47,6 +48,7 @@ public class BrandController {
     private final UpdateBrandLogoUseCase updateLogoUseCase;
     private final DeleteBrandLogoUseCase deleteLogoUseCase;
     private final SoftDeleteBrandUseCase softDeleteUseCase;
+    private final HardDeleteBrandUseCase hardDeleteUseCase;
     private final BrandWebMapper mapper;
 
     @GetMapping("/{id}")
@@ -174,6 +176,19 @@ public class BrandController {
             final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
         this.softDeleteUseCase.delete(command);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/purge")
+    public ResponseEntity<Void> hardDeleteById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toHardDeleteCommand(id, version);
+        this.hardDeleteUseCase.purge(command);
 
         return ResponseEntity.noContent().build();
     }

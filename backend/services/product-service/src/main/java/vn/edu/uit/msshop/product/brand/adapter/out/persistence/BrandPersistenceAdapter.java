@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.out.persistence.mapper.BrandPersistenceMapper;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBrandExistsPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CreateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.DeleteBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -22,7 +23,8 @@ public class BrandPersistenceAdapter
         LoadSoftDeletedBrandPort,
         CheckBrandExistsPort,
         CreateBrandPort,
-        UpdateBrandPort {
+        UpdateBrandPort,
+        DeleteBrandPort {
     private final BrandMongoRepository repository;
     private final BrandPersistenceMapper mapper;
 
@@ -66,5 +68,12 @@ public class BrandPersistenceAdapter
         final var toSave = this.mapper.toPersistence(brand);
         final var saved = this.repository.save(toSave);
         return this.mapper.toDomain(saved);
+    }
+
+    @Override
+    public void deleteById(
+            final BrandId id) {
+        final var jpaId = id.value();
+        this.repository.deleteById(jpaId);
     }
 }
