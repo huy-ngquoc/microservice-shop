@@ -69,6 +69,7 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
                 current.getId(),
                 nameSet.value(),
                 current.getLogoKey(),
-                current.getVersion());
+                current.getVersion(),
+                current.getDeletionTime());
     }
 }
