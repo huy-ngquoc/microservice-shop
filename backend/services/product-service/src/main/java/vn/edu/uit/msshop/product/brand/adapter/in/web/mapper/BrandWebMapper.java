@@ -15,6 +15,7 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.dto.command.CreateBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.DeleteBrandLogoCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.RestoreBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.SoftDeleteBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandInfoCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandLogoCommand;
@@ -37,6 +38,17 @@ public class BrandWebMapper {
 
         return new CreateBrandCommand(
                 name);
+    }
+
+    public RestoreBrandCommand toRestoreCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var brandId = new BrandId(id);
+        final var version = new BrandVersion(expectedVersion);
+
+        return new RestoreBrandCommand(
+                brandId,
+                version);
     }
 
     public UpdateBrandInfoCommand toUpdateInfoCommand(

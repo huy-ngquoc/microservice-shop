@@ -24,21 +24,25 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.CreateBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.DeleteBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.RestoreBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.SoftDeleteBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandInfoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.CheckBrandExistsUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.FindSoftDeletedBrandUseCase;
 
 @RestController
 @RequestMapping("/brands")
 @RequiredArgsConstructor
 public class BrandController {
     private final FindBrandUseCase findUseCase;
+    private final FindSoftDeletedBrandUseCase findSoftDeletedUseCase;
     private final FindBrandLogoUseCase findLogoUseCase;
     private final CheckBrandExistsUseCase checkActiveExistsUseCase;
     private final CreateBrandUseCase createUseCase;
+    private final RestoreBrandUseCase restoreUseCase;
     private final UpdateBrandInfoUseCase updateInfoUseCase;
     private final UpdateBrandLogoUseCase updateLogoUseCase;
     private final DeleteBrandLogoUseCase deleteLogoUseCase;
@@ -50,6 +54,17 @@ public class BrandController {
             @PathVariable
             final UUID id) {
         final var view = this.findUseCase.findById(this.mapper.toBrandId(id));
+
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/deleted/{id}")
+    public ResponseEntity<BrandResponse> findSoftDeletedById(
+            @PathVariable
+            final UUID id) {
+        final var view = this.findSoftDeletedUseCase
+                .findSoftDeletedById(this.mapper.toBrandId(id));
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -91,6 +106,19 @@ public class BrandController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restore(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toRestoreCommand(id, version);
+        this.restoreUseCase.restore(command);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/info")
