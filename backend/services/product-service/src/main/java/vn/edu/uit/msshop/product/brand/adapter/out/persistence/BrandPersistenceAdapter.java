@@ -2,6 +2,8 @@ package vn.edu.uit.msshop.product.brand.adapter.out.persistence;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -9,17 +11,22 @@ import vn.edu.uit.msshop.product.brand.adapter.out.persistence.mapper.BrandPersi
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBrandExistsPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CreateBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.DeleteBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListBrandsPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 
 @Component
 @RequiredArgsConstructor
 public class BrandPersistenceAdapter
-        implements LoadBrandPort,
+        implements
+        ListBrandsPort,
+        LoadBrandPort,
         LoadSoftDeletedBrandPort,
         CheckBrandExistsPort,
         CreateBrandPort,
@@ -27,6 +34,25 @@ public class BrandPersistenceAdapter
         DeleteBrandPort {
     private final BrandMongoRepository repository;
     private final BrandPersistenceMapper mapper;
+
+    @Override
+    public PageResponseDto<Brand> list(
+            final PageRequestDto pageRequest) {
+        final var pageable = BrandPersistenceAdapter.toPageable(
+                pageRequest,
+                BrandDocument.Fields.id);
+        final var page = this.repository.findAllByDeletionTimeIsNull(pageable);
+
+        final var brands = page.getContent().stream()
+                .map(this.mapper::toDomain)
+                .toList();
+
+        return new PageResponseDto<>(
+                brands,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements());
+    }
 
     @Override
     public Optional<Brand> loadById(
@@ -75,5 +101,20 @@ public class BrandPersistenceAdapter
             final BrandId id) {
         final var jpaId = id.value();
         this.repository.deleteById(jpaId);
+    }
+
+    private static PageRequest toPageable(
+            final PageRequestDto request,
+            final String defaultSortField) {
+        final var direction = switch (request.direction()) {
+            case ASC -> Sort.Direction.ASC;
+            case DESC -> Sort.Direction.DESC;
+        };
+
+        final var sortBy = request.sortBy();
+        final var sortField = (sortBy != null) ? sortBy : defaultSortField;
+        final var sort = Sort.by(direction, sortField);
+
+        return PageRequest.of(request.page(), request.size(), sort);
     }
 }

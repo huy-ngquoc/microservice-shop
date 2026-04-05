@@ -3,6 +3,8 @@ package vn.edu.uit.msshop.product.brand.adapter.out.persistence;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +19,7 @@ public interface BrandMongoRepository
 
     boolean existsByIdAndDeletionTimeIsNull(
             final UUID id);
+
+    Page<BrandDocument> findAllByDeletionTimeIsNull(
+            final Pageable pageable);
 }
