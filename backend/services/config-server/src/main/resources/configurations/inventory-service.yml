@@ -1,5 +1,6 @@
 server:
     port: 8090
+    address: 0.0.0.0
 spring:
     datasource:
         driver-class-name: org.postgresql.Driver
@@ -43,3 +44,24 @@ logging:
   level:
     org.apache.kafka: ERROR
     org.springframework.kafka: ERROR
+    io.micrometer.tracing: DEBUG
+    io.zipkin.reporter2: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      tracing:
+        sampling:
+            probability: 1.0 
+      zipkin:
+        tracing:
+            endpoint: http://127.0.0.1:9411/api/v2/spans
+      metrics:
+        tags:
+            application: ${spring.application.name}
+  metrics:
+    tags:
+      application: ${spring.application.name}

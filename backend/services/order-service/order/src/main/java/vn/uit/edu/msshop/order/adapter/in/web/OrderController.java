@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotFoundException;
@@ -43,6 +44,29 @@ public class OrderController {
     private final OrderWebMapper mapper;
     private final PublishOrderEventPort eventPublisher;
     private final CheckPermissionUseCase checkPermission;
+    private final Tracer tracer;
+    @GetMapping("/test-trace")
+    public String test() {
+        
+        var currentSpan = tracer.currentSpan();
+
+    // 2. Nếu null (chưa có span tự động), hãy tự tạo một span "mồi"
+    if (currentSpan == null) {
+        // Tạo một span mới, đặt tên là "manual-test"
+        var newSpan = tracer.nextSpan().name("manual-test-span").start();
+        
+        // Dùng try-with-resources để đưa span này vào ngữ cảnh (Scope)
+        try (var ws = tracer.withSpan(newSpan)) {
+            String traceId = newSpan.context().traceId();
+            return "New Trace ID (Manual): " + traceId;
+        } finally {
+            newSpan.end(); // Kết thúc span để nó gửi dữ liệu sang Zipkin
+        }
+    }
+
+    // 3. Nếu đã có span tự động (thông thường là vậy)
+    return "Current Trace ID: " + currentSpan.context().traceId();
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getById(@PathVariable UUID id,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
