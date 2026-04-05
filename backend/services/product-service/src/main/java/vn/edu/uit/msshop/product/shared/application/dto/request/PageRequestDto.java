@@ -12,6 +12,7 @@ public record PageRequestDto(
         Direction direction) {
     public static final int DEFAULT_PAGE = 0;
     public static final int DEFAULT_SIZE = 20;
+    public static final int MAX_SIZE = 100;
     public static final Direction DEFAULT_DIRECTION = Direction.ASC;
 
     public static final String DEFAULT_PAGE_STRING = "0";
@@ -30,6 +31,10 @@ public record PageRequestDto(
 
         if (size <= 0) {
             throw new IllegalArgumentException("Size must be > 0");
+        }
+
+        if (size > MAX_SIZE) {
+            throw new IllegalArgumentException("Size must be <= " + MAX_SIZE);
         }
 
         if ((sortBy == null) || sortBy.isBlank()) {
