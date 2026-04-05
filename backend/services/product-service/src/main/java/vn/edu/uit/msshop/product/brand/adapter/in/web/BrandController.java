@@ -35,6 +35,7 @@ import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandLogoUs
 import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.FindSoftDeletedBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.ListBrandsUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.ListSoftDeletedBrandsUseCase;
 import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 
@@ -43,6 +44,7 @@ import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto
 @RequiredArgsConstructor
 public class BrandController {
     private final ListBrandsUseCase listUseCase;
+    private final ListSoftDeletedBrandsUseCase listSoftDeletedUseCase;
     private final FindBrandUseCase findUseCase;
     private final FindSoftDeletedBrandUseCase findSoftDeletedUseCase;
     private final FindBrandLogoUseCase findLogoUseCase;
@@ -60,22 +62,47 @@ public class BrandController {
     public ResponseEntity<PageResponseDto<BrandResponse>> list(
             @RequestParam(
                     defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
-            int page,
+            final int page,
 
             @RequestParam(
                     defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
-            int size,
+            final int size,
 
             @RequestParam(
                     required = false)
             @Nullable
-            String sortBy,
+            final String sortBy,
 
             @RequestParam(
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
-            PageRequestDto.Direction direction) {
+            final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = listUseCase.list(request);
+
+        final var response = views.map(this.mapper::toResponse);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/deleted")
+    public ResponseEntity<PageResponseDto<BrandResponse>> listSoftDeleted(
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
+
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
+
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
+
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
+        final var request = new PageRequestDto(page, size, sortBy, direction);
+        final var views = listSoftDeletedUseCase.listSoftDeleted(request);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);

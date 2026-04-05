@@ -12,6 +12,7 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBra
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CreateBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.DeleteBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListBrandsPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListSoftDeletedBrandsPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -26,6 +27,7 @@ import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto
 public class BrandPersistenceAdapter
         implements
         ListBrandsPort,
+        ListSoftDeletedBrandsPort,
         LoadBrandPort,
         LoadSoftDeletedBrandPort,
         CheckBrandExistsPort,
@@ -42,6 +44,25 @@ public class BrandPersistenceAdapter
                 pageRequest,
                 BrandDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNull(pageable);
+
+        final var brands = page.getContent().stream()
+                .map(this.mapper::toDomain)
+                .toList();
+
+        return new PageResponseDto<>(
+                brands,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements());
+    }
+
+    @Override
+    public PageResponseDto<Brand> listSoftDeleted(
+            final PageRequestDto pageRequest) {
+        final var pageable = BrandPersistenceAdapter.toPageable(
+                pageRequest,
+                BrandDocument.Fields.id);
+        final var page = this.repository.findAllByDeletionTimeIsNotNull(pageable);
 
         final var brands = page.getContent().stream()
                 .map(this.mapper::toDomain)
