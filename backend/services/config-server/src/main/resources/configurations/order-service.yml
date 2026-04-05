@@ -2,6 +2,9 @@ spring:
   data:
     mongodb:
       uri: mongodb://alibou:alibou@localhost:27019/order_db?authSource=admin&uuidRepresentation=STANDARD
+      command-listener:
+        observation:
+          enabled: true
   kafka:
         bootstrap-servers: localhost:9092 
         consumer:
@@ -35,5 +38,29 @@ spring:
                     OrderShipped:vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped
 logging:
   level:
-    org.apache.kafka: ERROR
-    org.springframework.kafka: ERROR
+        org.apache.kafka: ERROR
+        org.springframework.kafka: ERROR
+        io.micrometer.tracing: DEBUG
+        io.zipkin.reporter2: DEBUG
+  pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+management:
+        endpoints:
+            web:
+        exposure:
+            include: "*"
+        tracing:
+            sampling:
+                probability: 1.0 
+        zipkin:
+            tracing:
+                endpoint: http://127.0.0.1:9411/api/v2/spans
+        metrics:
+            tags:
+                application: ${spring.application.name}
+server:
+  port: 8000
+  address: 0.0.0.0
+    
+
+    

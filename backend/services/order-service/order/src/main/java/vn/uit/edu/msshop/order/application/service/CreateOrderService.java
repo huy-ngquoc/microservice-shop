@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotFoundException;
@@ -88,6 +89,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     private String lastError; */
     @Override
     @Transactional
+    @Observed(name = "mongodb.save.order")
     public UUID create(CreateOrderCommand command) {
         this.checkUserPort.isUserAvailable(command.userId().value());
         List<OrderDetail> listDetails = command.details().stream().map(item->{

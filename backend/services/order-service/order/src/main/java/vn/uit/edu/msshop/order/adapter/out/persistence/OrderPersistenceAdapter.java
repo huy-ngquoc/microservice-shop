@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Component;
 
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.out.persistence.mapper.OrderDataMapper;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
@@ -94,6 +95,7 @@ public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort {
     }
 
     @Override
+    @Observed(name = "mongodb.save.order")
     public Order save(Order order) {
         OrderDocument orderDocument = this.orderDataMapper.toDocument(order);
         orderRepo.save(orderDocument);

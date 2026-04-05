@@ -28,12 +28,12 @@ public class OrderCreatedInventoryOutboxPublisher {
     public void publishPendingEvents() {
         //System.out.println("Alo alo");
         List<OrderCreatedInventoryDocument> pendingEvents =orderCreatedInventoryDocumentRepo.findAll();
-        System.out.println("Size " +pendingEvents.size());
+        //System.out.println("Size " +pendingEvents.size());
         for (OrderCreatedInventoryDocument event : pendingEvents) {
             
             if(event.getEventStatus()==null||!event.getEventStatus().equals("PENDING")) continue;
             try {
-                System.out.println(event.getEventStatus());
+                //System.out.println(event.getEventStatus());
                 OrderCreated orderCreated = new OrderCreated(event.getEventId(),event.getOrderId(), event.getOrderDetails().stream().map(item->new OrderDetail(
                     item.getVariantId(), item.getAmount()
                 )).toList());
@@ -43,7 +43,7 @@ public class OrderCreatedInventoryOutboxPublisher {
                             System.out.println("Sent event with id "+orderCreated.getEventId());
                             updateStatus(event, "SENT", null);
                         } else {
-                            System.out.println(ex.getMessage());
+                            //System.out.println(ex.getMessage());
                             handleFailure(event, ex.getMessage());
                         }
                     });
