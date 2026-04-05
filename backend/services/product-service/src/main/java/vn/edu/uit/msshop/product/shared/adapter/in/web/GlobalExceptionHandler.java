@@ -10,6 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -74,6 +76,26 @@ public class GlobalExceptionHandler {
         log.warn(message);
 
         final var status = HttpStatus.CONFLICT;
+        final var response = GlobalExceptionHandler.buildResponse(
+                status,
+                message,
+                request);
+
+        return ResponseEntity.status(status).body(response);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> handleTypeMismatch(
+            final MethodArgumentTypeMismatchException ex,
+            final HttpServletRequest request) {
+        final var message = String.format(
+                "The parameter '%s' should be of type %s",
+                ex.getName(),
+                ex.getRequiredType().getSimpleName());
+
+        log.warn(message);
+
+        final var status = HttpStatus.BAD_REQUEST;
         final var response = GlobalExceptionHandler.buildResponse(
                 status,
                 message,
@@ -207,6 +229,25 @@ public class GlobalExceptionHandler {
         final var response = GlobalExceptionHandler.buildResponse(
                 status,
                 "Internal server error",
+                request);
+
+        return ResponseEntity.status(status).body(response);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Object> handleNoResourceFoundException(
+            final NoResourceFoundException ex,
+            final HttpServletRequest request) {
+        final var message = String.format(
+                "Resource not found: %s",
+                ex.getMessage());
+
+        log.warn(message);
+
+        final var status = HttpStatus.NOT_FOUND;
+        final var response = GlobalExceptionHandler.buildResponse(
+                status,
+                message,
                 request);
 
         return ResponseEntity.status(status).body(response);
