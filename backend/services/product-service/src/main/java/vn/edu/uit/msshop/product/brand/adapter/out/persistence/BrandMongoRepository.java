@@ -11,6 +11,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BrandMongoRepository
         extends MongoRepository<BrandDocument, UUID> {
+    Page<BrandDocument> findAllByDeletionTimeIsNull(
+            final Pageable pageable);
+
+    Page<BrandDocument> findAllByDeletionTimeIsNotNull(
+            final Pageable pageable);
+
     Optional<BrandDocument> findByIdAndDeletionTimeIsNull(
             final UUID id);
 
@@ -19,7 +25,4 @@ public interface BrandMongoRepository
 
     boolean existsByIdAndDeletionTimeIsNull(
             final UUID id);
-
-    Page<BrandDocument> findAllByDeletionTimeIsNull(
-            final Pageable pageable);
 }
