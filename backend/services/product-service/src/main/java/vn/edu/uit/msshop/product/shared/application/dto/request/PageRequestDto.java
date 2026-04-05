@@ -10,17 +10,20 @@ public record PageRequestDto(
         @Nullable
         String sortBy,
         Direction direction) {
+    public static final int DEFAULT_PAGE = 0;
+    public static final int DEFAULT_SIZE = 20;
+    public static final Direction DEFAULT_DIRECTION = Direction.ASC;
+
+    public static final String DEFAULT_PAGE_STRING = "0";
+    public static final String DEFAULT_SIZE_STRING = "20";
+    public static final String DEFAULT_DIRECTION_STRING = "ASC";
+
     public enum Direction {
         ASC,
         DESC
     }
 
-    public PageRequestDto(
-            final int page,
-            final int size,
-            @Nullable
-            final String sortBy,
-            final Direction direction) {
+    public PageRequestDto {
         if (page < 0) {
             throw new IllegalArgumentException("Page must be >= 0");
         }
@@ -29,16 +32,13 @@ public record PageRequestDto(
             throw new IllegalArgumentException("Size must be > 0");
         }
 
-        this.page = page;
-        this.size = size;
-
         if ((sortBy == null) || sortBy.isBlank()) {
-            this.sortBy = null;
+            sortBy = null;
         } else {
-            this.sortBy = sortBy.trim();
+            sortBy = sortBy.trim();
         }
 
-        this.direction = Objects.requireNonNullElse(direction, Direction.ASC);
+        direction = Objects.requireNonNullElse(direction, Direction.ASC);
     }
 
     public PageRequestDto(

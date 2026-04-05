@@ -1,17 +1,14 @@
 package vn.edu.uit.msshop.product.shared.application.dto.response;
 
 import java.util.List;
+import java.util.function.Function;
 
 public record PageResponseDto<T>(
         List<T> items,
         int page,
         int size,
         long totalElements) {
-    public PageResponseDto(
-            List<T> items,
-            int page,
-            int size,
-            long totalElements) {
+    public PageResponseDto {
         if (page < 0) {
             throw new IllegalArgumentException("Page must be >= 0");
         }
@@ -25,14 +22,16 @@ public record PageResponseDto<T>(
         }
 
         if (items == null) {
-            this.items = List.of();
+            items = List.of();
         } else {
-            this.items = List.copyOf(items);
+            items = List.copyOf(items);
         }
+    }
 
-        this.page = page;
-        this.size = size;
-        this.totalElements = totalElements;
+    public <R> PageResponseDto<R> map(
+            final Function<T, R> mapper) {
+        var mapped = items.stream().map(mapper).toList();
+        return new PageResponseDto<>(mapped, page, size, totalElements);
     }
 
     public int totalPages() {
