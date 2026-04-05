@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.shared.adapter.in.web;
 
 import java.time.Instant;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +29,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleNotFound(
             final NotFoundException ex,
             final HttpServletRequest request) {
-        log.warn("Resource not found: {}", ex.getMessage());
+        final var message = String.format(
+                "Resource not found: %s",
+                ex.getMessage());
+
+        log.warn(message);
 
         final var status = HttpStatus.NOT_FOUND;
         final var response = GlobalExceptionHandler.buildResponse(
                 status,
-                ex.getMessage(),
+                message,
                 request);
 
         return ResponseEntity.status(status).body(response);
@@ -43,12 +48,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleBusinessRule(
             final BusinessRuleException ex,
             final HttpServletRequest request) {
-        log.warn("Business rule violation: {}", ex.getMessage());
+        final var message = String.format(
+                "Business rule violation: %s",
+                ex.getMessage());
+
+        log.warn(message);
 
         final var status = HttpStatus.UNPROCESSABLE_CONTENT;
         final var response = GlobalExceptionHandler.buildResponse(
                 status,
-                ex.getMessage(),
+                message,
                 request);
 
         return ResponseEntity.status(status).body(response);
@@ -58,12 +67,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleOptimisticLock(
             final OptimisticLockException ex,
             final HttpServletRequest request) {
-        log.warn("Optimistic lock conflict: {}", ex.getMessage());
+        final var message = String.format(
+                "Optimistic lock conflict: %s",
+                ex.getMessage());
+
+        log.warn(message);
 
         final var status = HttpStatus.CONFLICT;
         final var response = GlobalExceptionHandler.buildResponse(
                 status,
-                ex.getMessage(),
+                message,
                 request);
 
         return ResponseEntity.status(status).body(response);
@@ -76,16 +89,22 @@ public class GlobalExceptionHandler {
         final var fieldErrors = ex.getBindingResult().getFieldErrors().stream()
                 .map(fe -> new ValidationError(
                         fe.getField(),
-                        fe.getDefaultMessage()))
+                        Objects.requireNonNullElse(
+                                fe.getDefaultMessage(),
+                                "Validation error")))
                 .toList();
 
-        log.warn("Validation failed: {}", fieldErrors);
+        final var message = String.format(
+                "Validation failed: %s",
+                fieldErrors);
+
+        log.warn(message);
 
         final var status = HttpStatus.BAD_REQUEST;
         final var response = new ApiErrorResponse(
                 status.value(),
                 status.getReasonPhrase(),
-                "Validation failed",
+                message,
                 Instant.now(),
                 request.getRequestURI(),
                 fieldErrors);
@@ -103,13 +122,17 @@ public class GlobalExceptionHandler {
                         cv.getMessage()))
                 .toList();
 
-        log.warn("Constraint violation: {}", errors);
+        final var message = String.format(
+                "Constraint violation: %s",
+                errors);
+
+        log.warn(message);
 
         final var status = HttpStatus.BAD_REQUEST;
         final var response = new ApiErrorResponse(
                 status.value(),
                 status.getReasonPhrase(),
-                "Validation failed",
+                message,
                 Instant.now(),
                 request.getRequestURI(),
                 errors);
@@ -121,12 +144,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleNotReadable(
             final HttpMessageNotReadableException ex,
             final HttpServletRequest request) {
-        log.warn("Malformed request body: {}", ex.getMessage());
+        final var message = String.format(
+                "Malformed request body: %s",
+                ex.getMessage());
+
+        log.warn(message);
 
         final var status = HttpStatus.BAD_REQUEST;
         final var response = GlobalExceptionHandler.buildResponse(
                 status,
-                "Malformed request body",
+                message,
                 request);
 
         return ResponseEntity.status(status).body(response);
@@ -136,12 +163,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleMissingParam(
             final MissingServletRequestParameterException ex,
             final HttpServletRequest request) {
-        log.warn("Missing request parameter: {}", ex.getMessage());
+        final var message = String.format(
+                "Missing request parameter: %s",
+                ex.getMessage());
+
+        log.warn(message);
 
         final var status = HttpStatus.BAD_REQUEST;
         final var response = GlobalExceptionHandler.buildResponse(
                 status,
-                ex.getMessage(),
+                message,
                 request);
 
         return ResponseEntity.status(status).body(response);
@@ -151,12 +182,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleImageUploadFailed(
             final ImageUploadFailedException ex,
             final HttpServletRequest request) {
+        final var message = String.format(
+                "Image upload failed: %s",
+                ex.getMessage());
+
         log.error("Image upload failed", ex);
 
         final var status = HttpStatus.BAD_GATEWAY;
         final var response = GlobalExceptionHandler.buildResponse(
                 status,
-                ex.getMessage(),
+                message,
                 request);
 
         return ResponseEntity.status(status).body(response);
