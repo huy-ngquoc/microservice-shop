@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.adapter.out.persistence.mapper.CategoryPersistenceMapper;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CheckCategoryExistsPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.DeleteCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListCategoriesPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListSoftDeletedCategoriesPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
@@ -31,7 +32,8 @@ public class CategoryPersistenceAdapter
         LoadSoftDeletedCategoryPort,
         CheckCategoryExistsPort,
         CreateCategoryPort,
-        UpdateCategoryPort {
+        UpdateCategoryPort,
+        DeleteCategoryPort {
     private final CategoryMongoRepository repository;
     private final CategoryPersistenceMapper mapper;
 
@@ -112,6 +114,13 @@ public class CategoryPersistenceAdapter
         final var toSave = this.mapper.toPersistence(category);
         final var saved = this.repository.save(toSave);
         return this.mapper.toDomain(saved);
+    }
+
+    @Override
+    public void deleteById(
+            final CategoryId id) {
+        final var jpaId = id.value();
+        this.repository.deleteById(jpaId);
     }
 
     // TODO: place it somewhere shared as many places use it
