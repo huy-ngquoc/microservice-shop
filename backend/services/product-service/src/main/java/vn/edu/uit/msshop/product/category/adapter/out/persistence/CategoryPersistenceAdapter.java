@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.category.adapter.out.persistence.mapper.Categor
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CheckCategoryExistsPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListCategoriesPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListSoftDeletedCategoriesPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
@@ -25,6 +26,7 @@ import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto
 public class CategoryPersistenceAdapter
         implements
         ListCategoriesPort,
+        ListSoftDeletedCategoriesPort,
         LoadCategoryPort,
         LoadSoftDeletedCategoryPort,
         CheckCategoryExistsPort,
@@ -40,6 +42,25 @@ public class CategoryPersistenceAdapter
                 pageRequest,
                 CategoryDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNull(pageable);
+
+        final var categories = page.getContent().stream()
+                .map(this.mapper::toDomain)
+                .toList();
+
+        return new PageResponseDto<>(
+                categories,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements());
+    }
+
+    @Override
+    public PageResponseDto<Category> listSoftDeleted(
+            final PageRequestDto pageRequest) {
+        final var pageable = CategoryPersistenceAdapter.toPageable(
+                pageRequest,
+                CategoryDocument.Fields.id);
+        final var page = this.repository.findAllByDeletionTimeIsNotNull(pageable);
 
         final var categories = page.getContent().stream()
                 .map(this.mapper::toDomain)
