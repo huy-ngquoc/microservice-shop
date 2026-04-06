@@ -11,4 +11,7 @@ public interface CategoryMongoRepository
         extends MongoRepository<CategoryDocument, UUID> {
     Optional<CategoryDocument> findByIdAndDeletionTimeIsNull(
             final UUID id);
+
+    Optional<CategoryDocument> findByIdAndDeletionTimeIsNotNull(
+            final UUID id);
 }
