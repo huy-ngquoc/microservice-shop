@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.category.adapter.out.persistence;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
@@ -29,6 +30,9 @@ public class CategoryDocument {
     @Nullable
     private final Long version;
 
+    @Nullable
+    private final Instant deletionTime;
+
     @PersistenceCreator
     public CategoryDocument(
             final UUID id,
@@ -39,10 +43,14 @@ public class CategoryDocument {
             final String imageKey,
 
             @Nullable
-            final Long version) {
+            final Long version,
+
+            @Nullable
+            final Instant deletionTime) {
         this.id = id;
         this.name = name;
         this.imageKey = imageKey;
         this.version = version;
+        this.deletionTime = deletionTime;
     }
 }

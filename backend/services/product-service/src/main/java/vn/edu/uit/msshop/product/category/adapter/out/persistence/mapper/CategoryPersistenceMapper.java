@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.category.adapter.out.persistence.CategoryDocument;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryDeletionTime;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
@@ -24,12 +25,14 @@ public class CategoryPersistenceMapper {
                 entity.getVersion(),
                 "Persisted category must have a version");
         final var version = new CategoryVersion(versionValue);
+        final var deletionTime = CategoryDeletionTime.ofNullable(entity.getDeletionTime());
 
         return new Category(
                 id,
                 name,
                 imageKey,
-                version);
+                version,
+                deletionTime);
     }
 
     public CategoryDocument toPersistence(
@@ -38,7 +41,8 @@ public class CategoryPersistenceMapper {
                 category.getId().value(),
                 category.getName().value(),
                 CategoryImageKey.unwrap(category.getImageKey()),
-                category.getVersion().value());
+                category.getVersion().value(),
+                CategoryDeletionTime.unwrap(category.getDeletionTime()));
     }
 
     public CategoryDocument toPersistence(
@@ -46,6 +50,7 @@ public class CategoryPersistenceMapper {
         return new CategoryDocument(
                 newCategory.getId().value(),
                 newCategory.getName().value(),
+                null,
                 null,
                 null);
     }

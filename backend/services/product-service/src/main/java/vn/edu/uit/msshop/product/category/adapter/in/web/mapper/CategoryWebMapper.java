@@ -15,6 +15,7 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageR
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
 import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategoryCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.DeleteCategoryImageCommand;
+import vn.edu.uit.msshop.product.category.application.dto.command.SoftDeleteCategoryCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
@@ -72,6 +73,17 @@ public class CategoryWebMapper {
         final var version = new CategoryVersion(expectedVersion);
 
         return new DeleteCategoryImageCommand(
+                categoryId,
+                version);
+    }
+
+    public SoftDeleteCategoryCommand toSoftDeleteCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var categoryId = new CategoryId(id);
+        final var version = new CategoryVersion(expectedVersion);
+
+        return new SoftDeleteCategoryCommand(
                 categoryId,
                 version);
     }

@@ -78,7 +78,8 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
                     current.getId(),
                     current.getName(),
                     newImageKey,
-                    current.getVersion());
+                    current.getVersion(),
+                    current.getDeletionTime());
             return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {

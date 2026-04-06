@@ -17,7 +17,11 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 @Component
 @RequiredArgsConstructor
 public class CategoryPersistenceAdapter
-        implements LoadCategoryPort, CheckCategoryExistsPort, CreateCategoryPort, UpdateCategoryPort {
+        implements
+        LoadCategoryPort,
+        CheckCategoryExistsPort,
+        CreateCategoryPort,
+        UpdateCategoryPort {
     private final CategoryMongoRepository repository;
     private final CategoryPersistenceMapper mapper;
 
@@ -25,7 +29,9 @@ public class CategoryPersistenceAdapter
     public Optional<Category> loadById(
             final CategoryId id) {
         final var jpaId = id.value();
-        return this.repository.findById(jpaId).map(this.mapper::toDomain);
+        return this.repository
+                .findByIdAndDeletionTimeIsNull(jpaId)
+                .map(this.mapper::toDomain);
     }
 
     @Override

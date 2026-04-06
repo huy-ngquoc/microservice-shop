@@ -48,7 +48,7 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
                     currentVersion.value());
         }
 
-        final var next = this.applyChanges(category, nameSet);
+        final var next = UpdateCategoryInfoService.applyChanges(category, nameSet);
         if (next == null) {
             return this.mapper.toView(category);
         }
@@ -59,7 +59,7 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
         return this.mapper.toView(saved);
     }
 
-    private @Nullable Category applyChanges(
+    private static @Nullable Category applyChanges(
             final Category current,
             final Change.Set<CategoryName> nameSet) {
         if (nameSet.value().equals(current.getName())) {
@@ -70,6 +70,7 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
                 current.getId(),
                 nameSet.value(),
                 current.getImageKey(),
-                current.getVersion());
+                current.getVersion(),
+                current.getDeletionTime());
     }
 }

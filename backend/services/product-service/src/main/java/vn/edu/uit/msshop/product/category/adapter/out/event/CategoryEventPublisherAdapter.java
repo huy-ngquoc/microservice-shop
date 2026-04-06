@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCategoryEventPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryCreated;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdated;
+import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeleted;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
 
 @Component
@@ -30,6 +31,12 @@ public class CategoryEventPublisherAdapter
     @Override
     public void publish(
             final CategoryImageUpdated event) {
+        this.publisher.publishEvent(event);
+    }
+
+    @Override
+    public void publish(
+            final CategorySoftDeleted event) {
         this.publisher.publishEvent(event);
     }
 }
