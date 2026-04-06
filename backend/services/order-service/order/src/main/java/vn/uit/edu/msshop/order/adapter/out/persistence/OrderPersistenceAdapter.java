@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.out.persistence.mapper.OrderDataMapper;
+import vn.uit.edu.msshop.order.application.port.out.DeleteOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
 import vn.uit.edu.msshop.order.domain.model.Order;
@@ -27,7 +28,7 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
 @Component
 @RequiredArgsConstructor
-public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort {
+public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort, DeleteOrderPort {
 
     private final OrderRepository orderRepo;
     private final OrderDataMapper orderDataMapper;
@@ -100,6 +101,21 @@ public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort {
         OrderDocument orderDocument = this.orderDataMapper.toDocument(order);
         orderRepo.save(orderDocument);
         return order;
+    }
+
+    @Override
+    public void deleteById(OrderId orderId) {
+        orderRepo.deleteById(orderId.value());
+    }
+
+    @Override
+    public void deleteAll() {
+        orderRepo.deleteAll();
+    }
+
+    @Override
+    public List<Order> loadAll() {
+        return orderRepo.findAll().stream().map(orderDataMapper::toDomain).toList();
     }
 
 }
