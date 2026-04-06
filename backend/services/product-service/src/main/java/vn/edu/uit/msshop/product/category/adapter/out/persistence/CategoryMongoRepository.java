@@ -14,6 +14,9 @@ public interface CategoryMongoRepository
     Page<CategoryDocument> findAllByDeletionTimeIsNull(
             final Pageable pageable);
 
+    Page<CategoryDocument> findAllByDeletionTimeIsNotNull(
+            final Pageable pageable);
+
     Optional<CategoryDocument> findByIdAndDeletionTimeIsNull(
             final UUID id);
 

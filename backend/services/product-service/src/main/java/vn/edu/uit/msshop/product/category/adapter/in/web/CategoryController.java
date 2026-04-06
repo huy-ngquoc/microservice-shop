@@ -34,6 +34,7 @@ import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategory
 import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.query.FindSoftDeletedCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.query.ListCategoriesUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.ListSoftDeletedCategoriesUseCase;
 import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 
@@ -42,6 +43,7 @@ import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto
 @RequiredArgsConstructor
 public class CategoryController {
     private final ListCategoriesUseCase listUseCase;
+    private final ListSoftDeletedCategoriesUseCase listSoftDeletedUseCase;
     private final FindCategoryUseCase findUseCase;
     private final FindCategoryImageUseCase findImageUseCase;
     private final CheckCategoryExistsUseCase checkExistsUseCase;
@@ -74,6 +76,31 @@ public class CategoryController {
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = listUseCase.list(request);
+
+        final var response = views.map(this.mapper::toResponse);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/deleted")
+    public ResponseEntity<PageResponseDto<CategoryResponse>> listSoftDeleted(
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
+
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
+
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
+
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
+        final var request = new PageRequestDto(page, size, sortBy, direction);
+        final var views = listSoftDeletedUseCase.listSoftDeleted(request);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
