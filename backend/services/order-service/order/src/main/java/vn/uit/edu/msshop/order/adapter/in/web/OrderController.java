@@ -1,12 +1,14 @@
 package vn.uit.edu.msshop.order.adapter.in.web;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +29,7 @@ import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateOrderRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.OrderResponse;
 import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
+import vn.uit.edu.msshop.order.application.port.in.DeleteOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.FindOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
@@ -45,6 +48,7 @@ public class OrderController {
     private final PublishOrderEventPort eventPublisher;
     private final CheckPermissionUseCase checkPermission;
     private final Tracer tracer;
+    private final DeleteOrderUseCase deleteOrderUseCase;
     @GetMapping("/test-trace")
     public String test() {
         
@@ -134,6 +138,16 @@ public class OrderController {
         }
         return ResponseEntity.noContent().build();
 
+    }
+    @DeleteMapping("/clear")
+    public ResponseEntity<Void> clearDatabase() {
+        deleteOrderUseCase.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/all")
+    public ResponseEntity<List<OrderResponse>> getAll() {
+        var result = findService.findAll();
+        return ResponseEntity.ok(result.stream().map(mapper::toResponse).toList());
     }
 
 
