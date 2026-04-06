@@ -23,7 +23,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @Component
 @RequiredArgsConstructor
 public class VariantPersistenceAdapter
-        implements LoadVariantPort,
+        implements
+        LoadVariantPort,
         LoadAllVariantsPort,
         LoadVariantsForProductPort,
         CreateVariantPort,
@@ -37,7 +38,9 @@ public class VariantPersistenceAdapter
     public Optional<Variant> loadById(
             final VariantId id) {
         final var jpaId = id.value();
-        return this.repository.findById(jpaId).map(this.mapper::toDomain);
+        return this.repository
+                .findByIdAndDeletionTimeIsNull(jpaId)
+                .map(this.mapper::toDomain);
     }
 
     @Override
@@ -46,7 +49,7 @@ public class VariantPersistenceAdapter
         final var jpaIds = ids.stream()
                 .map(VariantId::value)
                 .toList();
-        return this.repository.findAllById(jpaIds).stream()
+        return this.repository.findAllByIdAndDeletionTimeIsNull(jpaIds).stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }
@@ -55,7 +58,7 @@ public class VariantPersistenceAdapter
     public List<Variant> loadByProductId(
             final VariantProductId productId) {
         final var jpaProductId = productId.value();
-        return this.repository.findByProductId(jpaProductId).stream()
+        return this.repository.findByProductIdAndDeletionTimeIsNull(jpaProductId).stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }
