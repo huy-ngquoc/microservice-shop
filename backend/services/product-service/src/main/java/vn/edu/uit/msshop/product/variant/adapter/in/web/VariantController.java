@@ -15,6 +15,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.DeleteVaria
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantImageUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantInfoUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.FindSoftDeletedVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantImageUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantUseCase;
 
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class VariantController {
     private final FindVariantUseCase findUseCase;
     private final FindVariantImageUseCase findImageUseCase;
+    private final FindSoftDeletedVariantUseCase findSoftDeletedUseCase;
     private final UpdateVariantInfoUseCase updateInfoUseCase;
     private final UpdateVariantImageUseCase updateImageUseCase;
     private final DeleteVariantImageUseCase deleteImageUseCase;
@@ -56,6 +58,17 @@ public class VariantController {
         final var view = this.findImageUseCase.findImageById(this.mapper.toVariantId(id));
 
         final var response = this.mapper.toImageResponse(view);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/deleted/{id}")
+    public ResponseEntity<VariantResponse> findSoftDeletedById(
+            @PathVariable
+            final UUID id) {
+        final var view = this.findSoftDeletedUseCase
+                .findSoftDeletedById(this.mapper.toVariantId(id));
+
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
