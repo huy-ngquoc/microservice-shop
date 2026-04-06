@@ -2,6 +2,7 @@ package vn.edu.uit.msshop.product.category.application.port.out.event;
 
 import vn.edu.uit.msshop.product.category.domain.event.CategoryCreated;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdated;
+import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeleted;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
 
 public interface PublishCategoryEventPort {
@@ -13,4 +14,7 @@ public interface PublishCategoryEventPort {
 
     void publish(
             final CategoryImageUpdated event);
+
+    void publish(
+            final CategorySoftDeleted event);
 }

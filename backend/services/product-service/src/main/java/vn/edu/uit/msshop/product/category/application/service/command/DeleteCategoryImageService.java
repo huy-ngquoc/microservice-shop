@@ -54,7 +54,8 @@ public class DeleteCategoryImageService implements DeleteCategoryImageUseCase {
                 category.getId(),
                 category.getName(),
                 null,
-                expectedVersion);
+                expectedVersion,
+                category.getDeletionTime());
         final var saved = this.updatePort.update(next);
 
         final var event = new CategoryImageUpdated(

@@ -4,6 +4,7 @@ import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryDeletionTime;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
@@ -26,6 +27,9 @@ public final class Category {
 
     private final CategoryVersion version;
 
+    @Nullable
+    private final CategoryDeletionTime deletionTime;
+
     public Category(
             final CategoryId id,
 
@@ -34,11 +38,15 @@ public final class Category {
             @Nullable
             final CategoryImageKey imageKey,
 
-            final CategoryVersion version) {
+            final CategoryVersion version,
+
+            @Nullable
+            final CategoryDeletionTime deletionTime) {
         this.id = Domains.requireNonNull(id, "Id must NOT be null");
         this.name = Domains.requireNonNull(name, "Name must NOT be null");
         this.imageKey = imageKey;
 
         this.version = Domains.requireNonNull(version, "Version must NOT be null");
+        this.deletionTime = deletionTime;
     }
 }
