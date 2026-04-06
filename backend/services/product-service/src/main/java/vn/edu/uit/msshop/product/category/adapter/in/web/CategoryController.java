@@ -24,6 +24,7 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageR
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
 import vn.edu.uit.msshop.product.category.application.port.in.command.CreateCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.command.DeleteCategoryImageUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.RestoreCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.command.SoftDeleteCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.command.UpdateCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.command.UpdateCategoryInfoUseCase;
@@ -41,6 +42,7 @@ public class CategoryController {
     private final CheckCategoryExistsUseCase checkExistsUseCase;
     private final FindSoftDeletedCategoryUseCase findSoftDeletedUseCase;
     private final CreateCategoryUseCase createUseCase;
+    private final RestoreCategoryUseCase restoreUseCase;
     private final UpdateCategoryInfoUseCase updateInfoUseCase;
     private final UpdateCategoryImageUseCase updateImageUseCase;
     private final DeleteCategoryImageUseCase deleteImageUseCase;
@@ -104,6 +106,19 @@ public class CategoryController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restore(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toRestoreCommand(id, version);
+        this.restoreUseCase.restore(command);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/info")
