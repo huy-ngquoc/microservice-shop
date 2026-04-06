@@ -55,7 +55,8 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             throw new RuntimeException("Unauthorized");
         }
         String oldStatus = order.getStatus().value();
-        final var updateInfo = Order.UpdateInfo.builder().id(command.id()).shippingInfo(command.shippingInfo().apply(order.getShippingInfo())).orderStatus(command.status().apply(order.getStatus())).build();
+        final var updateInfo = Order.UpdateInfo.builder().id(command.id()).shippingInfo(command.shippingInfo().apply(order.getShippingInfo())).orderStatus(command.status().apply(order.getStatus()))
+        .build();
         final var next = order.applyUpdateInfo(updateInfo);
         final var saved = saveOrderPort.save(next);
         boolean isSendEvent = !oldStatus.equals(saved.getStatus().value());

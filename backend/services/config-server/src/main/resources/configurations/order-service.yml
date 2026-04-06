@@ -1,7 +1,15 @@
 spring:
   data:
+    redis:
+      host: localhost       
+      port: 6379
+      password: binh123
+      timeout: 60000        
+      lettuce:
+        pool:
+          max-active: 8
     mongodb:
-      uri: mongodb://alibou:alibou@localhost:27019/order_db?authSource=admin&uuidRepresentation=STANDARD
+      uri: mongodb://alibou:alibou@localhost:27019/order_db?authSource=admin&uuidRepresentation=STANDARD&maxPoolSize=200&minPoolSize=20
       command-listener:
         observation:
           enabled: true
@@ -40,8 +48,8 @@ logging:
   level:
         org.apache.kafka: ERROR
         org.springframework.kafka: ERROR
-        io.micrometer.tracing: DEBUG
-        io.zipkin.reporter2: DEBUG
+        io.micrometer.tracing: ERROR
+        io.zipkin.reporter2: ERROR
   pattern:
         level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 management:

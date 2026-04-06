@@ -23,7 +23,7 @@ public class OrderShippedOutboxPublisher {
     private final OrderShippedDocumentRepository orderShippedDocumentRepo;
     private final KafkaTemplate<String, OrderShipped> kafkaTemplate;
     private static final String PUBLISH_TOPIC="order-inventory";
-    @Scheduled(fixedDelay=5000)
+    //@Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
         List<OrderShippedDocument> pendingEvents =orderShippedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");

@@ -47,5 +47,8 @@ public class OrderDocument {
     @Version
     private Long version;
 
+    private String currency;
+    private String paymentMethod;
+
 
 }
