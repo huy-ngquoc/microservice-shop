@@ -25,6 +25,7 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageR
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
 import vn.edu.uit.msshop.product.category.application.port.in.command.CreateCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.command.DeleteCategoryImageUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.HardDeleteCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.command.RestoreCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.command.SoftDeleteCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.command.UpdateCategoryImageUseCase;
@@ -54,6 +55,7 @@ public class CategoryController {
     private final UpdateCategoryImageUseCase updateImageUseCase;
     private final DeleteCategoryImageUseCase deleteImageUseCase;
     private final SoftDeleteCategoryUseCase softDeleteUseCase;
+    private final HardDeleteCategoryUseCase hardDeleteUseCase;
     private final CategoryWebMapper mapper;
 
     @GetMapping
@@ -231,6 +233,19 @@ public class CategoryController {
             final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
         this.softDeleteUseCase.delete(command);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/purge")
+    public ResponseEntity<Void> hardDeleteById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toHardDeleteCommand(id, version);
+        this.hardDeleteUseCase.purge(command);
 
         return ResponseEntity.noContent().build();
     }
