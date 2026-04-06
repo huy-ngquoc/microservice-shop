@@ -88,10 +88,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleTypeMismatch(
             final MethodArgumentTypeMismatchException ex,
             final HttpServletRequest request) {
+        final var requiredType = ex.getRequiredType();
+        final String typeName;
+        if (requiredType != null) {
+            typeName = requiredType.getSimpleName();
+        } else {
+            typeName = "unknown";
+        }
+
         final var message = String.format(
                 "The parameter '%s' should be of type %s",
                 ex.getName(),
-                ex.getRequiredType().getSimpleName());
+                typeName);
 
         log.warn(message);
 
