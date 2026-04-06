@@ -4,6 +4,7 @@ package vn.uit.edu.msshop.order.adapter.out.persistence;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,27 +14,45 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.redis.connection.stream.MapRecord;
+import org.springframework.data.redis.connection.stream.ObjectRecord;
+import org.springframework.data.redis.connection.stream.StreamRecords;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import io.micrometer.observation.annotation.Observed;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.out.persistence.mapper.OrderDataMapper;
 import vn.uit.edu.msshop.order.application.port.out.DeleteOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
+import vn.uit.edu.msshop.order.application.port.out.SaveRedisStreamPort;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
 @Component
 @RequiredArgsConstructor
-public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort, DeleteOrderPort {
+public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort, DeleteOrderPort, SaveRedisStreamPort {
 
     private final OrderRepository orderRepo;
     private final OrderDataMapper orderDataMapper;
     private final MongoTemplate mongoTemplate;
-
+    private final RedisTemplate redisTemplate;
+    private final ObjectMapper objectMapper;
+    @PostConstruct
+    public void setup() {
+        objectMapper.registerModule(new JavaTimeModule());
+        // Quan trọng: Để Instant trả về dạng chuỗi ISO thay vì mảng số
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
     @Override
     public Optional<Order> loadById(OrderId orderId) {
         Optional<OrderDocument> document = orderRepo.findById(orderId.value());
@@ -117,5 +136,27 @@ public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort, Del
     public List<Order> loadAll() {
         return orderRepo.findAll().stream().map(orderDataMapper::toDomain).toList();
     }
+
+    @Override
+    public void saveToStream(Order order) {
+        final OrderDocument document = orderDataMapper.toDocument(order);
+       try {
+        // 1. Biến cả cái OrderDocument (bao gồm list, object lồng) thành 1 chuỗi JSON duy nhất
+        String jsonPayload = objectMapper.writeValueAsString(document);
+
+        // 2. Lưu vào Redis dưới dạng một Map đơn giản có 1 key là "payload"
+        Map<String, String> map = Map.of("payload", jsonPayload);
+
+        MapRecord<String, String, String> record = StreamRecords.newRecord()
+                .in("order_stream")
+                .ofMap(map);
+
+        redisTemplate.opsForStream().add(record);
+    } catch (JsonProcessingException e) {
+        throw new RuntimeException("Lỗi đóng gói JSON", e);
+    }
+
+    }
+
 
 }

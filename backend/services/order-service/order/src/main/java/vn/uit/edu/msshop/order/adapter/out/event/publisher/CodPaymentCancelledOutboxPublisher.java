@@ -23,7 +23,7 @@ public class CodPaymentCancelledOutboxPublisher {
     private final CodPaymentCancelledDocumentRepository codPaymentCancelledDocumentRepo;
     private final KafkaTemplate<String, CodPaymentCancelled> kafkaTemplate;
     private static final String PUBLISH_TOPIC="payment-cod-topic";
-    @Scheduled(fixedDelay=5000)
+    //@Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
         List<CodPaymentCancelledDocument> pendingEvents =codPaymentCancelledDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");

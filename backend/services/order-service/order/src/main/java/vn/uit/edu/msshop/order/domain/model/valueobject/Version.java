@@ -1,4 +1,11 @@
 package vn.uit.edu.msshop.order.domain.model.valueobject;
-public record Version(long value) {
+
+import com.fasterxml.jackson.annotation.JsonValue;
+
+public record Version(Long value) {
+    @JsonValue
+    public Long getValue() {
+        return this.value;
+    }
 
 }

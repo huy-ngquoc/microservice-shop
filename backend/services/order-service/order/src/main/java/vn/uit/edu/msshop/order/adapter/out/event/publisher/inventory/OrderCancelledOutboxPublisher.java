@@ -23,7 +23,7 @@ public class OrderCancelledOutboxPublisher {
     private final OrderCancelledDocumentRepository orderCancelledDocumentRepo;
     private final KafkaTemplate<String, OrderCancelled> kafkaTemplate;
     private static final String PUBLISH_TOPIC="order-inventory";
-    @Scheduled(fixedDelay=5000)
+    //@Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
         List<OrderCancelledDocument> pendingEvents =orderCancelledDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");

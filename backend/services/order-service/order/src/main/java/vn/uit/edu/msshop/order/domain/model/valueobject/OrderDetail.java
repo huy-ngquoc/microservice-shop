@@ -4,6 +4,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+
+@Builder
 public record OrderDetail(UUID variantId, String variantName, String productName, String size, String color, List<String> images, int amount, long unitPrice) {
     private static final Set<String> VALID_SIZE = Set.of("XXS","XS","S","M","L","XL","XXL");
     public OrderDetail {
@@ -23,4 +31,5 @@ public record OrderDetail(UUID variantId, String variantName, String productName
             throw new IllegalArgumentException("Invalid unit price");
         }
     }
+
 }

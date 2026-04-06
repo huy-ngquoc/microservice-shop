@@ -9,11 +9,13 @@ import vn.uit.edu.msshop.order.adapter.out.persistence.OrderDocument;
 import vn.uit.edu.msshop.order.adapter.out.persistence.ShippingInfoDocument;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.CreateAt;
+import vn.uit.edu.msshop.order.domain.model.valueobject.Currency;
 import vn.uit.edu.msshop.order.domain.model.valueobject.Discount;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OriginPrice;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingFee;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 import vn.uit.edu.msshop.order.domain.model.valueobject.TotalPrice;
@@ -38,6 +40,8 @@ public class OrderDataMapper {
         .createAt(new CreateAt(document.getCreateAt()))
         .updateAt(new UpdateAt(document.getUpdateAt()))
         .version(new Version(document.getVersion()))
+        .currency(new Currency(document.getCurrency()))
+        .paymentMethod(new PaymentMethod(document.getPaymentMethod()))
         .build();
         return Order.reconstitue(snapShot);
     }
@@ -55,7 +59,7 @@ public class OrderDataMapper {
         List<OrderDetailDocument> details = order.getDetails().stream().map(this::toOrderDetailDocument).toList();
         return new OrderDocument(order.getId().value(), shippingInfoDocument, details, order.getStatus().value(), 
         order.getUserId().value(), order.getOriginPrice().value(), order.getShippingFee().value(),
-        order.getDiscount().value(), order.getTotalPrice().value(), order.getCreateAt().value(), order.getUpdateAt().value(),order.getVersion()==null ? null:order.getVersion().value());
+        order.getDiscount().value(), order.getTotalPrice().value(), order.getCreateAt().value(), order.getUpdateAt().value(),order.getVersion()==null ? null:order.getVersion().value(),order.getCurrency().value(), order.getPaymentMethod().value());
     }
     public ShippingInfoDocument toShippingInfoDocument(ShippingInfo shippingInfo) {
         return new ShippingInfoDocument(shippingInfo.fullName(), shippingInfo.address(), shippingInfo.email(), shippingInfo.phone());

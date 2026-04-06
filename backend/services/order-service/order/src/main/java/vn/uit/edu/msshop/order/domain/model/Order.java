@@ -12,11 +12,13 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.uit.edu.msshop.order.domain.model.valueobject.CreateAt;
+import vn.uit.edu.msshop.order.domain.model.valueobject.Currency;
 import vn.uit.edu.msshop.order.domain.model.valueobject.Discount;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OriginPrice;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingFee;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 import vn.uit.edu.msshop.order.domain.model.valueobject.TotalPrice;
@@ -68,6 +70,9 @@ public final class Order {
 
     private Version version;
 
+    private final Currency currency;
+    private final PaymentMethod paymentMethod;
+
     @Builder
     public static record UpdateInfo(
         @NonNull
@@ -111,7 +116,11 @@ public final class Order {
     CreateAt createAt,
 
     @NonNull
-    UpdateAt updateAt
+    UpdateAt updateAt,
+    @NonNull
+    Currency currency,
+    @NonNull
+    PaymentMethod paymentMethod
     ) {
 
     }
@@ -151,7 +160,11 @@ public final class Order {
     @NonNull
     UpdateAt updateAt,
     @NonNull
-    Version version
+    Version version,
+    @NonNull
+    Currency currency,
+    @NonNull
+    PaymentMethod paymentMethod
     ) {
 
     }
@@ -166,7 +179,8 @@ public final class Order {
         }
 
         return Order.builder().id(d.id()).shippingInfo(d.shippingInfo()).details(d.details()).status(d.status()).userId(d.userId())
-        .originPrice(d.originPrice()).shippingFee(d.shippingFee()).discount(d.discount()).totalPrice(d.totalPrice()).createAt(d.createAt()).updateAt(d.updateAt()).version(null).build();
+        .originPrice(d.originPrice()).shippingFee(d.shippingFee()).discount(d.discount()).totalPrice(d.totalPrice()).createAt(d.createAt()).updateAt(d.updateAt()).version(null).
+        currency(d.currency()).paymentMethod(d.paymentMethod()).build();
     }
     @NullMarked
     public static Order reconstitue(final SnapShot s) {
@@ -179,7 +193,10 @@ public final class Order {
         }
 
         return Order.builder().id(s.id()).shippingInfo(s.shippingInfo()).details(s.details()).status(s.status()).userId(s.userId())
-        .originPrice(s.originPrice()).shippingFee(s.shippingFee()).discount(s.discount()).totalPrice(s.totalPrice()).createAt(s.createAt()).updateAt(s.updateAt()).version(s.version()).build();
+        .originPrice(s.originPrice()).shippingFee(s.shippingFee()).discount(s.discount()).totalPrice(s.totalPrice()).createAt(s.createAt()).updateAt(s.updateAt()).version(s.version())
+        .currency(s.currency())
+        .paymentMethod(s.paymentMethod())
+        .build();
     
     }
     @NullMarked

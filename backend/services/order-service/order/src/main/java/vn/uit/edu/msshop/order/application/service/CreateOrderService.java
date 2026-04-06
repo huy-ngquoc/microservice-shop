@@ -6,18 +6,12 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotFoundException;
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCreatedInventoryDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderDetailDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCreatedInventoryDocumentRepository;
@@ -28,6 +22,7 @@ import vn.uit.edu.msshop.order.application.port.out.CheckUserPort;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderDetailPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
+import vn.uit.edu.msshop.order.application.port.out.SaveRedisStreamPort;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.CreateAt;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
@@ -78,6 +73,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     private final OrderCreatedDocumentRepository orderCreatedDocumentRepo;
     private final OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo;
     private final OrderCreatedInventoryDocumentRepository orderCreatedInventoryDocumentRepository;
+    private final SaveRedisStreamPort saveRedisStreamPort;
 /*private String currency;
     private UUID orderId;
     private String paymentMethod;
@@ -114,61 +110,13 @@ public class CreateOrderService implements CreateOrderUseCase {
         .totalPrice(new TotalPrice(originPrice+command.shippingFee().value()-command.discount().value()))
         .createAt(new CreateAt(Instant.now()))
         .updateAt(new UpdateAt(null))
+        .currency(command.currency())
+        .paymentMethod(command.paymentMethod())
         .build();
-        final var order = Order.create(draft);
-        final var saved = savePort.save(order);
+        final var saved = Order.create(draft);
 
-        OrderCreatedInventoryDocument outboxEventOrderCreatedInventory= OrderCreatedInventoryDocument.builder().eventId(UUID.randomUUID())
-        .orderId(saved.getId().value()).eventStatus("PENDING")
-        .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null)
-        .build();
-        final var savedOutboxEventOrderCreatedInventory = orderCreatedInventoryDocumentRepository.save(outboxEventOrderCreatedInventory);
-        System.out.println("Created event with id  "+savedOutboxEventOrderCreatedInventory.getEventId() + " with order size "+savedOutboxEventOrderCreatedInventory.getOrderDetails().size());
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishPort.publishOrderCreated_InventoryEvent(savedOutboxEventOrderCreatedInventory);
-            }
-        });
-        //publishPort.publishOrderCreated_InventoryEvent(new OrderCreated(saved.getId().value(),event_details));
-        OrderCreatedDocument outboxEventOrderCreated = OrderCreatedDocument.builder().currency(command.currency().value())
-        .orderId(saved.getId().value())
-        .paymentMethod(command.paymentMethod().value())
-        .paymentValue(saved.getTotalPrice().value())
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null).eventId(UUID.randomUUID())
-        .lastError(null).build();
-        final var savedEvent=orderCreatedDocumentRepo.save(outboxEventOrderCreated);
-        System.out.println(event_details.size());
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                
-                publishPort.publishOrderCreatedEvent(savedEvent);
-            }
-        });
-
-        OrderCreatedSuccessDocument outboxOrderCreatedSuccess = OrderCreatedSuccessDocument.builder().eventId(UUID.randomUUID())
-        .userId(command.userId().value())
-        .variantIds(command.details().stream().map(item->item.variantId()).toList())
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
-        final var savedOutboxOrderCreatedSuccess = orderCreatedSuccessDocumentRepo.save(outboxOrderCreatedSuccess);
-         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishPort.publishClearCartEvent(savedOutboxOrderCreatedSuccess);
-            }
-        });
+        //final var saved = savePort.save(order);
+        saveRedisStreamPort.saveToStream(saved);
         return saved.getId().value();
     }
     private void canPlaceOrder(List<OrderDetail> details) {

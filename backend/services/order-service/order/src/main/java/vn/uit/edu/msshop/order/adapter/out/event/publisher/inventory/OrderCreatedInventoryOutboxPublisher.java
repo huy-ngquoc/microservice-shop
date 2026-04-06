@@ -23,7 +23,7 @@ public class OrderCreatedInventoryOutboxPublisher {
     private final OrderCreatedInventoryDocumentRepository orderCreatedInventoryDocumentRepo;
     private final KafkaTemplate<String, OrderCreated> kafkaTemplate;
     private static final String PUBLISH_TOPIC="order-inventory";
-    @Scheduled(fixedDelay=5000)
+    //@Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
         //System.out.println("Alo alo");
@@ -48,8 +48,8 @@ public class OrderCreatedInventoryOutboxPublisher {
                         }
                     });
             } catch (Exception e) {
-                System.out.println(e.getMessage());
-                System.out.println("Event with id "+event.getEventId());
+                
+                
                 handleFailure(event, e.getMessage());
             }
         }
