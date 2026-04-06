@@ -30,7 +30,7 @@ public record PageResponseDto<T>(
 
     public <R> PageResponseDto<R> map(
             final Function<T, R> mapper) {
-        var mapped = items.stream().map(mapper).toList();
+        final var mapped = items.stream().map(mapper).toList();
         return new PageResponseDto<>(mapped, page, size, totalElements);
     }
 

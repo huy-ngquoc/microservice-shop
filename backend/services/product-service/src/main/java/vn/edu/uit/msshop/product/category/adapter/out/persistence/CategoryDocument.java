@@ -11,11 +11,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.experimental.FieldNameConstants;
 
 @Document("Categories")
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
+@FieldNameConstants
 public class CategoryDocument {
     @Id
     @EqualsAndHashCode.Include

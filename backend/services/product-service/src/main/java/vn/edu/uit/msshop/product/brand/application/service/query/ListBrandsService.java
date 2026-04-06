@@ -22,7 +22,7 @@ public class ListBrandsService implements ListBrandsUseCase {
             readOnly = true)
     public PageResponseDto<BrandView> list(
             PageRequestDto pageRequest) {
-        var page = listPort.list(pageRequest);
+        final var page = listPort.list(pageRequest);
         return page.map(this.viewMapper::toView);
     }
 }
