@@ -9,6 +9,7 @@ import vn.edu.uit.msshop.product.category.adapter.out.persistence.mapper.Categor
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CheckCategoryExistsPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
@@ -19,6 +20,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 public class CategoryPersistenceAdapter
         implements
         LoadCategoryPort,
+        LoadSoftDeletedCategoryPort,
         CheckCategoryExistsPort,
         CreateCategoryPort,
         UpdateCategoryPort {
@@ -31,6 +33,15 @@ public class CategoryPersistenceAdapter
         final var jpaId = id.value();
         return this.repository
                 .findByIdAndDeletionTimeIsNull(jpaId)
+                .map(this.mapper::toDomain);
+    }
+
+    @Override
+    public Optional<Category> loadSoftDeletedById(
+            final CategoryId id) {
+        final var jpaId = id.value();
+        return this.repository
+                .findByIdAndDeletionTimeIsNotNull(jpaId)
                 .map(this.mapper::toDomain);
     }
 

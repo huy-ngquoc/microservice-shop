@@ -30,6 +30,7 @@ import vn.edu.uit.msshop.product.category.application.port.in.command.UpdateCate
 import vn.edu.uit.msshop.product.category.application.port.in.query.CheckCategoryExistsUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.FindSoftDeletedCategoryUseCase;
 
 @RestController
 @RequestMapping("/categories")
@@ -38,6 +39,7 @@ public class CategoryController {
     private final FindCategoryUseCase findUseCase;
     private final FindCategoryImageUseCase findImageUseCase;
     private final CheckCategoryExistsUseCase checkExistsUseCase;
+    private final FindSoftDeletedCategoryUseCase findSoftDeletedUseCase;
     private final CreateCategoryUseCase createUseCase;
     private final UpdateCategoryInfoUseCase updateInfoUseCase;
     private final UpdateCategoryImageUseCase updateImageUseCase;
@@ -75,6 +77,17 @@ public class CategoryController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/deleted/{id}")
+    public ResponseEntity<CategoryResponse> findSoftDeletedById(
+            @PathVariable
+            final UUID id) {
+        final var view = this.findSoftDeletedUseCase
+                .findSoftDeletedById(this.mapper.toCategoryId(id));
+
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
