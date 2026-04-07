@@ -2,6 +2,9 @@ server:
     port: 8070
 
 spring:
+    output:
+        ansi:
+            enabled: ALWAYS
     mongodb:
         host: localhost
         port: 27017
@@ -19,6 +22,7 @@ spring:
 
 logging:
     level:
+        "[vn.edu.uit.msshop]": DEBUG
         org:
             springframework:
                 data:
