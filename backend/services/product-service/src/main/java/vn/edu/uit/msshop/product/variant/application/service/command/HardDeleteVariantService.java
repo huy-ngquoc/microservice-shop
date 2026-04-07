@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
@@ -14,9 +16,11 @@ import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImage
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantPurged;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class HardDeleteVariantService implements HardDeleteVariantUseCase {
     private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
     private final CheckProductExistsUseCase checkProductExistsUseCase;
@@ -46,7 +50,20 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
         this.deletePort.deleteById(variantId);
         this.eventPort.publish(new VariantPurged(variantId));
 
-        this.imageStoragePort.deleteImage(variant.getImageKey());
+        this.deleteImage(variant.getImageKey());
     }
 
+    private void deleteImage(
+            @Nullable
+            final VariantImageKey key) {
+        if (key == null) {
+            return;
+        }
+
+        try {
+            this.imageStoragePort.deleteImage(key);
+        } catch (final RuntimeException e) {
+            log.warn("Hard delete: failed to delete image '{}', manual cleanup required", key.value(), e);
+        }
+    }
 }
