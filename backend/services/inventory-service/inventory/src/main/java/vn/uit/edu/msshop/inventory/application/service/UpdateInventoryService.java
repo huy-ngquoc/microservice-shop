@@ -33,6 +33,7 @@ import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.PublishInventoryEventPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
+import vn.uit.edu.msshop.inventory.config.RedisConfig;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
@@ -49,7 +50,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     private final InventoryUpdatedDocumentRepository inventoryUpdatedDocumentRepo;
     private final ForceCancellOrderDocumentRepository forceCancellOrderDocumentRepo;
     private final RedisTemplate<String,Map<String,String>> redisTemplate;
-    private final DefaultRedisScript<Long> reserveScript;
+    private final RedisConfig redisConfig;
     private final SyncInventoryPort syncPort;
 
     @Override
@@ -85,7 +86,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     public List<InventoryView> updateWhenOrderCreated(OrderCreateCommand commands) {
         List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         System.out.println("Inventories size "+inventories.get(0).getVariantId().value().toString() );
-        List<Inventory> toSaves = new ArrayList<>();
+        
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
             System.out.println(detailCommand.getVariantId().value());
@@ -113,7 +114,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         .lastError(null)
         .build();
             events.add(event);
-            toSaves.add(toSave);
+            
         }
                 for(final var event:events) {
                     publishEventPort.publishInventoryUpdateEvent(event);
@@ -124,44 +125,50 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         inventoryUpdatedDocumentRepo.saveAll(events);
         for(OrderDetailCommand command: commands.getDetailCommands()) {
             System.out.println("Call check and reserve, amount "+command.getQuantity().value());
-           processReservation(command.getVariantId().value(), command.getQuantity().value());
+            processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getReserveStockScript());
         }
-        return toSaves.stream().map(mapper::toView).toList();
+        return inventories.stream().map(mapper::toView).toList();
     }
 
-    public void processReservation(UUID variantId, int amount) {
-    String key = "inventory:variant:" + variantId.toString();
     
-    Long result = redisTemplate.execute(reserveScript, List.of(key), String.valueOf(amount));
+
+    public void processScript(UUID variantId, int amount, DefaultRedisScript<Long> script) {
+        String key = "inventory:variant:" + variantId.toString();
+    
+    Long result = redisTemplate.execute(script, List.of(key), String.valueOf(amount));
 
     if (result == -1) {
         // Tình huống: Redis trống trơn (hết hạn hoặc chưa nạp)
         System.out.println("Redis miss! Loading from DB...");
-        syncPort.loadFromMainDatabase(variantId);
+        Inventory inventory = syncPort.loadFromMainDatabase(variantId);
+        if(inventory==null) throw new InventoryNotFoundException(new VariantId(variantId));
         // Sau khi load xong thì gọi lại chính nó (Recursive) hoặc báo user thử lại
-        processReservation(variantId, amount); 
+        processScript(variantId, amount, script); 
     } else if (result == 0) {
         throw new InsufficientStockException(new VariantId(variantId));
     } else if (result == -2) {
         throw new IllegalStateException("Dữ liệu tồn kho trên Redis bị lỗi định dạng!");
     } else if (result == 1) {
-        System.out.println("Giữ chỗ thành công! Đã chuyển " + amount + " món sang hàng đợi thanh toán.");
+        
     }
-}
+    }
+
+    
 
     @Override
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderCancelled(OrderCancelledCommand commands) {
         List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
-        List<Inventory> toSaves = new ArrayList<>();
+        
         List<InventoryUpdatedDocument> events = new ArrayList<>();
+        boolean isShipping = commands.getOrderStatus().value().equals("SHIPPING");
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
             Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
             if(inventory==null) throw new RuntimeException("Invalid variant id");
             
             int newQuantity = inventory.getQuantity().value()+detailCommand.getQuantity().value();
             int newReservedQuantity = inventory.getReservedQuantity().value()-detailCommand.getQuantity().value();
-            if(commands.getOrderStatus().value().equals("SHIPPING")) newReservedQuantity=inventory.getReservedQuantity().value();
+            if(isShipping) newReservedQuantity=inventory.getReservedQuantity().value();
             if(newReservedQuantity<0) throw new RuntimeException("Invalid info");
             final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity)).build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
@@ -176,19 +183,24 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         .lastError(null)
         .build();
             events.add(event);
-            toSaves.add(toSave);
+            
         }
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
+       
                 for(final var event:events) {
                     publishEventPort.publishInventoryUpdateEvent(event);
                 }
-            }
-        });
+            
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
         inventoryUpdatedDocumentRepo.saveAll(events);
-        return savePort.saveAll(toSaves).stream().map(mapper::toView).toList();
+        for(OrderDetailCommand command: commands.getDetailCommands()){
+            if(isShipping) {
+                processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getReserveShippingStockScript());
+            }
+            else {
+                processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getCancelStockScript());
+            }
+        }
+        return inventories.stream().map(mapper::toView).toList();
     }
     private Inventory findByVariantIdInList(VariantId id, List<Inventory> inventories) {
         for(Inventory inventory:inventories) {
@@ -201,7 +213,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderShipped(OrderShippedCommand commands) {
         List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
-        List<Inventory> toSaves = new ArrayList<>();
+        
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
             Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
@@ -224,19 +236,20 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         .build();
             events.add(event);
 
-            toSaves.add(toSave);
+            
         }
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
+        
                 for(final var event:events) {
                     publishEventPort.publishInventoryUpdateEvent(event);
                 }
-            }
-        });
+            
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
+        for(OrderDetailCommand command: commands.getDetailCommands()) {
+            
+            processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getReleaseStockScript());
+        }
         inventoryUpdatedDocumentRepo.saveAll(events);
-        return savePort.saveAll(toSaves).stream().map(mapper::toView).toList();
+        return inventories.stream().map(mapper::toView).toList();
     }
 
     private InventoryUpdatedDocument createUpdateEvent(Inventory inventory) {
