@@ -15,6 +15,7 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductDeletionTime;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKeys;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
@@ -59,6 +60,7 @@ public class ProductPersistenceMapper {
                 entity.getVersion(),
                 "Persisted product must have a version");
         final var version = new ProductVersion(versionValue);
+        final var deletionTime = ProductDeletionTime.ofNullable(entity.getDeletionTime());
 
         return new Product(
                 id,
@@ -70,7 +72,8 @@ public class ProductPersistenceMapper {
                 rating,
                 configuration,
                 imageKeys,
-                version);
+                version,
+                deletionTime);
     }
 
     public ProductVariant toDomain(
@@ -87,6 +90,10 @@ public class ProductPersistenceMapper {
 
     public ProductDocument toPersistence(
             final Product product) {
+        final var variantDocs = product.getVariants().values().stream()
+                .map(ProductPersistenceMapper::toPersistence)
+                .toList();
+
         return new ProductDocument(
                 product.getId().value(),
                 product.getName().value(),
@@ -98,16 +105,17 @@ public class ProductPersistenceMapper {
                 product.getRating().average(),
                 product.getRating().count(),
                 product.getOptions().unwrap(),
-                product.getVariants().values().stream().map(this::toPersistence).toList(),
+                variantDocs,
                 product.getImageKeys().unwrap(),
-                product.getVersion().value());
+                product.getVersion().value(),
+                ProductDeletionTime.unwrap(product.getDeletionTime()));
     }
 
     public ProductDocument toPersistence(
             final NewProduct newProduct) {
         final var priceRange = newProduct.getVariants().getPriceRange();
         final var variantDocs = newProduct.getVariants().values()
-                .stream().map(this::toPersistence).toList();
+                .stream().map(ProductPersistenceMapper::toPersistence).toList();
 
         return new ProductDocument(
                 newProduct.getId().value(),
@@ -122,10 +130,11 @@ public class ProductPersistenceMapper {
                 newProduct.getOptions().unwrap(),
                 variantDocs,
                 List.of(),
+                null,
                 null);
     }
 
-    private ProductVariantDocument toPersistence(
+    private static ProductVariantDocument toPersistence(
             final ProductVariant variant) {
         return new ProductVariantDocument(
                 variant.id().value(),

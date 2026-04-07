@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -29,6 +30,7 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductO
 import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductOptionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.SoftDeleteProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductInfoUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductOptionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
@@ -46,6 +48,7 @@ public class ProductController {
     private final UpdateProductInfoUseCase updateInfoUseCase;
     private final UpdateProductOptionUseCase updateOptionUseCase;
     private final RemoveProductOptionUseCase removeOptionUseCase;
+    private final SoftDeleteProductUseCase softDeleteUseCase;
     private final ProductWebMapper mapper;
 
     @GetMapping("/{id}")
@@ -170,5 +173,18 @@ public class ProductController {
         final var command = this.mapper.toRemoveOptionCommand(id, index, request);
         final var view = this.removeOptionUseCase.removeOption(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> softDeleteById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toSoftDeleteCommand(id, version);
+        this.softDeleteUseCase.delete(command);
+
+        return ResponseEntity.noContent().build();
     }
 }

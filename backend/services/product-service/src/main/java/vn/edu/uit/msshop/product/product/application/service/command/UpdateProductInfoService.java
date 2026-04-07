@@ -128,7 +128,8 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
                 current.getRating(),
                 current.getConfiguration(),
                 current.getImageKeys(),
-                current.getVersion());
+                current.getVersion(),
+                current.getDeletionTime());
     }
 
     private void validateCategoryExists(

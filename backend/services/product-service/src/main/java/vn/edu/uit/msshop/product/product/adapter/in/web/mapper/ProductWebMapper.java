@@ -20,6 +20,7 @@ import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVaria
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductOptionCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.SoftDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductOptionCommand;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductVariantView;
@@ -175,6 +176,17 @@ public class ProductWebMapper {
                 productId,
                 index,
                 defaultPrice,
+                version);
+    }
+
+    public SoftDeleteProductCommand toSoftDeleteCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var productId = new ProductId(id);
+        final var version = new ProductVersion(expectedVersion);
+
+        return new SoftDeleteProductCommand(
+                productId,
                 version);
     }
 

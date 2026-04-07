@@ -83,6 +83,7 @@ public class UpdateProductOptionService implements UpdateProductOptionUseCase {
                 current.getRating(),
                 configuration,
                 current.getImageKeys(),
-                current.getVersion());
+                current.getVersion(),
+                current.getDeletionTime());
     }
 }
