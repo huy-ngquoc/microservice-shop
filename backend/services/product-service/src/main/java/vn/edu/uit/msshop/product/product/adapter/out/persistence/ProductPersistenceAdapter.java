@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckP
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
@@ -21,7 +22,9 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @Component
 @RequiredArgsConstructor
 public class ProductPersistenceAdapter
-        implements LoadProductPort,
+        implements
+        LoadProductPort,
+        LoadSoftDeletedProductPort,
         CheckProductExistsPort,
         CheckProductExistsByBrandPort,
         CheckProductExistsByCategoryPort,
@@ -35,6 +38,14 @@ public class ProductPersistenceAdapter
             final ProductId id) {
         final var jpaId = id.value();
         return this.repository.findByIdAndDeletionTimeIsNull(jpaId)
+                .map(this.mapper::toDomain);
+    }
+
+    @Override
+    public Optional<Product> loadSoftDeletedById(
+            final ProductId id) {
+        final var jpaId = id.value();
+        return this.repository.findByIdAndDeletionTimeIsNotNull(jpaId)
                 .map(this.mapper::toDomain);
     }
 
