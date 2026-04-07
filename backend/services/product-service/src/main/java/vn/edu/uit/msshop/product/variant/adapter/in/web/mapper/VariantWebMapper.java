@@ -9,6 +9,7 @@ import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInf
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
 import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantImageCommand;
@@ -74,13 +75,24 @@ public class VariantWebMapper {
                 version);
     }
 
-    public SoftDeleteVariantCommand toSoftDeleteVariantCommand(
+    public SoftDeleteVariantCommand toSoftDeleteCommand(
             final UUID id,
             final long expectedVersion) {
         final var variantId = new VariantId(id);
         final var version = new VariantVersion(expectedVersion);
 
         return new SoftDeleteVariantCommand(
+                variantId,
+                version);
+    }
+
+    public HardDeleteVariantCommand toHardDeleteCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var variantId = new VariantId(id);
+        final var version = new VariantVersion(expectedVersion);
+
+        return new HardDeleteVariantCommand(
                 variantId,
                 version);
     }
