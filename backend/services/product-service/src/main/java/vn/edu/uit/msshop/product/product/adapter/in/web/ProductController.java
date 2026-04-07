@@ -2,6 +2,7 @@ package vn.edu.uit.msshop.product.product.adapter.in.web;
 
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,11 +38,15 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProdu
 import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.FindProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.FindSoftDeletedProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.ListProductsUseCase;
+import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
+    private final ListProductsUseCase listUseCase;
     private final FindProductUseCase findUseCase;
     private final CheckProductExistsUseCase checkExistsUseCase;
     private final FindSoftDeletedProductUseCase findSoftDeletedUseCase;
@@ -54,6 +59,32 @@ public class ProductController {
     private final RemoveProductOptionUseCase removeOptionUseCase;
     private final SoftDeleteProductUseCase softDeleteUseCase;
     private final ProductWebMapper mapper;
+
+    // TODO: product response has too much info.
+    @GetMapping
+    public ResponseEntity<PageResponseDto<ProductResponse>> list(
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
+
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
+
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
+
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
+        final var request = new PageRequestDto(page, size, sortBy, direction);
+        final var views = listUseCase.list(request);
+
+        final var response = views.map(this.mapper::toResponse);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> findById(
