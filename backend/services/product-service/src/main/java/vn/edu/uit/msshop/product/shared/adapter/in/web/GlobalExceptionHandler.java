@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
                 "Resource not found: %s",
                 ex.getMessage());
 
-        log.warn(message);
+        log.debug(message);
 
         final var status = HttpStatus.NOT_FOUND;
         final var response = GlobalExceptionHandler.buildResponse(
@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
                 "Business rule violation: %s",
                 ex.getMessage());
 
-        log.warn(message);
+        log.debug(message);
 
         final var status = HttpStatus.UNPROCESSABLE_CONTENT;
         final var response = GlobalExceptionHandler.buildResponse(
@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
                 "Optimistic lock conflict: %s",
                 ex.getMessage());
 
-        log.warn(message);
+        log.debug(message);
 
         final var status = HttpStatus.CONFLICT;
         final var response = GlobalExceptionHandler.buildResponse(
@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
                 ex.getName(),
                 typeName);
 
-        log.warn(message);
+        log.debug(message);
 
         final var status = HttpStatus.BAD_REQUEST;
         final var response = GlobalExceptionHandler.buildResponse(
@@ -128,7 +128,7 @@ public class GlobalExceptionHandler {
                 "Validation failed: %s",
                 fieldErrors);
 
-        log.warn(message);
+        log.debug(message);
 
         final var status = HttpStatus.BAD_REQUEST;
         final var response = new ApiErrorResponse(
@@ -156,7 +156,7 @@ public class GlobalExceptionHandler {
                 "Constraint violation: %s",
                 errors);
 
-        log.warn(message);
+        log.debug(message);
 
         final var status = HttpStatus.BAD_REQUEST;
         final var response = new ApiErrorResponse(
@@ -178,7 +178,7 @@ public class GlobalExceptionHandler {
                 "Malformed request body: %s",
                 ex.getMessage());
 
-        log.warn(message);
+        log.debug(message);
 
         final var status = HttpStatus.BAD_REQUEST;
         final var response = GlobalExceptionHandler.buildResponse(
@@ -197,7 +197,7 @@ public class GlobalExceptionHandler {
                 "Missing request parameter: %s",
                 ex.getMessage());
 
-        log.warn(message);
+        log.debug(message);
 
         final var status = HttpStatus.BAD_REQUEST;
         final var response = GlobalExceptionHandler.buildResponse(
@@ -216,7 +216,7 @@ public class GlobalExceptionHandler {
                 "Image upload failed: %s",
                 ex.getMessage());
 
-        log.error("Image upload failed", ex);
+        log.warn("Image upload failed", ex);
 
         final var status = HttpStatus.BAD_GATEWAY;
         final var response = GlobalExceptionHandler.buildResponse(
@@ -231,7 +231,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleDomainException(
             final DomainException ex,
             final HttpServletRequest request) {
-        log.error("Domain invariant violation", ex);
+        log.warn("Domain invariant violation", ex);
 
         final var status = HttpStatus.INTERNAL_SERVER_ERROR;
         final var response = GlobalExceptionHandler.buildResponse(
@@ -250,7 +250,7 @@ public class GlobalExceptionHandler {
                 "Resource not found: %s",
                 ex.getMessage());
 
-        log.warn(message);
+        log.debug(message);
 
         final var status = HttpStatus.NOT_FOUND;
         final var response = GlobalExceptionHandler.buildResponse(
