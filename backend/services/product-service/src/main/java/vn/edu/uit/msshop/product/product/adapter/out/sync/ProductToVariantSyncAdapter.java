@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.RestoreVariantsForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteVariantsForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.UpdateAllProductVariantTraitsPort;
@@ -23,6 +24,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantsForNewProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.CreateVariantsForNewProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteAllVariantsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateAllVariantTraitsForProductUseCase;
@@ -37,11 +39,14 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 @Component
 @RequiredArgsConstructor
 public class ProductToVariantSyncAdapter
-        implements CreateAllProductVariantsPort,
+        implements
+        CreateAllProductVariantsPort,
+        RestoreVariantsForProductPort,
         UpdateAllProductVariantTraitsPort,
         SoftDeleteAllProductVariantsPort,
         SoftDeleteVariantsForProductPort {
     private final CreateVariantsForNewProductUseCase createForNewProductUseCase;
+    private final RestoreVariantsForProductUseCase restoreVariantsForProductUseCase;
     private final UpdateAllVariantTraitsForProductUseCase updateAllTraitsForProductUseCase;
     private final SoftDeleteAllVariantsUseCase softDeleteAllUseCase;
     private final SoftDeleteVariantsForProductUseCase softDeleteForProductUseCase;
@@ -64,6 +69,17 @@ public class ProductToVariantSyncAdapter
         final var productVariantsList = variantViewsList.stream()
                 .map(this::toProductVariant).toList();
         return new ProductVariants(productVariantsList);
+    }
+
+    @Override
+    public void restoreByVariantIds(
+            final Collection<ProductVariantId> variantIds) {
+        final var ids = variantIds.stream()
+                .map(ProductVariantId::value)
+                .map(VariantId::new)
+                .toList();
+
+        this.restoreVariantsForProductUseCase.restoreByIds(ids);
     }
 
     @Override

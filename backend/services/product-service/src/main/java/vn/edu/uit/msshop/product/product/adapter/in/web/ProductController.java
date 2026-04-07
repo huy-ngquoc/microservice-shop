@@ -30,6 +30,7 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductO
 import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductOptionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.RestoreProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.SoftDeleteProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductInfoUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductOptionUseCase;
@@ -45,6 +46,7 @@ public class ProductController {
     private final CheckProductExistsUseCase checkExistsUseCase;
     private final FindSoftDeletedProductUseCase findSoftDeletedUseCase;
     private final CreateProductUseCase createUseCase;
+    private final RestoreProductUseCase restoreUseCase;
     private final AddProductOptionUseCase addOptionUseCase;
     private final AddProductVariantsUseCase addVariantsUseCase;
     private final UpdateProductInfoUseCase updateInfoUseCase;
@@ -106,14 +108,27 @@ public class ProductController {
         return ResponseEntity.created(location).body(response);
     }
 
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toRestoreCommand(id, version);
+        this.restoreUseCase.restore(command);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/options")
     public ResponseEntity<ProductResponse> addOption(
             @PathVariable
-            UUID id,
+            final UUID id,
 
             @RequestBody
             @Valid
-            AddProductOptionRequest request) {
+            final AddProductOptionRequest request) {
         final var command = this.mapper.toAddOptionCommand(id, request);
         final var view = this.addOptionUseCase.addOption(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -122,10 +137,11 @@ public class ProductController {
     @PostMapping("/{id}/variants")
     public ResponseEntity<ProductResponse> addVariant(
             @PathVariable
-            UUID id,
+            final UUID id,
+
             @RequestBody
             @Valid
-            AddProductVariantRequest request) {
+            final AddProductVariantRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
         final var view = this.addVariantsUseCase.addVariants(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -134,10 +150,10 @@ public class ProductController {
     @PostMapping("/{id}/variants/batch")
     public ResponseEntity<ProductResponse> addAllVariants(
             @PathVariable
-            UUID id,
+            final UUID id,
             @RequestBody
             @Valid
-            AddProductVariantsRequest request) {
+            final AddProductVariantsRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
         final var view = this.addVariantsUseCase.addVariants(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -161,12 +177,12 @@ public class ProductController {
     @PatchMapping("/{id}/options/{index}")
     public ResponseEntity<ProductResponse> updateOption(
             @PathVariable
-            UUID id,
+            final UUID id,
             @PathVariable
-            int index,
+            final int index,
             @RequestBody
             @Valid
-            UpdateProductOptionRequest request) {
+            final UpdateProductOptionRequest request) {
         final var command = this.mapper.toUpdateOptionCommand(id, index, request);
         final var view = this.updateOptionUseCase.updateOption(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -175,14 +191,14 @@ public class ProductController {
     @DeleteMapping("/{id}/options/{index}")
     public ResponseEntity<ProductResponse> removeOption(
             @PathVariable
-            UUID id,
+            final UUID id,
 
             @PathVariable
-            int index,
+            final int index,
 
             @RequestBody
             @Valid
-            RemoveProductOptionRequest request) {
+            final RemoveProductOptionRequest request) {
         final var command = this.mapper.toRemoveOptionCommand(id, index, request);
         final var view = this.removeOptionUseCase.removeOption(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));

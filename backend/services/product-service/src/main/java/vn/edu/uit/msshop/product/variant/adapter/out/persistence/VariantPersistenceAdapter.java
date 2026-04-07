@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantP
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
@@ -30,6 +31,7 @@ public class VariantPersistenceAdapter
         LoadSoftDeletedVariantPort,
         LoadAllVariantsPort,
         LoadVariantsForProductPort,
+        LoadAllSoftDeletedVariantsPort,
         CreateVariantPort,
         CreateAllVariantsPort,
         UpdateVariantPort,
@@ -72,6 +74,17 @@ public class VariantPersistenceAdapter
             final VariantProductId productId) {
         final var jpaProductId = productId.value();
         return this.repository.findByProductIdAndDeletionTimeIsNull(jpaProductId).stream()
+                .map(this.mapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Variant> loadAllSoftDeletedByIds(
+            final Collection<VariantId> ids) {
+        final var jpaIds = ids.stream()
+                .map(VariantId::value)
+                .toList();
+        return this.repository.findAllById(jpaIds).stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }
