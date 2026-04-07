@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-public class VariantImageUpdated {
+public final class VariantImageUpdated {
     @EqualsAndHashCode.Include
     private final UUID eventId = UUID.randomUUID();
 

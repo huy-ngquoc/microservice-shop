@@ -12,6 +12,7 @@ import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInf
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.DeleteVariantImageUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantImageUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantInfoUseCase;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -35,6 +37,7 @@ public class VariantController {
     private final FindVariantUseCase findUseCase;
     private final FindVariantImageUseCase findImageUseCase;
     private final FindSoftDeletedVariantUseCase findSoftDeletedUseCase;
+    private final RestoreVariantUseCase restoreUseCase;
     private final UpdateVariantInfoUseCase updateInfoUseCase;
     private final UpdateVariantImageUseCase updateImageUseCase;
     private final DeleteVariantImageUseCase deleteImageUseCase;
@@ -70,6 +73,19 @@ public class VariantController {
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toRestoreCommand(id, version);
+        this.restoreUseCase.restore(command);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/info")
