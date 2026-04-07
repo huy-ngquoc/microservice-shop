@@ -12,6 +12,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckP
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByCategoryPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
@@ -37,7 +38,8 @@ public class ProductPersistenceAdapter
         CheckProductExistsByBrandPort,
         CheckProductExistsByCategoryPort,
         CreateProductPort,
-        UpdateProductPort {
+        UpdateProductPort,
+        DeleteProductPort {
     private final ProductMongoRepository repository;
     private final ProductPersistenceMapper mapper;
 
@@ -145,5 +147,12 @@ public class ProductPersistenceAdapter
         final var sort = Sort.by(direction, sortField);
 
         return PageRequest.of(request.page(), request.size(), sort);
+    }
+
+    @Override
+    public void deleteById(
+            final ProductId id) {
+        final var jpaId = id.value();
+        this.repository.deleteById(jpaId);
     }
 }

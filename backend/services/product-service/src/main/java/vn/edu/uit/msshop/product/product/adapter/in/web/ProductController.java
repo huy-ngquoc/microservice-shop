@@ -30,6 +30,7 @@ import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
 import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductOptionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.CreateProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.HardDeleteProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductOptionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RestoreProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.SoftDeleteProductUseCase;
@@ -60,6 +61,7 @@ public class ProductController {
     private final UpdateProductOptionUseCase updateOptionUseCase;
     private final RemoveProductOptionUseCase removeOptionUseCase;
     private final SoftDeleteProductUseCase softDeleteUseCase;
+    private final HardDeleteProductUseCase hardDeleteUseCase;
     private final ProductWebMapper mapper;
 
     // TODO: product response has too much info.
@@ -271,6 +273,19 @@ public class ProductController {
             final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
         this.softDeleteUseCase.delete(command);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/purge")
+    public ResponseEntity<Void> hardDeleteById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toHardDeleteCommand(id, version);
+        this.hardDeleteUseCase.purge(command);
 
         return ResponseEntity.noContent().build();
     }

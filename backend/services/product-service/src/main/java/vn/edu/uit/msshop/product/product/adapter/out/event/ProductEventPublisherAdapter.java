@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
+import vn.edu.uit.msshop.product.product.domain.event.ProductPurged;
 import vn.edu.uit.msshop.product.product.domain.event.ProductRestored;
 import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeleted;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
@@ -37,6 +38,12 @@ public class ProductEventPublisherAdapter
     @Override
     public void publish(
             final ProductRestored event) {
+        this.publisher.publishEvent(event);
+    }
+
+    @Override
+    public void publish(
+            final ProductPurged event) {
         this.publisher.publishEvent(event);
     }
 }

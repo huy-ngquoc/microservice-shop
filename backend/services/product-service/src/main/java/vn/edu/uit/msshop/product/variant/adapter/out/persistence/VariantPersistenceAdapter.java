@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantP
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantsForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
@@ -36,7 +37,8 @@ public class VariantPersistenceAdapter
         CreateAllVariantsPort,
         UpdateVariantPort,
         UpdateAllVariantsPort,
-        DeleteVariantPort {
+        DeleteVariantPort,
+        DeleteVariantsForProductPort {
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
 
@@ -135,5 +137,12 @@ public class VariantPersistenceAdapter
         // TODO: variable name "jpaId" is suitable?
         final var jpaId = id.value();
         this.repository.deleteById(jpaId);
+    }
+
+    @Override
+    public void deleteByProductId(
+            final VariantProductId productId) {
+        final var jpaProductId = productId.value();
+        this.repository.deleteByProductId(jpaProductId);
     }
 }
