@@ -18,7 +18,8 @@ public class FindSoftDeletedVariantService implements FindSoftDeletedVariantUseC
     private final VariantViewMapper mapper;
 
     @Override
-    @Transactional
+    @Transactional(
+            readOnly = true)
     public VariantView findSoftDeletedById(
             final VariantId id) {
         return this.loadSoftDeletedPort

@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
@@ -15,12 +16,14 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateProductVariantForVariantService implements UpdateProductVariantForVariantUseCase {
+public class UpdateProductVariantForVariantService
+        implements UpdateProductVariantForVariantUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final PublishProductEventPort eventPort;
 
     @Override
+    @Transactional
     public void updateVariant(
             final UpdateProductVariantForVariantCommand command) {
         final var productId = command.id();

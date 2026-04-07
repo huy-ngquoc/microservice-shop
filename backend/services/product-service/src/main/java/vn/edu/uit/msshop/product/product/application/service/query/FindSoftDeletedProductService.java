@@ -19,7 +19,8 @@ public class FindSoftDeletedProductService
     private final ProductViewMapper mapper;
 
     @Override
-    @Transactional
+    @Transactional(
+            readOnly = true)
     public ProductView findSoftDeletedById(
             final ProductId id) {
         return this.loadSoftDeletedPort
