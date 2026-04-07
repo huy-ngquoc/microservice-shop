@@ -5,7 +5,8 @@ import java.util.UUID;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
 public record ProductVariantId(
-        UUID value) {
+        UUID value)
+        implements Comparable<ProductVariantId> {
     public ProductVariantId {
         if (value == null) {
             throw new DomainException("Product variant ID is null");
@@ -14,5 +15,11 @@ public record ProductVariantId(
 
     public static ProductVariantId newId() {
         return new ProductVariantId(UUID.randomUUID());
+    }
+
+    @Override
+    public int compareTo(
+            final ProductVariantId other) {
+        return this.value.compareTo(other.value);
     }
 }
