@@ -35,6 +35,7 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProdu
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductOptionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.FindProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.FindSoftDeletedProductUseCase;
 
 @RestController
 @RequestMapping("/products")
@@ -42,6 +43,7 @@ import vn.edu.uit.msshop.product.product.application.port.in.query.FindProductUs
 public class ProductController {
     private final FindProductUseCase findUseCase;
     private final CheckProductExistsUseCase checkExistsUseCase;
+    private final FindSoftDeletedProductUseCase findSoftDeletedUseCase;
     private final CreateProductUseCase createUseCase;
     private final AddProductOptionUseCase addOptionUseCase;
     private final AddProductVariantsUseCase addVariantsUseCase;
@@ -71,6 +73,17 @@ public class ProductController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/deleted/{id}")
+    public ResponseEntity<ProductResponse> findSoftDeletedById(
+            @PathVariable
+            final UUID id) {
+        final var view = this.findSoftDeletedUseCase
+                .findSoftDeletedById(this.mapper.toProductId(id));
+
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
