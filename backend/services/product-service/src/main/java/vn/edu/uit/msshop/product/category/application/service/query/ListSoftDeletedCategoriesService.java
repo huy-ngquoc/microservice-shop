@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.category.application.service.query;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
@@ -17,6 +18,8 @@ public class ListSoftDeletedCategoriesService implements ListSoftDeletedCategori
     private final CategoryViewMapper mapper;
 
     @Override
+    @Transactional(
+            readOnly = true)
     public PageResponseDto<CategoryView> listSoftDeleted(
             final PageRequestDto pageRequest) {
         final var page = this.listSoftDeletedPort.listSoftDeleted(pageRequest);

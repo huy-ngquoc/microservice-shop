@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.category.application.service.command;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.application.dto.command.RestoreCategoryCommand;
@@ -21,6 +22,7 @@ public class RestoreCategoryService implements RestoreCategoryUseCase {
     private final PublishCategoryEventPort eventPort;
 
     @Override
+    @Transactional
     public void restore(
             final RestoreCategoryCommand command) {
         final var categoryId = command.id();
