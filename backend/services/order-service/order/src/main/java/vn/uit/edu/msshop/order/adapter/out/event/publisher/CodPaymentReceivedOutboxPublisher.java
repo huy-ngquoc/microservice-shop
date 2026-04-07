@@ -22,7 +22,7 @@ public class CodPaymentReceivedOutboxPublisher {
     private final CodPaymentReceivedDocumentRepository codPaymentReceivedDocumentRepo;
     private final KafkaTemplate<String, CodPaymentReceived> kafkaTemplate;
     private static final String PUBLISH_TOPIC="payment-cod-topic";
-   // @Scheduled(fixedDelay=5000)
+   @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
         List<CodPaymentReceivedDocument> pendingEvents =codPaymentReceivedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 

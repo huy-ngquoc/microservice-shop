@@ -1,29 +1,39 @@
 package vn.uit.edu.msshop.inventory.adapter.out.persistence;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.mapper.InventoryJpaMapper;
+import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.inventory.application.port.out.DeleteInventoryPort;
+import vn.uit.edu.msshop.inventory.application.port.out.LoadFromRedisPort;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
+import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @Component
 @RequiredArgsConstructor
-public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInventoryPort, DeleteInventoryPort {
+public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInventoryPort, DeleteInventoryPort, LoadFromRedisPort {
     private final InventoryJpaMapper mapper;
     private final SpringDataInventoryJpaRepository repository;
+    private final RedisTemplate<String,Map<String,String>> redisTemplate;
+    private final SyncInventoryPort syncInventoryPort;
 
     @Override
     @Transactional
@@ -91,5 +101,38 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
     public void delete(Inventory inventory) {
         InventoryJpaEntity jpaEntity = mapper.toEntity(inventory);
         repository.delete(jpaEntity);
+    }
+
+    @Override
+    public List<Inventory> loadFromRedis(List<VariantId> variantIds) {
+        List<Inventory> result = new ArrayList<>();
+    for (VariantId variantId : variantIds) {
+        String key = "inventory:variant:" + variantId.value().toString();
+        
+        // 1. Dùng entries() để lấy toàn bộ Hash thay vì get() của String
+        Map<Object, Object> val = redisTemplate.opsForHash().entries(key);
+
+        // 2. Với Hash, nếu không tồn tại, Redis trả về Map trống chứ không phải null
+        if (val == null || val.isEmpty()) {
+            Inventory inventory = syncInventoryPort.loadFromMainDatabase(variantId.value());
+            if (inventory == null) throw new InventoryNotFoundException(variantId);
+            result.add(inventory);
+            continue;
+        }
+
+        // 3. Ép kiểu và lấy dữ liệu (Vì opsForHash trả về Map<Object, Object>)
+        int quantity = Integer.parseInt(val.get("quantity").toString());
+        int reservedQuantity = Integer.parseInt(val.get("reservedQuantity").toString());
+        
+        // Tạo domain object thông qua Mapper hoặc constructor
+        var draft = Inventory.Draft.builder().id(new InventoryId(UUID.randomUUID()))
+        .quantity(new Quantity(quantity))
+        .variantId(variantId)
+        .reservedQuantity(new ReservedQuantity(reservedQuantity))
+        .build();
+        result.add(Inventory.create(draft));
+    }
+    return result;
+        
     }
 }

@@ -3,8 +3,11 @@ package vn.uit.edu.msshop.inventory.application.service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -21,12 +24,15 @@ import vn.uit.edu.msshop.inventory.application.dto.command.OrderDetailCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderShippedCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.UpdateInventoryCommand;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
+import vn.uit.edu.msshop.inventory.application.exception.InsufficientStockException;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.inventory.application.mapper.InventoryViewMapper;
 import vn.uit.edu.msshop.inventory.application.port.in.UpdateInventoryUseCase;
+import vn.uit.edu.msshop.inventory.application.port.out.LoadFromRedisPort;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.PublishInventoryEventPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
+import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
@@ -37,10 +43,14 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 public class UpdateInventoryService implements UpdateInventoryUseCase {
     private final SaveInventoryPort savePort;
     private final LoadInventoryPort loadPort;
+    private final LoadFromRedisPort loadFromRedisPort;
     private final InventoryViewMapper mapper; 
     private final PublishInventoryEventPort publishEventPort;
     private final InventoryUpdatedDocumentRepository inventoryUpdatedDocumentRepo;
     private final ForceCancellOrderDocumentRepository forceCancellOrderDocumentRepo;
+    private final RedisTemplate<String,Map<String,String>> redisTemplate;
+    private final DefaultRedisScript<Long> reserveScript;
+    private final SyncInventoryPort syncPort;
 
     @Override
     @Transactional
@@ -73,7 +83,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @Override
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderCreated(OrderCreateCommand commands) {
-        List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
+        List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         System.out.println("Inventories size "+inventories.get(0).getVariantId().value().toString() );
         List<Inventory> toSaves = new ArrayList<>();
         List<InventoryUpdatedDocument> events = new ArrayList<>();
@@ -85,14 +95,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
 
                 //publishEventPort.publishForceCancellOrderEvent(new ForceCancellOrder(commands.getOrderId()));
                 final var outboxEvent = forceCancellOrderDocumentRepo.save(ForceCancellOrderDocument.builder().orderId(commands.getOrderId()).eventId(UUID.randomUUID()).build());
-                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                
                 publishEventPort.publishForceCancellOrderEvent(outboxEvent);
-                
-            }
-        });
                 return null;
             }
             int newQuantity = inventory.getQuantity().value()-detailCommand.getQuantity().value();
@@ -112,18 +115,39 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             events.add(event);
             toSaves.add(toSave);
         }
-         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
                 for(final var event:events) {
                     publishEventPort.publishInventoryUpdateEvent(event);
                 }
-            }
-        });
+            
+        
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
         inventoryUpdatedDocumentRepo.saveAll(events);
-        return savePort.saveAll(toSaves).stream().map(mapper::toView).toList();
+        for(OrderDetailCommand command: commands.getDetailCommands()) {
+            System.out.println("Call check and reserve, amount "+command.getQuantity().value());
+           processReservation(command.getVariantId().value(), command.getQuantity().value());
+        }
+        return toSaves.stream().map(mapper::toView).toList();
     }
+
+    public void processReservation(UUID variantId, int amount) {
+    String key = "inventory:variant:" + variantId.toString();
+    
+    Long result = redisTemplate.execute(reserveScript, List.of(key), String.valueOf(amount));
+
+    if (result == -1) {
+        // Tình huống: Redis trống trơn (hết hạn hoặc chưa nạp)
+        System.out.println("Redis miss! Loading from DB...");
+        syncPort.loadFromMainDatabase(variantId);
+        // Sau khi load xong thì gọi lại chính nó (Recursive) hoặc báo user thử lại
+        processReservation(variantId, amount); 
+    } else if (result == 0) {
+        throw new InsufficientStockException(new VariantId(variantId));
+    } else if (result == -2) {
+        throw new IllegalStateException("Dữ liệu tồn kho trên Redis bị lỗi định dạng!");
+    } else if (result == 1) {
+        System.out.println("Giữ chỗ thành công! Đã chuyển " + amount + " món sang hàng đợi thanh toán.");
+    }
+}
 
     @Override
     @org.springframework.transaction.annotation.Transactional
