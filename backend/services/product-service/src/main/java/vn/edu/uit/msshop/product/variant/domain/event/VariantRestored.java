@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-public final class VariantSoftDeleted {
+public final class VariantRestored {
     @EqualsAndHashCode.Include
     private final UUID eventId = UUID.randomUUID();
 

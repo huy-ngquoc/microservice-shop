@@ -41,6 +41,8 @@ public final class Product {
 
     private final ProductVersion version;
 
+    // TODO: should we omit "priceRange"?
+    // as it can be got from configuration.getVariant.getPriceRange()
     public Product(
             ProductId id,
             ProductName name,

@@ -9,6 +9,7 @@ import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInf
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
 import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
@@ -22,6 +23,17 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion
 
 @Component
 public class VariantWebMapper {
+    public RestoreVariantCommand toRestoreCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var variantId = new VariantId(id);
+        final var version = new VariantVersion(expectedVersion);
+
+        return new RestoreVariantCommand(
+                variantId,
+                version);
+    }
+
     public UpdateVariantInfoCommand toUpdateInfoCommand(
             final UUID id,
             final UpdateVariantInfoRequest request) {

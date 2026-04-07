@@ -3,8 +3,10 @@ package vn.edu.uit.msshop.product.variant.adapter.out.sync;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
@@ -12,6 +14,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -21,23 +24,32 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @Component
 @RequiredArgsConstructor
 public class VariantToProductSyncAdapter
-        implements UpdateVariantInProductPort,
+        implements
+        AddVariantToProductPort,
+        UpdateVariantInProductPort,
         RemoveVariantFromProductPort {
+    private final AddProductVariantForVariantUseCase addProductVariantForVariantUseCase;
     private final UpdateProductVariantForVariantUseCase updateProductVariantForVariantUseCase;
     private final RemoveProductVariantForVariantUseCase removeProductVariantForVariantUseCase;
 
     @Override
+    public void addToProduct(
+            final Variant variant) {
+        final var productId = new ProductId(variant.getProductId().value());
+        final var productVariant = VariantToProductSyncAdapter.toProductVariant(variant);
+
+        final var command = new AddProductVariantForVariantCommand(
+                productId,
+                productVariant);
+
+        this.addProductVariantForVariantUseCase.addVariant(command);
+    }
+
+    @Override
     public void updateInProduct(
             final Variant variant) {
-        final var productVariantId = new ProductVariantId(variant.getId().value());
-        final var productVariantPrice = new ProductVariantPrice(variant.getPrice().value());
-        final var productVariantTraits = ProductVariantTraits.of(variant.getTraits().unwrap());
-
-        final var productVariant = new ProductVariant(
-                productVariantId,
-                productVariantPrice,
-                productVariantTraits);
         final var productId = new ProductId(variant.getProductId().value());
+        final var productVariant = VariantToProductSyncAdapter.toProductVariant(variant);
 
         final var command = new UpdateProductVariantForVariantCommand(
                 productId,
@@ -58,5 +70,17 @@ public class VariantToProductSyncAdapter
                 productVariantId);
 
         this.removeProductVariantForVariantUseCase.removeVariant(command);
+    }
+
+    private static ProductVariant toProductVariant(
+            final Variant variant) {
+        final var productVariantId = new ProductVariantId(variant.getId().value());
+        final var productVariantPrice = new ProductVariantPrice(variant.getPrice().value());
+        final var productVariantTraits = ProductVariantTraits.of(variant.getTraits().unwrap());
+
+        return new ProductVariant(
+                productVariantId,
+                productVariantPrice,
+                productVariantTraits);
     }
 }
