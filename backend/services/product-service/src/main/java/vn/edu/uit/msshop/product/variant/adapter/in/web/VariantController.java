@@ -12,6 +12,7 @@ import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInf
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.DeleteVariantImageUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantImageUseCase;
@@ -42,6 +43,7 @@ public class VariantController {
     private final UpdateVariantImageUseCase updateImageUseCase;
     private final DeleteVariantImageUseCase deleteImageUseCase;
     private final SoftDeleteVariantUseCase softDeleteUseCase;
+    private final HardDeleteVariantUseCase hardDeleteUseCase;
     private final VariantWebMapper mapper;
 
     @GetMapping("/{id}")
@@ -139,8 +141,21 @@ public class VariantController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toSoftDeleteVariantCommand(id, version);
+        final var command = this.mapper.toSoftDeleteCommand(id, version);
         this.softDeleteUseCase.delete(command);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/purge")
+    public ResponseEntity<Void> hardDeleteById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toHardDeleteCommand(id, version);
+        this.hardDeleteUseCase.purge(command);
 
         return ResponseEntity.noContent().build();
     }

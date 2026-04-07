@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantPersistenceMapper;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
@@ -32,7 +33,8 @@ public class VariantPersistenceAdapter
         CreateVariantPort,
         CreateAllVariantsPort,
         UpdateVariantPort,
-        UpdateAllVariantsPort {
+        UpdateAllVariantsPort,
+        DeleteVariantPort {
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
 
@@ -112,5 +114,13 @@ public class VariantPersistenceAdapter
         return saved.stream()
                 .map(this.mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public void deleteById(
+            final VariantId id) {
+        // TODO: variable name "jpaId" is suitable?
+        final var jpaId = id.value();
+        this.repository.deleteById(jpaId);
     }
 }
