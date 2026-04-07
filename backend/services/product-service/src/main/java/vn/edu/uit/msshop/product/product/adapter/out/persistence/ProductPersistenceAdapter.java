@@ -13,6 +13,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckP
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListProductsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
@@ -29,6 +30,7 @@ import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto
 public class ProductPersistenceAdapter
         implements
         ListProductsPort,
+        ListSoftDeletedProductsPort,
         LoadProductPort,
         LoadSoftDeletedProductPort,
         CheckProductExistsPort,
@@ -46,6 +48,25 @@ public class ProductPersistenceAdapter
                 pageRequest,
                 ProductDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNull(pageable);
+
+        final var products = page.getContent().stream()
+                .map(this.mapper::toDomain)
+                .toList();
+
+        return new PageResponseDto<>(
+                products,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements());
+    }
+
+    @Override
+    public PageResponseDto<Product> listSoftDeleted(
+            final PageRequestDto pageRequest) {
+        final var pageable = ProductPersistenceAdapter.toPageable(
+                pageRequest,
+                ProductDocument.Fields.id);
+        final var page = this.repository.findAllByDeletionTimeIsNotNull(pageable);
 
         final var products = page.getContent().stream()
                 .map(this.mapper::toDomain)
