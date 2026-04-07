@@ -22,7 +22,7 @@ public class OrderCreatedSuccessOutboxPublisher {
      private final OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo;
     private final KafkaTemplate<String, OrderCreatedSuccess> kafkaTemplate;
     private static final String PUBLISH_TOPIC="cart-topic";
-    //@Scheduled(fixedDelay=5000)
+    @Scheduled(fixedDelay=5000)
     
     public void publishPendingEvents() {
         List<OrderCreatedSuccessDocument> pendingEvents =orderCreatedSuccessDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");

@@ -92,7 +92,7 @@ public class CreateOrderService implements CreateOrderUseCase {
             return loadOrderDetailPort.loadOrderDetail(item.variantId(), item.quantity());
         }).toList();
         System.out.println(listDetails.get(0).variantId());
-        //canPlaceOrder(listDetails);
+        canPlaceOrder(listDetails);
         long originPrice =0;
         for(OrderDetail d : listDetails) {
             originPrice+=d.amount()*d.unitPrice();
