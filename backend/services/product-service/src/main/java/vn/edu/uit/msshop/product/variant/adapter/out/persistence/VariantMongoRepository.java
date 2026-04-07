@@ -21,4 +21,7 @@ public interface VariantMongoRepository
 
     List<VariantDocument> findByProductIdAndDeletionTimeIsNull(
             final UUID productId);
+
+    void deleteByProductId(
+            final UUID productId);
 }
