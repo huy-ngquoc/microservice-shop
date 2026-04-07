@@ -70,7 +70,8 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
                 product.getRating(),
                 newConfiguration,
                 product.getImageKeys(),
-                product.getVersion());
+                product.getVersion(),
+                product.getDeletionTime());
 
         final var saved = this.updatePort.update(next);
         this.eventPort.publish(new ProductUpdated(saved.getId()));

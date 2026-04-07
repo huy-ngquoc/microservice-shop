@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,6 +48,9 @@ public class ProductDocument {
     @Nullable
     private final Long version;
 
+    @Nullable
+    private final Instant deletionTime;
+
     @PersistenceCreator
     public ProductDocument(
             final UUID id,
@@ -62,7 +66,9 @@ public class ProductDocument {
             final List<ProductVariantDocument> variants,
             final List<String> imageKeys,
             @Nullable
-            final Long version) {
+            final Long version,
+            @Nullable
+            final Instant deletionTime) {
         this.id = id;
         this.name = name;
         this.categoryId = categoryId;
@@ -76,5 +82,6 @@ public class ProductDocument {
         this.variants = List.copyOf(variants);
         this.imageKeys = List.copyOf(imageKeys);
         this.version = version;
+        this.deletionTime = deletionTime;
     }
 }

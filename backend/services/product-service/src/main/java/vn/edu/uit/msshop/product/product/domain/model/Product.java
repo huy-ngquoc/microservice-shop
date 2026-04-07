@@ -1,9 +1,12 @@
 package vn.edu.uit.msshop.product.product.domain.model;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductDeletionTime;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKeys;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
@@ -41,19 +44,24 @@ public final class Product {
 
     private final ProductVersion version;
 
+    @Nullable
+    private final ProductDeletionTime deletionTime;
+
     // TODO: should we omit "priceRange"?
     // as it can be got from configuration.getVariant.getPriceRange()
     public Product(
-            ProductId id,
-            ProductName name,
-            ProductCategoryId categoryId,
-            ProductBrandId brandId,
-            ProductPriceRange priceRange,
-            ProductSoldCount soldCount,
-            ProductRating rating,
-            ProductConfiguration configuration,
-            ProductImageKeys imageKeys,
-            ProductVersion version) {
+            final ProductId id,
+            final ProductName name,
+            final ProductCategoryId categoryId,
+            final ProductBrandId brandId,
+            final ProductPriceRange priceRange,
+            final ProductSoldCount soldCount,
+            final ProductRating rating,
+            final ProductConfiguration configuration,
+            final ProductImageKeys imageKeys,
+            final ProductVersion version,
+            @Nullable
+            final ProductDeletionTime deletionTime) {
         this.id = Domains.requireNonNull(id, "Product ID CANNOT be null");
         this.name = Domains.requireNonNull(name, "Product name CANNOT be null");
         this.categoryId = Domains.requireNonNull(categoryId, "Category ID CANNOT be null");
@@ -64,6 +72,7 @@ public final class Product {
         this.configuration = Domains.requireNonNull(configuration, "Configuration CANNOT be null");
         this.imageKeys = Domains.requireNonNull(imageKeys, "Product image keys CANNOT be null");
         this.version = Domains.requireNonNull(version, "Product version CANNOT be null");
+        this.deletionTime = deletionTime;
     }
 
     public ProductOptions getOptions() {

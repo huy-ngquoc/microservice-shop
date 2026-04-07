@@ -34,7 +34,8 @@ public class ProductPersistenceAdapter
     public Optional<Product> loadById(
             final ProductId id) {
         final var jpaId = id.value();
-        return this.repository.findById(jpaId).map(this.mapper::toDomain);
+        return this.repository.findByIdAndDeletionTimeIsNull(jpaId)
+                .map(this.mapper::toDomain);
     }
 
     @Override
