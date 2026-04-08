@@ -26,7 +26,7 @@ public class SoftDeleteVariantsForProductService implements SoftDeleteVariantsFo
     @Transactional
     public void deleteByProductId(
             final VariantProductId productId) {
-        final var variants = this.loadForProductPort.loadByProductId(productId);
+        final var variants = this.loadForProductPort.loadAllByProductId(productId);
         if (variants.isEmpty()) {
             throw new VariantProductNotFoundException(productId);
         }

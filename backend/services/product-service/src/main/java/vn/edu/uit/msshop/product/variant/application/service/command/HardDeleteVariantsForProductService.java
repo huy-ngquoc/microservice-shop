@@ -23,7 +23,7 @@ public class HardDeleteVariantsForProductService
     @Transactional
     public void purgeByProductId(
             final VariantProductId productId) {
-        final var variants = this.loadForProductPort.loadByProductId(productId);
+        final var variants = this.loadForProductPort.loadAllByProductId(productId);
         if (variants.isEmpty()) {
             return;
         }
