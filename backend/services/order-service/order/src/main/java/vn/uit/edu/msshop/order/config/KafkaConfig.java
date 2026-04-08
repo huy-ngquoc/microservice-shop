@@ -12,6 +12,10 @@ public class KafkaConfig {
         return TopicBuilder.name("order-topic").build();
     }
     @Bean
+    public NewTopic productTopic() {
+        return TopicBuilder.name("order-product").build();
+    }
+    @Bean
     public NewTopic paymentCodTopic() {
         return TopicBuilder.name("payment-cod-topic").build();
     }
