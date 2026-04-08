@@ -7,6 +7,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 
 // TODO: the name of interface is good?
 public interface LoadVariantsForProductPort {
-    List<Variant> loadByProductId(
+    List<Variant> loadAllByProductId(
             final VariantProductId id);
 }

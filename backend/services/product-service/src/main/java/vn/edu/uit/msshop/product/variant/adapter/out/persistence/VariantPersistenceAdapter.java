@@ -72,10 +72,10 @@ public class VariantPersistenceAdapter
     }
 
     @Override
-    public List<Variant> loadByProductId(
+    public List<Variant> loadAllByProductId(
             final VariantProductId productId) {
         final var jpaProductId = productId.value();
-        return this.repository.findByProductIdAndDeletionTimeIsNull(jpaProductId).stream()
+        return this.repository.findAllByProductId(jpaProductId).stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }
@@ -143,6 +143,6 @@ public class VariantPersistenceAdapter
     public void deleteByProductId(
             final VariantProductId productId) {
         final var jpaProductId = productId.value();
-        this.repository.deleteByProductId(jpaProductId);
+        this.repository.deleteAllByProductId(jpaProductId);
     }
 }
