@@ -51,10 +51,11 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
                 VariantDeletionTime.now());
 
         final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new VariantSoftDeleted(saved.getId()));
 
         this.removeFromProductPort.removeFromProduct(
-                variantId,
-                variant.getProductId());
+                saved.getId(),
+                saved.getProductId());
+
+        this.eventPort.publish(new VariantSoftDeleted(saved.getId()));
     }
 }

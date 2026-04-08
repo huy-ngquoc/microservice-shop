@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductPersistenceMapper;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByBrandPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByCategoryPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByVariantPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckSoftDeletedProductExistsByBrandPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckSoftDeletedProductExistsByCategoryPort;
@@ -25,6 +26,7 @@ import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 
@@ -41,6 +43,7 @@ public class ProductPersistenceAdapter
         CheckProductExistsByCategoryPort,
         CheckSoftDeletedProductExistsByBrandPort,
         CheckSoftDeletedProductExistsByCategoryPort,
+        CheckProductExistsByVariantPort,
         CreateProductPort,
         UpdateProductPort,
         DeleteProductPort {
@@ -134,6 +137,13 @@ public class ProductPersistenceAdapter
             final ProductCategoryId categoryId) {
         final var jpaCategoryId = categoryId.value();
         return this.repository.existsByCategoryIdAndDeletionTimeIsNotNull(jpaCategoryId);
+    }
+
+    @Override
+    public boolean existsByVariantId(
+            final ProductVariantId variantId) {
+        final var jpaVariantId = variantId.value();
+        return this.repository.existsByVariants_Id(jpaVariantId);
     }
 
     @Override

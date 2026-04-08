@@ -34,4 +34,7 @@ public interface ProductMongoRepository
 
     boolean existsByCategoryIdAndDeletionTimeIsNotNull(
             final UUID categoryId);
+
+    boolean existsByVariants_Id(
+            final UUID variantId);
 }
