@@ -11,6 +11,8 @@ import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductP
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByBrandPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByCategoryPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckSoftDeletedProductExistsByBrandPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckSoftDeletedProductExistsByCategoryPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListProductsPort;
@@ -37,6 +39,8 @@ public class ProductPersistenceAdapter
         CheckProductExistsPort,
         CheckProductExistsByBrandPort,
         CheckProductExistsByCategoryPort,
+        CheckSoftDeletedProductExistsByBrandPort,
+        CheckSoftDeletedProductExistsByCategoryPort,
         CreateProductPort,
         UpdateProductPort,
         DeleteProductPort {
@@ -108,14 +112,28 @@ public class ProductPersistenceAdapter
     public boolean existsByBrandId(
             final ProductBrandId brandId) {
         final var jpaBrandId = brandId.value();
-        return this.repository.existsByBrandId(jpaBrandId);
+        return this.repository.existsByBrandIdAndDeletionTimeIsNull(jpaBrandId);
     }
 
     @Override
     public boolean existsByCategoryId(
             final ProductCategoryId categoryId) {
         final var jpaCategoryId = categoryId.value();
-        return this.repository.existsByCategoryId(jpaCategoryId);
+        return this.repository.existsByCategoryIdAndDeletionTimeIsNull(jpaCategoryId);
+    }
+
+    @Override
+    public boolean existsSoftDeletedByBrandId(
+            final ProductBrandId brandId) {
+        final var jpaBrandId = brandId.value();
+        return this.repository.existsByBrandIdAndDeletionTimeIsNotNull(jpaBrandId);
+    }
+
+    @Override
+    public boolean existsSoftDeletedByCategoryId(
+            final ProductCategoryId categoryId) {
+        final var jpaCategoryId = categoryId.value();
+        return this.repository.existsByCategoryIdAndDeletionTimeIsNotNull(jpaCategoryId);
     }
 
     @Override
