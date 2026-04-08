@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCate
 import vn.edu.uit.msshop.product.category.application.port.out.image.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.DeleteCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasProductsPort;
+import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryPurged;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
@@ -24,7 +24,7 @@ import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockExce
 @Slf4j
 public class HardDeleteCategoryService implements HardDeleteCategoryUseCase {
     private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
-    private final CheckCategoryHasProductsPort checkHasProductsPort;
+    private final CheckCategoryHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
     private final DeleteCategoryPort deletePort;
     private final CategoryImageStoragePort imageStoragePort;
     private final PublishCategoryEventPort eventPort;
@@ -45,7 +45,7 @@ public class HardDeleteCategoryService implements HardDeleteCategoryUseCase {
                     currentVersion.value());
         }
 
-        if (this.checkHasProductsPort.hasProduct(categoryId)) {
+        if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(categoryId)) {
             throw new BusinessRuleException(
                     "Cannot delete category with existing products");
         }

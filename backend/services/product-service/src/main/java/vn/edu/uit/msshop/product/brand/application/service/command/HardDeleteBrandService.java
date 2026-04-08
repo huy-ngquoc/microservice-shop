@@ -13,8 +13,10 @@ import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEv
 import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.DeleteBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandPurged;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
+import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Service
@@ -24,6 +26,7 @@ public class HardDeleteBrandService implements HardDeleteBrandUseCase {
     private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
     private final DeleteBrandPort deletePort;
     private final BrandLogoStoragePort logoStoragePort;
+    private final CheckBrandHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
     private final PublishBrandEventPort eventPort;
 
     @Override
@@ -40,6 +43,11 @@ public class HardDeleteBrandService implements HardDeleteBrandUseCase {
             throw new OptimisticLockException(
                     expectedVersion.value(),
                     currentVersion.value());
+        }
+
+        if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(brandId)) {
+            throw new BusinessRuleException(
+                    "Cannot delete brand with existing products");
         }
 
         this.deletePort.deleteById(brandId);
