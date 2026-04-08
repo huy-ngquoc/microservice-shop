@@ -14,6 +14,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.sync.HardDeleteAll
 import vn.edu.uit.msshop.product.product.domain.event.ProductPurged;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
+// TODO: delete image as well.
 @Service
 @RequiredArgsConstructor
 public class HardDeleteProductService

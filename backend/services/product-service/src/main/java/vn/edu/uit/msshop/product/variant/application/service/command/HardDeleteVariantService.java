@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
+import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
@@ -15,6 +16,8 @@ import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVaria
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckProductExistsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantReferencedByProductPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantPurged;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
@@ -23,8 +26,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 @Slf4j
 public class HardDeleteVariantService implements HardDeleteVariantUseCase {
     private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
-    private final CheckProductExistsUseCase checkProductExistsUseCase;
     private final DeleteVariantPort deletePort;
+    private final CheckVariantReferencedByProductPort checkReferencedPort;
     private final VariantImageStoragePort imageStoragePort;
     private final PublishVariantEventPort eventPort;
 
@@ -45,7 +48,12 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
                     currentVersion.value());
         }
 
-        // TODO: do we need to check variant in product deleted first?
+        final var referenced = this.checkReferencedPort
+                .isReferencedByProduct(variantId);
+        if (referenced) {
+            throw new BusinessRuleException(
+                    "Cannot purge variant: still referenced by a product");
+        }
 
         this.deletePort.deleteById(variantId);
         this.eventPort.publish(new VariantPurged(variantId));
