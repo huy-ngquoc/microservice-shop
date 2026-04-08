@@ -177,6 +177,9 @@ public final class Order {
         if (d.id() == null) {
             throw new IllegalArgumentException("Id must NOT be null");
         }
+        if(d.currency()==null) {
+            throw new IllegalArgumentException("currency must not be null");
+        }
 
         return Order.builder().id(d.id()).shippingInfo(d.shippingInfo()).details(d.details()).status(d.status()).userId(d.userId())
         .originPrice(d.originPrice()).shippingFee(d.shippingFee()).discount(d.discount()).totalPrice(d.totalPrice()).createAt(d.createAt()).updateAt(d.updateAt()).version(null).
@@ -213,7 +216,8 @@ public final class Order {
         ShippingInfo newShippingInfo = u.shippingInfo()!=null?u.shippingInfo():this.shippingInfo;
         Instant updateTime = (u.orderStatus()==null&&u.shippingInfo()==null)?this.updateAt.value():Instant.now();
         return Order.builder().id(this.id).shippingInfo(newShippingInfo).details(this.details).status(newStatus).userId(this.userId)
-        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(updateTime)).version(this.version).build();
+        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(updateTime)).version(this.version)
+        .currency(this.currency).paymentMethod(this.paymentMethod).build();
     }
 
     @NullMarked

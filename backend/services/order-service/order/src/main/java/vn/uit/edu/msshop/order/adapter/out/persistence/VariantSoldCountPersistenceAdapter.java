@@ -17,8 +17,8 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.VariantId;
 @Service
 @RequiredArgsConstructor
 public class VariantSoldCountPersistenceAdapter implements CreateVariantSoldCountPort, FindVariantSoldCountPort, UpdateVariantSoldCountPort, DeleteVariantSoldCountPort {
-    private VariantSoldCountRepository variantSoldCountRepo;
-    private VariantSoldCountDataMapper mapper;
+    private final VariantSoldCountRepository variantSoldCountRepo;
+    private final VariantSoldCountDataMapper mapper;
 
     @Override
     public VariantSoldCount create(VariantSoldCount variantSoldCount) {
