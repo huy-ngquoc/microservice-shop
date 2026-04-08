@@ -24,13 +24,16 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotFoundException;
 import vn.uit.edu.msshop.order.adapter.in.web.mapper.OrderWebMapper;
+import vn.uit.edu.msshop.order.adapter.in.web.mapper.VariantSoldCountWebMapper;
 import vn.uit.edu.msshop.order.adapter.in.web.request.CreateOrderRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateOrderRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.OrderResponse;
+import vn.uit.edu.msshop.order.adapter.in.web.response.VariantSoldCountResponse;
 import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.DeleteOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.FindOrderUseCase;
+import vn.uit.edu.msshop.order.application.port.in.FindVariantSoldCountUseCase;
 import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
@@ -49,6 +52,8 @@ public class OrderController {
     private final CheckPermissionUseCase checkPermission;
     private final Tracer tracer;
     private final DeleteOrderUseCase deleteOrderUseCase;
+    private final FindVariantSoldCountUseCase findVariantSoldCountUseCase;
+    private final VariantSoldCountWebMapper variantSoldCountWebMapper;
     @GetMapping("/test-trace")
     public String test() {
         
@@ -112,6 +117,12 @@ public class OrderController {
             return ResponseEntity.badRequest().build();
         }
     } 
+
+    @GetMapping("/public/sold_counts") 
+    public ResponseEntity<List<VariantSoldCountResponse>> getAllVariantSoldCount() {
+        final var result = findVariantSoldCountUseCase.findAll();
+        return ResponseEntity.ok(result.stream().map(variantSoldCountWebMapper::toResponse).toList());
+    }
 
     @PutMapping("/update")
     public ResponseEntity<Void> updateOrder(@RequestBody UpdateOrderRequest request,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
