@@ -23,6 +23,9 @@ public interface ProductMongoRepository
     Optional<ProductDocument> findByIdAndDeletionTimeIsNotNull(
             final UUID id);
 
+    boolean existsByIdAndDeletionTimeIsNull(
+            final UUID id);
+
     boolean existsByBrandIdAndDeletionTimeIsNull(
             final UUID brandId);
 
