@@ -97,9 +97,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         for(OrderDetail d : listDetails) {
             originPrice+=d.amount()*d.unitPrice();
         }
-        List<vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail> event_details = listDetails.stream().map(item->new vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail(
-            item.variantId(), item.amount()
-        )).toList();
+        
         final var draft = Order.Draft.builder().id(command.id()).shippingInfo(command.shippingInfo())
         .details(listDetails)
         .status(new OrderStatus("PENDING"))

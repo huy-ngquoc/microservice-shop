@@ -28,6 +28,7 @@ public class OrderDataMapper {
     public Order toDomain(OrderDocument document) {
         ShippingInfo shippingInfo = this.toShippingInfoDomain(document.getShippingInfo());
         List<OrderDetail> details = document.getDetails().stream().map(this::toOrderDetailDomain).toList();
+        
         final var snapShot = Order.SnapShot.builder().id(new OrderId(document.getId()))
         .shippingInfo(shippingInfo)
         .details(details)
@@ -39,7 +40,7 @@ public class OrderDataMapper {
         .totalPrice(new TotalPrice(document.getTotalPrice()))
         .createAt(new CreateAt(document.getCreateAt()))
         .updateAt(new UpdateAt(document.getUpdateAt()))
-        .version(new Version(document.getVersion()))
+        .version(new Version(document.getVersion()==null?null:document.getVersion()))
         .currency(new Currency(document.getCurrency()))
         .paymentMethod(new PaymentMethod(document.getPaymentMethod()))
         .build();
