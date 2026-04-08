@@ -11,11 +11,14 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentReceivedDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.IncreaseSoldCountDetailDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.IncreaseSoldCountEventsDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderDetailDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderShippedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentCancelledDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentReceivedDocumentRepository;
+import vn.uit.edu.msshop.order.adapter.out.event.repositories.IncreaseSoldCountEventDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCancelledDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderShippedDocumentRepository;
 import vn.uit.edu.msshop.order.application.dto.command.IncreaseVariantSoldCountCommand;
@@ -49,6 +52,8 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     private final OrderCancelledDocumentRepository orderCancelledDocumentRepo;
     private final OrderShippedDocumentRepository orderShippedDocumentRepo;
     private final UpdateVariantSoldCountUseCase updateVariantSoldCountUseCase;
+    private final IncreaseSoldCountEventDocumentRepository increaseSoldCountEventDocumentRepo;
+    
 
     @Override
     @Transactional
@@ -58,13 +63,18 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         if(!checkPermission.isAdmin(role)&&!checkPermission.isSameUser(userIdFromHeader, order.getUserId().value().toString())) {
             throw new RuntimeException("Unauthorized");
         }
+        System.out.println("Order currency is "+order.getCurrency().value());
         String oldStatus = order.getStatus().value();
         final var updateInfo = Order.UpdateInfo.builder().id(command.id()).shippingInfo(command.shippingInfo().apply(order.getShippingInfo())).orderStatus(command.status().apply(order.getStatus()))
         .build();
         final var next = order.applyUpdateInfo(updateInfo);
         final var saved = saveOrderPort.save(next);
         boolean isSendEvent = !oldStatus.equals(saved.getStatus().value());
-        
+        CodPaymentCancelledDocument savedCodPaymentCancelledDocument = null;
+        OrderCancelledDocument savedOrderCancelledDocument=null;
+        IncreaseSoldCountEventsDocument savedIncreaseSoldCountEventDocument=null;
+        CodPaymentReceivedDocument savedCodPaymentReceivedDocument=null;
+        OrderShippedDocument savedOrderShippedDocument=null;
         
         if(saved.getStatus().value().equals("CANCELLED")&&isSendEvent) {
             CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder().eventId(UUID.randomUUID())
@@ -74,13 +84,8 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             .createdAt(Instant.now())
             .updatedAt(null)
             .lastError(null).build();
-            final var savedEvent = codPaymentCancelledDocumentRepo.save(outboxEvent);
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishEventPort.publishCodPaymentCancelled(savedEvent);
-            }
-        });
+            savedCodPaymentCancelledDocument = codPaymentCancelledDocumentRepo.save(outboxEvent);
+            
         OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder().eventId(UUID.randomUUID())
         .orderId(saved.getId().value())
         .oldStatus(oldStatus)
@@ -90,13 +95,8 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null).build();
-        final var savedOutboxOrderCancelled = orderCancelledDocumentRepo.save(outboxOrderCancelled);
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishEventPort.publishOrderCancelled_InventoryEvent(savedOutboxOrderCancelled);
-            }
-        });
+         savedOrderCancelledDocument= orderCancelledDocumentRepo.save(outboxOrderCancelled);
+        
            // publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
         }
         if(saved.getStatus().value().equals("RECEIVED")) {
@@ -104,6 +104,14 @@ public class UpdateOrderService implements UpdateOrderUseCase {
                 new VariantId(item.variantId()), new Amount(item.amount())
             )).toList();
             updateVariantSoldCountUseCase.updateMany(commands);
+            IncreaseSoldCountEventsDocument eventsDocument = IncreaseSoldCountEventsDocument.builder().eventId(UUID.randomUUID())
+            .details(saved.getDetails().stream().map(item->new IncreaseSoldCountDetailDocument(saved.getId().value(),item.amount())).toList())
+            .eventStatus("PENDING")
+            .retryCount(0)
+            .createdAt(Instant.now())
+            .updatedAt(null).build();
+            savedIncreaseSoldCountEventDocument = increaseSoldCountEventDocumentRepo.save(eventsDocument);
+            
         }
         if(saved.getStatus().value().equals("RECEIVED")&&isSendEvent) {
             CodPaymentReceivedDocument outboxEvent = CodPaymentReceivedDocument.builder().eventId(UUID.randomUUID())
@@ -113,13 +121,8 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null).build();
-        final var savedEvent = codPaymentReceivedDocumentRepo.save(outboxEvent);
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishEventPort.publishCodPaymentReceived(savedEvent);
-            }
-        });
+        savedCodPaymentReceivedDocument= codPaymentReceivedDocumentRepo.save(outboxEvent);
+        
             //publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(saved.getId().value()));
         }
         if(saved.getStatus().value().equals("SHIPPING")&&isSendEvent) {
@@ -131,15 +134,41 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             .createdAt(Instant.now())
             .updatedAt(null)
             .lastError(null).build();
-            final var savedOrderShippedDocument = orderShippedDocumentRepo.save(orderShippedDocument);
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishEventPort.publishOrderShipped_InventoryEvent(savedOrderShippedDocument);
-            }
-        });
+            savedOrderShippedDocument = orderShippedDocumentRepo.save(orderShippedDocument);
+            
             //publishEventPort.publishOrderShipped_InventoryEvent(new OrderShipped(saved.getId().value(),listEvent));
         }
+        final var codPaymentCancelledDocument = savedCodPaymentCancelledDocument;
+        final var orderCancelledDocument = savedOrderCancelledDocument;
+        final var increaseSoldCountEventDocument = savedIncreaseSoldCountEventDocument;
+        final var codPaymentReceivedDocument = savedCodPaymentReceivedDocument;
+        final var orderShippedDocument= savedOrderShippedDocument;
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                /*
+                CodPaymentCancelledDocument savedCodPaymentCancelledDocument = null;
+        OrderCancelledDocument savedOrderCancelledDocument=null;
+        IncreaseSoldCountEventsDocument savedIncreaseSoldCountEventDocument=null;
+        CodPaymentReceivedDocument savedCodPaymentReceivedDocument=null;
+        OrderShippedDocument savedOrderShippedDocument=null; */
+                if(codPaymentCancelledDocument!=null) {
+                    publishEventPort.publishCodPaymentCancelled(codPaymentCancelledDocument);
+                }
+                if(orderCancelledDocument!=null) {
+                    publishEventPort.publishOrderCancelled_InventoryEvent(orderCancelledDocument);
+                }
+                if(increaseSoldCountEventDocument!=null) {
+                    publishEventPort.publishIncreaseSoldCountEvent(increaseSoldCountEventDocument);
+                }
+                if(codPaymentReceivedDocument!=null){
+                    publishEventPort.publishCodPaymentReceived(codPaymentReceivedDocument);
+                }
+                if(orderShippedDocument!=null) {
+                    publishEventPort.publishOrderShipped_InventoryEvent(orderShippedDocument);
+                }
+            }
+        });
         publishEventPort.publish(new OrderUpdated(saved.getId()));
     }
 
