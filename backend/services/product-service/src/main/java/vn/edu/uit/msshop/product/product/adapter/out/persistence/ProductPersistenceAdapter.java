@@ -108,7 +108,7 @@ public class ProductPersistenceAdapter
     public boolean existsById(
             final ProductId id) {
         final var jpaId = id.value();
-        return this.repository.existsById(jpaId);
+        return this.repository.existsByIdAndDeletionTimeIsNull(jpaId);
     }
 
     @Override

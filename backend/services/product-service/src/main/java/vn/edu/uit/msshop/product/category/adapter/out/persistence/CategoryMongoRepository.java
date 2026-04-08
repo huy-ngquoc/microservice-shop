@@ -22,4 +22,7 @@ public interface CategoryMongoRepository
 
     Optional<CategoryDocument> findByIdAndDeletionTimeIsNotNull(
             final UUID id);
+
+    boolean existsByIdAndDeletionTimeIsNull(
+            final UUID id);
 }

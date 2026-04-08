@@ -97,7 +97,7 @@ public class CategoryPersistenceAdapter
     public boolean existsById(
             final CategoryId id) {
         final var jpaId = id.value();
-        return this.repository.existsById(jpaId);
+        return this.repository.existsByIdAndDeletionTimeIsNull(jpaId);
     }
 
     @Override
