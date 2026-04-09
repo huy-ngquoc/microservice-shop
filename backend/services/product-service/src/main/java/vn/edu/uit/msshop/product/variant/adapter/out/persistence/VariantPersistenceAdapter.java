@@ -17,6 +17,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAl
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.SaveVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -38,7 +39,7 @@ public class VariantPersistenceAdapter
         UpdateVariantPort,
         UpdateAllVariantsPort,
         DeleteVariantPort,
-        DeleteVariantsForProductPort {
+        DeleteVariantsForProductPort, SaveVariantPort {
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
 
@@ -144,5 +145,24 @@ public class VariantPersistenceAdapter
             final VariantProductId productId) {
         final var jpaProductId = productId.value();
         this.repository.deleteAllByProductId(jpaProductId);
+    }
+
+    @Override
+    public List<Variant> loadByListIds(List<VariantId> ids) {
+        final var jpaVariantIds = ids.stream().map(VariantId::value).toList();
+        // TODO Auto-generated method stub
+        return this.repository.findByIdIn(jpaVariantIds).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public Variant save(Variant v) {
+        final var result = this.repository.save(this.mapper.toPersistence(v));
+        return mapper.toDomain(result);
+    }
+
+    @Override
+    public List<Variant> saveAll(List<Variant> variants) {
+        final var result = this.repository.saveAll(variants.stream().map(mapper::toPersistence).toList());
+        return result.stream().map(mapper::toDomain).toList();
     }
 }

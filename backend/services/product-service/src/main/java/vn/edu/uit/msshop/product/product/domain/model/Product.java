@@ -4,6 +4,8 @@ import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.Amount;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.IncreaseAmount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductDeletionTime;
@@ -82,4 +84,14 @@ public final class Product {
     public ProductVariants getVariants() {
         return this.configuration.variants();
     }
+    public Product increaseSoldCount(IncreaseAmount amount) {
+        return new Product(this.id, this.name, this.categoryId, this.brandId, this.priceRange,new ProductSoldCount(this.soldCount.value()+amount.value()), this.rating, this.configuration, this.imageKeys, this.version, this.deletionTime);
+
+    }
+    public Product updateSoldCount(Amount amount) {
+        return new Product(this.id, this.name, this.categoryId, this.brandId, this.priceRange,new ProductSoldCount(amount.value()), this.rating, this.configuration, this.imageKeys, this.version, this.deletionTime);
+    }
+    /*public Product updateStock(Amount amount) {
+        return new Product(this.id, this.name, this.categoryId, this.brandId, this.priceRange,this.soldCount, this.rating, this.configuration, this.imageKeys, this.version, this.deletionTime);
+    }*/
 }
