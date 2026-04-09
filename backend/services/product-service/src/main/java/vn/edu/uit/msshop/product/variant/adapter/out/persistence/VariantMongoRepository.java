@@ -24,4 +24,5 @@ public interface VariantMongoRepository
 
     void deleteAllByProductId(
             final UUID productId);
+    public List<VariantDocument> findByIdIn(List<UUID> listIds);
 }

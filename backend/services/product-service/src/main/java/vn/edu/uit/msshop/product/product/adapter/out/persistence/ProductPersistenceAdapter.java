@@ -1,6 +1,11 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -20,6 +25,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListPr
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.SaveProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
@@ -29,6 +35,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 
 @Component
 @RequiredArgsConstructor
@@ -46,7 +53,8 @@ public class ProductPersistenceAdapter
         CheckProductExistsByVariantPort,
         CreateProductPort,
         UpdateProductPort,
-        DeleteProductPort {
+        DeleteProductPort,
+        SaveProductPort{
     private final ProductMongoRepository repository;
     private final ProductPersistenceMapper mapper;
 
@@ -183,4 +191,34 @@ public class ProductPersistenceAdapter
         final var jpaId = id.value();
         this.repository.deleteById(jpaId);
     }
+
+    @Override
+    public Product save(Product product) {
+        final var toSave = this.mapper.toPersistence(product);
+        return this.mapper.toDomain(this.repository.save(toSave));
+    }
+
+    @Override
+    public List<Product> loadByListId(List<ProductId> ids) {
+        final var listId = ids.stream().map(ProductId::value).toList();
+        return this.repository.findByIdIn(listId).stream().map(this.mapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Product> loadByVariants(List<Variant> variants) {
+        Set<UUID> setProductIds = new HashSet<>();
+        for(Variant v: variants) {
+            setProductIds.add(v.getProductId().value());
+        }
+        List<UUID> listProductIds = new ArrayList<>(setProductIds);
+        return this.loadByListId(listProductIds.stream().map(ProductId::new).toList());
+    }
+
+    @Override
+    public List<Product> saveAll(List<Product> products) {
+        List<ProductDocument> toSave = products.stream().map(mapper::toPersistence).toList();
+        return this.repository.saveAll(toSave).stream().map(mapper::toDomain).toList();
+    }
+
+   
 }
