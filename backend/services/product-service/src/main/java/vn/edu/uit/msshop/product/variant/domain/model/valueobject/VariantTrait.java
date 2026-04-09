@@ -10,8 +10,8 @@ public record VariantTrait(
     public static final int MAX_LENGTH = 30;
     public static final int MAX_RAW_LENGTH = (int) (MAX_LENGTH * Domains.RAW_LENGTH_TOLERANCE_FACTOR);
 
-    private static final VariantTrait DEFAULT_TRAIT = new VariantTrait("Default");
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\p{IsWhite_Space}+");
+    private static final VariantTrait DEFAULT_TRAIT = new VariantTrait("Default");
 
     public VariantTrait {
         value = VariantTrait.validateAndNormalizeValue(value);
