@@ -19,6 +19,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
@@ -43,11 +44,13 @@ public class VariantWebMapper {
 
         final var price = ChangeRequest.toChange(request.price(), VariantPrice::new);
         final var traits = ChangeRequest.toChange(request.traits(), VariantTraits::of);
+        final var targets = ChangeRequest.toChange(request.traits(), VariantTargets::of);
 
         return new UpdateVariantInfoCommand(
                 variantId,
                 price,
                 traits,
+                targets,
                 version);
     }
 

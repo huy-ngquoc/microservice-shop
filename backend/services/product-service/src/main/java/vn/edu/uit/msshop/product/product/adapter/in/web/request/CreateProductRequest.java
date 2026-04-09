@@ -10,8 +10,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 
 public record CreateProductRequest(
@@ -24,31 +27,17 @@ public record CreateProductRequest(
         @NotNull
         UUID brandId,
 
-        @Nullable
-        Long price,
-
+        @NotEmpty
+        @Size(
+                max = ProductOptions.MAX_AMOUNT)
         List<@NotBlank @Size(
                 max = ProductOption.MAX_RAW_LENGTH_VALUE) String> options,
 
+        @NotEmpty
         List<@Valid CreateProductVariantRequest> variants) {
     public CreateProductRequest {
-        if (options != null) {
-            options = List.copyOf(options);
-        } else {
-            options = List.of();
+        if (variants.size() > ProductVariants.MAX_AMOUNT) {
+            throw new IllegalArgumentException("Too many variants");
         }
-
-        if (variants != null) {
-            variants = List.copyOf(variants);
-        } else {
-            variants = List.of();
-        }
-    }
-
-    @AssertTrue(
-            message = "Price is required when no options and no variants are provided")
-    @JsonIgnore
-    public boolean isPriceValidForProductType() {
-        return !options.isEmpty() || !variants.isEmpty() || (price != null);
     }
 }

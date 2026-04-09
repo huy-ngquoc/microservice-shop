@@ -45,6 +45,7 @@ public class SoftDeleteAllVariantsService implements SoftDeleteAllVariantsUseCas
                 variant.getPrice(),
                 variant.getSoldCount(),
                 variant.getTraits(),
+                variant.getTargets(),
                 variant.getImageKey(),
                 variant.getVersion(),
                 VariantDeletionTime.now());

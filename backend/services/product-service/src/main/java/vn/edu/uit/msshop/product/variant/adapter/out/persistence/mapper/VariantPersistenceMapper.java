@@ -13,6 +13,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
@@ -27,6 +28,7 @@ public class VariantPersistenceMapper {
         final var price = new VariantPrice(entity.getPrice());
         final var sold = new VariantSoldCount(entity.getSold());
         final var traits = VariantTraits.of(entity.getTraits());
+        final var targets = VariantTargets.of(entity.getTargets());
 
         final var versionValue = Objects.requireNonNull(
                 entity.getVersion(),
@@ -41,6 +43,7 @@ public class VariantPersistenceMapper {
                 price,
                 sold,
                 traits,
+                targets,
                 imageKey,
                 version,
                 deletionTime);
@@ -54,6 +57,7 @@ public class VariantPersistenceMapper {
                 variant.getPrice().value(),
                 variant.getSoldCount().value(),
                 variant.getTraits().unwrap(),
+                variant.getTargets().unwrap(),
                 VariantImageKey.unwrap(variant.getImageKey()),
                 variant.getVersion().value(),
                 VariantDeletionTime.unwrap(variant.getDeletionTime()));
@@ -67,6 +71,7 @@ public class VariantPersistenceMapper {
                 newVariant.getPrice().value(),
                 VariantSoldCount.zero().value(),
                 newVariant.getTraits().unwrap(),
+                newVariant.getTargets().unwrap(),
                 null,
                 null,
                 null);
