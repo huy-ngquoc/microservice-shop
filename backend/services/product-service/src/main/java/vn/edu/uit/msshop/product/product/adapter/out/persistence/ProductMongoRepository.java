@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,4 +41,6 @@ public interface ProductMongoRepository
 
     boolean existsByVariants_Id(
             final UUID variantId);
+    public List<ProductDocument> findByIdIn(List<UUID> ids);
+    
 }

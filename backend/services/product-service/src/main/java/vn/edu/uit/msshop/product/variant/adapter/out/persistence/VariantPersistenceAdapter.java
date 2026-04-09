@@ -145,4 +145,11 @@ public class VariantPersistenceAdapter
         final var jpaProductId = productId.value();
         this.repository.deleteAllByProductId(jpaProductId);
     }
+
+    @Override
+    public List<Variant> loadByListIds(List<VariantId> ids) {
+        final var jpaVariantIds = ids.stream().map(VariantId::value).toList();
+        // TODO Auto-generated method stub
+        return this.repository.findByIdIn(jpaVariantIds).stream().map(mapper::toDomain).toList();
+    }
 }
