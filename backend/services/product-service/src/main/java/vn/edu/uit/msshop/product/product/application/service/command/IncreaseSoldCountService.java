@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.IncreaseSoldCountCommand;
+import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.IncreaseSoldCountUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.SaveProductPort;
@@ -18,11 +19,10 @@ public class IncreaseSoldCountService implements IncreaseSoldCountUseCase {
     @Override
     public Product increaseSoldCountAmount(
             IncreaseSoldCountCommand command) {
-        final var productOptional = loadPort.loadById(command.id());
-        if (productOptional.isEmpty())
-            return null;
-        return savePort.save(productOptional.get().increaseSoldCount(command.increaseAmount()));
+        final var productId = command.id();
+        final var product = loadPort.loadById(command.id())
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
+        return savePort.save(product.increaseSoldCount(command.increaseAmount()));
     }
-
 }
