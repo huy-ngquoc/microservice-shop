@@ -1,7 +1,6 @@
 package vn.edu.uit.msshop.product.product.domain.model.valueobject;
 
-import java.util.regex.Pattern;
-
+import vn.edu.uit.msshop.product.shared.domain.Domains;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
 
@@ -9,8 +8,6 @@ public record ProductVariantTrait(
         String value) {
     public static final int MAX_LENGTH = VariantTrait.MAX_LENGTH;
     public static final int MAX_RAW_LENGTH = VariantTrait.MAX_RAW_LENGTH;
-
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\p{IsWhite_Space}+");
 
     public ProductVariantTrait {
         if (value == null) {
@@ -25,7 +22,9 @@ public record ProductVariantTrait(
             throw new DomainException("Option value CANNOT be blank");
         }
 
-        value = WHITESPACE_PATTERN.matcher(value.trim()).replaceAll(" ");
+        value = Domains.getWhitespacePattern()
+                .matcher(value.trim())
+                .replaceAll(" ");
 
         if (value.length() > MAX_LENGTH) {
             throw new DomainException("Option value is too long");

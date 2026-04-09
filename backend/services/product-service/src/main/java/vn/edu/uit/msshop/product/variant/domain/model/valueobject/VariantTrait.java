@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.variant.domain.model.valueobject;
 
-import java.util.regex.Pattern;
-
 import vn.edu.uit.msshop.product.shared.domain.Domains;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
@@ -10,14 +8,13 @@ public record VariantTrait(
     public static final int MAX_LENGTH = 30;
     public static final int MAX_RAW_LENGTH = (int) (MAX_LENGTH * Domains.RAW_LENGTH_TOLERANCE_FACTOR);
 
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\p{IsWhite_Space}+");
     private static final VariantTrait DEFAULT_TRAIT = new VariantTrait("Default");
 
     public VariantTrait {
         value = VariantTrait.validateAndNormalizeValue(value);
     }
 
-    public static String validateAndNormalizeValue(
+    private static String validateAndNormalizeValue(
             final String value) {
         if (value == null) {
             throw new DomainException("Trait value CANNOT be null");
@@ -31,7 +28,9 @@ public record VariantTrait(
             throw new DomainException("Trait value CANNOT be blank");
         }
 
-        final var normalizedValue = WHITESPACE_PATTERN.matcher(value.trim()).replaceAll(" ");
+        final var normalizedValue = Domains.getWhitespacePattern()
+                .matcher(value.trim())
+                .replaceAll(" ");
 
         if (normalizedValue.length() > MAX_LENGTH) {
             throw new DomainException("Trait value is too long");
