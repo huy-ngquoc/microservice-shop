@@ -12,16 +12,17 @@ import vn.edu.uit.msshop.product.product.domain.model.Product;
 @Service
 @RequiredArgsConstructor
 public class IncreaseSoldCountService implements IncreaseSoldCountUseCase {
-    //private final LoadVariantPort loadPort;
     private final SaveProductPort savePort;
     private final LoadProductPort loadPort;
+
     @Override
-    public Product increaseSoldCountAmount(IncreaseSoldCountCommand command) {
+    public Product increaseSoldCountAmount(
+            IncreaseSoldCountCommand command) {
         final var productOptional = loadPort.loadById(command.id());
-        if(productOptional.isEmpty()) return null;
+        if (productOptional.isEmpty())
+            return null;
         return savePort.save(productOptional.get().increaseSoldCount(command.increaseAmount()));
-        
-        
+
     }
 
 }

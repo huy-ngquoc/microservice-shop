@@ -84,11 +84,37 @@ public final class Product {
     public ProductVariants getVariants() {
         return this.configuration.variants();
     }
-    public Product increaseSoldCount(IncreaseAmount amount) {
-        return new Product(this.id, this.name, this.categoryId, this.brandId, this.priceRange,new ProductSoldCount(this.soldCount.value()+amount.value()), this.rating, this.configuration, this.imageKeys, this.version, this.deletionTime);
+
+    public Product increaseSoldCount(
+            IncreaseAmount amount) {
+        return new Product(
+                this.id,
+                this.name,
+                this.categoryId,
+                this.brandId,
+                this.priceRange,
+                new ProductSoldCount(this.soldCount.value() + amount.value()),
+                this.rating,
+                this.configuration,
+                this.imageKeys,
+                this.version,
+                this.deletionTime);
 
     }
-    public Product updateSoldCount(Amount amount) {
-        return new Product(this.id, this.name, this.categoryId, this.brandId, this.priceRange,new ProductSoldCount(amount.value()), this.rating, this.configuration, this.imageKeys, this.version, this.deletionTime);
+
+    public Product updateSoldCount(
+            Amount amount) {
+        return new Product(
+                this.id,
+                this.name,
+                this.categoryId,
+                this.brandId,
+                this.priceRange,
+                new ProductSoldCount(amount.value()),
+                this.rating,
+                this.configuration,
+                this.imageKeys,
+                this.version,
+                this.deletionTime);
     }
 }
