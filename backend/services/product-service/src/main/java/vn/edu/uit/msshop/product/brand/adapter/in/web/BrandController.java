@@ -48,7 +48,7 @@ public class BrandController {
     private final FindBrandUseCase findUseCase;
     private final FindSoftDeletedBrandUseCase findSoftDeletedUseCase;
     private final FindBrandLogoUseCase findLogoUseCase;
-    private final CheckBrandExistsUseCase checkActiveExistsUseCase;
+    private final CheckBrandExistsUseCase checkExistsUseCase;
     private final CreateBrandUseCase createUseCase;
     private final RestoreBrandUseCase restoreUseCase;
     private final UpdateBrandInfoUseCase updateInfoUseCase;
@@ -143,7 +143,7 @@ public class BrandController {
     public ResponseEntity<Void> existsById(
             @PathVariable
             final UUID id) {
-        final var existed = this.checkActiveExistsUseCase.existsById(this.mapper.toBrandId(id));
+        final var existed = this.checkExistsUseCase.existsById(this.mapper.toBrandId(id));
         if (!existed) {
             return ResponseEntity.notFound().build();
         }

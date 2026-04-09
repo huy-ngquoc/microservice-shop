@@ -1,28 +1,26 @@
 package vn.edu.uit.msshop.product.product.adapter.in.web.request;
 
 import java.util.List;
+import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTarget;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 
-public record CreateProductVariantRequest(
+public record CreateSimpleProductRequest(
+        @NotBlank
+        String name,
+
         @NotNull
-        @PositiveOrZero
-        Long price,
+        UUID categoryId,
 
-        @NotEmpty
-        @Size(
-                max = ProductVariantTraits.MAX_TRAITS_AMOUNT)
-        List<@NotBlank @Size(
-                max = ProductVariantTrait.MAX_RAW_LENGTH) String> traits,
+        @NotNull
+        UUID brandId,
+
+        Long price,
 
         @NotEmpty
         @Size(

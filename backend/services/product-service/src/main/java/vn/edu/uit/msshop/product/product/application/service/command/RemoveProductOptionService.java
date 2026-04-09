@@ -28,6 +28,7 @@ import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
@@ -113,7 +114,8 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
 
         final var newVariant = new NewProductVariant(
                 new ProductVariantPrice(defaultPrice.value()),
-                ProductVariantTraits.empty());
+                ProductVariantTraits.empty(),
+                ProductVariantTargets.empty());
         final var newVariants = this.createVariantsPort.create(
                 productId, new NewProductVariants(List.of(newVariant)));
 

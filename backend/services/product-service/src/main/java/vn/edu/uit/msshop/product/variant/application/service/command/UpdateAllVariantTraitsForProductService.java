@@ -56,6 +56,7 @@ public class UpdateAllVariantTraitsForProductService
                 variant.getPrice(),
                 variant.getSoldCount(),
                 newTraits,
+                variant.getTargets(),
                 variant.getImageKey(),
                 variant.getVersion(),
                 variant.getDeletionTime());
