@@ -17,7 +17,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-public class SoftDeleteAllVariantsProductService implements SoftDeleteAllVariantsUseCase {
+public class SoftDeleteAllVariantsService implements SoftDeleteAllVariantsUseCase {
     private final LoadAllVariantsPort loadAllPort;
     private final UpdateAllVariantsPort updateAllPort;
     private final PublishVariantEventPort eventPort;
@@ -29,7 +29,7 @@ public class SoftDeleteAllVariantsProductService implements SoftDeleteAllVariant
         final var variants = this.loadAllPort.loadAllByIds(ids);
 
         final var next = variants.stream()
-                .map(SoftDeleteAllVariantsProductService::toSoftDeleted)
+                .map(SoftDeleteAllVariantsService::toSoftDeleted)
                 .toList();
 
         final var saved = this.updateAllPort.updateAll(next);
