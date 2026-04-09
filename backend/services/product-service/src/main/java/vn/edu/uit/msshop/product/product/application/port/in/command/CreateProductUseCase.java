@@ -9,7 +9,6 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 
 public interface CreateProductUseCase {
@@ -19,8 +18,9 @@ public interface CreateProductUseCase {
     default ProductView createSimple(
             final CreateSimpleProductCommand command) {
         final var defaultNewProductVariant = new NewProductVariant(
-                new ProductVariantPrice(command.price().value()),
-                ProductVariantTraits.empty());
+                command.price(),
+                ProductVariantTraits.empty(),
+                command.targets());
 
         final var defaultNewProductVariants = new NewProductVariants(
                 List.of(defaultNewProductVariant));

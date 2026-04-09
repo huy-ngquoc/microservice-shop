@@ -29,6 +29,7 @@ public class RemoveProductVariantForVariantService implements RemoveProductVaria
         final var product = this.loadPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
+        // TODO: what if that variant is the only one?
         final var newVariants = product.getVariants().removeById(command.variantId());
         final var newConfiguration = new ProductConfiguration(
                 product.getOptions(),

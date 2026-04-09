@@ -10,6 +10,7 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductOption
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.RemoveProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductOptionRequest;
@@ -38,6 +39,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
@@ -53,7 +55,7 @@ public class ProductWebMapper {
 
         final var options = ProductOptions.of(request.options());
         final var variantsList = request.variants().stream()
-                .map(v -> NewProductVariant.of(v.price(), v.traits()))
+                .map(v -> NewProductVariant.of(v.price(), v.traits(), v.targets()))
                 .toList();
         final var newVariants = new NewProductVariants(variantsList);
         final var newConfiguration = new NewProductConfiguration(
@@ -68,20 +70,19 @@ public class ProductWebMapper {
     }
 
     public CreateSimpleProductCommand toCreateSimpleCommand(
-            final CreateProductRequest request) {
+            final CreateSimpleProductRequest request) {
         final var name = new ProductName(request.name());
         final var categoryId = new ProductCategoryId(request.categoryId());
         final var brandId = new ProductBrandId(request.brandId());
-
-        final var rawPrice = Objects.requireNonNull(request.price(),
-                "Price must not be null for simple product");
-        final var price = new ProductPrice(rawPrice);
+        final var price = new ProductVariantPrice(request.price());
+        final var targets = ProductVariantTargets.of(request.targets());
 
         return new CreateSimpleProductCommand(
                 name,
                 categoryId,
                 brandId,
-                price);
+                price,
+                targets);
     }
 
     public RestoreProductCommand toRestoreCommand(
@@ -118,7 +119,11 @@ public class ProductWebMapper {
 
         final var variantPrice = new ProductVariantPrice(request.price());
         final var variantTraits = ProductVariantTraits.of(request.traits());
-        final var newVariant = new NewProductVariant(variantPrice, variantTraits);
+        final var variantTargets = ProductVariantTargets.of(request.targets());
+        final var newVariant = new NewProductVariant(
+                variantPrice,
+                variantTraits,
+                variantTargets);
         final var newVariants = new NewProductVariants(List.of(newVariant));
 
         return new AddProductVariantsCommand(
@@ -252,9 +257,11 @@ public class ProductWebMapper {
             final AddProductVariantsRequest.ProductVariantRequest request) {
         final var variantPrice = new ProductVariantPrice(request.price());
         final var variantTraits = ProductVariantTraits.of(request.traits());
+        final var variantTargets = ProductVariantTargets.of(request.targets());
 
         return new NewProductVariant(
                 variantPrice,
-                variantTraits);
+                variantTraits,
+                variantTargets);
     }
 }

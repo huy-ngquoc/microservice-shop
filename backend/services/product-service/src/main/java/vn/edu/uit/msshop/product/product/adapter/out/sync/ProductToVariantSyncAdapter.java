@@ -35,6 +35,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantsForNew
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTarget;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
@@ -135,10 +137,14 @@ public class ProductToVariantSyncAdapter
         final var traits = new VariantTraits(
                 variant.traits().unwrap()
                         .stream().map(VariantTrait::new).toList());
+        final var targets = new VariantTargets(
+                variant.targets().unwrap()
+                        .stream().map(VariantTarget::new).toList());
 
         return new NewVariantForNewProduct(
                 price,
-                traits);
+                traits,
+                targets);
     }
 
     private ProductVariant toProductVariant(

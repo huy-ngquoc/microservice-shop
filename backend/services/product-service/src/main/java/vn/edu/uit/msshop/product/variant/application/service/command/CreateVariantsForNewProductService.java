@@ -31,7 +31,7 @@ public class CreateVariantsForNewProductService implements CreateVariantsForNewP
             final CreateVariantsForNewProductCommand command) {
         final var newVariantsList = command.newVariantsForNewProduct().values()
                 .stream()
-                .map(v -> this.toNewVariant(command.productId(), v))
+                .map(v -> CreateVariantsForNewProductService.toNewVariant(command.productId(), v))
                 .toList();
 
         final var saved = this.createAllPort.createAll(newVariantsList);
@@ -42,13 +42,14 @@ public class CreateVariantsForNewProductService implements CreateVariantsForNewP
         return saved.stream().map(this.mapper::toView).toList();
     }
 
-    private NewVariant toNewVariant(
+    private static NewVariant toNewVariant(
             final VariantProductId productId,
             final NewVariantForNewProduct newInputs) {
         return new NewVariant(
                 VariantId.newId(),
                 productId,
                 newInputs.price(),
-                newInputs.traits());
+                newInputs.traits(),
+                newInputs.targets());
     }
 }

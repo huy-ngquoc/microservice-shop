@@ -22,6 +22,7 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductOption
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.RemoveProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductOptionRequest;
@@ -153,12 +154,22 @@ public class ProductController {
             @RequestBody
             @Valid
             final CreateProductRequest request) {
-        final ProductView view;
-        if (request.variants().isEmpty() && request.options().isEmpty()) {
-            view = this.createUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
-        } else {
-            view = this.createUseCase.create(this.mapper.toCreateCommand(request));
-        }
+        final var view = this.createUseCase.create(this.mapper.toCreateCommand(request));
+
+        final var response = this.mapper.toResponse(view);
+        final var location = WebMvcLinkBuilder
+                .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id()))
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
+    }
+
+    @PostMapping("/simple")
+    public ResponseEntity<ProductResponse> createSimple(
+            @RequestBody
+            @Valid
+            final CreateSimpleProductRequest request) {
+        final var view = this.createUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
 
         final var response = this.mapper.toResponse(view);
         final var location = WebMvcLinkBuilder

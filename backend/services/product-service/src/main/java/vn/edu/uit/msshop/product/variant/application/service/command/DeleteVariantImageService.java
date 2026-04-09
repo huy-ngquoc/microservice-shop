@@ -56,6 +56,7 @@ public class DeleteVariantImageService implements DeleteVariantImageUseCase {
                 variant.getPrice(),
                 variant.getSoldCount(),
                 variant.getTraits(),
+                variant.getTargets(),
                 null,
                 expectedVersion,
                 variant.getDeletionTime());
@@ -76,7 +77,7 @@ public class DeleteVariantImageService implements DeleteVariantImageUseCase {
             final VariantImageKey oldKey) {
         try {
             this.imageStoragePort.deleteImage(oldKey);
-        } catch (Exception e) {
+        } catch (final RuntimeException e) {
             log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
         }
     }

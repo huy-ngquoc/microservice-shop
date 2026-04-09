@@ -30,6 +30,8 @@ public class VariantDocument {
 
     private final List<String> traits;
 
+    private final List<String> targets;
+
     @Nullable
     private final String imageKey;
 
@@ -52,6 +54,8 @@ public class VariantDocument {
 
             final List<String> traits,
 
+            final List<String> targets,
+
             @Nullable
             final String imageKey,
 
@@ -65,6 +69,7 @@ public class VariantDocument {
         this.price = price;
         this.sold = sold;
         this.traits = List.copyOf(traits);
+        this.targets = List.copyOf(targets);
         this.imageKey = imageKey;
         this.version = version;
         this.deletionTime = deletionTime;

@@ -49,6 +49,7 @@ public class RestoreVariantService implements RestoreVariantUseCase {
                 variant.getPrice(),
                 variant.getSoldCount(),
                 variant.getTraits(),
+                variant.getTargets(),
                 variant.getImageKey(),
                 variant.getVersion(),
                 null);

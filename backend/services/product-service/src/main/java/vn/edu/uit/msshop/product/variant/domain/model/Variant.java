@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
@@ -29,6 +30,8 @@ public final class Variant {
     private final VariantSoldCount soldCount;
 
     private final VariantTraits traits;
+
+    private final VariantTargets targets;
 
     @Nullable
     private final VariantImageKey imageKey;
@@ -51,6 +54,8 @@ public final class Variant {
 
             final VariantTraits traits,
 
+            final VariantTargets targets,
+
             @Nullable
             final VariantImageKey imageKey,
 
@@ -63,6 +68,7 @@ public final class Variant {
         this.price = Domains.requireNonNull(price, "Variant price must not be null");
         this.soldCount = Domains.requireNonNull(soldCount, "Variant sold must not be null");
         this.traits = Domains.requireNonNull(traits, "Variant traits must not be null");
+        this.targets = Domains.requireNonNull(targets, "Variant targets must not be null");
         this.imageKey = imageKey;
 
         this.version = Domains.requireNonNull(version, "Variant version must not be null");

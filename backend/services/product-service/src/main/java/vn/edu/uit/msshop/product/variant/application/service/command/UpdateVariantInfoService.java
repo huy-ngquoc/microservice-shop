@@ -19,6 +19,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariant
 import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Service
@@ -40,8 +41,11 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
 
         final var priceSet = command.price().getSet();
         final var traitsSet = command.traits().getSet();
+        final var targetsSet = command.targets().getSet();
 
-        if ((priceSet == null) && (traitsSet == null)) {
+        if ((priceSet == null)
+                && (traitsSet == null)
+                && (targetsSet == null)) {
             return this.mapper.toView(variant);
         }
 
@@ -53,7 +57,11 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
                     currentVersion.value());
         }
 
-        final var next = this.applyChanges(variant, priceSet, traitsSet);
+        final var next = UpdateVariantInfoService.applyChanges(
+                variant,
+                priceSet,
+                traitsSet,
+                targetsSet);
         if (next == null) {
             return this.mapper.toView(variant);
         }
@@ -66,10 +74,11 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         return this.mapper.toView(saved);
     }
 
-    private @Nullable Variant applyChanges(
+    private static @Nullable Variant applyChanges(
             final Variant current,
             final Change.@Nullable Set<VariantPrice> priceSet,
-            final Change.@Nullable Set<VariantTraits> traitsSet) {
+            final Change.@Nullable Set<VariantTraits> traitsSet,
+            final Change.@Nullable Set<VariantTargets> targetsSet) {
         final VariantPrice newPrice;
         final boolean priceUnchanged;
         if ((priceSet != null) && !priceSet.value().equals(current.getPrice())) {
@@ -90,7 +99,17 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
             traitsUnchanged = true;
         }
 
-        if (priceUnchanged && traitsUnchanged) {
+        final VariantTargets newTargets;
+        final boolean targetsUnchanged;
+        if ((targetsSet != null) && !targetsSet.value().equals(current.getTargets())) {
+            newTargets = targetsSet.value();
+            targetsUnchanged = false;
+        } else {
+            newTargets = current.getTargets();
+            targetsUnchanged = true;
+        }
+
+        if (priceUnchanged && traitsUnchanged && targetsUnchanged) {
             return null;
         }
 
@@ -100,6 +119,7 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
                 newPrice,
                 current.getSoldCount(),
                 newTraits,
+                newTargets,
                 current.getImageKey(),
                 current.getVersion(),
                 current.getDeletionTime());
