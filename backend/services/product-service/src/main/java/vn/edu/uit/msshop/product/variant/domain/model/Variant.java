@@ -5,12 +5,14 @@ import org.jspecify.annotations.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.IncreaseAmount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStock;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
@@ -73,5 +75,14 @@ public final class Variant {
 
         this.version = Domains.requireNonNull(version, "Variant version must not be null");
         this.deletionTime = deletionTime;
+    }
+    public Variant updateStock(VariantStock variantStock) {
+        return new Variant(this.id, this.productId, this.price, this.soldCount, this.traits, this.targets, this.imageKey, this.version, this.deletionTime);
+    }
+    public Variant increaseSoldCount(IncreaseAmount increaseAmount) {
+        return new Variant(this.id, this.productId, this.price, new VariantSoldCount(this.soldCount.value()+increaseAmount.value()) , this.traits, this.targets, this.imageKey, this.version, this.deletionTime);
+    }
+    public Variant updateSoldCount(VariantSoldCount variantSoldCount) {
+        return new Variant(this.id, this.productId, this.price, variantSoldCount, this.traits, this.targets, this.imageKey, this.version, this.deletionTime);
     }
 }
