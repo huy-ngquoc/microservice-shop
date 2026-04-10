@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +28,16 @@ public class VariantInventoryEventListener {
     
     @KafkaHandler
     @Transactional
+    @Nullable
     public void onInventoryUpdate(InventoryUpdated event) {
         if(eventDocumentRepo.existsById(event.getEventId())) return;
-        Variant variant = loadVariantPort.loadById(new VariantId(event.getVariantId())).orElse(null);
-        final var toSave = variant.updateStock(new VariantStock(event.getNewQuantity()));
-        saveVariantPort.save(toSave);
-        eventDocumentRepo.save(new EventDocument(event.getEventId(),Instant.now()));
+       loadVariantPort.loadById(new VariantId(event.getVariantId()))
+        .ifPresent(variant -> {
+            var toSave = variant.updateStock(new VariantStock(event.getNewQuantity()));
+            saveVariantPort.save(toSave);
+            eventDocumentRepo.save(new EventDocument(event.getEventId(), Instant.now()));
+        });
+        
+        
     }
 }
