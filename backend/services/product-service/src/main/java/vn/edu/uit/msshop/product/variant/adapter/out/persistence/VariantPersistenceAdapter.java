@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -155,12 +156,14 @@ public class VariantPersistenceAdapter
     }
 
     @Override
+    @NonNull
     public Variant save(Variant v) {
         final var result = this.repository.save(this.mapper.toPersistence(v));
         return mapper.toDomain(result);
     }
 
     @Override
+    @NonNull
     public List<Variant> saveAll(List<Variant> variants) {
         final var result = this.repository.saveAll(variants.stream().map(mapper::toPersistence).toList());
         return result.stream().map(mapper::toDomain).toList();
