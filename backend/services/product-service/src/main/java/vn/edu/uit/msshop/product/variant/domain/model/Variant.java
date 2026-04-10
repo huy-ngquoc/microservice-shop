@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.variant.domain.model;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.lang.NonNull;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -76,6 +77,7 @@ public final class Variant {
         this.version = Domains.requireNonNull(version, "Variant version must not be null");
         this.deletionTime = deletionTime;
     }
+    @NonNull
     public Variant updateStock(VariantStock variantStock) {
         return new Variant(this.id, this.productId, this.price, this.soldCount, this.traits, this.targets, this.imageKey, this.version, this.deletionTime);
     }
