@@ -1,0 +1,40 @@
+server:
+    port: 8070
+
+spring:
+    output:
+        ansi:
+            enabled: ALWAYS
+    mongodb:
+        host: localhost
+        port: 27017
+        database: product
+        username: alibou
+        password: alibou
+        authentication-database: admin
+        representation:
+            uuid: STANDARD 
+    servlet:
+        multipart:
+            max-file-size: 5MB
+            max-request-size: 6MB
+    kafka:
+        bootstrap-servers: localhost:9092 
+        consumer:
+            group-id: product-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.json.trusted.packages: "*"
+                spring.json.type.mapping: 
+                    InventoryUpdated:vn.edu.uit.msshop.product.variant.domain.event.InventoryUpdated,
+                    IncreaseSoldCountEvents:vn.edu.uit.msshop.product.product.domain.event.IncreaseSoldCountEvents
+logging:
+    level:
+        "[vn.edu.uit.msshop]": DEBUG
+        org:
+            springframework:
+                data:
+                    mongodb:
+                        core:
+                            MongoTemplate: DEBUG
