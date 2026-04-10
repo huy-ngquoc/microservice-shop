@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ public class IncreaseSoldCountService implements IncreaseSoldCountUseCase {
     private final SaveProductPort savePort;
     private final LoadProductPort loadPort;
     @Override
+    @Nullable
     public Product increaseSoldCountAmount(IncreaseSoldCountCommand command) {
         final var productOptional = loadPort.loadById(command.id());
         if(productOptional.isEmpty()) return null;

@@ -3,6 +3,7 @@ package vn.edu.uit.msshop.product.product.adapter.out.sync;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +51,7 @@ public class SyncSoldCountJob {
         saveVariantPort.saveAll(toSaveVariants);
         saveProductPort.saveAll(toSaves);
     }
+    @Nullable
     private Variant findVariantInList(VariantId id, List<Variant> variants) {
         for(Variant v: variants) {
             if(v.getId().value().equals(id.value())) 
@@ -59,6 +61,7 @@ public class SyncSoldCountJob {
         }
         return null;
     }
+    @Nullable
     private Product findProductInListByVariant(Variant v, List<Product> products) {
         for(Product p: products) {
             if(v.getProductId().value().equals(p.getId().value())) {
