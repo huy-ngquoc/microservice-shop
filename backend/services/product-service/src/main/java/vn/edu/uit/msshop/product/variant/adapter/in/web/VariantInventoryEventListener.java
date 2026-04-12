@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +13,6 @@ import vn.edu.uit.msshop.product.shared.event.EventDocumentRepository;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.SaveVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.event.InventoryUpdated;
-import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStock;
 
@@ -28,7 +26,6 @@ public class VariantInventoryEventListener {
     
     @KafkaHandler
     @Transactional
-    @Nullable
     public void onInventoryUpdate(InventoryUpdated event) {
         if(event.getEventId()==null||event.getVariantId()==null) {
             return;

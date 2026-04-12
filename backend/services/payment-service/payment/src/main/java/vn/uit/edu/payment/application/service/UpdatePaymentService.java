@@ -1,6 +1,7 @@
 package vn.uit.edu.payment.application.service;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -8,7 +9,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentCancelledDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
 import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentCancelledDocumentRepository;
@@ -50,6 +50,7 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public void onlinePaymentExpire(OrderId orderId) {
         final var payment = loadPort.loadPaymentByOrderId(orderId);
         if(payment==null) return;
@@ -59,6 +60,7 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
         final var next = payment.applyUpdateInfo(update);
         final Payment saved = savePort.save(next);
         OnlinePaymentExpiredDocument outboxEvent = OnlinePaymentExpiredDocument.builder()
+        .eventId(UUID.randomUUID())
         .orderId(saved.getOrderId().value())
         .eventStatus("PENDING")
         .retryCount(0)
@@ -76,6 +78,7 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public void onlinePaymentCancelled(OrderId orderId) {
         final var payment = loadPort.loadPaymentByOrderId(orderId);
         if(payment==null) return;
@@ -85,6 +88,7 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
         final var next = payment.applyUpdateInfo(update);
         final Payment saved = savePort.save(next);
         OnlinePaymentCancelledDocument outboxEvent = OnlinePaymentCancelledDocument.builder()
+        .eventId(UUID.randomUUID())
         .orderId(saved.getOrderId().value())
         .eventStatus("PENDING")
         .retryCount(0)

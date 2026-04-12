@@ -113,6 +113,19 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=alibou
             - MONGO_INITDB_ROOT_PASSWORD=alibou
             - TZ=UTC
+    mongodb_payment:
+        container_name: ms_mongodb_payment
+        image: mongo:8
+        ports:
+            - 27023:27017
+        volumes:
+            - mongo_payment:/data
+        networks:
+            - microservices-net
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
     mongodb_rating:
         container_name: ms_mongo_db_rating
         image: mongo:8
@@ -272,3 +285,4 @@ volumes:
     mongo_auth:
     mongo_account:
     mongo_inventory:
+    mongo_payment:

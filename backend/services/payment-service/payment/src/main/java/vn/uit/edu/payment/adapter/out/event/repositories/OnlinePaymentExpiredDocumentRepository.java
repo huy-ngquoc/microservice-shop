@@ -13,7 +13,7 @@ import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocume
 public interface OnlinePaymentExpiredDocumentRepository extends MongoRepository<OnlinePaymentExpiredDocument, UUID> {
     public List<OnlinePaymentExpiredDocument> findByEventStatus(String eventStatus);
 
-    public List<OnlinePaymentExpiredDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<OnlinePaymentExpiredDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

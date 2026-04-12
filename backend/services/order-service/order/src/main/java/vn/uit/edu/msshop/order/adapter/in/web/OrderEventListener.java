@@ -32,6 +32,11 @@ public class OrderEventListener {
     @KafkaHandler
     @Transactional
     public void onPaymentCancelled(OnlinePaymentCancelled event) {
+        if(event.eventId()==null||event.orderId()==null) {
+            System.out.println("Con di me may");
+            System.out.println(event.orderId());
+            return;
+        }
         if(!eventDocumentRepo.existsById(event.eventId())) {
         Order order = loadPort.loadById(new OrderId(event.orderId())).orElseThrow(()->new OrderNotFoundException(new OrderId(event.orderId())));
         Order.UpdateInfo updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
@@ -43,6 +48,11 @@ public class OrderEventListener {
     @KafkaHandler
     @Transactional
     public void onPaymentExpired(OnlinePaymentExpired event) {
+        if(event.eventId()==null||event.orderId()==null) {
+            System.out.println("Con di me may");
+            System.out.println(event.orderId());
+            return;
+        }
         if(!eventDocumentRepo.existsById(event.eventId())) {
         Order order = loadPort.loadById(new OrderId(event.orderId())).orElseThrow(()->new OrderNotFoundException(new OrderId(event.orderId())));
         Order.UpdateInfo updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
