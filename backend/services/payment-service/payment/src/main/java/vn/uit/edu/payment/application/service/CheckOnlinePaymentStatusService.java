@@ -4,15 +4,16 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
 import vn.payos.PayOS;
-
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
 import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentExpiredDocumentRepository;
 import vn.uit.edu.payment.application.port.in.LoadPaymentUseCase;
@@ -37,7 +38,7 @@ public class CheckOnlinePaymentStatusService implements CheckOnlinePaymentStatus
 
     @Override
     @Scheduled(fixedRate=15*60*1000)
-    
+    @Transactional
     public void checkOnlinePaymentStatus() {
 
         List<Payment> payments = loadUseCase.loadExpiredPayment(Instant.now().plus(15, ChronoUnit.MINUTES));
@@ -49,6 +50,7 @@ public class CheckOnlinePaymentStatusService implements CheckOnlinePaymentStatus
                 p.setPaymentStatus(new PaymentStatus("EXPIRED"));
 
                 OnlinePaymentExpiredDocument outboxEvent = OnlinePaymentExpiredDocument.builder()
+                .eventId(UUID.randomUUID())
         .orderId(p.getOrderId().value())
         .eventStatus("PENDING")
         .retryCount(0)

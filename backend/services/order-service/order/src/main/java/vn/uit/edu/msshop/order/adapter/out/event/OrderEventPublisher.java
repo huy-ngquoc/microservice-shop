@@ -74,6 +74,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
 
     @Override
     public void publishOrderCreatedEvent( OrderCreatedDocument outboxEvent) {
+        System.out.println("Publish event order created");
         OrderCreated event = new OrderCreated(outboxEvent.getEventId(),outboxEvent.getCurrency(), outboxEvent.getOrderId(), outboxEvent.getPaymentMethod(), outboxEvent.getPaymentValue());
         Message<OrderCreated> message=MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, ORDER_CREATED_TOPIC).build();
         try {
@@ -225,7 +226,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     @Override
     public void publishIncreaseSoldCountEvent(IncreaseSoldCountEventsDocument outboxEvent) {
          IncreaseSoldCountEvents event = new IncreaseSoldCountEvents(outboxEvent.getEventId(), outboxEvent.getDetails().stream().map(item->new IncreaseSoldCountDetail(item.getVariantId(), item.getAmount())).toList());
-         Message<IncreaseSoldCountEvents> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
+         Message<IncreaseSoldCountEvents> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PRODUCT_TOPIC).build();
          try {
         increaseSoldCountTemplate.send(message)  
         .whenComplete((result,ex)->{

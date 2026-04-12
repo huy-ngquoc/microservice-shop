@@ -27,6 +27,7 @@ public class OrderEventListener {
 
     @KafkaHandler
     public void handleOrderCreated(OrderCreated event) {
+        System.out.println("Listen to event");
         if(!eventDocumentRepo.existsById(event.eventId())) {
         CreatePaymentCommand command = mapper.toCommand(event);
         createUseCase.create(command);

@@ -28,7 +28,9 @@ public class LoadPaymentService implements LoadPaymentUseCase {
 
     @Override
     public PaymentView loadByOrderId(OrderId orderId) {
-       return mapper.toView(loadPort.loadPaymentByOrderId(orderId));
+        final var result = loadPort.loadPaymentByOrderId(orderId);
+        if(result==null) return null;
+       return mapper.toView(result);
     }
 
     @Override

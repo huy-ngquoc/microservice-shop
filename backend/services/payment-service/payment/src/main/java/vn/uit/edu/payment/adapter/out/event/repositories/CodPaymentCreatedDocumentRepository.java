@@ -14,7 +14,7 @@ import vn.uit.edu.payment.adapter.out.event.documents.CodPaymentCreatedDocument;
 public interface CodPaymentCreatedDocumentRepository extends MongoRepository<CodPaymentCreatedDocument, UUID> {
      public List<CodPaymentCreatedDocument> findByEventStatus(String eventStatus);
 
-    public List<CodPaymentCreatedDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<CodPaymentCreatedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

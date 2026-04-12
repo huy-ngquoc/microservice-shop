@@ -25,7 +25,7 @@ public class OnlinePaymentExpiredOutboxPublisher {
 
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<OnlinePaymentExpiredDocument> pendingEvents = onlinePaymentExpiredDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<OnlinePaymentExpiredDocument> pendingEvents = onlinePaymentExpiredDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (OnlinePaymentExpiredDocument event : pendingEvents) {
             try {
@@ -69,7 +69,7 @@ public class OnlinePaymentExpiredOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    onlinePaymentExpiredDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    onlinePaymentExpiredDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

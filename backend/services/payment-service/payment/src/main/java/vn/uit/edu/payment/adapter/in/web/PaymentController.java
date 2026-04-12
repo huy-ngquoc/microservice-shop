@@ -46,7 +46,9 @@ public class PaymentController {
     @GetMapping("/order/{orderId}")
     public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId, @RequestHeader("X-User-Id") String userIdFromHeader) {
         System.out.println("X-User-Id "+userIdFromHeader+"newiwniweviwenvioernoviernv");
-        final var result = mapper.toResponse(loadPaymentUseCase.loadByOrderId(new OrderId(orderId)));
+        final var payment = loadPaymentUseCase.loadByOrderId(new OrderId(orderId));
+        if(payment==null) return ResponseEntity.notFound().build();
+        final var result = mapper.toResponse(payment);
         return ResponseEntity.ok(result);
     }
     @PostMapping("/create")

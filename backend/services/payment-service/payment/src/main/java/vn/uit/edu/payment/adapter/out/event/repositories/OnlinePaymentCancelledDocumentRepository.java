@@ -13,7 +13,7 @@ import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentCancelledDocu
 public interface OnlinePaymentCancelledDocumentRepository extends MongoRepository<OnlinePaymentCancelledDocument, UUID> {
     public List<OnlinePaymentCancelledDocument> findByEventStatus(String eventStatus);
 
-    public List<OnlinePaymentCancelledDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<OnlinePaymentCancelledDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

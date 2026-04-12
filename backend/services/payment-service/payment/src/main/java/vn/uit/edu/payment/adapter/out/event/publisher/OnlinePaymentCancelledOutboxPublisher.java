@@ -25,7 +25,7 @@ public class OnlinePaymentCancelledOutboxPublisher {
 
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<OnlinePaymentCancelledDocument> pendingEvents = onlinePaymentCancelledDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<OnlinePaymentCancelledDocument> pendingEvents = onlinePaymentCancelledDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (OnlinePaymentCancelledDocument event : pendingEvents) {
             try {
@@ -69,7 +69,7 @@ public class OnlinePaymentCancelledOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    onlinePaymentCancelledDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    onlinePaymentCancelledDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }
