@@ -36,7 +36,7 @@ public class CreatePaymentService implements CreatePaymentUseCase {
         Payment p = loadPort.loadPaymentByOrderId(command.orderId());
         if(p!=null) throw new RuntimeException("Payment for this order already exist");
         final var draft = Payment.Draft.builder().paymentId(command.paymentId()).createAt(new CreateAt(Instant.now())).currency(command.currency()).orderId(command.orderId()).paymentMethod(command.paymentMethod())
-        .paymentStatus(command.paymentStatus()).paymentValue(command.paymentValue()).updateAt(new UpdateAt(null)).build();
+        .paymentStatus(command.paymentStatus()).paymentValue(command.paymentValue()).updateAt(new UpdateAt(null)).userId(command.userId()).build();
         final var payment = Payment.create(draft);
 
         final var saved=savePort.save(payment);

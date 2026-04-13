@@ -24,6 +24,7 @@ public class OrderCreatedDocument extends OutboxEvent {
     private UUID orderId;
     private String paymentMethod;
     private long paymentValue;
+    private UUID userId;
 
    
     

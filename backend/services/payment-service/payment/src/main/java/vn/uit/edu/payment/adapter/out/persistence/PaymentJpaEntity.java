@@ -39,6 +39,7 @@ public class PaymentJpaEntity {
     private String paymentMethod;
     private String paymentStatus;
     private long paymentValue;
+    private UUID userId;
 
      @Version
     @Column(
@@ -53,9 +54,10 @@ public class PaymentJpaEntity {
     UUID orderId,
     String paymentMethod,
     String paymentStatus,
-    long paymentValue
+    long paymentValue,
+    UUID userId
    ) {
-    return new PaymentJpaEntity(id, createAt, updateAt, currency, orderId, paymentMethod, paymentStatus, paymentValue, 0L);
+    return new PaymentJpaEntity(id, createAt, updateAt, currency, orderId, paymentMethod, paymentStatus, paymentValue,userId, 0L);
    }
 
 }
