@@ -6,7 +6,8 @@ public record CreatePaymentRequest(
     String currency,
     UUID orderId,
     String paymentMethod,
-    long paymentValue
+    long paymentValue,
+    UUID userId
 ) {
 
 }

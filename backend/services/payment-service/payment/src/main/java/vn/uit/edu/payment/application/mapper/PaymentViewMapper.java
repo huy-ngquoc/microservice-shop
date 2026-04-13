@@ -10,6 +10,6 @@ public class PaymentViewMapper {
     public PaymentView toView(final Payment payment) {
         return new PaymentView(payment.getPaymentId().value().toString(), payment.getCreateAt().value(), payment.getCurrency().value(),
          payment.getOrderId().value().toString(), payment.getPaymentMethod().value(), payment.getPaymentStatus().value(), payment.getPaymentValue().value(),
-          payment.getUpdateAt().value());
+          payment.getUpdateAt().value(), payment.getUserId().value().toString());
     }
 }

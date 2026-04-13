@@ -18,6 +18,7 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentValue;
+import vn.uit.edu.payment.domain.model.valueobject.UserId;
 /*PaymentId paymentId,
     Currency currency,
     OrderId orderId,
@@ -33,7 +34,8 @@ public class PaymentWebMapper {
             new OrderId(request.orderId()),
             new PaymentMethod(request.paymentMethod()),
             new PaymentStatus("PENDING"),
-            new PaymentValue(request.paymentValue())
+            new PaymentValue(request.paymentValue()),
+            new UserId(request.userId())
         );
     }
 
@@ -44,7 +46,8 @@ public class PaymentWebMapper {
             new OrderId(event.orderId()),
             new PaymentMethod(event.paymentMethod()),
             new PaymentStatus("PENDING"),
-            new PaymentValue(event.paymentValue())
+            new PaymentValue(event.paymentValue()),
+        new UserId(event.userId())
         );
     }
     
@@ -57,7 +60,7 @@ public class PaymentWebMapper {
     }
 
     public PaymentResponse toResponse(PaymentView paymentView) {
-        return new PaymentResponse(paymentView.paymentId(), paymentView.createAt(), paymentView.currency(), paymentView.orderId(), paymentView.paymentMethod(), paymentView.paymentStatus(), paymentView.paymentValue(), paymentView.updateAt());
+        return new PaymentResponse(paymentView.paymentId(), paymentView.createAt(), paymentView.currency(), paymentView.orderId(), paymentView.paymentMethod(), paymentView.paymentStatus(), paymentView.paymentValue(), paymentView.updateAt(), paymentView.userId());
     }
 
 }

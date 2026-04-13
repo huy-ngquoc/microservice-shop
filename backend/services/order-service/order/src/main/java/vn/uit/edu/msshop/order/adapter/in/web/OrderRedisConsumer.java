@@ -2,11 +2,9 @@ package vn.uit.edu.msshop.order.adapter.in.web;
 
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.redis.connection.stream.MapRecord;
-import org.springframework.data.redis.connection.stream.ObjectRecord;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.stereotype.Service;
@@ -84,7 +82,7 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
         .retryCount(0)
         .createdAt(Instant.now())
         .updatedAt(null).eventId(UUID.randomUUID())
-        .lastError(null).build();
+        .lastError(null).userId(saved.getUserId().value()).build();
         final var savedEvent=orderCreatedDocumentRepo.save(outboxEventOrderCreated);
          OrderCreatedSuccessDocument outboxOrderCreatedSuccess = OrderCreatedSuccessDocument.builder().eventId(UUID.randomUUID())
         .userId(order.getUserId().value())

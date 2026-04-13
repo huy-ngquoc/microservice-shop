@@ -10,7 +10,8 @@ public record PaymentView(
     String paymentMethod,
     String paymentStatus,
     long paymentValue,
-    Instant updateAt
+    Instant updateAt,
+    String userId
 ) {
 
 }

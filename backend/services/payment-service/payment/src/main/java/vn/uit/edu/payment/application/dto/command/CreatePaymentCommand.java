@@ -8,6 +8,7 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentValue;
+import vn.uit.edu.payment.domain.model.valueobject.UserId;
 
 public record CreatePaymentCommand(
     PaymentId paymentId,
@@ -15,7 +16,8 @@ public record CreatePaymentCommand(
     OrderId orderId,
     PaymentMethod paymentMethod,
     PaymentStatus paymentStatus,
-    PaymentValue paymentValue
+    PaymentValue paymentValue,
+    UserId userId
 ) {
     public CreatePaymentCommand {
         if(paymentId==null) {

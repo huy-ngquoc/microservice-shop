@@ -19,6 +19,7 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentValue;
 import vn.uit.edu.payment.domain.model.valueobject.UpdateAt;
+import vn.uit.edu.payment.domain.model.valueobject.UserId;
 
 @Getter
 @EqualsAndHashCode(
@@ -46,6 +47,10 @@ public class Payment {
 
     private UpdateAt updateAt;
 
+    private final UserId userId;
+
+
+
     @Builder
     public static record Draft (
     @NonNull
@@ -56,7 +61,8 @@ public class Payment {
     PaymentMethod paymentMethod,
     PaymentStatus paymentStatus,
     PaymentValue paymentValue,
-    UpdateAt updateAt
+    UpdateAt updateAt,
+    UserId userId
     ) {
         public Draft {
             if(paymentId==null) {
@@ -80,6 +86,9 @@ public class Payment {
             if(paymentValue == null) {
                 throw new IllegalArgumentException("Payment value must not be null");
             }
+            if(userId==null) {
+                throw new IllegalArgumentException("User id must not be null");
+            }
         }
 
     }
@@ -94,7 +103,8 @@ public class Payment {
         PaymentMethod paymentMethod,
         PaymentStatus paymentStatus,
         PaymentValue paymentValue,
-        UpdateAt updateAt
+        UpdateAt updateAt,
+        UserId userId
     ) {
         public Snapshot {
             if(paymentId==null) {
@@ -115,6 +125,9 @@ public class Payment {
             
             if(paymentValue == null) {
                 throw new IllegalArgumentException("Payment value must not be null");
+            }
+            if(userId==null) {
+                throw new IllegalArgumentException("User id must not be null");
             }
         }
     }
@@ -137,7 +150,7 @@ public class Payment {
             throw new IllegalArgumentException("Draft must NOT be null");
         }
         return Payment.builder().paymentId(d.paymentId()).createAt(d.createAt()).currency(d.currency()).orderId(d.orderId()).paymentMethod(d.paymentMethod())
-        .paymentStatus(d.paymentStatus()).paymentValue(d.paymentValue()).updateAt(d.updateAt()).build();
+        .paymentStatus(d.paymentStatus()).paymentValue(d.paymentValue()).updateAt(d.updateAt()).userId(d.userId()).build();
     }
     @NullMarked
     public static Payment reconstitue(Snapshot s) {
@@ -146,12 +159,12 @@ public class Payment {
 
         }
         return Payment.builder().paymentId(s.paymentId()).createAt(s.createAt()).currency(s.currency()).orderId(s.orderId()).paymentMethod(s.paymentMethod())
-        .paymentStatus(s.paymentStatus()).paymentValue(s.paymentValue()).updateAt(s.updateAt()).build();
+        .paymentStatus(s.paymentStatus()).paymentValue(s.paymentValue()).updateAt(s.updateAt()).userId(s.userId()).build();
     }
     @NullMarked
     public Snapshot snapshot() {
         return Snapshot.builder().paymentId(this.paymentId).createAt(this.createAt).currency(this.currency).orderId(this.orderId).paymentMethod(this.paymentMethod)
-        .paymentStatus(this.paymentStatus).paymentValue(this.paymentValue).updateAt(this.updateAt).build();
+        .paymentStatus(this.paymentStatus).paymentValue(this.paymentValue).updateAt(this.updateAt).userId(this.userId).build();
     
     }
     @NullMarked
@@ -163,7 +176,7 @@ public class Payment {
             return this;
         } 
         return Payment.builder().paymentId(paymentId).createAt(createAt).currency(u.currency()).orderId(orderId).paymentMethod(u.paymentMethod())
-        .paymentStatus(u.paymentStatus()).paymentValue(paymentValue).updateAt(new UpdateAt(Instant.now())).build();
+        .paymentStatus(u.paymentStatus()).paymentValue(paymentValue).updateAt(new UpdateAt(Instant.now())).userId(this.userId).build();
 
     }
     @NullMarked
