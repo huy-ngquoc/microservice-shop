@@ -11,6 +11,7 @@ import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotFoundException;
+import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
@@ -88,9 +89,8 @@ public class CreateOrderService implements CreateOrderUseCase {
     @Observed(name = "mongodb.save.order")
     public UUID create(CreateOrderCommand command) {
         this.checkUserPort.isUserAvailable(command.userId().value());
-        List<OrderDetail> listDetails = command.details().stream().map(item->{
-            return loadOrderDetailPort.loadOrderDetail(item.variantId(), item.quantity());
-        }).toList();
+        List<OrderDetailRequest> requests= command.details().stream().map(item->new OrderDetailRequest(item.variantId(), item.quantity())).toList();
+        List<OrderDetail> listDetails = loadOrderDetailPort.loadByListDetail(requests);
         System.out.println(listDetails.get(0).variantId());
         canPlaceOrder(listDetails);
         long originPrice =0;

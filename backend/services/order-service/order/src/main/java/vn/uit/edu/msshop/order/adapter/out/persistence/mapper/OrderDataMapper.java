@@ -51,8 +51,7 @@ public class OrderDataMapper {
     }
     public OrderDetail toOrderDetailDomain(OrderDetailDocument orderDetailDocument) {
         
-        return new OrderDetail(orderDetailDocument.getVariantId(),orderDetailDocument.getVariantName(),orderDetailDocument.getProductName(),orderDetailDocument.getSize(),
-    orderDetailDocument.getColor(),orderDetailDocument.getImages(),orderDetailDocument.getAmount(),orderDetailDocument.getUnitPrice());
+        return new OrderDetail(orderDetailDocument.getVariantId(), orderDetailDocument.getProductId(),orderDetailDocument.getProductName(), orderDetailDocument.getImageKey(), orderDetailDocument.getAmount(), orderDetailDocument.getUnitPrice(), orderDetailDocument.getTraits());
     }
 
     public OrderDocument toDocument(Order order) {
@@ -66,7 +65,6 @@ public class OrderDataMapper {
         return new ShippingInfoDocument(shippingInfo.fullName(), shippingInfo.address(), shippingInfo.email(), shippingInfo.phone());
     }
     public OrderDetailDocument toOrderDetailDocument(OrderDetail orderDetail) {
-        return new OrderDetailDocument(orderDetail.variantId(), orderDetail.variantName(), orderDetail.productName(), orderDetail.size(),
-        orderDetail.color(), orderDetail.images(), orderDetail.amount(), orderDetail.unitPrice());
+        return new OrderDetailDocument(orderDetail.variantId(), orderDetail.productName(), orderDetail.traits(), orderDetail.imageKey(), orderDetail.productId(), orderDetail.amount(), orderDetail.unitPrice());
     }
 }

@@ -1,0 +1,12 @@
+package vn.uit.edu.msshop.order.adapter.out.persistence;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+@Repository
+public interface VariantInfoRepository extends MongoRepository<VariantInfo, UUID> {
+    public List<VariantInfo> findByProductId(UUID productId);
+    public List<VariantInfo> findByIdIn(List<UUID> variantIds);
+}
