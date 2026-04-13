@@ -58,7 +58,7 @@ public class OrderWebMapper {
     }
 
     public OrderDetailResponse toResponse(OrderDetail orderDetail) {
-        return new OrderDetailResponse(orderDetail.variantId().toString(),orderDetail.variantName(),orderDetail.productName(),orderDetail.size(),orderDetail.color(),orderDetail.images().toArray(new String[0]),orderDetail.amount(),orderDetail.unitPrice());
+        return new OrderDetailResponse(orderDetail.variantId().toString(), orderDetail.productId().toString(), orderDetail.productName(), orderDetail.traits(), orderDetail.amount(), orderDetail.unitPrice());
     }
 
     public OrderResponse toResponse(OrderView orderView) {
