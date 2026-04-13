@@ -151,6 +151,7 @@ public class VariantPersistenceAdapter
     @Override
     public List<Variant> loadByListIds(List<VariantId> ids) {
         final var jpaVariantIds = ids.stream().map(VariantId::value).toList();
+        System.out.println("First id "+jpaVariantIds.get(0).toString());
         // TODO Auto-generated method stub
         return this.repository.findByIdIn(jpaVariantIds).stream().map(mapper::toDomain).toList();
     }

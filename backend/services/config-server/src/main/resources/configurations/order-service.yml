@@ -43,7 +43,8 @@ spring:
                     OrderCreatedSuccess:vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess,
                     OrderCreated_Inventory:vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated,
                     OrderCancelled:vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled,
-                    OrderShipped:vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped
+                    OrderShipped:vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped,
+                    IncreaseSoldCountEvents:vn.uit.edu.msshop.order.domain.event.IncreaseSoldCountEvents
 logging:
   level:
         org.apache.kafka: ERROR

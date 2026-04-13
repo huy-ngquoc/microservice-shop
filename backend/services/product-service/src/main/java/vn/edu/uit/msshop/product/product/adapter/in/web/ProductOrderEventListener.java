@@ -37,10 +37,14 @@ public class ProductOrderEventListener {
     @Transactional
     
     public void onOrderReceived(IncreaseSoldCountEvents event) {
+        System.out.println("Event received");
         if(eventDocumentRepo.existsById(event.eventId())) return;
         List<VariantId> variantIds =  event.details().stream().map(item->new VariantId(item.variantId())).toList();
+        System.out.println("Variant Ids size" +variantIds.size());
         List<Variant> variants = loadVariantPort.loadByListIds(variantIds);
+        System.out.println("Variants size "+variants.size());
         List<Product> products = loadProductPort.loadByVariants(variants);
+        System.out.println("Products size "+products.size());
         List<Product> toSaves = new ArrayList<>();
         List<Variant> toSaveVariants=  new ArrayList<>();
         for(IncreaseSoldCountDetail detail:event.details()) {

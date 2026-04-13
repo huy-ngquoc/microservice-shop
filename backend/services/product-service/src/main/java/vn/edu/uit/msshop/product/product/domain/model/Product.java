@@ -85,6 +85,7 @@ public final class Product {
         return this.configuration.variants();
     }
     public Product increaseSoldCount(IncreaseAmount amount) {
+        System.out.println("Increase amount "+amount.value());
         return new Product(this.id, this.name, this.categoryId, this.brandId, this.priceRange,new ProductSoldCount(this.soldCount.value()+amount.value()), this.rating, this.configuration, this.imageKeys, this.version, this.deletionTime);
 
     }
