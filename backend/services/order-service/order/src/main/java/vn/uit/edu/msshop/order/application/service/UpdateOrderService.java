@@ -105,7 +105,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             )).toList();
             updateVariantSoldCountUseCase.updateMany(commands);
             IncreaseSoldCountEventsDocument eventsDocument = IncreaseSoldCountEventsDocument.builder().eventId(UUID.randomUUID())
-            .details(saved.getDetails().stream().map(item->new IncreaseSoldCountDetailDocument(saved.getId().value(),item.amount())).toList())
+            .details(saved.getDetails().stream().map(item->new IncreaseSoldCountDetailDocument(item.variantId(),item.amount())).toList())
             .eventStatus("PENDING")
             .retryCount(0)
             .createdAt(Instant.now())
