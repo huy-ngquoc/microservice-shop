@@ -1,11 +1,14 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEventPort;
+import vn.edu.uit.msshop.product.shared.event.repository.VariantUpdateRepository;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
@@ -21,6 +24,8 @@ public class RestoreVariantsForProductService
     private final LoadAllSoftDeletedVariantsPort loadAllSoftDeletedPort;
     private final UpdateAllVariantsPort updateAllPort;
     private final PublishVariantEventPort eventPort;
+    private final VariantUpdateRepository variantUpdateRepo;
+    private final PublishProductEventPort publishProductEventPort;
 
     @Override
     @Transactional
@@ -35,7 +40,17 @@ public class RestoreVariantsForProductService
 
         final var saved = this.updateAllPort.updateAll(next);
 
-        saved.forEach(s -> this.eventPort.publish(new VariantRestored(s.getId())));
+        
+        
+        saved.forEach(s -> {
+                this.eventPort.publish(new VariantRestored(s.getId()));
+                
+
+        });
+        
+    }
+    private List<String> getTraits(Variant v) {
+        return v.getTraits().values().stream().map(item->item.value()).toList();
     }
 
     private static Variant toRestored(

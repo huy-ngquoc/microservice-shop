@@ -1,10 +1,17 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEventPort;
+import vn.edu.uit.msshop.product.shared.event.document.VariantUpdateDocument;
+import vn.edu.uit.msshop.product.shared.event.repository.VariantUpdateRepository;
 import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantUseCase;
@@ -24,6 +31,8 @@ public class RestoreVariantService implements RestoreVariantUseCase {
     private final AddVariantToProductPort addToProductPort;
     private final UpdateVariantPort updatePort;
     private final PublishVariantEventPort eventPort;
+    private final VariantUpdateRepository variantUpdateRepo;
+    private final PublishProductEventPort publishProductEventPort;
 
     @Override
     @Transactional
@@ -56,7 +65,14 @@ public class RestoreVariantService implements RestoreVariantUseCase {
         final var saved = this.updatePort.update(next);
 
         this.addToProductPort.addToProduct(variant);
+        VariantUpdateDocument eventDocument = new VariantUpdateDocument(UUID.randomUUID(), saved.getId().value(), saved.getProductId().value(), "",
+                 saved.getPrice().value(), getTraits(saved), saved.getImageKey().value(), "PENDING", 0, Instant.now(), null, null);
+        VariantUpdateDocument savedEventDodcument = variantUpdateRepo.save(eventDocument);
+        publishProductEventPort.publishVariantUpdated(savedEventDodcument);
 
         this.eventPort.publish(new VariantRestored(saved.getId()));
+    }
+    private List<String> getTraits(Variant v) {
+        return v.getTraits().values().stream().map(item->item.value()).toList();
     }
 }

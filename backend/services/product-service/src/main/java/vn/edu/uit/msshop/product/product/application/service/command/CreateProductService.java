@@ -1,5 +1,9 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +22,14 @@ import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckPr
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.shared.event.document.ProductCreatedDocument;
+import vn.edu.uit.msshop.product.shared.event.document.VariantCreatedDocument;
+import vn.edu.uit.msshop.product.shared.event.repository.ProductCreatedRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +41,9 @@ public class CreateProductService implements CreateProductUseCase {
     private final PublishProductEventPort eventPort;
 
     private final ProductViewMapper mapper;
+
+    private final ProductCreatedRepository productCreatedRepository;
+    private final vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEventPort publishProductEventPort;
 
     @Override
     @Transactional
@@ -68,7 +79,17 @@ public class CreateProductService implements CreateProductUseCase {
         final var saved = this.createPort.create(newProduct);
 
         this.eventPort.publish(new ProductCreated(saved.getId()));
+
+        List<VariantCreatedDocument> variantCreateds = saved.getVariants().values().stream().map(item->new VariantCreatedDocument(item.id().value(), item.price().value(),getTraits(item),"")).toList();
+
+        ProductCreatedDocument productCreatedDocument = new ProductCreatedDocument(UUID.randomUUID(), saved.getId().value(), saved.getName().value(), variantCreateds, "PENDING", 
+            0, Instant.now(), null, null);
+        final var savedEvent = productCreatedRepository.save(productCreatedDocument);
+        publishProductEventPort.publishProductCreated(savedEvent);
         return this.mapper.toView(saved);
+    }
+    private List<String> getTraits(ProductVariant v) {
+        return v.traits().values().stream().map(item->item.value()).toList();
     }
 
     private void validateCategoryExists(

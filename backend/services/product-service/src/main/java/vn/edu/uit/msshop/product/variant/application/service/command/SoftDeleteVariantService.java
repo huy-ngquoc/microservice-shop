@@ -1,10 +1,16 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEventPort;
+import vn.edu.uit.msshop.product.shared.event.document.VariantDeletedDocument;
+import vn.edu.uit.msshop.product.shared.event.repository.VariantDeletedRepository;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantUseCase;
@@ -23,6 +29,8 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
     private final UpdateVariantPort updatePort;
     private final RemoveVariantFromProductPort removeFromProductPort;
     private final PublishVariantEventPort eventPort;
+    private final VariantDeletedRepository variantDeletedRepo;
+    private final PublishProductEventPort publishProductEventPort;
 
     @Override
     @Transactional
@@ -56,6 +64,8 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
         this.removeFromProductPort.removeFromProduct(
                 saved.getId(),
                 saved.getProductId());
+        VariantDeletedDocument eventDocument = new VariantDeletedDocument(UUID.randomUUID(), saved.getId().value(), "PENDING", 0, Instant.now(), null, null);
+        publishProductEventPort.publishVariantDeleted(variantDeletedRepo.save(eventDocument));
 
         this.eventPort.publish(new VariantSoftDeleted(saved.getId()));
     }

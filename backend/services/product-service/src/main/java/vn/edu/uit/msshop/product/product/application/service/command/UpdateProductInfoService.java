@@ -1,5 +1,8 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategor
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.shared.event.document.ProductUpdateDocument;
+import vn.edu.uit.msshop.product.shared.event.repository.ProductUpdateRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +39,8 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
     private final CheckProductBrandExistsPort checkBrandExistsPort;
     private final ProductViewMapper mapper;
     private final PublishProductEventPort eventPort;
+    private final ProductUpdateRepository productUpdateRepo;
+    private final vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEventPort publishProductEventPort;
 
     @Override
     @Transactional
@@ -69,6 +76,10 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
         }
 
         final var saved = this.updatePort.update(next);
+
+        ProductUpdateDocument eventDocument = new ProductUpdateDocument(UUID.randomUUID(), saved.getId().value(), saved.getName().value(), "PENDING", 0, Instant.now(), null, null);
+        ProductUpdateDocument savedEvent = productUpdateRepo.save(eventDocument);
+        publishProductEventPort.publishProductUpdated(savedEvent);
         this.eventPort.publish(new ProductUpdated(saved.getId()));
 
         return this.mapper.toView(saved);
