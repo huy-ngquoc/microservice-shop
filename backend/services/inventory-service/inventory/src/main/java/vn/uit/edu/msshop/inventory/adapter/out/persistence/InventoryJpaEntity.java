@@ -33,14 +33,15 @@ public class InventoryJpaEntity {
     private int quantity;
     private int reservedQuantity;
     private Instant lastUpdate;
+    private String status;
 
     @Version
     @Column(
             nullable = false)
     private long version;
 
-    public static InventoryJpaEntity of(UUID variantId, int quantity, int reservedQuantity, Instant lastUpdate) {
-        return InventoryJpaEntity.builder().variantId(variantId).quantity(quantity).reservedQuantity(reservedQuantity).lastUpdate(lastUpdate).version(0L).build();
+    public static InventoryJpaEntity of(UUID variantId, int quantity, int reservedQuantity, Instant lastUpdate, String status) {
+        return InventoryJpaEntity.builder().variantId(variantId).quantity(quantity).reservedQuantity(reservedQuantity).lastUpdate(lastUpdate).version(0L).status(status).build();
     }
 
 }
