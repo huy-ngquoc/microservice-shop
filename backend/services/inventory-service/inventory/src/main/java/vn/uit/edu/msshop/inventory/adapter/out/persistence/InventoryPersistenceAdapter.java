@@ -143,4 +143,11 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         if(inventoryJpaEntity.isEmpty()) return Optional.empty();
         return Optional.of(mapper.toDomain(inventoryJpaEntity.get()));
     }
+
+    @Override
+    public List<Inventory> createNews(List<VariantId> variantIds) {
+        List<InventoryJpaEntity> inventories = variantIds.stream().map(item->mapper.toNew(item)).toList();
+        List<InventoryJpaEntity> results = repository.saveAll(inventories);
+        return results.stream().map(mapper::toDomain).toList();
+    }
 }

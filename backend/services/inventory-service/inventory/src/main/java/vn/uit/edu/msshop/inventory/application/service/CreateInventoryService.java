@@ -1,6 +1,7 @@
 package vn.uit.edu.msshop.inventory.application.service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -65,6 +66,11 @@ public class CreateInventoryService implements CreateInventoryUseCase {
         final var savedEvent=inventoryUpdatedDocumentRepo.save(event);
         return mapper.toView(result);
 
+    }
+
+    @Override
+    public List<InventoryView> createNewsFromListVariantId(List<VariantId> variantIds) {
+        return savePort.createNews(variantIds).stream().map(mapper::toView).toList();
     }
 
 }
