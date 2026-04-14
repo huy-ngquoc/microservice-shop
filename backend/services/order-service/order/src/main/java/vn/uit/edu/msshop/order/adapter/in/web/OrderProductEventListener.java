@@ -12,11 +12,11 @@ import vn.uit.edu.msshop.order.adapter.out.event.documents.EventDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfo;
 import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfoRepository;
-import vn.uit.edu.msshop.order.domain.event.product.Product;
 import vn.uit.edu.msshop.order.domain.event.product.ProductCreated;
 import vn.uit.edu.msshop.order.domain.event.product.ProductDeleted;
-import vn.uit.edu.msshop.order.domain.event.product.Variant;
+import vn.uit.edu.msshop.order.domain.event.product.ProductUpdate;
 import vn.uit.edu.msshop.order.domain.event.product.VariantDeleted;
+import vn.uit.edu.msshop.order.domain.event.product.VariantUpdate;
 
 @Component
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class OrderProductEventListener {
     private final VariantInfoRepository variantInfoRepo;
     private final EventDocumentRepository eventDocumentRepo;
     @KafkaHandler
-    public void onProductUpdate(Product event)
+    public void onProductUpdate(ProductUpdate event)
     {
         if(eventDocumentRepo.existsById(event.getEventId())) return;
         List<VariantInfo> variantInfos = variantInfoRepo.findByProductId(event.getProductId());
@@ -37,7 +37,7 @@ public class OrderProductEventListener {
     }
 
     @KafkaHandler
-    public void onVariantUpdate(Variant event) {
+    public void onVariantUpdate(VariantUpdate event) {
         if(eventDocumentRepo.existsById(event.getEventId())) return;
         VariantInfo v = variantInfoRepo.findById(event.getVariantId()).orElse(null);
         if(v==null) v= new VariantInfo(event.getVariantId(), event.getProductId(),event.getProductName(), event.getPrice(), event.getTraits(), event.getImageKey());

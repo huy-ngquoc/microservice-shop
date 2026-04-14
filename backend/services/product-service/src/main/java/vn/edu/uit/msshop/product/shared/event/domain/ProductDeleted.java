@@ -1,17 +1,15 @@
-package vn.uit.edu.msshop.order.domain.event.product;
-
+package vn.edu.uit.msshop.product.shared.event.domain;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
-public class Product {
+@Builder
+public class ProductDeleted {
     private UUID eventId;
     private UUID productId;
-    private String name;
 }

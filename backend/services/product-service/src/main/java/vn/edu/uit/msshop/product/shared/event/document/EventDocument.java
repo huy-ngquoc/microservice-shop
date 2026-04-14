@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.shared.event;
+package vn.edu.uit.msshop.product.shared.event.document;
 
 import java.time.Instant;
 import java.util.UUID;
