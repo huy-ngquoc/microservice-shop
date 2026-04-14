@@ -46,6 +46,7 @@ public class PublishProductEventAdapter implements PublishProductEventPort {
     @Override
     public void publishProductCreated(
             ProductCreatedDocument eventDocument) {
+                System.out.println("Send product created");
         List<VariantCreated> variantCreateds = eventDocument.getVariantCreateds().stream().map(item->new VariantCreated(item.getVariantId(), eventDocument.getProductId(), eventDocument.getProductName(), item.getPrice(), item.getTraits(), item.getImageKey())).toList();
             ProductCreated productCreated = new ProductCreated(eventDocument.getEventId(), eventDocument.getProductId(), eventDocument.getProductName(), variantCreateds);
             Message<ProductCreated> message = MessageBuilder.withPayload(productCreated).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
@@ -62,6 +63,7 @@ public class PublishProductEventAdapter implements PublishProductEventPort {
     }
     catch(Exception e) {
         log.error("Error sending event");
+        e.printStackTrace();
     }
     }
     @Override
@@ -88,7 +90,7 @@ public class PublishProductEventAdapter implements PublishProductEventPort {
     @Override
     public void publishVariantUpdated(
             VariantUpdateDocument eventDocument) {
-    VariantUpdate variantUpdate = new VariantUpdate(eventDocument.getEventId(), eventDocument.getVariantId(), eventDocument.getProductId(), eventDocument.getProductName(), eventDocument.getPrice(), eventDocument.getTraits(), eventDocument.getImageKey());
+    VariantUpdate variantUpdate = new VariantUpdate(eventDocument.getEventId(), eventDocument.getVariantId(), eventDocument.getProductId(), eventDocument.getProductName(), eventDocument.getPrice(), eventDocument.getTraits(), eventDocument.getImageKey()==null?"":eventDocument.getImageKey());
     Message<VariantUpdate> message = MessageBuilder.withPayload(variantUpdate).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
 
         try {

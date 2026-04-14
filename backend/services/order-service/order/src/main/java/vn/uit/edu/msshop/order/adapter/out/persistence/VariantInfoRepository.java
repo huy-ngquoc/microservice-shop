@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface VariantInfoRepository extends MongoRepository<VariantInfo, UUID> {
     public List<VariantInfo> findByProductId(UUID productId);
-    public List<VariantInfo> findByIdIn(List<UUID> variantIds);
+    public List<VariantInfo> findByVariantIdIn(List<UUID> variantIds);
 }

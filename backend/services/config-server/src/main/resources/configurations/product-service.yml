@@ -29,6 +29,18 @@ spring:
                 spring.json.type.mapping: 
                     InventoryUpdated:vn.edu.uit.msshop.product.variant.domain.event.InventoryUpdated,
                     IncreaseSoldCountEvents:vn.edu.uit.msshop.product.product.domain.event.IncreaseSoldCountEvents
+        producer:
+            group-id: product-group
+            bootstrap-servers: localhost:9092
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                spring.json.type.mapping: 
+                    ProductCreated:vn.edu.uit.msshop.product.shared.event.domain.ProductCreated,
+                    ProductUpdated:vn.edu.uit.msshop.product.shared.event.domain.ProductUpdate,
+                    VariantUpdated:vn.edu.uit.msshop.product.shared.event.domain.VariantUpdate,
+                    ProductDeleted:vn.edu.uit.msshop.product.shared.event.domain.ProductDeleted,
+                    VariantDeleted:vn.edu.uit.msshop.product.shared.event.domain.VariantDeleted
 logging:
     level:
         "[vn.edu.uit.msshop]": DEBUG

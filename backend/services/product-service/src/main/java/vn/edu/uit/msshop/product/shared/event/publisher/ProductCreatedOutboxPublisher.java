@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,13 +51,13 @@ public class ProductCreatedOutboxPublisher {
         }
     }
 
-    private void updateStatus(ProductCreatedDocument event, String status, String error) {
+    private void updateStatus(ProductCreatedDocument event, String status, @Nullable String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
         productCreatedRepo.save(event);
     }
-    private void handleFailure(ProductCreatedDocument event, String error) {
+    private void handleFailure(ProductCreatedDocument event,@Nullable String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);

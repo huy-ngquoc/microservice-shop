@@ -20,7 +20,7 @@ import vn.uit.edu.msshop.order.domain.event.product.VariantUpdate;
 
 @Component
 @RequiredArgsConstructor
-@KafkaListener(topics="inventory-order",groupId="order-group")
+@KafkaListener(topics="product-topic",groupId="product-group")
 public class OrderProductEventListener {
     private final VariantInfoRepository variantInfoRepo;
     private final EventDocumentRepository eventDocumentRepo;
@@ -65,6 +65,7 @@ public class OrderProductEventListener {
     }
     @KafkaHandler
     public void onProductCreated(ProductCreated event) {
+        System.out.println("Product created event received");
         if(eventDocumentRepo.existsById(event.getEventId())) return;
         List<VariantInfo> infos = event.getVariantCreateds().stream().map(item->new VariantInfo(item.getVariantId(), event.getProductId(),event.getProductName(), item.getPrice(), item.getTraits(), item.getImageKey())).toList();
         variantInfoRepo.saveAll(infos);

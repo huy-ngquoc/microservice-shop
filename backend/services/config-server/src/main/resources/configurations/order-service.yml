@@ -25,9 +25,12 @@ spring:
                     OnlinePaymentExpired:vn.uit.edu.msshop.order.domain.event.OnlinePaymentExpired,
                     OnlinePaymentCancelled:vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled,
                     CodPaymentCreated:vn.uit.edu.msshop.order.domain.event.CodPaymentCreated,
-                    ForceCancellOrder:vn.uit.edu.msshop.order.domain.event.inventory.ForceCancellOrder
-
-                    
+                    ForceCancellOrder:vn.uit.edu.msshop.order.domain.event.inventory.ForceCancellOrder,
+                    ProductCreated:vn.uit.edu.msshop.order.domain.event.product.ProductCreated,
+                    ProductUpdated:vn.uit.edu.msshop.order.domain.event.product.ProductUpdate,
+                    VariantUpdated:vn.uit.edu.msshop.order.domain.event.product.VariantUpdate,
+                    VariantDeleted:vn.uit.edu.msshop.order.domain.event.product.VariantDeleted,
+                    ProductDeleted:vn.uit.edu.msshop.order.domain.event.product.ProductDeleted
         producer:
             bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
