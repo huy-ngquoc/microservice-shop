@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.shared.event.EventDocument;
-import vn.edu.uit.msshop.product.shared.event.EventDocumentRepository;
+import vn.edu.uit.msshop.product.shared.event.document.EventDocument;
+import vn.edu.uit.msshop.product.shared.event.repository.EventDocumentRepository;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.SaveVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.event.InventoryUpdated;

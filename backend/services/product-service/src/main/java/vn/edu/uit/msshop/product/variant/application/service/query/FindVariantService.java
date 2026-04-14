@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.variant.application.service.query;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,5 +27,11 @@ public class FindVariantService implements FindVariantUseCase {
         return this.loadPort.loadById(id)
                 .map(this.mapper::toView)
                 .orElseThrow(() -> new VariantNotFoundException(id));
+    }
+
+    @Override
+    public List<VariantView> findByListIds(
+                List<VariantId> ids) {
+        return this.loadPort.loadByListIds(ids).stream().map(mapper::toView).toList();
     }
 }
