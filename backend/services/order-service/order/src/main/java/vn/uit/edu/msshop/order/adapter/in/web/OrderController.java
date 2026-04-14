@@ -29,6 +29,8 @@ import vn.uit.edu.msshop.order.adapter.in.web.request.CreateOrderRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateOrderRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.OrderResponse;
 import vn.uit.edu.msshop.order.adapter.in.web.response.VariantSoldCountResponse;
+import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfo;
+import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfoRepository;
 import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.DeleteOrderUseCase;
@@ -54,6 +56,7 @@ public class OrderController {
     private final DeleteOrderUseCase deleteOrderUseCase;
     private final FindVariantSoldCountUseCase findVariantSoldCountUseCase;
     private final VariantSoldCountWebMapper variantSoldCountWebMapper;
+    private final VariantInfoRepository variantInfoRepo;
     @GetMapping("/test-trace")
     public String test() {
         
@@ -75,6 +78,10 @@ public class OrderController {
 
     // 3. Nếu đã có span tự động (thông thường là vậy)
     return "Current Trace ID: " + currentSpan.context().traceId();
+    }
+    @GetMapping("/variant_info")
+    public List<VariantInfo> getVariantInfos() {
+        return variantInfoRepo.findAll();
     }
 
     @GetMapping("/{id}")
@@ -98,7 +105,7 @@ public class OrderController {
 
         return ResponseEntity.ok(view.map(this.mapper::toResponse));
     }
-
+ 
     @PostMapping("/create") 
     public ResponseEntity<UUID> createOrder(@RequestBody CreateOrderRequest request,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
         if(!checkPermission.isUser(role)&&!checkPermission.isSameUser(userFromHeader,request.userId().toString())) {

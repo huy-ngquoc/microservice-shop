@@ -79,7 +79,7 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         this.eventPort.publish(new VariantUpdated(saved.getId()));
 
         VariantUpdateDocument eventDocument = new VariantUpdateDocument(UUID.randomUUID(), saved.getId().value(), saved.getProductId().value(), "",
-                 saved.getPrice().value(), getTraits(saved), saved.getImageKey().value(), "PENDING", 0, Instant.now(), null, null);
+                 saved.getPrice().value(), getTraits(saved), saved.getImageKey()==null?"":saved.getImageKey().value(), "PENDING", 0, Instant.now(), null, null);
 
         this.updateInProductPort.updateInProduct(saved);
         publishProductEventPort.publishVariantUpdated(variantUpdateRepo.save(eventDocument));

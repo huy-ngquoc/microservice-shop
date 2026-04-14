@@ -47,7 +47,7 @@ public class CreateVariantsForNewProductService implements CreateVariantsForNewP
         List<VariantUpdateDocument> eventDocuments = new ArrayList<>();
         for (final var savedVariant : saved) {
             VariantUpdateDocument eventDocument = new VariantUpdateDocument(UUID.randomUUID(), savedVariant.getId().value(), savedVariant.getProductId().value(), "",
-                 savedVariant.getPrice().value(), getTraits(savedVariant), savedVariant.getImageKey().value(), "PENDING", 0, Instant.now(), null, null);
+                 savedVariant.getPrice().value(), getTraits(savedVariant), savedVariant.getImageKey()==null?"":savedVariant.getImageKey().value(), "PENDING", 0, Instant.now(), null, null);
                  eventDocuments.add(eventDocument);
             this.eventPort.publish(new VariantCreated(savedVariant.getId()));
         }

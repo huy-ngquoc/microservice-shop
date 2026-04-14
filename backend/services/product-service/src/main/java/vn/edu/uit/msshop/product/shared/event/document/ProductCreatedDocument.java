@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.lang.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Document(collection="product_created_document")
+
 public class ProductCreatedDocument {
     @Id
     private UUID eventId;
@@ -28,7 +30,9 @@ public class ProductCreatedDocument {
     private String eventStatus;
     private Integer retryCount; 
     private Instant createdAt;
+    @Nullable
     private Instant updatedAt; 
+    @Nullable
     private String lastError;
 
 }

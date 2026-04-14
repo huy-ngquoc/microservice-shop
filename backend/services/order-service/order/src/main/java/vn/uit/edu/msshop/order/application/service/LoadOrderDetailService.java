@@ -29,7 +29,7 @@ public class LoadOrderDetailService implements LoadOrderDetailPort  {
 
     @Override
     public List<OrderDetail> loadByListDetail(List<OrderDetailRequest> requests) {
-        List<VariantInfo> infos = variantInfoRepo.findByIdIn(requests.stream().map(item->item.variantId()).toList());
+        List<VariantInfo> infos = variantInfoRepo.findByVariantIdIn(requests.stream().map(item->item.variantId()).toList());
         List<OrderDetail> result = new ArrayList<>();
         for(OrderDetailRequest orderDetail: requests) {
             VariantInfo info = findInList(orderDetail.variantId(), infos);

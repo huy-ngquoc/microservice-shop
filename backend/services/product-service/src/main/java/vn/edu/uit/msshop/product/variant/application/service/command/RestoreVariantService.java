@@ -66,7 +66,7 @@ public class RestoreVariantService implements RestoreVariantUseCase {
 
         this.addToProductPort.addToProduct(variant);
         VariantUpdateDocument eventDocument = new VariantUpdateDocument(UUID.randomUUID(), saved.getId().value(), saved.getProductId().value(), "",
-                 saved.getPrice().value(), getTraits(saved), saved.getImageKey().value(), "PENDING", 0, Instant.now(), null, null);
+                 saved.getPrice().value(), getTraits(saved), saved.getImageKey()==null?"":saved.getImageKey().value(), "PENDING", 0, Instant.now(), null, null);
         VariantUpdateDocument savedEventDodcument = variantUpdateRepo.save(eventDocument);
         publishProductEventPort.publishVariantUpdated(savedEventDodcument);
 

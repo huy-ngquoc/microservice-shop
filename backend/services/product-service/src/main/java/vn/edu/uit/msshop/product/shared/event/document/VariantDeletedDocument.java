@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.lang.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,9 @@ public class VariantDeletedDocument {
     private String eventStatus;
     private Integer retryCount; 
     private Instant createdAt;
-    private Instant updatedAt; 
+    @Nullable
+    private Instant updatedAt;
+    @Nullable 
     private String lastError;
 
 }

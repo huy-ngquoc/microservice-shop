@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,10 +55,12 @@ public class CreateProductService implements CreateProductUseCase {
 
     @Override
     @Transactional
+    
     public ProductView create(
             final CreateProductCommand command) {
         this.validateCategoryExists(command.categoryId());
         this.validateBrandExists(command.brandId());
+        
 
         final var productId = ProductId.newId();
 
@@ -88,6 +91,7 @@ public class CreateProductService implements CreateProductUseCase {
         publishProductEventPort.publishProductCreated(savedEvent);
         return this.mapper.toView(saved);
     }
+    @NonNull
     private List<String> getTraits(ProductVariant v) {
         return v.traits().values().stream().map(item->item.value()).toList();
     }
