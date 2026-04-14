@@ -96,4 +96,11 @@ public void releaseReservedStock(int amount) {
     this.reservedQuantity = new ReservedQuantity(this.reservedQuantity.value() - amount);
     this.quantity = new Quantity(this.quantity.value() + amount);
 }
+public Inventory disable() {
+    return Inventory.builder().id(this.id).variantId(this.variantId).quantity(this.quantity).reservedQuantity(this.reservedQuantity).lastUpdate(new LastUpdate(Instant.now())).version(this.version).status(new InventoryStatus("DISABLE")).build();
+}
+public Inventory restore() {
+    return Inventory.builder().id(this.id).variantId(this.variantId).quantity(this.quantity).reservedQuantity(this.reservedQuantity).lastUpdate(new LastUpdate(Instant.now())).version(this.version).status(new InventoryStatus("ENABLE")).build();
+
+}
 }

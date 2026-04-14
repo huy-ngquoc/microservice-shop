@@ -11,4 +11,5 @@ public interface SaveInventoryPort {
     public Inventory createNew(VariantId variantId);
     public List<Inventory> saveAll(List<Inventory> inventory);
     public Inventory createFromCommand(VariantId variantId, Quantity quantity);
+    public List<Inventory> createNews(List<VariantId> variantIds);
 }
