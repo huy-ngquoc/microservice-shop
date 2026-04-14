@@ -23,6 +23,7 @@ import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryStatus;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
@@ -134,5 +135,12 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
     }
     return result;
         
+    }
+
+    @Override
+    public Optional<Inventory> loadByVariantIdAndStatus(VariantId id, InventoryStatus status) {
+        Optional<InventoryJpaEntity> inventoryJpaEntity = repository.findByVariantIdAndStatus(id.value(), status.value());
+        if(inventoryJpaEntity.isEmpty()) return Optional.empty();
+        return Optional.of(mapper.toDomain(inventoryJpaEntity.get()));
     }
 }

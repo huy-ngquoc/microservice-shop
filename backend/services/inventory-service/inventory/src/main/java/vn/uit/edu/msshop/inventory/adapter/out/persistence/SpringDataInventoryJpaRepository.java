@@ -19,6 +19,8 @@ public interface SpringDataInventoryJpaRepository extends JpaRepository<Inventor
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     public List<InventoryJpaEntity> findByVariantIdIn(List<UUID> variantIds);
 
+    public Optional<InventoryJpaEntity> findByVariantIdAndStatus(UUID variantId, String status);
+
     
 
 }

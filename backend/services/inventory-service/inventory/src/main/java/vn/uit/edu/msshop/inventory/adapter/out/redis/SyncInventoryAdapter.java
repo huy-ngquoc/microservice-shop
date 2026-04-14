@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryStatus;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @Component
@@ -27,7 +28,7 @@ public class SyncInventoryAdapter implements SyncInventoryPort {
     public Inventory loadFromMainDatabase(UUID variantId) {
 
         VariantId id = new VariantId(variantId);
-        Inventory inventory = loadPort.loadByVariantId(id).orElse(null);
+        Inventory inventory = loadPort.loadByVariantIdAndStatus(id, new InventoryStatus("ENABLE")).orElse(null);
         if(inventory==null) return null;
 
        String key = "inventory:variant:" + variantId.toString();
