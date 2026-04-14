@@ -12,6 +12,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadPr
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
+import vn.edu.uit.msshop.product.shared.event.repository.VariantUpdateRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,8 @@ public class AddProductVariantForVariantService
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final PublishProductEventPort eventPort;
+    private final VariantUpdateRepository variantUpdateRepo;
+    private final vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEventPort publishProductEventPort;
 
     @Override
     @Transactional
@@ -47,6 +50,7 @@ public class AddProductVariantForVariantService
                 product.getDeletionTime());
 
         final var saved = this.updatePort.update(next);
+        
         this.eventPort.publish(new ProductUpdated(saved.getId()));
     }
 }
