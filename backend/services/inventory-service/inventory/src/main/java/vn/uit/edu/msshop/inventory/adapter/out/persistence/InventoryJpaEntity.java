@@ -44,4 +44,6 @@ public class InventoryJpaEntity {
         return InventoryJpaEntity.builder().variantId(variantId).quantity(quantity).reservedQuantity(reservedQuantity).lastUpdate(lastUpdate).version(0L).status(status).build();
     }
 
+    
+
 }

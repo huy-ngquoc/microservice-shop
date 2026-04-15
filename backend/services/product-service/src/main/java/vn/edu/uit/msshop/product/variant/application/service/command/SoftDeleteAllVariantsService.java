@@ -29,6 +29,8 @@ public class SoftDeleteAllVariantsService implements SoftDeleteAllVariantsUseCas
     private final PublishVariantEventPort eventPort;
     private final VariantDeletedRepository variantDeletedRepo;
     private final PublishProductEventPort publishProductEventPort;
+    
+
 
     @Override
     @Transactional

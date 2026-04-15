@@ -1,5 +1,8 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEventPort;
+import vn.edu.uit.msshop.product.shared.event.document.VariantPurgeDocument;
+import vn.edu.uit.msshop.product.shared.event.repository.VariantPurgeRepository;
 import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantUseCase;
@@ -28,6 +34,8 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
     private final CheckVariantReferencedByProductPort checkReferencedPort;
     private final VariantImageStoragePort imageStoragePort;
     private final PublishVariantEventPort eventPort;
+    private final VariantPurgeRepository variantPurgeRepo;
+    private final PublishProductEventPort publishPort;
 
     @Override
     @Transactional
@@ -56,7 +64,11 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
         this.deletePort.deleteById(variantId);
         this.eventPort.publish(new VariantPurged(variantId));
 
+
         this.deleteImage(variant.getImageKey());
+        VariantPurgeDocument eventDocument = new VariantPurgeDocument(UUID.randomUUID(), variantId.value(), "PENDING", 0, Instant.now(), null, null);
+        this.publishPort.publishVariantPurge(variantPurgeRepo.save(eventDocument));
+
     }
 
     private void deleteImage(

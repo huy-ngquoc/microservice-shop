@@ -38,8 +38,12 @@ spring:
                 spring.json.type.mapping: 
                     OrderCancelled:vn.uit.edu.msshop.inventory.domain.event.OrderCancelled,
                     OrderCreated_Inventory:vn.uit.edu.msshop.inventory.domain.event.OrderCreated,
-                    OrderShipped:vn.uit.edu.msshop.inventory.domain.event.OrderShipped
-                    
+                    OrderShipped:vn.uit.edu.msshop.inventory.domain.event.OrderShipped,
+                    ProductCreated:vn.uit.edu.msshop.inventory.domain.event.product.ProductCreated,
+                    VariantUpdate:vn.uit.edu.msshop.inventory.domain.event.product.VariantUpdate,
+                    VariantDeleted:vn.uit.edu.msshop.inventory.domain.event.product.VariantDeleted,
+                    VariantRestore:vn.uit.edu.msshop.inventory.domain.event.product.VariantRestore,
+                    VariantPurge:vn.uit.edu.msshop.inventory.domain.event.product.VariantPurge    
         producer:
             bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
