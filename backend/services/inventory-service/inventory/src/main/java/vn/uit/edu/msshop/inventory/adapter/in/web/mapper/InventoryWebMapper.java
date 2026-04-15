@@ -33,7 +33,7 @@ public class InventoryWebMapper {
         return new UpdateInventoryCommand(variantId, quantity, reservedQuantity);
     }
     public InventoryResponse toResponse(InventoryView view) {
-        return new InventoryResponse(view.getId(),view.getVariantId(),view.getQuantity(),view.getReservedQuantity(),view.getLastUpdate());
+        return new InventoryResponse(view.getId(),view.getVariantId(),view.getQuantity(),view.getReservedQuantity(),view.getLastUpdate(), view.getStatus());
     }
     public OrderCreateCommand toCommand(OrderCreated event) {
         List<OrderDetailCommand> detailCommands = event.getDetails().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getAmount()))).toList();

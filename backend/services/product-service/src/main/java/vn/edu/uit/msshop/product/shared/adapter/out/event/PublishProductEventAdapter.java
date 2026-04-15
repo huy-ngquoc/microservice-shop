@@ -15,17 +15,23 @@ import vn.edu.uit.msshop.product.shared.event.document.ProductCreatedDocument;
 import vn.edu.uit.msshop.product.shared.event.document.ProductDeletedDocument;
 import vn.edu.uit.msshop.product.shared.event.document.ProductUpdateDocument;
 import vn.edu.uit.msshop.product.shared.event.document.VariantDeletedDocument;
+import vn.edu.uit.msshop.product.shared.event.document.VariantPurgeDocument;
+import vn.edu.uit.msshop.product.shared.event.document.VariantRestoreDocument;
 import vn.edu.uit.msshop.product.shared.event.document.VariantUpdateDocument;
 import vn.edu.uit.msshop.product.shared.event.domain.ProductCreated;
 import vn.edu.uit.msshop.product.shared.event.domain.ProductDeleted;
 import vn.edu.uit.msshop.product.shared.event.domain.ProductUpdate;
 import vn.edu.uit.msshop.product.shared.event.domain.VariantCreated;
 import vn.edu.uit.msshop.product.shared.event.domain.VariantDeleted;
+import vn.edu.uit.msshop.product.shared.event.domain.VariantPurge;
+import vn.edu.uit.msshop.product.shared.event.domain.VariantRestore;
 import vn.edu.uit.msshop.product.shared.event.domain.VariantUpdate;
 import vn.edu.uit.msshop.product.shared.event.publisher.ProductCreatedOutboxPublisher;
 import vn.edu.uit.msshop.product.shared.event.publisher.ProductDeletedOutboxPublisher;
 import vn.edu.uit.msshop.product.shared.event.publisher.ProductUpdateOutboxPublisher;
 import vn.edu.uit.msshop.product.shared.event.publisher.VariantDeletedOutboxPublisher;
+import vn.edu.uit.msshop.product.shared.event.publisher.VariantPurgeOutboxPublisher;
+import vn.edu.uit.msshop.product.shared.event.publisher.VariantRestoreOutboxPublisher;
 import vn.edu.uit.msshop.product.shared.event.publisher.VariantUpdateOutboxPublisher;
 
 @Component
@@ -43,6 +49,10 @@ public class PublishProductEventAdapter implements PublishProductEventPort {
     private final VariantDeletedOutboxPublisher variantDeletedOutboxPublisher;
     private final KafkaTemplate<String,ProductDeleted> productDeletedTemplate;
     private final ProductDeletedOutboxPublisher productDeletedOutboxPublisher;
+    private final VariantRestoreOutboxPublisher variantRestoreOutboxPublisher;
+    private final KafkaTemplate<String,VariantRestore> variantRestoreTemplate;
+    private final VariantPurgeOutboxPublisher VariantPurgeOutboxPublisher;
+    private final KafkaTemplate<String,VariantPurge> variantPurgeTemplate;
     @Override
     public void publishProductCreated(
             ProductCreatedDocument eventDocument) {
@@ -137,6 +147,46 @@ public class PublishProductEventAdapter implements PublishProductEventPort {
         productDeletedTemplate.send(message).whenComplete((result,ex)->{
             if(ex==null) {
                 productDeletedOutboxPublisher.markAsSent(eventDocument);
+            }
+            else {
+                System.out.println("Send fail");
+            }
+        });
+    }
+    catch(Exception e) {
+        log.error("Error sending event");
+    }
+    }
+    @Override
+    public void publishVariantRestore(
+            VariantRestoreDocument eventDocument) {
+      VariantRestore variantRestore = new VariantRestore(eventDocument.getEventId(), eventDocument.getVariantId());
+    Message<VariantRestore> message = MessageBuilder.withPayload(variantRestore).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+
+        try {
+        productDeletedTemplate.send(message).whenComplete((result,ex)->{
+            if(ex==null) {
+                variantRestoreOutboxPublisher.markAsSent(eventDocument);
+            }
+            else {
+                System.out.println("Send fail");
+            }
+        });
+    }
+    catch(Exception e) {
+        log.error("Error sending event");
+    }
+    }
+    @Override
+    public void publishVariantPurge(
+            VariantPurgeDocument eventDocument) {
+       VariantPurge variantPurge = new VariantPurge(eventDocument.getEventId(), eventDocument.getVariantId());
+    Message<VariantPurge> message = MessageBuilder.withPayload(variantPurge).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+
+        try {
+        productDeletedTemplate.send(message).whenComplete((result,ex)->{
+            if(ex==null) {
+                VariantPurgeOutboxPublisher.markAsSent(eventDocument);
             }
             else {
                 System.out.println("Send fail");

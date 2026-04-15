@@ -40,7 +40,9 @@ spring:
                     ProductUpdated:vn.edu.uit.msshop.product.shared.event.domain.ProductUpdate,
                     VariantUpdated:vn.edu.uit.msshop.product.shared.event.domain.VariantUpdate,
                     ProductDeleted:vn.edu.uit.msshop.product.shared.event.domain.ProductDeleted,
-                    VariantDeleted:vn.edu.uit.msshop.product.shared.event.domain.VariantDeleted
+                    VariantDeleted:vn.edu.uit.msshop.product.shared.event.domain.VariantDeleted,
+                    VariantRestore:vn.edu.uit.msshop.product.shared.event.domain.VariantRestore,
+                    VariantPurge:vn.edu.uit.msshop.product.shared.event.domain.VariantPurge
 logging:
     level:
         "[vn.edu.uit.msshop]": DEBUG

@@ -44,8 +44,13 @@ public class InventoryProductListener {
     @Transactional
     public void onVariantUpdate(VariantUpdate event) {
         if(eventDocumentRepo.existsById(event.getEventId())) return;
-        if(loadPort.loadByVariantId(new VariantId(event.getVariantId())).isEmpty()) {
+        Inventory i = loadPort.loadByVariantId(new VariantId(event.getVariantId())).orElse(null);
+        if(i==null) {
             createUseCase.create(new VariantId(event.getVariantId()));
+        }
+        else {
+            final var toSave=i.restore();
+            savePort.save(toSave);
         }
         eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
     }
