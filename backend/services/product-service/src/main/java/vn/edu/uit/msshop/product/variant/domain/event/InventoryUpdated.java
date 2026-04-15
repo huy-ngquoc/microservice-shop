@@ -10,7 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-
 public class InventoryUpdated {
     @NonNull
     private UUID variantId;

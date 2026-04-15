@@ -16,28 +16,27 @@ import vn.edu.uit.msshop.product.variant.domain.event.InventoryUpdated;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStock;
 
-@KafkaListener(topics="inventory-product")
+@KafkaListener(
+        topics = "inventory-product")
 @Component
 @RequiredArgsConstructor
 public class VariantInventoryEventListener {
     private final LoadVariantPort loadVariantPort;
     private final EventDocumentRepository eventDocumentRepo;
     private final SaveVariantPort saveVariantPort;
-    
+
     @KafkaHandler
     @Transactional
-    public void onInventoryUpdate(InventoryUpdated event) {
-        if(event.getEventId()==null||event.getVariantId()==null) {
+    public void onInventoryUpdate(
+            InventoryUpdated event) {
+        if (eventDocumentRepo.existsById(event.getEventId()))
             return;
-        }
-        if(eventDocumentRepo.existsById(event.getEventId())) return;
-       loadVariantPort.loadById(new VariantId(event.getVariantId()))
-        .ifPresent(variant -> {
-            var toSave = variant.updateStock(new VariantStock(event.getNewQuantity()));
-            saveVariantPort.save(toSave);
-            eventDocumentRepo.save(new EventDocument(event.getEventId(), Instant.now()));
-        });
-        
-        
+        loadVariantPort.loadById(new VariantId(event.getVariantId()))
+                .ifPresent(variant -> {
+                    var toSave = variant.updateStock(new VariantStock(event.getNewQuantity()));
+                    saveVariantPort.save(toSave);
+                    eventDocumentRepo.save(new EventDocument(event.getEventId(), Instant.now()));
+                });
+
     }
 }
