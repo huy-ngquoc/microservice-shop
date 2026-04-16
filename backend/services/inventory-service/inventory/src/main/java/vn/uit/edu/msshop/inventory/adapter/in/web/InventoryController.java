@@ -21,6 +21,7 @@ import vn.uit.edu.msshop.inventory.adapter.in.web.mapper.InventoryWebMapper;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.CreateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.response.InventoryResponse;
+import vn.uit.edu.msshop.inventory.adapter.out.redis.InventorySyncJob;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.CreateInventoryUseCase;
@@ -38,7 +39,7 @@ public class InventoryController {
     private final UpdateInventoryUseCase updateUseCase;
     private final CheckPermissionUseCase checkPermission;
     private final CreateInventoryUseCase createUseCase;
-
+    private final InventorySyncJob syncJob;
     @GetMapping("/")
     public ResponseEntity<Page<InventoryResponse>> getAll(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestParam(defaultValue="7") int pageSize, @RequestParam(defaultValue="0") int pageNumber) {
         if(!checkPermission.isAdmin(role)) {
@@ -47,6 +48,11 @@ public class InventoryController {
         Page<InventoryView> result = findUseCase.findAll(pageNumber, pageSize);
         Page<InventoryResponse> response = result.map(mapper::toResponse);
         return ResponseEntity.ok(response);
+    }
+    @PostMapping("/sync")
+    public String sync() {
+        syncJob.syncRedisToDb();
+        return "Success";
     }
 
     @GetMapping("/{id}")

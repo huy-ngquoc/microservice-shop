@@ -34,16 +34,20 @@ spring:
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
             properties:
+                spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
                 spring.json.trusted.packages: "*"
+                spring.json.value.default.type: java.lang.Object
                 spring.json.type.mapping: 
                     OrderCancelled:vn.uit.edu.msshop.inventory.domain.event.OrderCancelled,
                     OrderCreated_Inventory:vn.uit.edu.msshop.inventory.domain.event.OrderCreated,
                     OrderShipped:vn.uit.edu.msshop.inventory.domain.event.OrderShipped,
-                    ProductCreated:vn.uit.edu.msshop.inventory.domain.event.product.ProductCreated,
-                    VariantUpdate:vn.uit.edu.msshop.inventory.domain.event.product.VariantUpdate,
+                    VariantUpdated:vn.uit.edu.msshop.inventory.domain.event.product.VariantUpdate,
                     VariantDeleted:vn.uit.edu.msshop.inventory.domain.event.product.VariantDeleted,
                     VariantRestore:vn.uit.edu.msshop.inventory.domain.event.product.VariantRestore,
-                    VariantPurge:vn.uit.edu.msshop.inventory.domain.event.product.VariantPurge    
+                    VariantPurge:vn.uit.edu.msshop.inventory.domain.event.product.VariantPurge,
+                    ProductCreated:java.lang.Object,
+                    ProductUpdated:java.lang.Object,
+                    ProductDeleted:java.lang.Object
         producer:
             bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer

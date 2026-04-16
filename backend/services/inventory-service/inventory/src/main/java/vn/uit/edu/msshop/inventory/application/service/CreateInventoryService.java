@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedDocument;
@@ -47,6 +48,7 @@ public class CreateInventoryService implements CreateInventoryUseCase {
     }
 
     @Override
+    @Transactional
     public InventoryView create(CreateInventoryCommand command) {
         Optional<Inventory> inventoryExist = loadPort.loadByVariantId(command.variantId());
         if(inventoryExist.isPresent()) return null;

@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.mapper.InventoryJpaMapper;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.inventory.application.port.out.DeleteInventoryPort;
+import vn.uit.edu.msshop.inventory.application.port.out.DeleteRedisPort;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadFromRedisPort;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
@@ -30,7 +31,7 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @Component
 @RequiredArgsConstructor
-public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInventoryPort, DeleteInventoryPort, LoadFromRedisPort {
+public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInventoryPort, DeleteInventoryPort, LoadFromRedisPort,DeleteRedisPort {
     private final InventoryJpaMapper mapper;
     private final SpringDataInventoryJpaRepository repository;
     private final RedisTemplate<String,Map<String,String>> redisTemplate;
@@ -124,14 +125,16 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         // 3. Ép kiểu và lấy dữ liệu (Vì opsForHash trả về Map<Object, Object>)
         int quantity = Integer.parseInt(val.get("quantity").toString());
         int reservedQuantity = Integer.parseInt(val.get("reservedQuantity").toString());
+        String inventoryStatus = val.get("status").toString();
         
         // Tạo domain object thông qua Mapper hoặc constructor
-        var draft = Inventory.Draft.builder().id(new InventoryId(UUID.randomUUID()))
+        var snapshot = Inventory.Snapshot.builder().id(new InventoryId(UUID.randomUUID()))
         .quantity(new Quantity(quantity))
         .variantId(variantId)
         .reservedQuantity(new ReservedQuantity(reservedQuantity))
+        .status(new InventoryStatus(inventoryStatus))
         .build();
-        result.add(Inventory.create(draft));
+        result.add(Inventory.reconstitue(snapshot));
     }
     return result;
         
@@ -149,5 +152,42 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         List<InventoryJpaEntity> inventories = variantIds.stream().map(item->mapper.toNew(item)).toList();
         List<InventoryJpaEntity> results = repository.saveAll(inventories);
         return results.stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public Inventory loadById(VariantId variantId) {
+        String key = "inventory:variant:" + variantId.value().toString();
+        
+        // 1. Dùng entries() để lấy toàn bộ Hash thay vì get() của String
+        Map<Object, Object> val = redisTemplate.opsForHash().entries(key);
+
+        
+        if (val == null || val.isEmpty()) {
+            Inventory inventory = syncInventoryPort.loadFromMainDatabase(variantId.value());
+            if (inventory == null) return null;
+            return inventory;
+        }
+
+        // 3. Ép kiểu và lấy dữ liệu (Vì opsForHash trả về Map<Object, Object>)
+        int quantity = Integer.parseInt(val.get("quantity").toString());
+        int reservedQuantity = Integer.parseInt(val.get("reservedQuantity").toString());
+        String inventoryStatus = val.get("status").toString();
+        
+        // Tạo domain object thông qua Mapper hoặc constructor
+        var snapshot = Inventory.Snapshot.builder().id(new InventoryId(UUID.randomUUID()))
+        .quantity(new Quantity(quantity))
+        .variantId(variantId)
+        .reservedQuantity(new ReservedQuantity(reservedQuantity))
+        .status(new InventoryStatus(inventoryStatus))
+        .build();
+        return Inventory.reconstitue(snapshot);
+    }
+
+    @Override
+    public void delete(VariantId variantId) {
+        String key = "inventory:variant:" + variantId.value().toString();
+    
+    
+    redisTemplate.delete(key);
     }
 }

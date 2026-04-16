@@ -36,6 +36,7 @@ public class SyncInventoryAdapter implements SyncInventoryPort {
         stockData.put("quantity", String.valueOf(inventory.getQuantity().value()));
         stockData.put("reservedQuantity", String.valueOf(inventory.getReservedQuantity().value()));
         stockData.put("id",String.valueOf(inventory.getId().value()));
+        stockData.put("status", String.valueOf(inventory.getStatus().value()));
         redisTemplate.opsForHash().putAll(key, stockData);
         
         redisTemplate.expire(key, Duration.ofDays(1));

@@ -122,7 +122,7 @@ public class PublishProductEventAdapter implements PublishProductEventPort {
             VariantDeletedDocument eventDocument) {
     VariantDeleted variantDeleted = new VariantDeleted(eventDocument.getEventId(), eventDocument.getVariantId());
     Message<VariantDeleted> message = MessageBuilder.withPayload(variantDeleted).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
-
+    System.out.println("Send deleted message");
         try {
         variantDeletedTemplate.send(message).whenComplete((result,ex)->{
             if(ex==null) {
