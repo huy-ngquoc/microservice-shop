@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductMongoRepository
         extends MongoRepository<ProductDocument, UUID> {
+    List<ProductDocument> findAllByDeletionTimeIsNull(
+            final Iterable<UUID> ids);
+
     Page<ProductDocument> findAllByDeletionTimeIsNull(
             final Pageable pageable);
 

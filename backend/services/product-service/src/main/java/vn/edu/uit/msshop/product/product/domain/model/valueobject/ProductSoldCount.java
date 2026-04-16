@@ -15,4 +15,14 @@ public record ProductSoldCount(
     public static ProductSoldCount zero() {
         return ProductSoldCount.ZERO;
     }
+
+    public ProductSoldCount increase(
+            final int increment) {
+        if (increment < 0) {
+            throw new DomainException("Product sold count increment cannot be negative");
+        }
+
+        final var newValue = this.value + increment;
+        return new ProductSoldCount(newValue);
+    }
 }

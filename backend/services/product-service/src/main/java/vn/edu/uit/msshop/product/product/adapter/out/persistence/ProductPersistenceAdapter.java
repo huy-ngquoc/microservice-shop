@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
@@ -18,8 +20,10 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.Create
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListSoftDeletedProductsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadAllProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateAllProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
@@ -37,6 +41,7 @@ public class ProductPersistenceAdapter
         ListProductsPort,
         ListSoftDeletedProductsPort,
         LoadProductPort,
+        LoadAllProductsPort,
         LoadSoftDeletedProductPort,
         CheckProductExistsPort,
         CheckProductExistsByBrandPort,
@@ -46,6 +51,7 @@ public class ProductPersistenceAdapter
         CheckProductExistsByVariantPort,
         CreateProductPort,
         UpdateProductPort,
+        UpdateAllProductsPort,
         DeleteProductPort {
     private final ProductMongoRepository repository;
     private final ProductPersistenceMapper mapper;
@@ -94,6 +100,17 @@ public class ProductPersistenceAdapter
         final var jpaId = id.value();
         return this.repository.findByIdAndDeletionTimeIsNull(jpaId)
                 .map(this.mapper::toDomain);
+    }
+
+    @Override
+    public List<Product> loadAllByIds(
+            final Collection<ProductId> ids) {
+        final var jpaIds = ids.stream()
+                .map(ProductId::value)
+                .toList();
+        return this.repository.findAllByDeletionTimeIsNull(jpaIds).stream()
+                .map(this.mapper::toDomain)
+                .toList();
     }
 
     @Override
@@ -160,6 +177,18 @@ public class ProductPersistenceAdapter
         final var toSave = this.mapper.toPersistence(product);
         final var saved = this.repository.save(toSave);
         return this.mapper.toDomain(saved);
+    }
+
+    @Override
+    public List<Product> updateAll(
+            final Collection<Product> products) {
+        final var toSave = products.stream()
+                .map(this.mapper::toPersistence)
+                .toList();
+        final var saved = this.repository.saveAll(toSave);
+        return saved.stream()
+                .map(this.mapper::toDomain)
+                .toList();
     }
 
     private static PageRequest toPageable(
