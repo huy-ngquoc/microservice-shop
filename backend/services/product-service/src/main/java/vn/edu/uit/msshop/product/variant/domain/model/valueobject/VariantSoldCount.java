@@ -15,4 +15,14 @@ public record VariantSoldCount(
     public static VariantSoldCount zero() {
         return VariantSoldCount.ZERO;
     }
+
+    public VariantSoldCount increase(
+            final int increment) {
+        if (increment < 0) {
+            throw new DomainException("Variant sold count increment cannot be negative");
+        }
+
+        final var newValue = this.value + increment;
+        return new VariantSoldCount(newValue);
+    }
 }

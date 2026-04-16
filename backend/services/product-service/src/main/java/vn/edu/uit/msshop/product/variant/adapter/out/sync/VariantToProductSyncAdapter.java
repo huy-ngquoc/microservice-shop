@@ -1,12 +1,16 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.sync;
 
+import java.util.Collection;
+
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVariantForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.IncreaseProductSoldCountsForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantForVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.IncreaseProductSoldCountsForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
@@ -14,7 +18,9 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
+import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantProductSoldCountIncrement;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -27,9 +33,11 @@ public class VariantToProductSyncAdapter
         implements
         AddVariantToProductPort,
         UpdateVariantInProductPort,
+        IncreaseProductSoldCountsPort,
         RemoveVariantFromProductPort {
     private final AddProductVariantForVariantUseCase addProductVariantForVariantUseCase;
     private final UpdateProductVariantForVariantUseCase updateProductVariantForVariantUseCase;
+    private final IncreaseProductSoldCountsForVariantUseCase increaseProductSoldCountsForVariantUseCase;
     private final RemoveProductVariantForVariantUseCase removeProductVariantForVariantUseCase;
 
     @Override
@@ -82,5 +90,22 @@ public class VariantToProductSyncAdapter
                 productVariantId,
                 productVariantPrice,
                 productVariantTraits);
+    }
+
+    @Override
+    public void increaseSoldCounts(
+            Collection<VariantProductSoldCountIncrement> increments) {
+        final var commandItems = increments.stream()
+                .map(VariantToProductSyncAdapter::toIncreaseProductSoldCountsForVariantCommandItem)
+                .toList();
+        this.increaseProductSoldCountsForVariantUseCase.execute(
+                new IncreaseProductSoldCountsForVariantCommand(commandItems));
+    }
+
+    private static IncreaseProductSoldCountsForVariantCommand.Item toIncreaseProductSoldCountsForVariantCommandItem(
+            final VariantProductSoldCountIncrement increment) {
+        return new IncreaseProductSoldCountsForVariantCommand.Item(
+                new ProductId(increment.productId().value()),
+                increment.value());
     }
 }
