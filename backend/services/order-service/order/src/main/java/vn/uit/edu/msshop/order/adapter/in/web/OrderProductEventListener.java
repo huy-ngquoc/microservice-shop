@@ -38,6 +38,7 @@ public class OrderProductEventListener {
 
     @KafkaHandler
     public void onVariantUpdate(VariantUpdate event) {
+        System.out.println("Received variant update");
         if(eventDocumentRepo.existsById(event.getEventId())) return;
         VariantInfo v = variantInfoRepo.findById(event.getVariantId()).orElse(null);
         if(v==null) v= new VariantInfo(event.getVariantId(), event.getProductId(),event.getProductName(), event.getPrice(), event.getTraits(), event.getImageKey());
@@ -70,5 +71,9 @@ public class OrderProductEventListener {
         List<VariantInfo> infos = event.getVariantCreateds().stream().map(item->new VariantInfo(item.getVariantId(), event.getProductId(),event.getProductName(), item.getPrice(), item.getTraits(), item.getImageKey())).toList();
         variantInfoRepo.saveAll(infos);
         eventDocumentRepo.save(new EventDocument(event.getEventId(), Instant.now()));
+    }
+    @KafkaHandler(isDefault = true)
+    public void ignoreOthers(Object event) {
+        
     }
 }

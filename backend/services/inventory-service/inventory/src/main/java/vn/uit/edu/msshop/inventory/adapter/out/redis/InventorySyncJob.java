@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
@@ -53,15 +54,30 @@ public class InventorySyncJob {
                     UUID variantId = UUID.fromString(key.replace("inventory:variant:", ""));
                     int quantity = Integer.parseInt(entries.get("quantity").toString());
                     int reservedQuantity = Integer.parseInt(entries.get("reservedQuantity").toString());
-                    
+                    String status = entries.get("status").toString();
+                    UUID id = UUID.fromString(entries.get("id").toString());
                     
                     Inventory inventory = loadInventoryPort.loadByVariantId(new VariantId(variantId)).orElse(null);
                     if(inventory!=null) {
+                        
                         final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId())
+                        
                         .quantity(new Quantity(quantity))
                         .reservedQuantity(new ReservedQuantity(reservedQuantity)).build();
                         final var toSave = inventory.applyUpdateInfo(updateInfo);
+                        if(status.equals("ENABLE")) toSave.restore();
+                        else toSave.disable();
                         updateList.add(toSave);
+                    }
+                    else {
+                        System.out.println("Inventory is null with id "+variantId);
+                        final var draft = Inventory.Draft.builder().id(new InventoryId(id))
+                        .variantId(new VariantId(variantId))
+                        .quantity(new Quantity(quantity))
+                        .reservedQuantity(new ReservedQuantity(reservedQuantity))
+                        .build();
+                        updateList.add(Inventory.create(draft));
+
                     }
                 }
 
@@ -74,6 +90,7 @@ public class InventorySyncJob {
             
             
             if (!updateList.isEmpty()) {
+                System.out.println("Size of list "+updateList.size());
                 saveInventoryPort.saveAll(updateList);
             }
         }

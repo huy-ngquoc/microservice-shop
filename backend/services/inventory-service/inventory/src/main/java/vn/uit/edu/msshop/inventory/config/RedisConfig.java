@@ -20,12 +20,14 @@ public class RedisConfig {
     private DefaultRedisScript<Long> reserveShippingStockScript;
     private DefaultRedisScript<Long> cancelStockScript;
     private DefaultRedisScript<Long> releaseStockScript;
+    private DefaultRedisScript<Long> updateInventoryStatus;
 
     public RedisConfig() {
         reserveStockScript=  reserveStockScript();
         reserveShippingStockScript= reserveShippingStockScript();
         cancelStockScript = cancelStockScript();
         releaseStockScript=releaseStockScript();
+        updateInventoryStatus=updateStatusScript();
     }
     
     
@@ -60,6 +62,14 @@ public class RedisConfig {
         
         script.setLocation(new ClassPathResource("reverse_ship.lua"));
         
+        script.setResultType(Long.class);
+        return script;
+    }
+    
+    public DefaultRedisScript<Long> updateStatusScript() {
+        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+        // Đường dẫn tính từ thư mục src/main/resources
+        script.setLocation(new ClassPathResource("change_status.lua"));
         script.setResultType(Long.class);
         return script;
     }

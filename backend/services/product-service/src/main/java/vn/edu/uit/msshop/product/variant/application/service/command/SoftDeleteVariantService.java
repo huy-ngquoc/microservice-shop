@@ -39,7 +39,7 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
         final var variantId = command.id();
         final var variant = this.loadPort.loadById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
-
+        System.out.println("Deleteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
         final var expectedVersion = command.expectedVersion();
         final var currentVersion = variant.getVersion();
         if (!expectedVersion.equals(currentVersion)) {

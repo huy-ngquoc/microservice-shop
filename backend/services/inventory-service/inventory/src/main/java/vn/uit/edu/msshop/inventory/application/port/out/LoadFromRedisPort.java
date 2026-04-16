@@ -7,4 +7,5 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 public interface LoadFromRedisPort {
     public List<Inventory> loadFromRedis(List<VariantId> variantIds);
+    public Inventory loadById(VariantId variantId);
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.InventoryJpaEntity;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryStatus;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.LastUpdate;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
@@ -23,6 +24,7 @@ public class InventoryJpaMapper {
         .reservedQuantity(new ReservedQuantity(entity.getReservedQuantity()))
         .lastUpdate(new LastUpdate(entity.getLastUpdate()))
         .version(new Version(entity.getVersion()))
+        .status(new InventoryStatus(entity.getStatus()))
         .build();
         return Inventory.reconstitue(snapshot);
     }
