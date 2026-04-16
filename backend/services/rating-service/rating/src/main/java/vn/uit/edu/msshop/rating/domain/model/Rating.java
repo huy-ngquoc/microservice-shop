@@ -116,6 +116,9 @@ public class Rating {
         return Snapshot.builder().id(this.id).content(this.content).media(this.media).productId(this.productId).ratingPoint(this.ratingPoint)
         .userAvatar(this.userAvatar).username(this.username).userId(this.userId).build();
     }
+    public boolean isRatingPointChange(UpdateInfo u){
+        return this.ratingPoint.value()!=u.ratingPoint.value();
+    }
     @NullMarked
     private boolean isSameInfoWithUpdateInfo(UpdateInfo u) {
         return Objects.equals(u.content(), this.content)&&Objects.equals(u.ratingPoint(), this.ratingPoint);

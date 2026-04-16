@@ -1,9 +1,12 @@
 package vn.uit.edu.msshop.rating.adapter.in.web;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import vn.uit.edu.msshop.rating.adapter.in.web.mapper.RatingInfoWebMapper;
 import vn.uit.edu.msshop.rating.adapter.in.web.mapper.RatingWebMapper;
 import vn.uit.edu.msshop.rating.adapter.in.web.request.PostRatingRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.request.UpdateRatingRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.response.ImageViewResponse;
+import vn.uit.edu.msshop.rating.adapter.in.web.response.RatingInfoResponse;
 import vn.uit.edu.msshop.rating.adapter.in.web.response.RatingResponse;
 import vn.uit.edu.msshop.rating.application.dto.command.UploadRatingImageCommand;
+import vn.uit.edu.msshop.rating.application.port.in.LoadRatingInfoUseCase;
 import vn.uit.edu.msshop.rating.application.service.DeleteImageService;
 import vn.uit.edu.msshop.rating.application.service.DeleteRatingService;
 import vn.uit.edu.msshop.rating.application.service.FindRatingService;
@@ -47,6 +53,28 @@ public class RatingController {
     private final RatingWebMapper mapper;
     private final UploadImageService uploadImageService;
     private final DeleteImageService deleteImageService;
+    private final RatingInfoWebMapper ratingInfoWebMapper;
+    private final LoadRatingInfoUseCase loadRatingInfoUseCase;
+
+    @GetMapping("/rating_info/{productId}")
+    public ResponseEntity<RatingInfoResponse> findRatingInfoByProductId(@PathVariable UUID productId) {
+        final var result =loadRatingInfoUseCase.loadById(new ProductId(productId));
+        if(result.isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(ratingInfoWebMapper.toResponse(result.get()));
+
+    }
+    @GetMapping("/rating_info/all")
+    public ResponseEntity<List<RatingInfoResponse>> findAllRatingInfo() {
+        final var result = loadRatingInfoUseCase.loadAll();
+        return ResponseEntity.ok(result.stream().map(ratingInfoWebMapper::toResponse).toList());
+    }
+    @GetMapping("/rating_info")
+    public ResponseEntity<Page<RatingInfoResponse>> findAllRatingInfoByPage(@RequestParam(defaultValue="0") int pageNumber, @RequestParam(defaultValue="7") int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        final var result = loadRatingInfoUseCase.loadAll(pageable);
+        return ResponseEntity.ok(result.map(ratingInfoWebMapper::toResponse));
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<RatingResponse> findById(@PathVariable UUID id) {
