@@ -29,6 +29,7 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.CreateAt;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OriginPrice;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.TotalPrice;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UpdateAt;
 /*@NonNull
@@ -110,6 +111,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         .updateAt(new UpdateAt(null))
         .currency(command.currency())
         .paymentMethod(command.paymentMethod())
+        .paymentStatus(new PaymentStatus("PENDING"))
         .build();
         final var saved = Order.create(draft);
 
