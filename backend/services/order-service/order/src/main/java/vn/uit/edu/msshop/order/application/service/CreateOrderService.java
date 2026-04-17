@@ -91,7 +91,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         this.checkUserPort.isUserAvailable(command.userId().value());
         List<OrderDetailRequest> requests= command.details().stream().map(item->new OrderDetailRequest(item.variantId(), item.quantity())).toList();
         List<OrderDetail> listDetails = loadOrderDetailPort.loadByListDetail(requests);
-        System.out.println(listDetails.get(0).variantId());
+        
         canPlaceOrder(listDetails);
         long originPrice =0;
         for(OrderDetail d : listDetails) {

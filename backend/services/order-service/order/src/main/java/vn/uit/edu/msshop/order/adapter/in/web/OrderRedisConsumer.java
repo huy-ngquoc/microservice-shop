@@ -62,7 +62,7 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
         OrderDocument document = objectMapper.readValue(jsonPayload, OrderDocument.class);
         // 3. Dùng Jackson để convert từ Map sang OrderDocument "xịn"
         order = mapper.toDomain(document);
-        System.out.println("On order created");
+        
         
         final Order saved =savePort.save(order);
         OrderCreatedInventoryDocument outboxEventOrderCreatedInventory= OrderCreatedInventoryDocument.builder().eventId(UUID.randomUUID())
