@@ -13,7 +13,11 @@ public record OrderResponse(
     long shippingFee,
     long discount,
     String status,
-    Instant createAt
+    Instant createAt,
+    Instant updateAt,
+    String currency,
+    String paymentMethod,
+    String paymentStatus
 ) {
 
 }

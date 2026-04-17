@@ -16,6 +16,7 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OriginPrice;
 import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentMethod;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingFee;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 import vn.uit.edu.msshop.order.domain.model.valueobject.TotalPrice;
@@ -43,6 +44,7 @@ public class OrderDataMapper {
         .version(new Version(document.getVersion()==null?null:document.getVersion()))
         .currency(new Currency(document.getCurrency()))
         .paymentMethod(new PaymentMethod(document.getPaymentMethod()))
+        .paymentStatus(new PaymentStatus(document.getPaymentStatus()))
         .build();
         return Order.reconstitue(snapShot);
     }
@@ -59,7 +61,7 @@ public class OrderDataMapper {
         List<OrderDetailDocument> details = order.getDetails().stream().map(this::toOrderDetailDocument).toList();
         return new OrderDocument(order.getId().value(), shippingInfoDocument, details, order.getStatus().value(), 
         order.getUserId().value(), order.getOriginPrice().value(), order.getShippingFee().value(),
-        order.getDiscount().value(), order.getTotalPrice().value(), order.getCreateAt().value(), order.getUpdateAt().value(),order.getVersion()==null ? null:order.getVersion().value(),order.getCurrency().value(), order.getPaymentMethod().value());
+        order.getDiscount().value(), order.getTotalPrice().value(), order.getCreateAt().value(), order.getUpdateAt().value(),order.getVersion()==null ? null:order.getVersion().value(),order.getCurrency().value(), order.getPaymentMethod().value(), order.getPaymentStatus().value());
     }
     public ShippingInfoDocument toShippingInfoDocument(ShippingInfo shippingInfo) {
         return new ShippingInfoDocument(shippingInfo.fullName(), shippingInfo.address(), shippingInfo.email(), shippingInfo.phone());

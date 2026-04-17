@@ -3,11 +3,14 @@ package vn.uit.edu.msshop.order.application.dto.query;
 import java.util.List;
 
 import vn.uit.edu.msshop.order.domain.model.valueobject.CreateAt;
+import vn.uit.edu.msshop.order.domain.model.valueobject.Currency;
 import vn.uit.edu.msshop.order.domain.model.valueobject.Discount;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OriginPrice;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentMethod;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingFee;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 import vn.uit.edu.msshop.order.domain.model.valueobject.TotalPrice;
@@ -25,7 +28,10 @@ public record OrderView(
     Discount discount,
     TotalPrice totalPrice,
     CreateAt createAt,
-    UpdateAt updateAt
+    UpdateAt updateAt,
+    PaymentMethod paymentMethod,
+    Currency currency,
+    PaymentStatus paymentStatus
 ) {
 
 }

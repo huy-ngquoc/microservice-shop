@@ -49,6 +49,7 @@ public class OrderDocument {
 
     private String currency;
     private String paymentMethod;
+    private String paymentStatus;
 
 
 }

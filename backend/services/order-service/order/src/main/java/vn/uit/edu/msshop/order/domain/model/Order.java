@@ -19,6 +19,7 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OriginPrice;
 import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentMethod;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingFee;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 import vn.uit.edu.msshop.order.domain.model.valueobject.TotalPrice;
@@ -72,6 +73,7 @@ public final class Order {
 
     private final Currency currency;
     private final PaymentMethod paymentMethod;
+    private PaymentStatus paymentStatus;
 
     @Builder
     public static record UpdateInfo(
@@ -120,7 +122,9 @@ public final class Order {
     @NonNull
     Currency currency,
     @NonNull
-    PaymentMethod paymentMethod
+    PaymentMethod paymentMethod,
+    @NonNull
+    PaymentStatus paymentStatus
     ) {
 
     }
@@ -164,7 +168,9 @@ public final class Order {
     @NonNull
     Currency currency,
     @NonNull
-    PaymentMethod paymentMethod
+    PaymentMethod paymentMethod,
+    @NonNull
+    PaymentStatus paymentStatus
     ) {
 
     }
@@ -183,7 +189,7 @@ public final class Order {
 
         return Order.builder().id(d.id()).shippingInfo(d.shippingInfo()).details(d.details()).status(d.status()).userId(d.userId())
         .originPrice(d.originPrice()).shippingFee(d.shippingFee()).discount(d.discount()).totalPrice(d.totalPrice()).createAt(d.createAt()).updateAt(d.updateAt()).version(null).
-        currency(d.currency()).paymentMethod(d.paymentMethod()).build();
+        currency(d.currency()).paymentMethod(d.paymentMethod()).paymentStatus(d.paymentStatus()).build();
     }
     @NullMarked
     public static Order reconstitue(final SnapShot s) {
@@ -199,6 +205,7 @@ public final class Order {
         .originPrice(s.originPrice()).shippingFee(s.shippingFee()).discount(s.discount()).totalPrice(s.totalPrice()).createAt(s.createAt()).updateAt(s.updateAt()).version(s.version())
         .currency(s.currency())
         .paymentMethod(s.paymentMethod())
+        .paymentStatus(s.paymentStatus())
         .build();
     
     }
@@ -217,13 +224,15 @@ public final class Order {
         Instant updateTime = (u.orderStatus()==null&&u.shippingInfo()==null)?this.updateAt.value():Instant.now();
         return Order.builder().id(this.id).shippingInfo(newShippingInfo).details(this.details).status(newStatus).userId(this.userId)
         .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(updateTime)).version(this.version)
-        .currency(this.currency).paymentMethod(this.paymentMethod).build();
+        .currency(this.currency).paymentMethod(this.paymentMethod).paymentStatus(this.paymentStatus).build();
     }
 
     @NullMarked
     public SnapShot snapShot() {
         return SnapShot.builder().id(this.id).shippingInfo(this.shippingInfo).details(this.details).status(this.status).userId(this.userId)
-        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(this.updateAt).version(this.version).build();
+        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(this.updateAt).version(this.version)
+        .paymentStatus(this.paymentStatus)
+        .build();
     }
     @NullMarked
     @SuppressWarnings("java:S1067")

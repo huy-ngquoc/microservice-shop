@@ -16,6 +16,6 @@ import vn.uit.edu.msshop.order.domain.model.Order;
 public class OrderViewMapper {
     public OrderView toView(Order order) {
         return new OrderView(order.getId(),order.getShippingInfo(),order.getDetails(),order.getStatus(),order.getUserId(),order.getOriginPrice()
-    ,order.getShippingFee(),order.getDiscount(),order.getTotalPrice(),order.getCreateAt(),order.getUpdateAt());
+    ,order.getShippingFee(),order.getDiscount(),order.getTotalPrice(),order.getCreateAt(),order.getUpdateAt(),order.getPaymentMethod(), order.getCurrency(), order.getPaymentStatus());
     }
 }
