@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.rating.application.port.out;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,4 +15,5 @@ public interface LoadRatingInfoPort {
     public Optional<RatingInfo> loadById(ProductId productId);
     public List<RatingInfo> loadAll();
     public Page<RatingInfo> loadByPage(Pageable pageable);
+    public Page<RatingInfo> loadUpdatedRatingInfo(Instant start, Instant end,Pageable pageAble);
 }

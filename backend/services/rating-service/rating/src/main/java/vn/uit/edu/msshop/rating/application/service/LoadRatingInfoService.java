@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.rating.application.service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,12 @@ public class LoadRatingInfoService implements LoadRatingInfoUseCase {
     @Override
     public Page<RatingInfoView> loadAll(Pageable pageable) {
         final var result = loadPort.loadByPage(pageable);
+        return result.map(mapper::toView);
+    }
+
+    @Override
+    public Page<RatingInfoView> loadUpdatedRatingInfo(Instant start, Instant end, Pageable pageable) {
+        final var result = loadPort.loadUpdatedRatingInfo(start, end, pageable);
         return result.map(mapper::toView);
     }
 }
