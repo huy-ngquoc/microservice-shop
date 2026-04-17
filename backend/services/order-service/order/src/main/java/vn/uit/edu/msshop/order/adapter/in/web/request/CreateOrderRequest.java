@@ -12,7 +12,7 @@ public record CreateOrderRequest(
     List<OrderDetailRequest> detailRequests,
     UUID userId,
     long shippingFee,
-    long totalPrice,
+    
     long discount,
     String currency,
     String paymentMethod

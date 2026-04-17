@@ -27,11 +27,11 @@ public class OrderCreatedInventoryOutboxPublisher {
     
     public void publishPendingEvents() {
         //System.out.println("Alo alo");
-        List<OrderCreatedInventoryDocument> pendingEvents =orderCreatedInventoryDocumentRepo.findAll();
+        List<OrderCreatedInventoryDocument> pendingEvents =orderCreatedInventoryDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
         //System.out.println("Size " +pendingEvents.size());
         for (OrderCreatedInventoryDocument event : pendingEvents) {
             
-            if(event.getEventStatus()==null||!event.getEventStatus().equals("PENDING")) continue;
+            
             try {
                 //System.out.println(event.getEventStatus());
                 OrderCreated orderCreated = new OrderCreated(event.getEventId(),event.getOrderId(), event.getOrderDetails().stream().map(item->new OrderDetail(

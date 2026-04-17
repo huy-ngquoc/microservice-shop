@@ -74,7 +74,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
 
     @Override
     public void publishOrderCreatedEvent( OrderCreatedDocument outboxEvent) {
-        System.out.println("Publish event order created");
+        
         OrderCreated event = new OrderCreated(outboxEvent.getEventId(),outboxEvent.getCurrency(), outboxEvent.getOrderId(), outboxEvent.getPaymentMethod(), outboxEvent.getPaymentValue(), outboxEvent.getUserId());
         Message<OrderCreated> message=MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, ORDER_CREATED_TOPIC).build();
         try {
@@ -85,12 +85,12 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 orderCreatedOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
-                log.error("Fail, wait 5 seconds");
+                //log.error("Fail, wait 5 seconds");
             }
         });
     }
     catch(Exception e) {
-        System.out.println("Kafka is dead");
+        //System.out.println("Kafka is dead");
     e.printStackTrace();
     }
     }
@@ -106,12 +106,12 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 codPaymentCancelledOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
-                log.error("Fail, wait 5 seconds");
+                //log.error("Fail, wait 5 seconds");
             }
         });
     }
     catch(Exception e) {
-        log.error("Error sending event");
+        //log.error("Error sending event");
     }
     }
 
@@ -126,12 +126,12 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 codPaymentReceivedOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
-                log.error("Fail, wait 5 seconds");
+               // log.error("Fail, wait 5 seconds");
             }
         });
     }
     catch(Exception e) {
-        log.error("Error sending event");
+        //log.error("Error sending event");
     }
     }
 
@@ -146,11 +146,11 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 orderCreatedSuccessOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
-                log.error("Fail, wait 5 seconds");
+                //log.error("Fail, wait 5 seconds");
             }
         });
     }catch(Exception e) {
-        System.out.println("Kafka is dead");
+        //System.out.println("Kafka is dead");
     e.printStackTrace();
     }
 
@@ -170,11 +170,11 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 orderCreatedInventoryOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
-                log.error("Fail, wait 5 seconds");
+                //log.error("Fail, wait 5 seconds");
             }
         });
     }catch(Exception e) {
-        System.out.println("Kafka is dead");
+        //System.out.println("Kafka is dead");
     e.printStackTrace();
     }
     }
@@ -190,12 +190,12 @@ public class OrderEventPublisher implements PublishOrderEventPort{
                 orderCancelledOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
-                log.error("Fail, wait 5 seconds");
+                //log.error("Fail, wait 5 seconds");
             }
         });
     }
     catch(Exception e) {
-        log.error("Error sending event");
+        //log.error("Error sending event");
     }
     }
 
@@ -207,19 +207,19 @@ public class OrderEventPublisher implements PublishOrderEventPort{
         orderShippedTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
-                System.out.println("Send event with id "+event.getEventId());
+                //System.out.println("Send event with id "+event.getEventId());
                 orderShippedOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
-                System.out.println("Send event fail");
-                log.error("Fail, wait 5 seconds");
+                //System.out.println("Send event fail");
+                //log.error("Fail, wait 5 seconds");
             }
         })
         ;
     }
     catch(Exception e) {
-    System.out.println("Kafka is dead");
-    e.printStackTrace();
+    //System.out.println("Kafka is dead");
+    //e.printStackTrace();
 }
 }
 
@@ -231,19 +231,19 @@ public class OrderEventPublisher implements PublishOrderEventPort{
         increaseSoldCountTemplate.send(message)  
         .whenComplete((result,ex)->{
             if(ex==null) {
-                System.out.println("Send event with id "+outboxEvent.getEventId());
+                //System.out.println("Send event with id "+outboxEvent.getEventId());
                 increaseSoldCountEventOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
-                System.out.println("Send event fail");
-                log.error("Fail, wait 5 seconds");
+                //System.out.println("Send event fail");
+                //log.error("Fail, wait 5 seconds");
             }
         })
         ;
     }
     catch(Exception e) {
-    System.out.println("Kafka is dead");
-    e.printStackTrace();
+    //System.out.println("Kafka is dead");
+    //e.printStackTrace();
 }
     }
 
