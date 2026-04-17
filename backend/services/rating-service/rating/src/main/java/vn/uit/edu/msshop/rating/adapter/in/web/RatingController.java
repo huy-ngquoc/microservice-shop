@@ -32,6 +32,7 @@ import vn.uit.edu.msshop.rating.adapter.in.web.response.ImageViewResponse;
 import vn.uit.edu.msshop.rating.adapter.in.web.response.RatingInfoResponse;
 import vn.uit.edu.msshop.rating.adapter.in.web.response.RatingResponse;
 import vn.uit.edu.msshop.rating.application.dto.command.UploadRatingImageCommand;
+import vn.uit.edu.msshop.rating.application.exception.ProductNotFoundException;
 import vn.uit.edu.msshop.rating.application.port.in.LoadRatingInfoUseCase;
 import vn.uit.edu.msshop.rating.application.service.DeleteImageService;
 import vn.uit.edu.msshop.rating.application.service.DeleteRatingService;
@@ -95,9 +96,14 @@ public class RatingController {
         return ResponseEntity.ok(viewPage.map(this.mapper::toResponse));
     }
     @PostMapping("/create")
-    public ResponseEntity<Void> postRating(@RequestBody PostRatingRequest request) {
+    public ResponseEntity<?> postRating(@RequestBody PostRatingRequest request) {
+        try {
         postService.post(mapper.toCommand(request));
         return ResponseEntity.noContent().build();
+        }
+        catch(ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
     @PutMapping("/update") 
     public ResponseEntity<Void> updateRating(@RequestBody UpdateRatingRequest request) {

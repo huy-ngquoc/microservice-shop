@@ -8,6 +8,6 @@ import vn.uit.edu.msshop.rating.domain.model.RatingInfo;
 @Component
 public class RatingInfoViewMapper {
     public RatingInfoView toView(RatingInfo domain) {
-        return new RatingInfoView(domain.getProductId().value(), domain.getRatingCount().value(), domain.getTotalPoint().value());
+        return new RatingInfoView(domain.getProductId().value(), domain.getRatingCount().value(), domain.getTotalPoint().value(), domain.getCreateAt().value(), domain.getUpdateAt().value());
     }
 }
