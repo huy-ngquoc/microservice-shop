@@ -63,7 +63,7 @@ public class OrderWebMapper {
 
     public OrderResponse toResponse(OrderView orderView) {
         List<OrderDetailResponse> detailResponses = orderView.details().stream().map(item->toResponse(item)).toList();
-        return new OrderResponse(orderView.orderId().toString(),orderView.shippingInfo().fullName(),orderView.shippingInfo().address(),orderView.shippingInfo().email(),orderView.shippingInfo().phone(),detailResponses,orderView.shippingFee().value(),orderView.discount().value(),orderView.status().value(),orderView.createAt().value());
+        return new OrderResponse(orderView.orderId().toString(),orderView.shippingInfo().fullName(),orderView.shippingInfo().address(),orderView.shippingInfo().email(),orderView.shippingInfo().phone(),detailResponses,orderView.shippingFee().value(),orderView.discount().value(),orderView.status().value(),orderView.createAt().value(),orderView.updateAt().value(),orderView.currency().value(), orderView.paymentMethod().value(), orderView.paymentStatus().value());
     }
     /*public OrderCreatedSuccess toEvent(CreateOrderRequest request) {
         return new OrderCreatedSuccess(request.userId(),request.detailRequests().stream().map(item->item.variantId()).toList());

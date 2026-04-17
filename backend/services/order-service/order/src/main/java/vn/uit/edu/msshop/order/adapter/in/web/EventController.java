@@ -1,28 +1,28 @@
 package vn.uit.edu.msshop.order.adapter.in.web;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
+import vn.uit.edu.msshop.order.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCreatedInventoryDocumentRepository;
 
-@RestController
-@RequiredArgsConstructor
+@Component
 public class EventController {
-    private final OrderCreatedInventoryDocumentRepository orderCreatedInventoryDocumentRepo;
-    private final OrderCreatedDocumentRepository orderCreatedDocumentRepo;
-    private final OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo;
+    private OrderCreatedInventoryDocumentRepository orderCreatedInventoryDocumentRepo;
+    private  OrderCreatedDocumentRepository orderCreatedDocumentRepo;
+    private  OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo;
+    private  EventDocumentRepository eventDocumentRepo;
 
-    @DeleteMapping("/clear_events")
-    public ResponseEntity<Void> deleteAllEvent() {
+    public EventController(OrderCreatedInventoryDocumentRepository orderCreatedInventoryDocumentRepo, OrderCreatedDocumentRepository orderCreatedDocumentRepo,
+        OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo,EventDocumentRepository eventDocumentRepo
+    ) {
+        System.out.println("Cleareddddddddddddddddddddddddddddddd");
         orderCreatedInventoryDocumentRepo.deleteAll();
         orderCreatedDocumentRepo.deleteAll();
         orderCreatedSuccessDocumentRepo.deleteAll();
+        eventDocumentRepo.deleteAll();
         
-        return ResponseEntity.noContent().build();
         
     }
 
