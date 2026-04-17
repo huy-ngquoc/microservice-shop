@@ -76,6 +76,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             @Override
             public void afterCommit() {
                 publishEventPort.publishInventoryUpdateEvent(savedEvent);
+                syncPort.loadFromMainDatabase(saved.getVariantId().value());
             }
         });
         return mapper.toView(saved);
@@ -85,11 +86,11 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderCreated(OrderCreateCommand commands) {
         List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
-        System.out.println("Inventories size "+inventories.get(0).getVariantId().value().toString() );
+        //System.out.println("Inventories size "+inventories.get(0).getVariantId().value().toString() );
         
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
-            System.out.println(detailCommand.getVariantId().value());
+            //System.out.println(detailCommand.getVariantId().value());
             Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
             if(inventory==null) throw new RuntimeException("Invalid variant id");
             if(inventory.getQuantity().value()<detailCommand.getQuantity().value()) {
@@ -124,7 +125,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
         inventoryUpdatedDocumentRepo.saveAll(events);
         for(OrderDetailCommand command: commands.getDetailCommands()) {
-            System.out.println("Call check and reserve, amount "+command.getQuantity().value());
+            //System.out.println("Call check and reserve, amount "+command.getQuantity().value());
             processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getReserveStockScript());
         }
         return inventories.stream().map(mapper::toView).toList();
@@ -139,7 +140,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
 
     if (result == -1) {
         // Tình huống: Redis trống trơn (hết hạn hoặc chưa nạp)
-        System.out.println("Redis miss! Loading from DB...");
+        //System.out.println("Redis miss! Loading from DB...");
         Inventory inventory = syncPort.loadFromMainDatabase(variantId);
         if(inventory==null) throw new InventoryNotFoundException(new VariantId(variantId));
         // Sau khi load xong thì gọi lại chính nó (Recursive) hoặc báo user thử lại
