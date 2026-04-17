@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.rating.adapter.in.web.mapper.RatingInfoWebMapper;
 import vn.uit.edu.msshop.rating.adapter.in.web.mapper.RatingWebMapper;
+import vn.uit.edu.msshop.rating.adapter.in.web.request.GetUpdatedRatingInfoRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.request.PostRatingRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.request.UpdateRatingRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.response.ImageViewResponse;
@@ -74,6 +75,13 @@ public class RatingController {
         final var result = loadRatingInfoUseCase.loadAll(pageable);
         return ResponseEntity.ok(result.map(ratingInfoWebMapper::toResponse));
     }
+    @PostMapping("/updated_rating_info")
+    public ResponseEntity<Page<RatingInfoResponse>> findUpdatedRatingInfo(@RequestParam(defaultValue="0") int pageNumber, @RequestParam(defaultValue="7") int pageSize, @RequestBody GetUpdatedRatingInfoRequest request) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        final var result = loadRatingInfoUseCase.loadUpdatedRatingInfo(request.getStart(), request.getEnd(), pageable);
+        return ResponseEntity.ok(result.map(ratingInfoWebMapper::toResponse));
+    }
+
 
 
     @GetMapping("/{id}")

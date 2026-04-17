@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.rating.adapter.out.persistence;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +49,12 @@ public class RatingInfoPersistenceAdapter implements LoadRatingInfoPort, SaveRat
     @Override
     public void delete(ProductId productId) {
         repository.deleteById(productId.value());
+    }
+
+    @Override
+    public Page<RatingInfo> loadUpdatedRatingInfo(Instant start, Instant end, Pageable pageAble) {
+        final var result = repository.findByCreateAtBetweenOrUpdateAtBetween(start, end, start, end, pageAble);
+        return result.map(mapper::toDomain);
     }
 
 }

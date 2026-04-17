@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.rating.application.service;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -14,8 +15,10 @@ import vn.uit.edu.msshop.rating.application.port.out.SaveRatingPort;
 import vn.uit.edu.msshop.rating.domain.event.RatingPosted;
 import vn.uit.edu.msshop.rating.domain.model.Rating;
 import vn.uit.edu.msshop.rating.domain.model.RatingInfo;
+import vn.uit.edu.msshop.rating.domain.model.valueobject.CreateAt;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.ProductId;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingCount;
+import vn.uit.edu.msshop.rating.domain.model.valueobject.UpdateAt;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +35,10 @@ public class PostRatingService implements PostRatingUseCase {
         final var saved = this.savePort.save(rating);
         Optional<RatingInfo> ratingInfoOptional = loadRatingInfoPort.loadById(new ProductId(command.productId().value()));
         if(ratingInfoOptional.isEmpty()) {
-            final var ratingInfoDraft = RatingInfo.Draft.builder().productId(command.productId()).ratingCount(new RatingCount(1)).totalPoint(command.ratingPoint()).build();
+            final var ratingInfoDraft = RatingInfo.Draft.builder().productId(command.productId()).ratingCount(new RatingCount(1)).totalPoint(command.ratingPoint())
+            .createAt(new CreateAt(Instant.now()))
+            .updateAt(new UpdateAt(null))
+            .build();
             saveRatingInfoPort.save(RatingInfo.create(ratingInfoDraft));
         }
         else {
