@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.rating.application.dto.query;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -15,4 +16,6 @@ public class RatingInfoView {
     private UUID productId;
     private int ratingCount;
     private float totalPoint;
+    private Instant createAt;
+    private Instant updateAt;
 }
