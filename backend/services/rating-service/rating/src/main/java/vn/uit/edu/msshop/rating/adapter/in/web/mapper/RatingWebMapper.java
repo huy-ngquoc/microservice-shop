@@ -1,5 +1,7 @@
 package vn.uit.edu.msshop.rating.adapter.in.web.mapper;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 import vn.uit.edu.msshop.rating.adapter.in.web.request.PostRatingRequest;
@@ -25,7 +27,7 @@ import vn.uit.edu.msshop.rating.domain.model.valueobject.Username;
 @Component
 public class RatingWebMapper {
     public PostRatingCommand toCommand(PostRatingRequest request) {
-        final var id = new RatingId(request.ratingId());
+        final var id = new RatingId(UUID.randomUUID());
         final var content =new Content(request.content());
         final var productId = new ProductId(request.productId());
         final var userId = new UserId(request.userId());

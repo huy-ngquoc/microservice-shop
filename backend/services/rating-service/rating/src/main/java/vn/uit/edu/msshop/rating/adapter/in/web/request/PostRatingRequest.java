@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public record PostRatingRequest(
    
-    UUID ratingId,
+    
     String content,
     UUID productId,
     UUID userId,
