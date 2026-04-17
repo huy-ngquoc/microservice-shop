@@ -78,7 +78,7 @@ public class InventoryController {
     }
     @PostMapping("/public/variants")
     public ResponseEntity<List<InventoryResponse>> getByVariantIds(@RequestBody List<UUID> variantIds) {
-        System.out.println(variantIds.size());
+        
         List<VariantId> listIds = variantIds.stream().map(item->new VariantId(item)).toList();
         List<InventoryView> views = findUseCase.findByListVariantIdFromRedis(listIds);
         return ResponseEntity.ok(views.stream().map(mapper::toResponse).toList());

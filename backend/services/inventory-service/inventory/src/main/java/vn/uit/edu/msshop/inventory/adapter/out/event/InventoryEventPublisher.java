@@ -39,12 +39,12 @@ public class InventoryEventPublisher implements PublishInventoryEventPort {
                 inventoryUpdatedOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
-                log.error("Error sending event");
+                //log.error("Error sending event");
             }
         })
         ;
     }catch(Exception e) {
-        log.error("Error sending event");
+        //log.error("Error sending event");
     }
     }
 
@@ -58,11 +58,11 @@ public class InventoryEventPublisher implements PublishInventoryEventPort {
                 forceCancellOrderOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
-                log.error("Error sending event");
+                //log.error("Error sending event");
             }
         });
     }catch(Exception e) {
-        log.error("Error sending event");
+        //log.error("Error sending event");
     }
     }
 

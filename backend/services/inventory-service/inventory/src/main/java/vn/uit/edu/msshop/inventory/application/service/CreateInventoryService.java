@@ -53,6 +53,7 @@ public class CreateInventoryService implements CreateInventoryUseCase {
         Optional<Inventory> inventoryExist = loadPort.loadByVariantId(command.variantId());
         if(inventoryExist.isPresent()) return null;
         final var result = savePort.createFromCommand(command.variantId(), command.quantity());
+        
 
         //publishPort.publishInventoryUpdateEvent(new InventoryUpdated(command.variantId().value(),command.quantity().value(),0));
         InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())

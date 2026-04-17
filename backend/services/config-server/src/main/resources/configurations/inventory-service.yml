@@ -22,9 +22,14 @@ spring:
         hibernate:
             ddl-auto: update
         database: postgresql
-        show-sql: true
+        show-sql: false
         properties:
             hibernate:
+                format_sql: false
+                type:
+                    descriptor:
+                        sql:
+                            BasicBinder: OFF
                 "[globally_quoted_identifiers]": true
                 "[globally_quoted_identifiers_skip_column_definitions]": true
     kafka:
@@ -59,10 +64,16 @@ spring:
                     UpdateManyInventoriesEvent:vn.uit.edu.msshop.inventory.domain.event.UpdateManyInventoriesEvent
 logging:
   level:
+    org.hibernate.SQL: OFF 
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF
+    org.springframework.data.mongodb.core.MongoTemplate: OFF
     org.apache.kafka: ERROR
     org.springframework.kafka: ERROR
     io.micrometer.tracing: DEBUG
     io.zipkin.reporter2: DEBUG
+    root: WARN
+    vn.uit.edu.msshop.inventory: INFO
+    io.lettuce.core: WARN
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 management:

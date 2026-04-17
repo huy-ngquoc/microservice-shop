@@ -50,10 +50,14 @@ spring:
                     IncreaseSoldCountEvents:vn.uit.edu.msshop.order.domain.event.IncreaseSoldCountEvents
 logging:
   level:
+        org.springframework.data.mongodb.core.MongoTemplate: OFF
         org.apache.kafka: ERROR
         org.springframework.kafka: ERROR
         io.micrometer.tracing: ERROR
         io.zipkin.reporter2: ERROR
+        root: WARN
+        vn.uit.edu.msshop.order: INFO
+        io.lettuce.core: WARN
   pattern:
         level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 management:
@@ -73,6 +77,8 @@ management:
 server:
   port: 8000
   address: 0.0.0.0
+
+    
     
 
     
