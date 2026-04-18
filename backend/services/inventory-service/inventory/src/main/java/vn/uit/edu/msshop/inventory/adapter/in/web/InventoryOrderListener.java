@@ -25,11 +25,11 @@ public class InventoryOrderListener {
 
     @KafkaHandler
     public void onOrderCreated(OrderCreated event) {
-        if(!eventDocumentRepo.existsById(event.getEventId())) {
+        /*if(!eventDocumentRepo.existsById(event.getEventId())) {
         final var command = mapper.toCommand(event);
         updateInventoryUseCase.updateWhenOrderCreated(command);
         eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
-        }
+        }*/
     }
     @KafkaHandler
     public void onOrderCancelled(OrderCancelled event) {

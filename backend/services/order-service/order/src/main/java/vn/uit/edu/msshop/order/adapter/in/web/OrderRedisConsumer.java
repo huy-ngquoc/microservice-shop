@@ -20,8 +20,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCreatedInventoryDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderDetailDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCreatedInventoryDocumentRepository;
@@ -65,7 +63,7 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
         
         
         final Order saved =savePort.save(order);
-        OrderCreatedInventoryDocument outboxEventOrderCreatedInventory= OrderCreatedInventoryDocument.builder().eventId(UUID.randomUUID())
+        /*OrderCreatedInventoryDocument outboxEventOrderCreatedInventory= OrderCreatedInventoryDocument.builder().eventId(UUID.randomUUID())
         .orderId(saved.getId().value()).eventStatus("PENDING")
         .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
         .retryCount(0)
@@ -73,7 +71,7 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
         .updatedAt(null)
         .lastError(null)
         .build();
-        final var savedOutboxEventOrderCreatedInventory = orderCreatedInventoryDocumentRepository.save(outboxEventOrderCreatedInventory);
+        final var savedOutboxEventOrderCreatedInventory = orderCreatedInventoryDocumentRepository.save(outboxEventOrderCreatedInventory);*/
         OrderCreatedDocument outboxEventOrderCreated = OrderCreatedDocument.builder().currency(saved.getCurrency().value())
         .orderId(saved.getId().value())
         .paymentMethod(saved.getPaymentMethod().value())
@@ -98,7 +96,7 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                publishPort.publishOrderCreated_InventoryEvent(savedOutboxEventOrderCreatedInventory);
+                //publishPort.publishOrderCreated_InventoryEvent(savedOutboxEventOrderCreatedInventory);
                 publishPort.publishOrderCreatedEvent(savedEvent);
                 publishPort.publishClearCartEvent(savedOutboxOrderCreatedSuccess);
                 redisTemplate.opsForStream().acknowledge("order_stream", "order-group", message.getId());
