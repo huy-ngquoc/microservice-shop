@@ -42,6 +42,7 @@ spring:
                 request.timeout.ms: 2000
                 spring.json.type.mapping: 
                     OrderCreated:vn.uit.edu.msshop.order.domain.event.OrderCreated,
+                    OnlinePaymentCancelled:vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled,
                     CodPaymentCancelled:vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled,
                     CodPaymentReceived:vn.uit.edu.msshop.order.domain.event.CodPaymentReceived,
                     OrderCreatedSuccess:vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess,

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentReceivedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.IncreaseSoldCountEventsDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.OnlinePaymentCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCancelledDocument;
@@ -19,6 +20,7 @@ import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderShippe
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.CodPaymentCancelledOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.CodPaymentReceivedOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.IncreaseSoldCountEventOutboxPublisher;
+import vn.uit.edu.msshop.order.adapter.out.event.publisher.OnlinePaymentCancelledOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.OrderCreatedOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.OrderCreatedSuccessOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.inventory.OrderCancelledOutboxPublisher;
@@ -29,6 +31,7 @@ import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
 import vn.uit.edu.msshop.order.domain.event.IncreaseSoldCountDetail;
 import vn.uit.edu.msshop.order.domain.event.IncreaseSoldCountEvents;
+import vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.OrderCreated;
 import vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
@@ -49,8 +52,9 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     private final KafkaTemplate<String, OrderCancelled> orderCancelledTemplate;
     private final KafkaTemplate<String, OrderShipped> orderShippedTemplate;
     private final KafkaTemplate<String, IncreaseSoldCountEvents> increaseSoldCountTemplate;
+    private final KafkaTemplate<String,OnlinePaymentCancelled> onlinePaymentCancelledTemplate;
     private static final String ORDER_CREATED_TOPIC = "order-topic";
-    private static final String PAYMENT_STATUS_TOPIC="payment-cod-topic";
+    private static final String PAYMENT_STATUS_TOPIC="payment-status-topic";
     private static final String CLEAR_CART_TOPIC="cart-topic";
     private static final String INVENTORY_TOPIC="order-inventory";
     private static final String PRODUCT_TOPIC="order-product";
@@ -62,6 +66,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     private final OrderCancelledOutboxPublisher orderCancelledOutboxPublisher;
     private final OrderShippedOutboxPublisher orderShippedOutboxPublisher;
     private final IncreaseSoldCountEventOutboxPublisher increaseSoldCountEventOutboxPublisher;
+    private final OnlinePaymentCancelledOutboxPublisher onlinePaymentCancelledOutboxPublisher;
     /*UUID eventId,
     String currency,
     UUID orderId,
@@ -245,6 +250,26 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     //System.out.println("Kafka is dead");
     //e.printStackTrace();
 }
+    }
+
+    @Override
+    public void publishOnlinePaymentCancelledEvent(OnlinePaymentCancelledDocument outboxEvent) {
+        OnlinePaymentCancelled event = new OnlinePaymentCancelled(outboxEvent.getEventId(), outboxEvent.getOrderId());
+        Message<OnlinePaymentCancelled> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_STATUS_TOPIC).build();
+        try {
+        onlinePaymentCancelledTemplate.send(message)
+        .whenComplete((result,ex)->{
+            if(ex==null) {
+                onlinePaymentCancelledOutboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                //log.error("Fail, wait 5 seconds");
+            }
+        });
+    }catch(Exception e) {
+        //System.out.println("Kafka is dead");
+    e.printStackTrace();
+    }
     }
 
 
