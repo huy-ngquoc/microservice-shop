@@ -1,0 +1,10 @@
+package vn.edu.uit.msshop.product.variant.application.port.out.sync;
+
+import java.util.Collection;
+
+import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantProductSoldCountReconciliation;
+
+public interface ReconcileProductSoldCountsForVariantPort {
+    void reconcileSoldCounts(
+            Collection<VariantProductSoldCountReconciliation> reconciliations);
+}
