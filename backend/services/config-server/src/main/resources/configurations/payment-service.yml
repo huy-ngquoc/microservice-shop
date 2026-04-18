@@ -45,7 +45,8 @@ spring:
                 spring.json.type.mapping: 
                     OnlinePaymentExpired:vn.uit.edu.payment.domain.event.OnlinePaymentExpired,
                     OnlinePaymentCancelled:vn.uit.edu.payment.domain.event.OnlinePaymentCancelled,
-                    CodPaymentCreated:vn.uit.edu.payment.domain.event.CodPaymentCreated
+                    CodPaymentCreated:vn.uit.edu.payment.domain.event.CodPaymentCreated,
+                    PaymentSuccess:vn.uit.edu.payment.domain.event.PaymentSuccess
 logging:
   level:
     org.apache.kafka: ERROR

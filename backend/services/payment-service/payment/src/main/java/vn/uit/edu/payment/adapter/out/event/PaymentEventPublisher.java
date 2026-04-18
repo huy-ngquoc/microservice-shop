@@ -12,14 +12,17 @@ import lombok.extern.slf4j.Slf4j;
 import vn.uit.edu.payment.adapter.out.event.documents.CodPaymentCreatedDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentCancelledDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
+import vn.uit.edu.payment.adapter.out.event.documents.PaymentSuccessDocument;
 import vn.uit.edu.payment.adapter.out.event.publisher.CodPaymentCreatedOutboxPublisher;
 import vn.uit.edu.payment.adapter.out.event.publisher.OnlinePaymentCancelledOutboxPublisher;
 import vn.uit.edu.payment.adapter.out.event.publisher.OnlinePaymentExpiredOutboxPublisher;
+import vn.uit.edu.payment.adapter.out.event.publisher.PaymentSuccessOutboxPublisher;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.domain.event.CodPaymentCreated;
 import vn.uit.edu.payment.domain.event.OnlinePaymentCancelled;
 import vn.uit.edu.payment.domain.event.OnlinePaymentExpired;
 import vn.uit.edu.payment.domain.event.PaymentCreated;
+import vn.uit.edu.payment.domain.event.PaymentSuccess;
 import vn.uit.edu.payment.domain.event.PaymentUpdated;
 
 @Component
@@ -30,9 +33,11 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
     private final KafkaTemplate<String,OnlinePaymentCancelled> paymentCancelledTemplate;
     private final KafkaTemplate<String,OnlinePaymentExpired> paymentExpiredTemplate;
     private final KafkaTemplate<String, CodPaymentCreated> codPaymentCreatedTemplate;
+    private final KafkaTemplate<String,PaymentSuccess> paymentSuccessTemplate;
     private final OnlinePaymentCancelledOutboxPublisher onlinePaymentCancelledOutboxPublisher;
     private final OnlinePaymentExpiredOutboxPublisher onlinePaymentExpiredOutboxPublisher;
     private final CodPaymentCreatedOutboxPublisher codPaymentCreatedOutboxPublisher;
+    private final PaymentSuccessOutboxPublisher paymentSuccessOutboxPublisher;
     private static final String PAYMENT_TOPIC="payment-online-topic";
     @Override
     public void publish(PaymentCreated event) {
@@ -100,6 +105,25 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
         codPaymentCreatedTemplate.send(message).whenComplete((result,ex)->{
             if(ex==null) {
                 codPaymentCreatedOutboxPublisher.markAsSent(outboxEvent);
+            }
+            else {
+                System.out.println("Send fail");
+            }
+        });
+    }
+    catch(Exception e) {
+        log.error("Error sending event");
+    }
+    }
+
+    @Override
+    public void publishPaymentSuccess(PaymentSuccessDocument outboxEvent) {
+        PaymentSuccess event = new PaymentSuccess(outboxEvent.getEventId(), outboxEvent.getOrderId());
+        Message<PaymentSuccess> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
+        try {
+        paymentSuccessTemplate.send(message).whenComplete((result,ex)->{
+            if(ex==null) {
+                paymentSuccessOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
                 System.out.println("Send fail");

@@ -30,7 +30,8 @@ spring:
                     ProductUpdated:vn.uit.edu.msshop.order.domain.event.product.ProductUpdate,
                     VariantUpdated:vn.uit.edu.msshop.order.domain.event.product.VariantUpdate,
                     VariantDeleted:vn.uit.edu.msshop.order.domain.event.product.VariantDeleted,
-                    ProductDeleted:vn.uit.edu.msshop.order.domain.event.product.ProductDeleted
+                    ProductDeleted:vn.uit.edu.msshop.order.domain.event.product.ProductDeleted,
+                    PaymentSuccess:vn.uit.edu.msshop.order.domain.event.PaymentSuccess
         producer:
             bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer

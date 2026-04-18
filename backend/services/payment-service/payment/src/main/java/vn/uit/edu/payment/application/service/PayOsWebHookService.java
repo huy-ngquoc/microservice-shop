@@ -1,5 +1,8 @@
 package vn.uit.edu.payment.application.service;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -8,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import vn.payos.PayOS;
 import vn.payos.model.webhooks.Webhook;
 import vn.payos.model.webhooks.WebhookData;
+import vn.uit.edu.payment.adapter.out.event.documents.PaymentSuccessDocument;
+import vn.uit.edu.payment.adapter.out.event.repositories.PaymentSuccessDocumentRepository;
 import vn.uit.edu.payment.application.exception.PaymentNotFoundException;
 import vn.uit.edu.payment.application.port.out.LoadOnlinePaymentInfoPort;
 import vn.uit.edu.payment.application.port.out.LoadPaymentPort;
@@ -19,7 +24,6 @@ import vn.uit.edu.payment.domain.model.OnlinePaymentInfo;
 import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.OnlinePaymentNumber;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
-import vn.uit.edu.payment.domain.model.valueobject.TransactionId;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +35,8 @@ public class PayOsWebHookService implements PayOsWebHookPort {
     private final SavePaymentPort savePaymentPort;
     private final LoadPaymentPort loadPaymentPort;
     private final PublishPaymentEventPort eventPort;
+    private final PaymentSuccessDocumentRepository paymentSuccessRepo;
+    private final PublishPaymentEventPort publishEventPort;
     @Override
 
 public void handlePayOSWebHook(Webhook body) {
@@ -57,7 +63,7 @@ public void handlePayOSWebHook(Webhook body) {
 public void processPaymentUpdate(WebhookData webhookData) {
     long orderCode = webhookData.getOrderCode();
     
-    
+    System.out.println("Order code "+orderCode);
     if(orderCode == 123) return;
 
     OnlinePaymentInfo onlinePaymentInfo = loadOnlinePaymentInfoPort.loadByOrderCode(new OnlinePaymentNumber(orderCode));
@@ -76,13 +82,21 @@ public void processPaymentUpdate(WebhookData webhookData) {
             .paymentStatus(new PaymentStatus("SUCCESS"))
             .build();
     
-    savePaymentPort.save(payment.applyUpdateInfo(updateInfo));
+    final var saved=savePaymentPort.save(payment.applyUpdateInfo(updateInfo));
 
     
    
-        onlinePaymentInfo.setTransactionId(new TransactionId(""));
+        //onlinePaymentInfo.setTransactionId(new TransactionId(""));
     
-    saveOnlinePaymentInfoPort.save(onlinePaymentInfo);
+    //saveOnlinePaymentInfoPort.save(onlinePaymentInfo);
+    final var newPaymentSuccessEvent = PaymentSuccessDocument.builder().eventId(UUID.randomUUID()).orderId(saved.getOrderId().value())
+    .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        System.out.println("Publish payment success event");
+    publishEventPort.publishPaymentSuccess(newPaymentSuccessEvent);
 }
 
 }
