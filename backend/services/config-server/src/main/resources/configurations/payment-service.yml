@@ -36,7 +36,8 @@ spring:
                 spring.json.type.mapping: 
                     OrderCreated:vn.uit.edu.payment.domain.event.OrderCreated,
                     CodPaymentCancelled:vn.uit.edu.payment.domain.event.CodPaymentCancelled,
-                    CodPaymentReceived:vn.uit.edu.payment.domain.event.CodPaymentReceived
+                    CodPaymentReceived:vn.uit.edu.payment.domain.event.CodPaymentReceived,
+                    OnlinePaymentCancelled:vn.uit.edu.payment.domain.event.OnlinePaymentCancelled
         producer:
             bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer

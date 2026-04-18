@@ -13,12 +13,14 @@ import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentCancelledDo
 import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentReceivedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.IncreaseSoldCountDetailDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.IncreaseSoldCountEventsDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.OnlinePaymentCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderDetailDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderShippedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentCancelledDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentReceivedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.IncreaseSoldCountEventDocumentRepository;
+import vn.uit.edu.msshop.order.adapter.out.event.repositories.OnlinePaymentCancelledRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCancelledDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderShippedDocumentRepository;
 import vn.uit.edu.msshop.order.application.dto.command.IncreaseVariantSoldCountCommand;
@@ -53,6 +55,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     private final OrderShippedDocumentRepository orderShippedDocumentRepo;
     private final UpdateVariantSoldCountUseCase updateVariantSoldCountUseCase;
     private final IncreaseSoldCountEventDocumentRepository increaseSoldCountEventDocumentRepo;
+    private final OnlinePaymentCancelledRepository onlinePaymentCancelledRepo;
     
 
     @Override
@@ -75,9 +78,30 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         IncreaseSoldCountEventsDocument savedIncreaseSoldCountEventDocument=null;
         CodPaymentReceivedDocument savedCodPaymentReceivedDocument=null;
         OrderShippedDocument savedOrderShippedDocument=null;
-       
+        OnlinePaymentCancelledDocument savedOnlinePaymentCancelledDocument=null;
+       if(saved.getStatus().value().equals("CANCELLED")&&isSendEvent&&saved.getPaymentMethod().value().equals("ONLINE")) {
+        OnlinePaymentCancelledDocument outboxEvent = OnlinePaymentCancelledDocument.builder().eventId(UUID.randomUUID())
+            .orderId(saved.getId().value())
+            .eventStatus("PENDING")
+            .retryCount(0)
+            .createdAt(Instant.now())
+            .updatedAt(null)
+            .lastError(null).build();
+            savedOnlinePaymentCancelledDocument=onlinePaymentCancelledRepo.save(outboxEvent);
         
-        if(saved.getStatus().value().equals("CANCELLED")&&isSendEvent) {
+        OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder().eventId(UUID.randomUUID())
+        .orderId(saved.getId().value())
+        .oldStatus(oldStatus)
+        .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+         savedOrderCancelledDocument= orderCancelledDocumentRepo.save(outboxOrderCancelled);
+       }
+        
+        if(saved.getStatus().value().equals("CANCELLED")&&isSendEvent&&saved.getPaymentMethod().value().equals("COD")) {
             CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder().eventId(UUID.randomUUID())
             .orderId(saved.getId().value())
             .eventStatus("PENDING")
@@ -144,6 +168,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         final var increaseSoldCountEventDocument = savedIncreaseSoldCountEventDocument;
         final var codPaymentReceivedDocument = savedCodPaymentReceivedDocument;
         final var orderShippedDocument= savedOrderShippedDocument;
+        final var onlinePaymentCancelledDocument =savedOnlinePaymentCancelledDocument; 
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
@@ -167,6 +192,9 @@ public class UpdateOrderService implements UpdateOrderUseCase {
                 }
                 if(orderShippedDocument!=null) {
                     publishEventPort.publishOrderShipped_InventoryEvent(orderShippedDocument);
+                }
+                if(onlinePaymentCancelledDocument!=null) {
+                    publishEventPort.publishOnlinePaymentCancelledEvent(onlinePaymentCancelledDocument);
                 }
             }
         });
