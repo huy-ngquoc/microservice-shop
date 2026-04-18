@@ -6,10 +6,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVariantSoldCountsUseCase;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ReconcileVariantSoldCountsJob {
     private final ReconcileVariantSoldCountsUseCase reconcileVariantSoldCountsUseCase;
 
@@ -17,6 +19,10 @@ public class ReconcileVariantSoldCountsJob {
             fixedRate = 1,
             timeUnit = TimeUnit.HOURS)
     public void reconcile() {
-        this.reconcileVariantSoldCountsUseCase.execute();
+        try {
+            this.reconcileVariantSoldCountsUseCase.execute();
+        } catch (Exception e) {
+            log.warn("Sold count reconciliation skipped: {}", e.getMessage());
+        }
     }
 }
