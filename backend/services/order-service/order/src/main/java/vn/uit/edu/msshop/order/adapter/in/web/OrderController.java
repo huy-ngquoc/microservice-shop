@@ -31,6 +31,7 @@ import vn.uit.edu.msshop.order.adapter.in.web.response.OrderResponse;
 import vn.uit.edu.msshop.order.adapter.in.web.response.VariantSoldCountResponse;
 import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfo;
 import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfoRepository;
+import vn.uit.edu.msshop.order.application.exception.WrongUpdateInfoException;
 import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.DeleteOrderUseCase;
@@ -132,11 +133,15 @@ public class OrderController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Void> updateOrder(@RequestBody UpdateOrderRequest request,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
+    public ResponseEntity<?> updateOrder(@RequestBody UpdateOrderRequest request,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
         final var command = this.mapper.toCommand(request);
         try {
         this.updateService.update(command,userFromHeader,role);}
+        
         catch(RuntimeException e) {
+            if(e instanceof WrongUpdateInfoException) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
             e.printStackTrace();
              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

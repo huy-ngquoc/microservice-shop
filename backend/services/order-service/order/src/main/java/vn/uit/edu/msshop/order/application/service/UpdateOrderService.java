@@ -26,6 +26,7 @@ import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderShi
 import vn.uit.edu.msshop.order.application.dto.command.IncreaseVariantSoldCountCommand;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
+import vn.uit.edu.msshop.order.application.exception.WrongUpdateInfoException;
 import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.in.UpdateVariantSoldCountUseCase;
@@ -37,6 +38,7 @@ import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.Amount;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.VariantId;
 /*@NonNull
         OrderId  id,
@@ -68,11 +70,21 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         }
         System.out.println("Order currency is "+order.getCurrency().value());
         String oldStatus = order.getStatus().value();
+        
+        String commandStatus = command.status().apply(order.getStatus()).value();
+        if(!oldStatus.equals(commandStatus)) {
+            if(!preUpdateCheck(order, new OrderStatus(commandStatus))) {
+                throw new WrongUpdateInfoException("Invalid order status");
+            }
+        }
         final var updateInfo = Order.UpdateInfo.builder().id(command.id()).shippingInfo(command.shippingInfo().apply(order.getShippingInfo())).orderStatus(command.status().apply(order.getStatus()))
         .build();
-        final var next = order.applyUpdateInfo(updateInfo);
+        var next = order.applyUpdateInfo(updateInfo);
+        if(next.getStatus().value().equals("CANCELLED")) {
+            next= next.updatePaymentStatus(new PaymentStatus("CANCELLED"));
+        }
         final var saved = saveOrderPort.save(next);
-        boolean isSendEvent = !oldStatus.equals(saved.getStatus().value());
+        boolean isSendEvent = !oldStatus.equals(order.getStatus().value());
         CodPaymentCancelledDocument savedCodPaymentCancelledDocument = null;
         OrderCancelledDocument savedOrderCancelledDocument=null;
         IncreaseSoldCountEventsDocument savedIncreaseSoldCountEventDocument=null;
@@ -275,6 +287,24 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
         saveOrderPort.save(order.applyUpdateInfo(updateInfo));
+    }
+    private boolean preUpdateCheck(Order order, OrderStatus newStatus) {
+        String newStatusValue = newStatus.getValue();
+        String oldStatusValue = order.getStatus().value();
+        String paymentStatus = order.getPaymentStatus().value();
+        String paymentMethod = order.getPaymentMethod().value();
+        if(newStatusValue.equals("PENDING")) return false;
+        if(newStatusValue.equals("SHIPPING")) {
+            if(!oldStatusValue.equals("PENDING")) return false;
+            if(paymentMethod.equals("ONLINE")&&!paymentStatus.equals("SUCCESS")) return false;
+        }
+        if(newStatusValue.equals("CANCELLED")) {
+            if(oldStatusValue.equals("RECEIVED")) return false;
+        }
+        if(newStatusValue.equals("RECEIVED")) {
+            if(!oldStatusValue.equals("SHIPPING")) return false;
+        }
+        return true;
     }
 
 }
