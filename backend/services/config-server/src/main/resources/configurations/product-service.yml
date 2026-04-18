@@ -18,7 +18,17 @@ spring:
         multipart:
             max-file-size: 5MB
             max-request-size: 6MB
-
+    cloud:
+        openfeign:
+            client:
+                config:
+                    order-service:
+                        connect-timeout: 3000
+                        read-timeout: 10000
+    task:
+        scheduling:
+            pool:
+                size: 1
 
 logging:
     level:
