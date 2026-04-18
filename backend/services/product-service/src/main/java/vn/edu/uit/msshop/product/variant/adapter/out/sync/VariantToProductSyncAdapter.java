@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductVa
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.IncreaseProductSoldCountsForVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.ReconcileProductSoldCountsForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
@@ -18,9 +19,12 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
+import vn.edu.uit.msshop.product.variant.application.dto.command.ReconcileProductSoldCountsForVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantProductSoldCountIncrement;
+import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantProductSoldCountReconciliation;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.ReconcileProductSoldCountsForVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -34,10 +38,12 @@ public class VariantToProductSyncAdapter
         AddVariantToProductPort,
         UpdateVariantInProductPort,
         IncreaseProductSoldCountsPort,
+        ReconcileProductSoldCountsForVariantPort,
         RemoveVariantFromProductPort {
     private final AddProductVariantForVariantUseCase addProductVariantForVariantUseCase;
     private final UpdateProductVariantForVariantUseCase updateProductVariantForVariantUseCase;
     private final IncreaseProductSoldCountsForVariantUseCase increaseProductSoldCountsForVariantUseCase;
+    private final ReconcileProductSoldCountsForVariantUseCase reconcileProductSoldCountsForVariantUseCase;
     private final RemoveProductVariantForVariantUseCase removeProductVariantForVariantUseCase;
 
     @Override
@@ -102,10 +108,27 @@ public class VariantToProductSyncAdapter
                 new IncreaseProductSoldCountsForVariantCommand(commandItems));
     }
 
+    @Override
+    public void reconcileSoldCounts(
+            Collection<VariantProductSoldCountReconciliation> reconciliations) {
+        final var commandItems = reconciliations.stream()
+                .map(VariantToProductSyncAdapter::toReconcileCommandItem)
+                .toList();
+        this.reconcileProductSoldCountsForVariantUseCase.execute(
+                new ReconcileProductSoldCountsForVariantCommand(commandItems));
+    }
+
     private static IncreaseProductSoldCountsForVariantCommand.Item toIncreaseProductSoldCountsForVariantCommandItem(
             final VariantProductSoldCountIncrement increment) {
         return new IncreaseProductSoldCountsForVariantCommand.Item(
                 new ProductId(increment.productId().value()),
                 increment.value());
+    }
+
+    private static ReconcileProductSoldCountsForVariantCommand.Item toReconcileCommandItem(
+            final VariantProductSoldCountReconciliation reconciliation) {
+        return new ReconcileProductSoldCountsForVariantCommand.Item(
+                new ProductId(reconciliation.productId().value()),
+                reconciliation.newSoldCount());
     }
 }
