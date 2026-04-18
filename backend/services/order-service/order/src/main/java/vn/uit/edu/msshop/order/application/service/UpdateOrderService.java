@@ -75,6 +75,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         IncreaseSoldCountEventsDocument savedIncreaseSoldCountEventDocument=null;
         CodPaymentReceivedDocument savedCodPaymentReceivedDocument=null;
         OrderShippedDocument savedOrderShippedDocument=null;
+       
         
         if(saved.getStatus().value().equals("CANCELLED")&&isSendEvent) {
             CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder().eventId(UUID.randomUUID())

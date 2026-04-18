@@ -16,9 +16,11 @@ import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
 import vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.OnlinePaymentExpired;
+import vn.uit.edu.msshop.order.domain.event.PaymentSuccess;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
+import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentStatus;
 
 @Component
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class OrderEventListener {
         if(!eventDocumentRepo.existsById(event.eventId())) {
         Order order = loadPort.loadById(new OrderId(event.orderId())).orElseThrow(()->new OrderNotFoundException(new OrderId(event.orderId())));
         Order.UpdateInfo updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
-        final var saved = order.applyUpdateInfo(updateInfo);
+        final var saved = order.applyUpdateInfo(updateInfo).updatePaymentStatus(new PaymentStatus("CANCELLED"));
         savePort.save(saved);
         eventDocumentRepo.save(new EventDocument(event.eventId(), Instant.now()));
         }
@@ -56,10 +58,28 @@ public class OrderEventListener {
         if(!eventDocumentRepo.existsById(event.eventId())) {
         Order order = loadPort.loadById(new OrderId(event.orderId())).orElseThrow(()->new OrderNotFoundException(new OrderId(event.orderId())));
         Order.UpdateInfo updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
-        final var saved = order.applyUpdateInfo(updateInfo);
+        final var saved = order.applyUpdateInfo(updateInfo).updatePaymentStatus(new PaymentStatus("EXPIRED"));
         savePort.save(saved);
         eventDocumentRepo.save(new EventDocument(event.eventId(), Instant.now()));
         }
+    }
+    @KafkaHandler
+    public void onOnlinePaymentSuccess(PaymentSuccess event) {
+        System.out.println("Nhan event");
+        if(event.getEventId()==null||event.getOrderId()==null) {
+            System.out.println("Con di me may");
+            System.out.println(event.getOrderId().toString());
+            return;
+        }
+        if(!eventDocumentRepo.existsById(event.getEventId())) {
+        Order order = loadPort.loadById(new OrderId(event.getOrderId())).orElseThrow(()->new OrderNotFoundException(new OrderId(event.getOrderId())));
+        Order.UpdateInfo updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
+        final var saved = order.applyUpdateInfo(updateInfo).updatePaymentStatus(new PaymentStatus("SUCCESS"));
+        
+        savePort.save(saved);
+        eventDocumentRepo.save(new EventDocument(event.getEventId(), Instant.now()));
+        }
+
     }
     
 }

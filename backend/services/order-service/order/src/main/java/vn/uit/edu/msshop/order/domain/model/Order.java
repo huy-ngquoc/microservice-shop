@@ -244,4 +244,9 @@ public final class Order {
         return (s.address().equals(this.shippingInfo.address()))&&(s.email().equals(this.shippingInfo.email()))
         &&(s.fullName().equals(this.shippingInfo.fullName()))&&(s.phone().equals(this.shippingInfo.phone()));
     }
+    public Order updatePaymentStatus(PaymentStatus paymentStatus) {
+        return Order.builder().id(this.id).shippingInfo(this.shippingInfo).details(this.details).status(this.status).userId(this.userId)
+        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(Instant.now())).version(this.version)
+        .currency(this.currency).paymentMethod(this.paymentMethod).paymentStatus(paymentStatus).build();
+    }
 }
