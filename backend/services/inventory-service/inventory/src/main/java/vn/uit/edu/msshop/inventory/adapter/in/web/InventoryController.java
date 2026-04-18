@@ -19,15 +19,21 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.in.web.mapper.InventoryWebMapper;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.CreateInventoryRequest;
+import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.response.InventoryResponse;
 import vn.uit.edu.msshop.inventory.adapter.out.redis.InventorySyncJob;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
+import vn.uit.edu.msshop.inventory.application.exception.InsufficientStockException;
+import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.inventory.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.CreateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.FindInventoryUseCase;
+import vn.uit.edu.msshop.inventory.application.port.in.ProcessOrderUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.UpdateInventoryUseCase;
+import vn.uit.edu.msshop.inventory.domain.model.OrderDetail;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @RestController
@@ -40,6 +46,7 @@ public class InventoryController {
     private final CheckPermissionUseCase checkPermission;
     private final CreateInventoryUseCase createUseCase;
     private final InventorySyncJob syncJob;
+    private final ProcessOrderUseCase processOrderUseCase;
     @GetMapping("/")
     public ResponseEntity<Page<InventoryResponse>> getAll(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestParam(defaultValue="7") int pageSize, @RequestParam(defaultValue="0") int pageNumber) {
         if(!checkPermission.isAdmin(role)) {
@@ -75,6 +82,23 @@ public class InventoryController {
     public ResponseEntity<InventoryResponse> getByVariantId(@PathVariable UUID id) {
         InventoryView view = findUseCase.findByVariantId(new VariantId(id));
         return ResponseEntity.ok(mapper.toResponse(view));
+    }
+    @PostMapping("/public/process_order")
+    public ResponseEntity<?> processOrder(@RequestBody List<OrderDetailRequest> requests) {
+        try {
+            List<OrderDetail> details = requests.stream().map(item->new OrderDetail(new VariantId(item.getVariantId()), new Quantity(item.getQuantity()))).toList();
+            processOrderUseCase.processOrder(details);
+            return ResponseEntity.ok().build();
+        }
+        catch(Exception e) {
+            if(e instanceof InventoryNotFoundException) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
+            if(e instanceof InsufficientStockException) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
     @PostMapping("/public/variants")
     public ResponseEntity<List<InventoryResponse>> getByVariantIds(@RequestBody List<UUID> variantIds) {

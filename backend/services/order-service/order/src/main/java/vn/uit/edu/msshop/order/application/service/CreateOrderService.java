@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import feign.FeignException;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
@@ -18,6 +19,8 @@ import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSucces
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCreatedInventoryDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.dto.command.CreateOrderCommand;
+import vn.uit.edu.msshop.order.application.exception.InsufficientStockException;
+import vn.uit.edu.msshop.order.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.CheckUserPort;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderDetailPort;
@@ -92,8 +95,21 @@ public class CreateOrderService implements CreateOrderUseCase {
         this.checkUserPort.isUserAvailable(command.userId().value());
         List<OrderDetailRequest> requests= command.details().stream().map(item->new OrderDetailRequest(item.variantId(), item.quantity())).toList();
         List<OrderDetail> listDetails = loadOrderDetailPort.loadByListDetail(requests);
-        
-        canPlaceOrder(listDetails);
+        try {
+          processOrder(listDetails);
+        }
+        catch(FeignException e) {
+            int status = e.status();
+
+            switch (status) {
+                case 404:
+                    throw new InventoryNotFoundException(e.getMessage());
+                case 400:
+                    throw new InsufficientStockException(e.getMessage());
+                default:
+                    throw new RuntimeException(e.getMessage());
+            }
+    }
         long originPrice =0;
         for(OrderDetail d : listDetails) {
             originPrice+=d.amount()*d.unitPrice();
@@ -132,6 +148,10 @@ public class CreateOrderService implements CreateOrderUseCase {
                 throw new VariantNotEnoughException(orderDetail.variantId());
             }
         }
+    }
+    private void processOrder(List<OrderDetail> orderDetails) {
+        List<OrderDetailRequest> requests = orderDetails.stream().map(item->new OrderDetailRequest(item.variantId(), item.amount())).toList();
+        inventoryChecker.processOrder(requests);
     }
     private InventoryResponse findInListByVariantId(List<InventoryResponse> responses, UUID variantId) {
         for(InventoryResponse response:responses) {

@@ -31,6 +31,8 @@ import vn.uit.edu.msshop.order.adapter.in.web.response.OrderResponse;
 import vn.uit.edu.msshop.order.adapter.in.web.response.VariantSoldCountResponse;
 import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfo;
 import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfoRepository;
+import vn.uit.edu.msshop.order.application.exception.InsufficientStockException;
+import vn.uit.edu.msshop.order.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.order.application.exception.WrongUpdateInfoException;
 import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
@@ -108,7 +110,7 @@ public class OrderController {
     }
  
     @PostMapping("/create") 
-    public ResponseEntity<UUID> createOrder(@RequestBody CreateOrderRequest request/*,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role*/) {
+    public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest request/*,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role*/) {
         /*if(!checkPermission.isUser(role)&&!checkPermission.isSameUser(userFromHeader,request.userId().toString())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }*/
@@ -118,11 +120,11 @@ public class OrderController {
         //eventPublisher.publishOrderCreatedEvent(new OrderCreated(request.currency(),result,request.paymentMethod(),request.totalPrice()));
         //eventPublisher.publishClearCartEvent(mapper.toEvent(request));
         return ResponseEntity.ok(result);}
-        catch(VariantNotFoundException e) {
-            return ResponseEntity.notFound().build();
+        catch(VariantNotFoundException | InventoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        catch(VariantNotEnoughException e) {
-            return ResponseEntity.badRequest().build();
+        catch(VariantNotEnoughException| InsufficientStockException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     } 
 
