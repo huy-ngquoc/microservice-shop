@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.ReconcileProductSoldCountsForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadAllProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateAllProductsPort;
@@ -28,21 +30,48 @@ public class ReconcileProductSoldCountsForVariantService
     @Transactional
     public void execute(
             final ReconcileProductSoldCountsForVariantCommand command) {
-        final var absoluteByProductId = command.items().stream()
+        final var newSoldCountByProductId = ReconcileProductSoldCountsForVariantService
+                .toNewSoldCountByProductIdFromCommand(command);
+
+        final var loadedById = this.loadProducts(newSoldCountByProductId.keySet());
+
+        final var updated = ReconcileProductSoldCountsForVariantService
+                .applyNewCounts(loadedById, newSoldCountByProductId);
+
+        this.updateAllPort.updateAll(updated);
+    }
+
+    private static Map<ProductId, Integer> toNewSoldCountByProductIdFromCommand(
+            final ReconcileProductSoldCountsForVariantCommand command) {
+        return command.items().stream()
                 .collect(Collectors.toMap(
                         ReconcileProductSoldCountsForVariantCommand.Item::productId,
                         ReconcileProductSoldCountsForVariantCommand.Item::newSoldCount,
                         Integer::sum));
+    }
 
-        final var loadedById = this.loadProducts(absoluteByProductId.keySet());
-
-        final var updated = absoluteByProductId.entrySet().stream()
+    private static List<Product> applyNewCounts(
+            final Map<ProductId, Product> loadedById,
+            final Map<ProductId, Integer> newSoldCountByProductId) {
+        return newSoldCountByProductId.entrySet().stream()
                 .filter(e -> loadedById.containsKey(e.getKey()))
                 .map(e -> ReconcileProductSoldCountsForVariantService
-                        .withNewSoldCount(loadedById.get(e.getKey()), e.getValue()))
+                        .applyNewCount(loadedById, e.getKey(), e.getValue()))
                 .toList();
+    }
 
-        this.updateAllPort.updateAll(updated);
+    private static Product applyNewCount(
+            final Map<ProductId, Product> loadedById,
+            final ProductId productId,
+            final int newSoldCount) {
+        final var product = loadedById.get(productId);
+
+        if (product == null) {
+            throw new ProductNotFoundException(productId);
+        }
+
+        return ReconcileProductSoldCountsForVariantService
+                .withNewSoldCount(product, newSoldCount);
     }
 
     private static Product withNewSoldCount(
