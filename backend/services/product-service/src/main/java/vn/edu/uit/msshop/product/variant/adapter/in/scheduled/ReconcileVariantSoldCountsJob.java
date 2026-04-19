@@ -21,7 +21,7 @@ public class ReconcileVariantSoldCountsJob {
     public void reconcile() {
         try {
             this.reconcileVariantSoldCountsUseCase.execute();
-        } catch (Exception e) {
+        } catch (final RuntimeException e) {
             log.warn("Sold count reconciliation skipped: {}", e.getMessage());
         }
     }

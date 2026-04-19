@@ -5,9 +5,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.adapter.in.event.payload.IncreaseVariantSoldCountsEvent;
-import vn.edu.uit.msshop.product.variant.application.dto.command.IncreaseVariantSoldCountsCommand;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.IncreaseVariantSoldCountsUseCase;
+import vn.edu.uit.msshop.product.variant.adapter.in.event.payload.SetVariantSoldCountsEvent;
+import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantOrderSoldCount;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.SetVariantSoldCountsUseCase;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Component
@@ -16,23 +16,22 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
         groupId = "product-service")
 @RequiredArgsConstructor
 public class VariantOrderEventListener {
-    private final IncreaseVariantSoldCountsUseCase increaseVariantSoldCountsUseCase;
+    private final SetVariantSoldCountsUseCase setVariantSoldCountsUseCase;
 
     @KafkaHandler
-    public void onIncreaseSoldCounts(
-            final IncreaseVariantSoldCountsEvent event) {
-        final var items = event.details().stream()
-                .map(VariantOrderEventListener::toCommandItem)
+    public void onSetSoldCounts(
+            final SetVariantSoldCountsEvent event) {
+        final var orderSoldCounts = event.details().stream()
+                .map(VariantOrderEventListener::toOrderSoldCount)
                 .toList();
 
-        this.increaseVariantSoldCountsUseCase.execute(
-                new IncreaseVariantSoldCountsCommand(event.eventId(), items));
+        this.setVariantSoldCountsUseCase.execute(orderSoldCounts);
     }
 
-    private static IncreaseVariantSoldCountsCommand.Item toCommandItem(
-            final IncreaseVariantSoldCountsEvent.Detail detail) {
-        return new IncreaseVariantSoldCountsCommand.Item(
+    private static VariantOrderSoldCount toOrderSoldCount(
+            final SetVariantSoldCountsEvent.Detail detail) {
+        return new VariantOrderSoldCount(
                 new VariantId(detail.variantId()),
-                detail.amount());
+                detail.newTotal());
     }
 }
