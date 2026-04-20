@@ -36,10 +36,8 @@ public class EmailDocumentMapper {
     }
     public EmailDocument toDocument(Email email) {
         OrderDocument orderDocument =null;
-        if(email.getOrderInfo()!=null) {
-            orderDocument= toDocument(email.getOrderInfo());
-        }
-        return new EmailDocument(email.getEmailId().value(), email.getEmailContent().value(), email.getEmailStatus().value(), email.getEmailContent().value(), email.getEmailType().value(), orderDocument,email.getUserEmail().value(),email.getCreationTime().value(), email.getSendTime().value(), email.getUpdateTime().value());
+        
+        return new EmailDocument(email.getEmailId().value(), email.getEmailContent().value(), email.getEmailStatus().value(), email.getEmailContent().value(), email.getEmailType().value(), email.getOrderId().value(),email.getUserEmail().value(),email.getCreationTime().value(), email.getSendTime().value(), email.getUpdateTime().value());
     }
     public OrderDetail toDomain(OrderDetailDocument document) {
         return new OrderDetail(document.getVariantId(), document.getProductName(), document.getUnitPrice(), document.getAmount());
@@ -49,10 +47,7 @@ public class EmailDocumentMapper {
         return new OrderInfo(new OrderId(document.getOrderId()),new OrderCurrency(document.getOrderCurrency()), orderDetails, new OrderDiscount(document.getOrderDiscount()), new OrderTotalPrice(document.getOrderTotalPrice()), new OriginOrderValue(document.getOrderOriginValue()));
     }
     public Email toDomain(EmailDocument document) {
-        OrderInfo orderInfo =null;
-        if(document.getOrderInfo()!=null) {
-            orderInfo=toDomain(document.getOrderInfo());
-        }
-        return new Email(new EmailId(document.getEmailId()), new EmailContent(document.getEmailContent()), new EmailStatus(document.getEmailStatus()), new EmailTitle(document.getEmailTitle()), new EmailType(document.getEmailType()), new SendTime(document.getSendTime()), new UpdateTime(document.getUpdateTime()), orderInfo,new UserEmail(document.getUserEmail()), new CreationTime(document.getCreationTime()));
+        
+        return new Email(new EmailId(document.getEmailId()), new EmailContent(document.getEmailContent()), new EmailStatus(document.getEmailStatus()), new EmailTitle(document.getEmailTitle()), new EmailType(document.getEmailType()), new SendTime(document.getSendTime()), new UpdateTime(document.getUpdateTime()), new OrderId(document.getOrderId()),new UserEmail(document.getUserEmail()), new CreationTime(document.getCreationTime()));
     }
 }

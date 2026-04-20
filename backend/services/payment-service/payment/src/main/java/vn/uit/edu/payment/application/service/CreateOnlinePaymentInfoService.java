@@ -41,9 +41,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
         .expiredAt((System.currentTimeMillis() / 1000)+PAYMENT_LINK_LIFETIME)
         .build();
         var paymentLink = payOS.paymentRequests().create(request);
-        if(payment.getPaymentId().value()==null) {
-            System.out.println("wdivbiuhe");
-        }
+        
          OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new PaymentLink(paymentLink.getCheckoutUrl()), new OnlinePaymentNumber(orderCode),new TransactionId(null), new CreateAt(Instant.now()));
         this.savePort.save(info);
         return paymentLink.getCheckoutUrl();

@@ -24,7 +24,7 @@ public class EmailDocument {
     private String emailStatus;
     private String emailTitle;
     private String emailType;
-    private OrderDocument orderInfo;
+    private UUID orderId;
     private String userEmail;
     @Indexed(expireAfter="2592000")
     private Instant creationTime;
