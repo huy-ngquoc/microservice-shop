@@ -10,6 +10,7 @@ import vn.uit.edu.msshop.notification.domain.model.valueobject.EmailId;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.EmailStatus;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.EmailTitle;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.EmailType;
+import vn.uit.edu.msshop.notification.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.SendTime;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.UpdateTime;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.UserEmail;
@@ -26,7 +27,7 @@ public class Email {
     private EmailType emailType;
     private SendTime sendTime;
     private UpdateTime updateTime;
-    private OrderInfo orderInfo;
+    private OrderId orderId;
     private UserEmail userEmail;
     private CreationTime creationTime;
 }

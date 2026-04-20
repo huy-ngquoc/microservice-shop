@@ -186,7 +186,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
 
     @Override
     public void publishOrderCancelled_InventoryEvent(OrderCancelledDocument outboxEvent) {
-        OrderCancelled event = new OrderCancelled(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList(),outboxEvent.getOldStatus());
+        OrderCancelled event = new OrderCancelled(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList(),outboxEvent.getOldStatus(), outboxEvent.getUserEmail());
         Message<OrderCancelled> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
         try {
         orderCancelledTemplate.send(message)
@@ -206,7 +206,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
 
     @Override
     public void publishOrderShipped_InventoryEvent(OrderShippedDocument outboxEvent) {
-         OrderShipped event = new OrderShipped(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList());
+         OrderShipped event = new OrderShipped(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList(), outboxEvent.getUserEmail());
          Message<OrderShipped> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
          try {
         orderShippedTemplate.send(message)

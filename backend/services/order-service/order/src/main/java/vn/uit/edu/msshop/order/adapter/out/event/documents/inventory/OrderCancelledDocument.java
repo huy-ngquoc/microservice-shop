@@ -24,4 +24,5 @@ public class OrderCancelledDocument extends OutboxEvent {
     private UUID orderId;
     private List<OrderDetailDocument> orderDetails;
     private String oldStatus;
+    private String userEmail;
 }

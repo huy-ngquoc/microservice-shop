@@ -13,4 +13,5 @@ public class OrderShipped {
     private UUID eventId;
     private UUID orderId;
     private List<OrderDetail> details;
+    private String userEmail;
 }
