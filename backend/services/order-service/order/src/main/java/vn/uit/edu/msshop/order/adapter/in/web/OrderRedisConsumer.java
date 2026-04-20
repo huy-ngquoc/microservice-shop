@@ -76,6 +76,7 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
         .orderId(saved.getId().value())
         .paymentMethod(saved.getPaymentMethod().value())
         .paymentValue(saved.getTotalPrice().value())
+        .userEmail(saved.getShippingInfo().email())
         .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())

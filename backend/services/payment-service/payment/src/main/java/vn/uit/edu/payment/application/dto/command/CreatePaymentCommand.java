@@ -8,6 +8,7 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentValue;
+import vn.uit.edu.payment.domain.model.valueobject.UserEmail;
 import vn.uit.edu.payment.domain.model.valueobject.UserId;
 
 public record CreatePaymentCommand(
@@ -17,7 +18,8 @@ public record CreatePaymentCommand(
     PaymentMethod paymentMethod,
     PaymentStatus paymentStatus,
     PaymentValue paymentValue,
-    UserId userId
+    UserId userId,
+    UserEmail userEmail
 ) {
     public CreatePaymentCommand {
         if(paymentId==null) {
@@ -37,6 +39,9 @@ public record CreatePaymentCommand(
             }
             if(paymentValue == null) {
                 throw new IllegalArgumentException("Payment value must not be null");
+            }
+            if(userEmail==null) {
+                throw new IllegalArgumentException("Invalid user email");
             }
     }
 }
