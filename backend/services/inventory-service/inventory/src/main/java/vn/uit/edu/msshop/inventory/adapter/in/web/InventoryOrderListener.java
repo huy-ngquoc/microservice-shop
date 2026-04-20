@@ -11,13 +11,12 @@ import vn.uit.edu.msshop.inventory.adapter.in.web.mapper.InventoryWebMapper;
 import vn.uit.edu.msshop.inventory.adapter.out.event.documents.EventDocument;
 import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.msshop.inventory.application.port.in.UpdateInventoryUseCase;
-import vn.uit.edu.msshop.inventory.domain.event.OrderCancelled;
 import vn.uit.edu.msshop.inventory.domain.event.OrderCreated;
-import vn.uit.edu.msshop.inventory.domain.event.OrderShipped;
+import vn.uit.edu.msshop.inventory.domain.event.OrderUpdatedEvent;
 
 @Component
 @RequiredArgsConstructor
-@KafkaListener(topics="order-inventory",groupId="order-group")
+@KafkaListener(topics="order-topic",groupId="order-group")
 public class InventoryOrderListener {
     private final InventoryWebMapper mapper;
     private final UpdateInventoryUseCase updateInventoryUseCase;
@@ -32,22 +31,14 @@ public class InventoryOrderListener {
         }*/
     }
     @KafkaHandler
-    public void onOrderCancelled(OrderCancelled event) {
-        if(!eventDocumentRepo.existsById(event.getEventId())) {
-        final var command = mapper.toCommand(event);
-        updateInventoryUseCase.updateWhenOrderCancelled(command);
-        eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
+    public void onOrderUpdated(OrderUpdatedEvent event) {
+        if(eventDocumentRepo.existsById(event.getEventId())) return;
+        if(event.getStatus().equals("SHIPPING")) {
+            updateInventoryUseCase.updateWhenOrderShipped(mapper.toShippedCommand(event));
         }
-        
-    }
-    @KafkaHandler
-    public void onOrderShipped(OrderShipped event) {
-        System.out.println("Event received with id "+event.getEventId());
-        if(!eventDocumentRepo.existsById(event.getEventId())) {
-        final var command = mapper.toCommand(event);
-        updateInventoryUseCase.updateWhenOrderShipped(command);
-        eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
+        if(event.getStatus().equals("CANCELLED")) {
+            updateInventoryUseCase.updateWhenOrderCancelled(mapper.toCancelledCommand(event));
         }
-        
+        eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
     }
 }
