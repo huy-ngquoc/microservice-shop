@@ -30,7 +30,7 @@ public class OrderCreatedOutboxPublisher {
 
         for (OrderCreatedDocument event : pendingEvents) {
             try {
-                OrderCreated orderCreated = new OrderCreated(event.getEventId(),event.getCurrency(), event.getOrderId(),event.getPaymentMethod(), event.getPaymentValue(), event.getUserId());
+                OrderCreated orderCreated = new OrderCreated(event.getEventId(),event.getCurrency(), event.getOrderId(),event.getPaymentMethod(), event.getPaymentValue(), event.getUserId(), event.getUserEmail());
                 kafkaTemplate.send(PUBLISH_TOPIC, orderCreated)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {

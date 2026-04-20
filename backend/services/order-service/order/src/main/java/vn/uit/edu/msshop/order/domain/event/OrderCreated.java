@@ -8,7 +8,8 @@ public record OrderCreated(
     UUID orderId,
     String paymentMethod,
     long paymentValue,
-    UUID userId
+    UUID userId,
+    String userEmail
 ) {
 
 }

@@ -12,6 +12,7 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentValue;
 import vn.uit.edu.payment.domain.model.valueobject.UpdateAt;
+import vn.uit.edu.payment.domain.model.valueobject.UserEmail;
 import vn.uit.edu.payment.domain.model.valueobject.UserId;
 /*PaymentId paymentId,
         CreateAt createAt,
@@ -33,11 +34,12 @@ public class PaymentEntityMapper {
         .paymentStatus(new PaymentStatus(e.getPaymentStatus()))
         .updateAt(new UpdateAt(e.getUpdateAt()))
         .userId(new UserId(e.getUserId()))
+        .userEmail(new UserEmail(e.getUserEmail()))
         .build();
         return Payment.reconstitue(snapshot);
     }
     public PaymentJpaEntity toEntity(Payment p) {
         final var snapshot = p.snapshot();
-        return PaymentJpaEntity.of(snapshot.paymentId().value(), snapshot.createAt().value(), snapshot.updateAt().value(), snapshot.currency().value(), snapshot.orderId().value(), snapshot.paymentMethod().value(), snapshot.paymentStatus().value(), snapshot.paymentValue().value(), snapshot.userId().value());
+        return PaymentJpaEntity.of(snapshot.paymentId().value(), snapshot.createAt().value(), snapshot.updateAt().value(), snapshot.currency().value(), snapshot.orderId().value(), snapshot.paymentMethod().value(), snapshot.paymentStatus().value(), snapshot.paymentValue().value(), snapshot.userId().value(), snapshot.userEmail().value());
     }
 }

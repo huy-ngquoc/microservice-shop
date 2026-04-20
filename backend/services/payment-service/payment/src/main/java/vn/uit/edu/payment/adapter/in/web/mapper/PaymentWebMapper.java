@@ -18,6 +18,7 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentValue;
+import vn.uit.edu.payment.domain.model.valueobject.UserEmail;
 import vn.uit.edu.payment.domain.model.valueobject.UserId;
 /*PaymentId paymentId,
     Currency currency,
@@ -35,7 +36,8 @@ public class PaymentWebMapper {
             new PaymentMethod(request.paymentMethod()),
             new PaymentStatus("PENDING"),
             new PaymentValue(request.paymentValue()),
-            new UserId(request.userId())
+            new UserId(request.userId()),
+            new UserEmail(request.userEmail())
         );
     }
 
@@ -47,7 +49,7 @@ public class PaymentWebMapper {
             new PaymentMethod(event.paymentMethod()),
             new PaymentStatus("PENDING"),
             new PaymentValue(event.paymentValue()),
-        new UserId(event.userId())
+        new UserId(event.userId()),new UserEmail(event.userEmail())
         );
     }
     
