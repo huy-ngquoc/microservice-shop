@@ -15,9 +15,8 @@ import vn.uit.edu.msshop.inventory.application.dto.command.OrderDetailCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderShippedCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.UpdateInventoryCommand;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
-import vn.uit.edu.msshop.inventory.domain.event.OrderCancelled;
 import vn.uit.edu.msshop.inventory.domain.event.OrderCreated;
-import vn.uit.edu.msshop.inventory.domain.event.OrderShipped;
+import vn.uit.edu.msshop.inventory.domain.event.OrderUpdatedEvent;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.OrderQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
@@ -39,16 +38,17 @@ public class InventoryWebMapper {
         List<OrderDetailCommand> detailCommands = event.getDetails().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getAmount()))).toList();
         return new OrderCreateCommand(detailCommands,event.getOrderId());
     }
-    public OrderCancelledCommand toCommand(OrderCancelled event) {
+    public OrderCancelledCommand toCancelledCommand(OrderUpdatedEvent event) {
         List<OrderDetailCommand> detailCommands = event.getDetails().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getAmount()))).toList();
         return new OrderCancelledCommand(detailCommands,event.getOrderId(), new OrderStatus(event.getOldStatus()));
     }
     public CreateInventoryCommand toCommand(CreateInventoryRequest request) {
         return new CreateInventoryCommand(new VariantId(request.getVariantId()),new Quantity(request.getQuantity()));
     }
-    public OrderShippedCommand toCommand(OrderShipped event) {
+    public OrderShippedCommand toShippedCommand(OrderUpdatedEvent event) {
         List<OrderDetailCommand> detailCommands = event.getDetails().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getAmount()))).toList();
         return new OrderShippedCommand(detailCommands,event.getOrderId());
     }
+    
     
 }

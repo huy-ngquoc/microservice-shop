@@ -14,18 +14,20 @@ import vn.uit.edu.msshop.order.adapter.out.event.documents.IncreaseSoldCountEven
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OnlinePaymentCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCancelledDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderUpdatedEventDocument;
+
 import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCreatedInventoryDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderShippedDocument;
+
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.CodPaymentCancelledOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.CodPaymentReceivedOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.IncreaseSoldCountEventOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.OnlinePaymentCancelledOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.OrderCreatedOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.OrderCreatedSuccessOutboxPublisher;
-import vn.uit.edu.msshop.order.adapter.out.event.publisher.inventory.OrderCancelledOutboxPublisher;
+import vn.uit.edu.msshop.order.adapter.out.event.publisher.OrderUpdatedOutboxPublisher;
+
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.inventory.OrderCreatedInventoryOutboxPublisher;
-import vn.uit.edu.msshop.order.adapter.out.event.publisher.inventory.OrderShippedOutboxPublisher;
+
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
@@ -35,6 +37,7 @@ import vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.OrderCreated;
 import vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
+import vn.uit.edu.msshop.order.domain.event.OrderUpdatedEvent;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderDetail;
 import vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped;
@@ -53,6 +56,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     private final KafkaTemplate<String, OrderShipped> orderShippedTemplate;
     private final KafkaTemplate<String, IncreaseSoldCountEvents> increaseSoldCountTemplate;
     private final KafkaTemplate<String,OnlinePaymentCancelled> onlinePaymentCancelledTemplate;
+    private final KafkaTemplate<String, OrderUpdatedEventDocument> orderUpdatedEventDocumentTemplate;
     private static final String ORDER_CREATED_TOPIC = "order-topic";
     private static final String PAYMENT_STATUS_TOPIC="payment-status-topic";
     private static final String CLEAR_CART_TOPIC="cart-topic";
@@ -63,10 +67,10 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     private final CodPaymentReceivedOutboxPublisher codPaymentReceivedOutboxPublisher;
     private final OrderCreatedSuccessOutboxPublisher orderCreatedSuccessOutboxPublisher;
     private final OrderCreatedInventoryOutboxPublisher orderCreatedInventoryOutboxPublisher;
-    private final OrderCancelledOutboxPublisher orderCancelledOutboxPublisher;
-    private final OrderShippedOutboxPublisher orderShippedOutboxPublisher;
+   
     private final IncreaseSoldCountEventOutboxPublisher increaseSoldCountEventOutboxPublisher;
     private final OnlinePaymentCancelledOutboxPublisher onlinePaymentCancelledOutboxPublisher;
+    private final OrderUpdatedOutboxPublisher orderUpdatedOutboxPublisher;
     /*UUID eventId,
     String currency,
     UUID orderId,
@@ -184,49 +188,8 @@ public class OrderEventPublisher implements PublishOrderEventPort{
     }
     }
 
-    @Override
-    public void publishOrderCancelled_InventoryEvent(OrderCancelledDocument outboxEvent) {
-        OrderCancelled event = new OrderCancelled(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList(),outboxEvent.getOldStatus(), outboxEvent.getUserEmail());
-        Message<OrderCancelled> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
-        try {
-        orderCancelledTemplate.send(message)
-        .whenComplete((result,ex)->{
-            if(ex==null) {
-                orderCancelledOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                //log.error("Fail, wait 5 seconds");
-            }
-        });
-    }
-    catch(Exception e) {
-        //log.error("Error sending event");
-    }
-    }
-
-    @Override
-    public void publishOrderShipped_InventoryEvent(OrderShippedDocument outboxEvent) {
-         OrderShipped event = new OrderShipped(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getOrderDetails().stream().map(item->new OrderDetail(item.getVariantId(), item.getAmount())).toList(), outboxEvent.getUserEmail());
-         Message<OrderShipped> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
-         try {
-        orderShippedTemplate.send(message)
-        .whenComplete((result,ex)->{
-            if(ex==null) {
-                //System.out.println("Send event with id "+event.getEventId());
-                orderShippedOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                //System.out.println("Send event fail");
-                //log.error("Fail, wait 5 seconds");
-            }
-        })
-        ;
-    }
-    catch(Exception e) {
-    //System.out.println("Kafka is dead");
-    //e.printStackTrace();
-}
-}
+    
+    
 
     @Override
     public void publishIncreaseSoldCountEvent(IncreaseSoldCountEventsDocument outboxEvent) {
@@ -270,6 +233,30 @@ public class OrderEventPublisher implements PublishOrderEventPort{
         //System.out.println("Kafka is dead");
     e.printStackTrace();
     }
+    }
+
+    @Override
+    public void publishOrderUpdatedEvent(OrderUpdatedEventDocument event) {
+        OrderUpdatedEvent orderUpdatedEvent= new OrderUpdatedEvent(event.getEventId(), event.getOrderId(), event.getDetails(), event.getStatus(), event.getUserId(), event.getOriginPrice(), event.getShippingFee(), event.getDiscount(), event.getTotalPrice(), event.getCurrency(), event.getPaymentMethod(), event.getPaymentStatus(),event.getEmail(), event.getOldStatus());
+         Message<OrderUpdatedEvent> message = MessageBuilder.withPayload(orderUpdatedEvent).setHeader(KafkaHeaders.TOPIC, ORDER_CREATED_TOPIC).build();
+         try {
+        orderShippedTemplate.send(message)
+        .whenComplete((result,ex)->{
+            if(ex==null) {
+                //System.out.println("Send event with id "+event.getEventId());
+               orderUpdatedOutboxPublisher.markAsSent(event);
+            }
+            else {
+                //System.out.println("Send event fail");
+                //log.error("Fail, wait 5 seconds");
+            }
+        })
+        ;
+    }
+    catch(Exception e) {
+    //System.out.println("Kafka is dead");
+    //e.printStackTrace();
+}
     }
 
 

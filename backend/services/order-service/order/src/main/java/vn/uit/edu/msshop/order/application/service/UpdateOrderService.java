@@ -1,6 +1,7 @@
 package vn.uit.edu.msshop.order.application.service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -11,35 +12,23 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentReceivedDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.IncreaseSoldCountDetailDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.IncreaseSoldCountEventsDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.OnlinePaymentCancelledDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCancelledDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderDetailDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderShippedDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderUpdatedEventDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentCancelledDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentReceivedDocumentRepository;
-import vn.uit.edu.msshop.order.adapter.out.event.repositories.IncreaseSoldCountEventDocumentRepository;
-import vn.uit.edu.msshop.order.adapter.out.event.repositories.OnlinePaymentCancelledRepository;
-import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCancelledDocumentRepository;
-import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderShippedDocumentRepository;
-import vn.uit.edu.msshop.order.application.dto.command.IncreaseVariantSoldCountCommand;
+import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderUpdatedRepository;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
 import vn.uit.edu.msshop.order.application.exception.WrongUpdateInfoException;
 import vn.uit.edu.msshop.order.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
-import vn.uit.edu.msshop.order.application.port.in.UpdateVariantSoldCountUseCase;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
-import vn.uit.edu.msshop.order.domain.event.OrderUpdated;
+import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 import vn.uit.edu.msshop.order.domain.model.Order;
-import vn.uit.edu.msshop.order.domain.model.valueobject.Amount;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentStatus;
-import vn.uit.edu.msshop.order.domain.model.valueobject.VariantId;
 /*@NonNull
         OrderId  id,
         ShippingInfo shippingInfo,
@@ -53,11 +42,29 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     private final CheckPermissionUseCase checkPermission;
     private final CodPaymentCancelledDocumentRepository codPaymentCancelledDocumentRepo;
     private final CodPaymentReceivedDocumentRepository codPaymentReceivedDocumentRepo;
-    private final OrderCancelledDocumentRepository orderCancelledDocumentRepo;
-    private final OrderShippedDocumentRepository orderShippedDocumentRepo;
-    private final UpdateVariantSoldCountUseCase updateVariantSoldCountUseCase;
-    private final IncreaseSoldCountEventDocumentRepository increaseSoldCountEventDocumentRepo;
-    private final OnlinePaymentCancelledRepository onlinePaymentCancelledRepo;
+   
+    private final OrderUpdatedRepository orderUpdatedRepo;
+    /*
+    private UUID eventId;
+    private UUID orderId;
+
+    private List<OrderDetailEvent> details;
+    
+    private String status;
+    
+    private UUID userId;
+
+    private long originPrice;
+
+    private long shippingFee;
+
+    private long discount;
+
+    private long totalPrice;
+    private String currency;
+    private String paymentMethod;
+    private String paymentStatus;
+    private String email; */
     
 
     @Override
@@ -85,135 +92,30 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         }
         final var saved = saveOrderPort.save(next);
         boolean isSendEvent = !oldStatus.equals(order.getStatus().value());
-        CodPaymentCancelledDocument savedCodPaymentCancelledDocument = null;
-        OrderCancelledDocument savedOrderCancelledDocument=null;
-        IncreaseSoldCountEventsDocument savedIncreaseSoldCountEventDocument=null;
-        CodPaymentReceivedDocument savedCodPaymentReceivedDocument=null;
-        OrderShippedDocument savedOrderShippedDocument=null;
-        OnlinePaymentCancelledDocument savedOnlinePaymentCancelledDocument=null;
-       if(saved.getStatus().value().equals("CANCELLED")&&isSendEvent&&saved.getPaymentMethod().value().equals("ONLINE")) {
-        OnlinePaymentCancelledDocument outboxEvent = OnlinePaymentCancelledDocument.builder().eventId(UUID.randomUUID())
+        if(isSendEvent) {
+            List<OrderDetailEvent> detailEvents = saved.getDetails().stream().map(item->new OrderDetailEvent(item.variantId(), item.productId(), item.amount())).toList();
+            OrderUpdatedEventDocument eventDocument = OrderUpdatedEventDocument.builder()
+            .eventId(UUID.randomUUID())
             .orderId(saved.getId().value())
+            .details(detailEvents)
+            .status(saved.getStatus().value())
+            .userId(saved.getUserId().value())
+            .originPrice(saved.getOriginPrice().value())
+            .shippingFee(saved.getShippingFee().value())
+            .discount(saved.getDiscount().value())
+            .totalPrice(saved.getTotalPrice().value())
+            .currency(saved.getCurrency().value())
+            .paymentMethod(saved.getPaymentMethod().value())
+            .paymentStatus(saved.getPaymentStatus().value())
+            .email(saved.getShippingInfo().email())
+            .oldStatus(oldStatus)
             .eventStatus("PENDING")
-            .retryCount(0)
-            .createdAt(Instant.now())
-            .updatedAt(null)
-            .lastError(null).build();
-            savedOnlinePaymentCancelledDocument=onlinePaymentCancelledRepo.save(outboxEvent);
-        
-        OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder().eventId(UUID.randomUUID())
-        .orderId(saved.getId().value())
-        .oldStatus(oldStatus)
-        .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
-        .userEmail(saved.getShippingInfo().email())
-        .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null).build();
-         savedOrderCancelledDocument= orderCancelledDocumentRepo.save(outboxOrderCancelled);
-       }
-        
-        if(saved.getStatus().value().equals("CANCELLED")&&isSendEvent&&saved.getPaymentMethod().value().equals("COD")) {
-            CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder().eventId(UUID.randomUUID())
-            .orderId(saved.getId().value())
-            .eventStatus("PENDING")
-            .retryCount(0)
-            .createdAt(Instant.now())
-            .updatedAt(null)
-            .lastError(null).build();
-            savedCodPaymentCancelledDocument = codPaymentCancelledDocumentRepo.save(outboxEvent);
-            
-        OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder().eventId(UUID.randomUUID())
-        .orderId(saved.getId().value())
-        .oldStatus(oldStatus)
-        .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
-        .eventStatus("PENDING")
-        .userEmail(saved.getShippingInfo().email())
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
-         savedOrderCancelledDocument= orderCancelledDocumentRepo.save(outboxOrderCancelled);
-        
-           // publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
+        publishEventPort.publishOrderUpdatedEvent(orderUpdatedRepo.save(eventDocument));
         }
-        if(saved.getStatus().value().equals("RECEIVED")) {
-            final var commands = saved.getDetails().stream().map(item->new IncreaseVariantSoldCountCommand(
-                new VariantId(item.variantId()), new Amount(item.amount())
-            )).toList();
-            updateVariantSoldCountUseCase.updateMany(commands);
-            IncreaseSoldCountEventsDocument eventsDocument = IncreaseSoldCountEventsDocument.builder().eventId(UUID.randomUUID())
-            .details(saved.getDetails().stream().map(item->new IncreaseSoldCountDetailDocument(item.variantId(),item.amount())).toList())
-            .eventStatus("PENDING")
-            .retryCount(0)
-            .createdAt(Instant.now())
-            .updatedAt(null).build();
-            savedIncreaseSoldCountEventDocument = increaseSoldCountEventDocumentRepo.save(eventsDocument);
-            
-        }
-        if(saved.getStatus().value().equals("RECEIVED")&&isSendEvent) {
-            CodPaymentReceivedDocument outboxEvent = CodPaymentReceivedDocument.builder().eventId(UUID.randomUUID())
-        .orderId(saved.getId().value())
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
-        savedCodPaymentReceivedDocument= codPaymentReceivedDocumentRepo.save(outboxEvent);
-        
-            //publishEventPort.publishCodPaymentReceived(new CodPaymentReceived(saved.getId().value()));
-        }
-        if(saved.getStatus().value().equals("SHIPPING")&&isSendEvent) {
-            OrderShippedDocument orderShippedDocument = OrderShippedDocument.builder().eventId(UUID.randomUUID())
-            .orderId(saved.getId().value())
-            .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
-            .eventStatus("PENDING")
-            .userEmail(saved.getShippingInfo().email())
-            .retryCount(0)
-            .createdAt(Instant.now())
-            .updatedAt(null)
-            .lastError(null).build();
-            savedOrderShippedDocument = orderShippedDocumentRepo.save(orderShippedDocument);
-            
-            //publishEventPort.publishOrderShipped_InventoryEvent(new OrderShipped(saved.getId().value(),listEvent));
-        }
-        final var codPaymentCancelledDocument = savedCodPaymentCancelledDocument;
-        final var orderCancelledDocument = savedOrderCancelledDocument;
-        final var increaseSoldCountEventDocument = savedIncreaseSoldCountEventDocument;
-        final var codPaymentReceivedDocument = savedCodPaymentReceivedDocument;
-        final var orderShippedDocument= savedOrderShippedDocument;
-        final var onlinePaymentCancelledDocument =savedOnlinePaymentCancelledDocument; 
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                /*
-                CodPaymentCancelledDocument savedCodPaymentCancelledDocument = null;
-        OrderCancelledDocument savedOrderCancelledDocument=null;
-        IncreaseSoldCountEventsDocument savedIncreaseSoldCountEventDocument=null;
-        CodPaymentReceivedDocument savedCodPaymentReceivedDocument=null;
-        OrderShippedDocument savedOrderShippedDocument=null; */
-                if(codPaymentCancelledDocument!=null) {
-                    publishEventPort.publishCodPaymentCancelled(codPaymentCancelledDocument);
-                }
-                if(orderCancelledDocument!=null) {
-                    publishEventPort.publishOrderCancelled_InventoryEvent(orderCancelledDocument);
-                }
-                if(increaseSoldCountEventDocument!=null) {
-                    publishEventPort.publishIncreaseSoldCountEvent(increaseSoldCountEventDocument);
-                }
-                if(codPaymentReceivedDocument!=null){
-                    publishEventPort.publishCodPaymentReceived(codPaymentReceivedDocument);
-                }
-                if(orderShippedDocument!=null) {
-                    publishEventPort.publishOrderShipped_InventoryEvent(orderShippedDocument);
-                }
-                if(onlinePaymentCancelledDocument!=null) {
-                    publishEventPort.publishOnlinePaymentCancelledEvent(onlinePaymentCancelledDocument);
-                }
-            }
-        });
-        publishEventPort.publish(new OrderUpdated(saved.getId()));
     }
 
     @Override
@@ -265,7 +167,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
                 publishEventPort.publishCodPaymentCancelled(savedEvent);
             }
         });
-        OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder().eventId(UUID.randomUUID())
+       /*  OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder().eventId(UUID.randomUUID())
         .orderId(saved.getId().value())
         .oldStatus(oldStatus)
         .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
@@ -280,7 +182,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             public void afterCommit() {
                 publishEventPort.publishOrderCancelled_InventoryEvent(savedOutboxOrderCancelled);
             }
-        });
+        });*/
         //publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
     }
 
