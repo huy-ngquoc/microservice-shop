@@ -10,4 +10,5 @@ public interface CreateInventoryUseCase {
     public InventoryView create(VariantId variantId);
     public InventoryView create(CreateInventoryCommand command);
     public List<InventoryView> createNewsFromListVariantId(List<VariantId> variantIds);
+    public List<InventoryView> createMany(List<CreateInventoryCommand> commands);
 }
