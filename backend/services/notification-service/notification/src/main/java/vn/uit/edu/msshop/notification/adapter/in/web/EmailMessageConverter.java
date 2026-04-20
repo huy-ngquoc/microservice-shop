@@ -69,4 +69,79 @@ public class EmailMessageConverter {
     content.append("Đội ngũ hỗ trợ khách hàng.");
     return content.toString();
     }
+
+    public String getOrderReceivedContent(UUID orderId) {
+        StringBuilder content = new StringBuilder();
+        content.append("Chào bạn,\n\n");
+    content.append("Cảm ơn bạn đã xác nhận đơn hàng. Dưới đây là thông tin quan trọng:\n\n");
+    
+    
+    content.append("1. Xem chi tiết đơn hàng tại đây:\n");
+    content.append(ORDER_PREFIX).append(orderId.toString()).append("\n\n"); 
+    
+    content.append("Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tối\n");
+    
+    
+    
+    content.append("Cảm ơn bạn đã ủng hộ MSShop!\n");
+    content.append("Đội ngũ hỗ trợ khách hàng.");
+    return content.toString();
+    }
+    public String getPaymentLinkCreatedContent(UUID orderId, String paymentLink) {
+        StringBuilder content = new StringBuilder();
+    
+    content.append("Chào bạn,\n\n");
+    content.append("MSShop đã tiếp nhận đơn hàng của bạn. Dưới đây là thông tin quan trọng:\n\n");
+    
+    // Khối 1: Link xem chi tiết đơn
+    content.append("1. Xem chi tiết đơn hàng tại đây:\n");
+    content.append(ORDER_PREFIX).append(orderId.toString()).append("\n\n"); 
+    
+    // Khối 2: Link thanh toán (Ví dụ PayOS)
+    content.append("2. Để hoàn tất, vui lòng thanh toán qua liên kết này:\n");
+    content.append(paymentLink).append("\n\n");
+    
+    content.append("Cảm ơn bạn đã ủng hộ MSShop!\n");
+    content.append("Đội ngũ hỗ trợ khách hàng.");
+
+    // Gán vào Value Object của bạn
+    return content.toString();
+    }
+    public String getPaymentLinkExpiredContent(UUID orderId) {
+        StringBuilder content = new StringBuilder();
+    
+    content.append("Chào bạn,\n\n");
+    content.append("Đơn hàng của bạn đã bị hủy do hết hạn thanh toán. Dưới đây là thông tin quan trọng:\n\n");
+    
+    
+    content.append("1. Xem chi tiết đơn hàng tại đây:\n");
+    content.append(ORDER_PREFIX).append(orderId.toString()).append("\n\n"); 
+    
+    
+    content.append("Chúng tôi xin lỗi vì sự bất tiện này\n");
+    
+    
+    content.append("Cảm ơn bạn đã ủng hộ MSShop!\n");
+    content.append("Đội ngũ hỗ trợ khách hàng.");
+    return content.toString();
+    }
+
+    public String getPaymentOnlineSuccessExpiredContent(UUID orderId) {
+        StringBuilder content = new StringBuilder();
+    
+    content.append("Chào bạn,\n\n");
+    content.append("Cảm ơn bạn đã thanh toán, đơn hàng của bạn đang được xử lý. Dưới đây là thông tin quan trọng:\n\n");
+    
+    
+    content.append("1. Xem chi tiết đơn hàng tại đây:\n");
+    content.append(ORDER_PREFIX).append(orderId.toString()).append("\n\n"); 
+    
+    
+    content.append("Chúng tôi sẽ thông báo khi đơn hàng được cập nhật\n");
+    
+    
+    content.append("Cảm ơn bạn đã ủng hộ MSShop!\n");
+    content.append("Đội ngũ hỗ trợ khách hàng.");
+    return content.toString();
+    }
 }

@@ -1,4 +1,4 @@
-package vn.uit.edu.payment.domain.event;
+package vn.uit.edu.msshop.notification.domain.event;
 
 import java.util.UUID;
 

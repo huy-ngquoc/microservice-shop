@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import vn.payos.PayOS;
 import vn.payos.model.webhooks.Webhook;
 import vn.payos.model.webhooks.WebhookData;
+import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentSuccessDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.PaymentSuccessDocument;
+import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentSuccessRepository;
 import vn.uit.edu.payment.adapter.out.event.repositories.PaymentSuccessDocumentRepository;
 import vn.uit.edu.payment.application.exception.PaymentNotFoundException;
 import vn.uit.edu.payment.application.port.out.LoadOnlinePaymentInfoPort;
@@ -37,6 +39,7 @@ public class PayOsWebHookService implements PayOsWebHookPort {
     private final PublishPaymentEventPort eventPort;
     private final PaymentSuccessDocumentRepository paymentSuccessRepo;
     private final PublishPaymentEventPort publishEventPort;
+    private final OnlinePaymentSuccessRepository onlinePaymentSuccessRepo;
     @Override
 
 public void handlePayOSWebHook(Webhook body) {
@@ -96,7 +99,16 @@ public void processPaymentUpdate(WebhookData webhookData) {
         .updatedAt(null)
         .lastError(null).build();
         System.out.println("Publish payment success event");
-    publishEventPort.publishPaymentSuccess(newPaymentSuccessEvent);
+    publishEventPort.publishPaymentSuccess(paymentSuccessRepo.save(newPaymentSuccessEvent));
+    final var newOnlinePaymentSuccess = OnlinePaymentSuccessDocument.builder().eventId(UUID.randomUUID())
+    .orderId(saved.getOrderId().value())
+    .userEmail(saved.getUserEmail().value())
+    .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+    publishEventPort.publishOnlinePaymentSuccess(onlinePaymentSuccessRepo.save(newOnlinePaymentSuccess));
 }
 
 }

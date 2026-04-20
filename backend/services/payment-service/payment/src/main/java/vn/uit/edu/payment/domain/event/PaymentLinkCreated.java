@@ -17,4 +17,5 @@ public class PaymentLinkCreated {
     private UUID eventId;
     private String paymentLink;
     private UUID orderId;
+    private String userEmail;
 }
