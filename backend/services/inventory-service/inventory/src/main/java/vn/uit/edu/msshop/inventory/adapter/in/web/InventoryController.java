@@ -126,6 +126,11 @@ public class InventoryController {
         InventoryView result = createUseCase.create(command);
         return ResponseEntity.ok(mapper.toResponse(result));
     }
+    @PostMapping("/public/create") 
+    public ResponseEntity<Void> create( @RequestBody List<CreateInventoryRequest> requests) {
+        createUseCase.createMany(requests.stream().map(mapper::toCommand).toList());
+        return ResponseEntity.ok().build();
+    }
 
 
 

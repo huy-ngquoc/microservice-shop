@@ -76,4 +76,10 @@ public class CreateInventoryService implements CreateInventoryUseCase {
         return savePort.createNews(variantIds).stream().map(mapper::toView).toList();
     }
 
+    @Override
+    public List<InventoryView> createMany(List<CreateInventoryCommand> commands) {
+        final var result = savePort.saveAll(commands.stream().map(mapper::toDomain).toList());
+        return result.stream().map(mapper::toView).toList();
+    }
+
 }
