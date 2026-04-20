@@ -52,6 +52,7 @@ public class CheckOnlinePaymentStatusService implements CheckOnlinePaymentStatus
                 OnlinePaymentExpiredDocument outboxEvent = OnlinePaymentExpiredDocument.builder()
                 .eventId(UUID.randomUUID())
         .orderId(p.getOrderId().value())
+        .userEmail(p.getUserEmail().value())
         .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())

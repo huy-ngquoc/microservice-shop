@@ -11,25 +11,26 @@ import org.springframework.stereotype.Component;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
-import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentExpiredDocumentRepository;
-import vn.uit.edu.payment.domain.event.OnlinePaymentExpired;
+import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentSuccessDocument;
+import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentSuccessRepository;
+import vn.uit.edu.payment.domain.event.OnlinePaymentSuccess;
+
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class OnlinePaymentExpiredOutboxPublisher {
-    private final OnlinePaymentExpiredDocumentRepository onlinePaymentExpiredDocumentRepo;
+public class OnlinePaymentSuccessOutboxPublisher {
+    private final OnlinePaymentSuccessRepository onlinePaymentSuccessRepo;
     private static final String PUBLISH_TOPIC="payment-online-topic";
-    private final KafkaTemplate<String, OnlinePaymentExpired> kafkaTemplate;
+    private final KafkaTemplate<String, OnlinePaymentSuccess> kafkaTemplate;
 
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<OnlinePaymentExpiredDocument> pendingEvents = onlinePaymentExpiredDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        List<OnlinePaymentSuccessDocument> pendingEvents = onlinePaymentSuccessRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
-        for (OnlinePaymentExpiredDocument event : pendingEvents) {
+        for (OnlinePaymentSuccessDocument event : pendingEvents) {
             try {
-                OnlinePaymentExpired onlinePaymentExpired = new OnlinePaymentExpired(event.getOrderId(), event.getEventId(), event.getUserEmail());
+                OnlinePaymentSuccess onlinePaymentExpired = new OnlinePaymentSuccess(event.getOrderId(), event.getEventId(), event.getUserEmail());
                 kafkaTemplate.send(PUBLISH_TOPIC, onlinePaymentExpired)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {
@@ -46,17 +47,17 @@ public class OnlinePaymentExpiredOutboxPublisher {
         }
     }
 
-    private void updateStatus(OnlinePaymentExpiredDocument event, String status, String error) {
+    private void updateStatus(OnlinePaymentSuccessDocument event, String status, String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
-        onlinePaymentExpiredDocumentRepo.save(event);
+        onlinePaymentSuccessRepo.save(event);
     }
     @Transactional
-    public void markAsSent(OnlinePaymentExpiredDocument event) {
+    public void markAsSent(OnlinePaymentSuccessDocument event) {
         updateStatus(event, "SENT", null);
     }
-    private void handleFailure(OnlinePaymentExpiredDocument event, String error) {
+    private void handleFailure(OnlinePaymentSuccessDocument event, String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
@@ -69,7 +70,7 @@ public class OnlinePaymentExpiredOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    onlinePaymentExpiredDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+    onlinePaymentSuccessRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }

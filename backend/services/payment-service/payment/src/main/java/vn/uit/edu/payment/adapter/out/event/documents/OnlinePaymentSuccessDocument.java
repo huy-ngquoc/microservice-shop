@@ -4,27 +4,26 @@ import java.util.UUID;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document(collection="outbox_events_online_payment_expired")
+@Document(collection="online_payment_success_document")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OnlinePaymentExpiredDocument {
-    @Id
+public class OnlinePaymentSuccessDocument {
     private UUID eventId;
     private UUID orderId;
+    private String userEmail;
     private String eventStatus;
     private Integer retryCount; 
     private Instant createdAt;
     private Instant updatedAt; 
     private String lastError;
-    private String userEmail;
+    
 }
