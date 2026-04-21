@@ -4,8 +4,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.payos.PayOS;
@@ -62,7 +63,7 @@ public void handlePayOSWebHook(Webhook body) {
     }
 }
 
-@Transactional
+@org.springframework.transaction.annotation.Transactional
 public void processPaymentUpdate(WebhookData webhookData) {
     long orderCode = webhookData.getOrderCode();
     
@@ -99,7 +100,7 @@ public void processPaymentUpdate(WebhookData webhookData) {
         .updatedAt(null)
         .lastError(null).build();
         System.out.println("Publish payment success event");
-    publishEventPort.publishPaymentSuccess(paymentSuccessRepo.save(newPaymentSuccessEvent));
+    final var savedPaymentSuccessEvent = paymentSuccessRepo.save(newPaymentSuccessEvent);
     final var newOnlinePaymentSuccess = OnlinePaymentSuccessDocument.builder().eventId(UUID.randomUUID())
     .orderId(saved.getOrderId().value())
     .userEmail(saved.getUserEmail().value())
@@ -108,7 +109,14 @@ public void processPaymentUpdate(WebhookData webhookData) {
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null).build();
-    publishEventPort.publishOnlinePaymentSuccess(onlinePaymentSuccessRepo.save(newOnlinePaymentSuccess));
+    final var savedEvent = onlinePaymentSuccessRepo.save(newOnlinePaymentSuccess);
+     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                eventPort.publishOnlinePaymentSuccess(savedEvent);
+                eventPort.publishPaymentSuccess(savedPaymentSuccessEvent);
+            }
+        });
 }
 
 }

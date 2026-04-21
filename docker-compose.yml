@@ -196,6 +196,19 @@ services:
         entrypoint: [ "/bin/sh", "-c", "chown 999:999 /data/configdb/mongodb.key && chmod 400 /data/configdb/mongodb.key && exec docker-entrypoint.sh $$@" ]
         networks:
             - microservices-net
+    mongodb_notification:
+        container_name: ms_mongdb_notification
+        image: mongo:8
+        ports:
+           - 20720:27017
+        volumes:
+           - mongo_notification:/data
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+        networks:
+            - microservices-net
     mongo-express:
         container_name: ms_mongo_express
         image: mongo-express:1
@@ -257,16 +270,26 @@ services:
         command:
             - "start-dev"
     redis:
-        image: redis:7.2-alpine  
+        image: redis:7.2-alpine
         container_name: redis_cart
         restart: always
         ports:
             - "6379:6379"
-        command: redis-server --save 60 1 --loglevel warning --requirepass binh123 --appendonly yes --appendfsync everysec
+        command: redis-server --save 300 10 --requirepass binh123 --appendonly yes --appendfsync everysec --loglevel warning
         volumes:
             - redis_data:/data
         networks:
             - microservices-net
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.50'
+                    memory: 512M
+        healthcheck:
+            test: ["CMD", "redis-cli", "-a", "binh123", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
 networks:
     microservices-net:
@@ -286,3 +309,4 @@ volumes:
     mongo_account:
     mongo_inventory:
     mongo_payment:
+    mongo_notification:

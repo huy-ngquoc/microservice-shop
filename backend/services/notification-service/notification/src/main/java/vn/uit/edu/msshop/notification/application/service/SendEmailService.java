@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
@@ -45,7 +44,7 @@ public class SendEmailService implements SendMailUseCase{
         message.setTo(email.getUserEmail().value()); 
         message.setSubject(email.getEmailTitle().value());
         message.setText(email.getEmailContent().value()); // Nội dung lấy trực tiếp từ field
-        message.setFrom("MSShop <your-email@gmail.com>");
+        message.setFrom("");
 
         // 3. Thực hiện gửi
         mailSender.send(message);
@@ -72,7 +71,7 @@ public class SendEmailService implements SendMailUseCase{
     }
 
     @Override
-    @Scheduled(fixedRate=5000)
+    //@Scheduled(fixedRate=5000)
     public void sendFailedEmail() {
         List<Email> unsentEmail = loadPort.loadByEmailStatus(new EmailStatus("UNSENT"));
         List<Email> toSave = new ArrayList<>();

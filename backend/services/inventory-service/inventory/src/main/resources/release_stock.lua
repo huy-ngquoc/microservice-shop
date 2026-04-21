@@ -8,5 +8,5 @@ local reserved = tonumber(reserved_raw) or 0
 if reserved < amount then
     return 0 
 end
-redis.call('HINCRBY', KEYS[1], 'reservedQuantity', amount)
+redis.call('HINCRBY', KEYS[1], 'reservedQuantity', -amount)
 return 1

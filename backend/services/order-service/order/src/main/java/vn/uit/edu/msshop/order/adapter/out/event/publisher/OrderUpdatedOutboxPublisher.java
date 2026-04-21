@@ -74,6 +74,7 @@ public class OrderUpdatedOutboxPublisher {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
+        orderUpdatedRepo.save(event);
         
     }
     private void handleFailure(OrderUpdatedEventDocument event, String error) {

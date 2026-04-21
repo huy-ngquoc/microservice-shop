@@ -91,8 +91,9 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             next= next.updatePaymentStatus(new PaymentStatus("CANCELLED"));
         }
         final var saved = saveOrderPort.save(next);
-        boolean isSendEvent = !oldStatus.equals(order.getStatus().value());
+        boolean isSendEvent = !oldStatus.equals(saved.getStatus().value());
         if(isSendEvent) {
+            System.out.println("Send eventtttttttttttttttttttttttttttttttt");
             List<OrderDetailEvent> detailEvents = saved.getDetails().stream().map(item->new OrderDetailEvent(item.variantId(), item.productId(), item.amount())).toList();
             OrderUpdatedEventDocument eventDocument = OrderUpdatedEventDocument.builder()
             .eventId(UUID.randomUUID())
@@ -114,7 +115,13 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null).build();
-        publishEventPort.publishOrderUpdatedEvent(orderUpdatedRepo.save(eventDocument));
+        final var savedEvent = orderUpdatedRepo.save(eventDocument);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishOrderUpdatedEvent(savedEvent);
+            }
+        });
         }
     }
 

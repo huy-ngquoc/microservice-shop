@@ -22,7 +22,7 @@ public class InventoryUpdatedOutboxPublisher {
     private final InventoryUpdatedDocumentRepository inventoryUpdatedDocumentRepo;
     private static final String PUBLISH_TOPIC="inventory-product";
     private final KafkaTemplate<String, InventoryUpdated> kafkaTemplate;
-    @Scheduled(fixedDelay=5000)
+    //@Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
         List<InventoryUpdatedDocument> pendingEvents = inventoryUpdatedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 

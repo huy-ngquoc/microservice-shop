@@ -159,7 +159,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @Override
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderCancelled(OrderCancelledCommand commands) {
-        List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
+        List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         boolean isShipping = commands.getOrderStatus().value().equals("SHIPPING");
@@ -213,7 +213,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @Override
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderShipped(OrderShippedCommand commands) {
-        List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
+        List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
