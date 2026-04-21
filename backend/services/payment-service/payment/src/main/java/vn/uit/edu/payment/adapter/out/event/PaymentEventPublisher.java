@@ -167,6 +167,7 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
     @Override
     public void publishOnlinePaymentSuccess(OnlinePaymentSuccessDocument outboxEvent) {
         OnlinePaymentSuccess event = new OnlinePaymentSuccess(outboxEvent.getEventId(),  outboxEvent.getOrderId(),outboxEvent.getUserEmail());
+        System.out.println("Send online payment success event");
         Message<OnlinePaymentSuccess> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
         try {
         onlinePaymentSuccessTemplate.send(message).whenComplete((result,ex)->{

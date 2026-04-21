@@ -8,6 +8,7 @@ import vn.uit.edu.msshop.order.adapter.out.event.repositories.EventDocumentRepos
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.IncreaseSoldCountEventDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
+import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderUpdatedRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCreatedInventoryDocumentRepository;
 
 
@@ -24,12 +25,13 @@ public class EventController {
     
     
     private IncreaseSoldCountEventDocumentRepository increaseSoldCountEventRepo;
+    private OrderUpdatedRepository orderUpdatedRepo;
 
     public EventController(OrderCreatedInventoryDocumentRepository orderCreatedInventoryDocumentRepo, OrderCreatedDocumentRepository orderCreatedDocumentRepo,
         OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo,EventDocumentRepository eventDocumentRepo,CodPaymentCancelledDocumentRepository codPaymentCancelledRepo,
         CodPaymentReceivedDocumentRepository codPaymentReceivedRepo,
        
-        IncreaseSoldCountEventDocumentRepository increaseSoldCountRepo
+        IncreaseSoldCountEventDocumentRepository increaseSoldCountRepo,OrderUpdatedRepository orderUpdatedRepo
     ) {
         System.out.println("Cleareddddddddddddddddddddddddddddddd");
         orderCreatedInventoryDocumentRepo.deleteAll();
@@ -40,6 +42,7 @@ public class EventController {
         codPaymentReceivedRepo.deleteAll();
        
         increaseSoldCountRepo.deleteAll();
+        orderUpdatedRepo.deleteAll();
         
         
     }

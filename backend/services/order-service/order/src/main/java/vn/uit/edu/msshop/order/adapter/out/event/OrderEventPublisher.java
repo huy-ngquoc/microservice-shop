@@ -15,9 +15,7 @@ import vn.uit.edu.msshop.order.adapter.out.event.documents.OnlinePaymentCancelle
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderUpdatedEventDocument;
-
 import vn.uit.edu.msshop.order.adapter.out.event.documents.inventory.OrderCreatedInventoryDocument;
-
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.CodPaymentCancelledOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.CodPaymentReceivedOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.IncreaseSoldCountEventOutboxPublisher;
@@ -25,9 +23,7 @@ import vn.uit.edu.msshop.order.adapter.out.event.publisher.OnlinePaymentCancelle
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.OrderCreatedOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.OrderCreatedSuccessOutboxPublisher;
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.OrderUpdatedOutboxPublisher;
-
 import vn.uit.edu.msshop.order.adapter.out.event.publisher.inventory.OrderCreatedInventoryOutboxPublisher;
-
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled;
 import vn.uit.edu.msshop.order.domain.event.CodPaymentReceived;
@@ -223,6 +219,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
         onlinePaymentCancelledTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
+                
                 onlinePaymentCancelledOutboxPublisher.markAsSent(outboxEvent);
             }
             else {
@@ -237,25 +234,27 @@ public class OrderEventPublisher implements PublishOrderEventPort{
 
     @Override
     public void publishOrderUpdatedEvent(OrderUpdatedEventDocument event) {
+        System.out.println("Publish eventttttttt order updated");
         OrderUpdatedEvent orderUpdatedEvent= new OrderUpdatedEvent(event.getEventId(), event.getOrderId(), event.getDetails(), event.getStatus(), event.getUserId(), event.getOriginPrice(), event.getShippingFee(), event.getDiscount(), event.getTotalPrice(), event.getCurrency(), event.getPaymentMethod(), event.getPaymentStatus(),event.getEmail(), event.getOldStatus());
          Message<OrderUpdatedEvent> message = MessageBuilder.withPayload(orderUpdatedEvent).setHeader(KafkaHeaders.TOPIC, ORDER_CREATED_TOPIC).build();
          try {
         orderShippedTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
+                System.out.println("Ackkkkkkkkkkkkkkkkkkkk");
                 //System.out.println("Send event with id "+event.getEventId());
                orderUpdatedOutboxPublisher.markAsSent(event);
             }
             else {
                 //System.out.println("Send event fail");
-                //log.error("Fail, wait 5 seconds");
+                log.error("Fail, wait 5 seconds");
             }
         })
         ;
     }
     catch(Exception e) {
     //System.out.println("Kafka is dead");
-    //e.printStackTrace();
+    e.printStackTrace();
 }
     }
 

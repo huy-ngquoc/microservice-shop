@@ -4,10 +4,13 @@ spring:
       host: localhost       
       port: 6379
       password: binh123
-      timeout: 60000        
+      timeout: 60000   
+      client-type: lettuce     
       lettuce:
         pool:
-          max-active: 8
+          max-active: 32 # Tăng lên để chịu tải tốt hơn
+          max-idle: 16
+          min-idle: 8
     mongodb:
       uri: mongodb://alibou:alibou@localhost:27019/order_db?authSource=admin&uuidRepresentation=STANDARD&maxPoolSize=200&minPoolSize=20
       command-listener:
@@ -20,7 +23,9 @@ spring:
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
             properties:
+                spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
                 spring.json.trusted.packages: "*"
+                spring.json.value.default.type: java.lang.Object
                 spring.json.type.mapping: 
                     OnlinePaymentExpired:vn.uit.edu.msshop.order.domain.event.OnlinePaymentExpired,
                     OnlinePaymentCancelled:vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled,
@@ -31,15 +36,20 @@ spring:
                     VariantUpdated:vn.uit.edu.msshop.order.domain.event.product.VariantUpdate,
                     VariantDeleted:vn.uit.edu.msshop.order.domain.event.product.VariantDeleted,
                     ProductDeleted:vn.uit.edu.msshop.order.domain.event.product.ProductDeleted,
-                    PaymentSuccess:vn.uit.edu.msshop.order.domain.event.PaymentSuccess
+                    PaymentSuccess:vn.uit.edu.msshop.order.domain.event.PaymentSuccess,
+                    PaymentLinkCreated:java.lang.Object,
+                    OnlinePaymentSuccess:java.lang.Object
         producer:
             bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
             properties:
-                max.block.ms: 3000
-                delivery.timeout.ms: 5000
-                request.timeout.ms: 2000
+                acks: all
+                properties:
+                    enable.idempotence: true
+                max.block.ms: 10000        # Tăng lên 10s
+                delivery.timeout.ms: 30000  # Tăng lên 30s (Chuẩn của Kafka)
+                request.timeout.ms: 10000
                 spring.json.type.mapping: 
                     OrderCreated:vn.uit.edu.msshop.order.domain.event.OrderCreated,
                     OnlinePaymentCancelled:vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled,
@@ -47,9 +57,10 @@ spring:
                     CodPaymentReceived:vn.uit.edu.msshop.order.domain.event.CodPaymentReceived,
                     OrderCreatedSuccess:vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess,
                     OrderCreated_Inventory:vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated,
-                    OrderCancelled:vn.uit.edu.msshop.order.domain.event.inventory.OrderCancelled,
-                    OrderShipped:vn.uit.edu.msshop.order.domain.event.inventory.OrderShipped,
-                    IncreaseSoldCountEvents:vn.uit.edu.msshop.order.domain.event.IncreaseSoldCountEvents
+                    IncreaseSoldCountEvents:vn.uit.edu.msshop.order.domain.event.IncreaseSoldCountEvents,
+                    OrderUpdatedEvent:vn.uit.edu.msshop.order.domain.event.OrderUpdatedEvent,
+                    PaymentLinkCreated:java.lang.Object,
+                    OnlinePaymentSuccess:java.lang.Object
 logging:
   level:
         org.springframework.data.mongodb.core.MongoTemplate: OFF

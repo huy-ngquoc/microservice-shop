@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.notification.adapter.out.event.EventDocument;
@@ -13,7 +14,7 @@ import vn.uit.edu.msshop.notification.application.port.in.SendMailUseCase;
 import vn.uit.edu.msshop.notification.domain.event.OnlinePaymentExpired;
 import vn.uit.edu.msshop.notification.domain.event.OnlinePaymentSuccess;
 import vn.uit.edu.msshop.notification.domain.event.PaymentLinkCreated;
-
+@Component
 @KafkaListener(topics="payment-online-topic", groupId="notification-group")
 @RequiredArgsConstructor
 public class NotificationPaymentEventListener {
@@ -36,10 +37,15 @@ public class NotificationPaymentEventListener {
     }
     @KafkaHandler
     public void onOnlinePaymentSuccess(OnlinePaymentSuccess event) {
+        System.out.println("Receive online payment success event");
         if(eventDocumentRepo.existsById(event.getEventId())) return;
-        CreateEmailCommand command = messageConverter.toCommand(messageConverter.getPaymentLinkExpiredContent(event.getOrderId()), "Thanh toán online thành công", "ONLINE_PAYMET_SUCCESS", event.getOrderId(), event.getUserEmail());
+        CreateEmailCommand command = messageConverter.toCommand(messageConverter.getPaymentLinkExpiredContent(event.getOrderId()), "Thanh toán online thành công", "ONLINE_PAYMENT_SUCCESS", event.getOrderId(), event.getUserEmail());
         sendMailUseCase.createEmail(command);
         eventDocumentRepo.save(new EventDocument(event.getEventId(),Instant.now()));
+    }
+    @KafkaHandler(isDefault=true)
+    public void onObjectReceived(Object event) {
+        
     }
 
 }

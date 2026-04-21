@@ -43,13 +43,13 @@ spring:
                 spring.json.trusted.packages: "*"
                 spring.json.value.default.type: java.lang.Object
                 spring.json.type.mapping: 
-                    OrderCancelled:vn.uit.edu.msshop.inventory.domain.event.OrderCancelled,
                     OrderCreated_Inventory:vn.uit.edu.msshop.inventory.domain.event.OrderCreated,
-                    OrderShipped:vn.uit.edu.msshop.inventory.domain.event.OrderShipped,
+                    OrderCreated:java.lang.Object,
                     VariantUpdated:vn.uit.edu.msshop.inventory.domain.event.product.VariantUpdate,
                     VariantDeleted:vn.uit.edu.msshop.inventory.domain.event.product.VariantDeleted,
                     VariantRestore:vn.uit.edu.msshop.inventory.domain.event.product.VariantRestore,
                     VariantPurge:vn.uit.edu.msshop.inventory.domain.event.product.VariantPurge,
+                    OrderUpdatedEvent:vn.uit.edu.msshop.inventory.domain.event.OrderUpdatedEvent,
                     ProductCreated:java.lang.Object,
                     ProductUpdated:java.lang.Object,
                     ProductDeleted:java.lang.Object

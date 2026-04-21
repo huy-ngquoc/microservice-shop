@@ -37,7 +37,8 @@ spring:
                     OrderCreated:vn.uit.edu.payment.domain.event.OrderCreated,
                     CodPaymentCancelled:vn.uit.edu.payment.domain.event.CodPaymentCancelled,
                     CodPaymentReceived:vn.uit.edu.payment.domain.event.CodPaymentReceived,
-                    OnlinePaymentCancelled:vn.uit.edu.payment.domain.event.OnlinePaymentCancelled
+                    OnlinePaymentCancelled:vn.uit.edu.payment.domain.event.OnlinePaymentCancelled,
+                    OrderUpdatedEvent:java.lang.Object
         producer:
             bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -47,12 +48,14 @@ spring:
                     OnlinePaymentExpired:vn.uit.edu.payment.domain.event.OnlinePaymentExpired,
                     OnlinePaymentCancelled:vn.uit.edu.payment.domain.event.OnlinePaymentCancelled,
                     CodPaymentCreated:vn.uit.edu.payment.domain.event.CodPaymentCreated,
-                    PaymentSuccess:vn.uit.edu.payment.domain.event.PaymentSuccess
+                    PaymentSuccess:vn.uit.edu.payment.domain.event.PaymentSuccess,
+                    PaymentLinkCreated:vn.uit.edu.payment.domain.event.PaymentLinkCreated,
+                    OnlinePaymentSuccess:vn.uit.edu.payment.domain.event.OnlinePaymentSuccess
 logging:
   level:
     org.apache.kafka: ERROR
     org.springframework.kafka: ERROR
 payos:
-    client-id: 12c6330d-6619-407c-ab25-6a2e7eaf8f0a
-    api-key: 3d007e3b-9f27-46e4-b469-6be53e180181
-    checksum-key: e989cd5d9989a981d49da94f9d9a363f5886ba4568edca3a52fc1cc1b51b7699
+    client-id:
+    api-key:
+    checksum-key: 

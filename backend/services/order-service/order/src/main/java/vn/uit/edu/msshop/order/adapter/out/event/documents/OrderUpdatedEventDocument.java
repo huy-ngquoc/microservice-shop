@@ -3,6 +3,7 @@ package vn.uit.edu.msshop.order.adapter.out.event.documents;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 @Setter
 @SuperBuilder
 public class OrderUpdatedEventDocument extends OutboxEvent {
+    @Id
     private UUID eventId;
     private UUID orderId;
 
