@@ -6,13 +6,13 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.IncreaseProductSoldCountsForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.IncreaseProductSoldCountsForVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.IncreaseAllProductSoldCountsPort;
 
 @Service
 @RequiredArgsConstructor
 public class IncreaseProductSoldCountsForVariantService
         implements IncreaseProductSoldCountsForVariantUseCase {
-    private final IncreaseProductSoldCountsPort increaseSoldCountsPort;
+    private final IncreaseAllProductSoldCountsPort increaseAllSoldCountsPort;
 
     @Override
     public void execute(
@@ -22,6 +22,6 @@ public class IncreaseProductSoldCountsForVariantService
                         IncreaseProductSoldCountsForVariantCommand.Item::productId,
                         IncreaseProductSoldCountsForVariantCommand.Item::soldCountIncrement,
                         Integer::sum));
-        this.increaseSoldCountsPort.increaseAll(incrementByProductId);
+        this.increaseAllSoldCountsPort.increaseAll(incrementByProductId);
     }
 }
