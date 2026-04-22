@@ -21,8 +21,6 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKe
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRating;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
@@ -40,10 +38,6 @@ public class ProductPersistenceMapper {
         final var priceRange = new ProductPriceRange(
                 new ProductPrice(entity.getMinPrice()),
                 new ProductPrice(entity.getMaxPrice()));
-        final var soldCount = new ProductSoldCount(entity.getSoldCount());
-        final var rating = new ProductRating(
-                entity.getRatingAverage(),
-                entity.getRatingCount());
 
         final var options = ProductOptions.of(entity.getOptions());
 
@@ -68,8 +62,6 @@ public class ProductPersistenceMapper {
                 categoryId,
                 brandId,
                 priceRange,
-                soldCount,
-                rating,
                 configuration,
                 imageKeys,
                 version,
@@ -101,9 +93,6 @@ public class ProductPersistenceMapper {
                 product.getBrandId().value(),
                 product.getPriceRange().minPrice().value(),
                 product.getPriceRange().maxPrice().value(),
-                product.getSoldCount().value(),
-                product.getRating().average(),
-                product.getRating().count(),
                 product.getOptions().unwrap(),
                 variantDocs,
                 product.getImageKeys().unwrap(),
@@ -124,9 +113,6 @@ public class ProductPersistenceMapper {
                 newProduct.getBrandId().value(),
                 priceRange.minPrice().value(),
                 priceRange.maxPrice().value(),
-                0,
-                0,
-                0,
                 newProduct.getOptions().unwrap(),
                 variantDocs,
                 List.of(),

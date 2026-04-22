@@ -9,6 +9,8 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundEx
 import vn.edu.uit.msshop.product.product.application.port.in.command.HardDeleteProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductSoldCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.HardDeleteAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductPurged;
@@ -21,6 +23,8 @@ public class HardDeleteProductService
         implements HardDeleteProductUseCase {
     private final LoadSoftDeletedProductPort loadSoftDeletedPort;
     private final DeleteProductPort deletePort;
+    private final DeleteProductSoldCountPort deleteSoldCountPort;
+    private final DeleteProductRatingPort deleteRatingPort;
     private final HardDeleteAllProductVariantsPort hardDeleteAllVariantsPort;
     private final PublishProductEventPort eventPort;
 
@@ -39,10 +43,12 @@ public class HardDeleteProductService
             throw new OptimisticLockException(
                     expectedVersion.value(),
                     currentVersion.value());
-
         }
 
         this.deletePort.deleteById(productId);
+        this.deleteSoldCountPort.deleteById(productId);
+        this.deleteRatingPort.deleteById(productId);
+
         this.hardDeleteAllVariantsPort.purgeByProductId(productId);
 
         this.eventPort.publish(new ProductPurged(productId));

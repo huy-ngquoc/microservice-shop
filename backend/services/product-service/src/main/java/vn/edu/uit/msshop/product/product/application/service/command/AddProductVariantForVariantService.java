@@ -39,8 +39,6 @@ public class AddProductVariantForVariantService
                 product.getCategoryId(),
                 product.getBrandId(),
                 newPriceRange,
-                product.getSoldCount(),
-                product.getRating(),
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),

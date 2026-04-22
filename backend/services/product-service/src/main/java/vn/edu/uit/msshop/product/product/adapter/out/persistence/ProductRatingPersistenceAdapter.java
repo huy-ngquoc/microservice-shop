@@ -1,9 +1,8 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductRatingPersistenceMapper;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadAllProductRatingsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
@@ -33,7 +33,8 @@ public class ProductRatingPersistenceAdapter
         LoadProductRatingPort,
         LoadAllProductRatingsPort,
         InitializeProductRatingPort,
-        UpdateProductRatingPort {
+        UpdateProductRatingPort,
+        DeleteProductRatingPort {
     private static final Collector<ProductRating, ?, Map<ProductId, ProductRating>> COLLECTOR = Collectors
             .toUnmodifiableMap(
                     ProductRating::getId,
@@ -75,17 +76,8 @@ public class ProductRatingPersistenceAdapter
                 .setOnInsert(ProductRatingDocument.Fields.average, 0.0F)
                 .setOnInsert(ProductRatingDocument.Fields.amount, 0)
                 .setOnInsert(ProductRatingDocument.Fields.lastUpdatedTime, Instant.now());
-        final var options = FindAndModifyOptions
-                .options()
-                .returnNew(true)
-                .upsert(true);
 
-        final var doc = this.mongoTemplate.findAndModify(
-                query,
-                update,
-                options,
-                ProductRatingDocument.class);
-        return this.mapper.toDomain(doc);
+        return this.upsertAndReturnDomain(query, update);
     }
 
     @Override
@@ -96,16 +88,31 @@ public class ProductRatingPersistenceAdapter
                 .set(ProductRatingDocument.Fields.average, rating.getAverage().value())
                 .set(ProductRatingDocument.Fields.amount, rating.getAmount().value())
                 .set(ProductRatingDocument.Fields.lastUpdatedTime, Instant.now());
+
+        return this.upsertAndReturnDomain(query, update);
+    }
+
+    @Override
+    public void deleteById(
+            final ProductId id) {
+        final var jpaId = id.value();
+        this.repository.deleteById(jpaId);
+    }
+
+    private ProductRating upsertAndReturnDomain(
+            final Query query,
+            final Update update) {
         final var options = FindAndModifyOptions
                 .options()
                 .returnNew(true)
                 .upsert(true);
-
         final var doc = this.mongoTemplate.findAndModify(
                 query,
                 update,
                 options,
                 ProductRatingDocument.class);
+        Objects.requireNonNull(doc, "find-and-modify with upsert must return a non-null document");
+
         return this.mapper.toDomain(doc);
     }
 }

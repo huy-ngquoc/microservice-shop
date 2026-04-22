@@ -13,6 +13,8 @@ import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductSoldCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;
@@ -30,6 +32,8 @@ public class CreateProductService implements CreateProductUseCase {
     private final CheckProductCategoryExistsPort checkCategoryExistsPort;
     private final CheckProductBrandExistsPort checkBrandExistsPort;
     private final CreateAllProductVariantsPort createVariantsForNewProductPort;
+    private final InitializeProductSoldCountPort initializeSoldCountPort;
+    private final InitializeProductRatingPort initializeRatingPort;
     private final PublishProductEventPort eventPort;
 
     private final ProductViewMapper mapper;
@@ -65,10 +69,17 @@ public class CreateProductService implements CreateProductUseCase {
                 command.brandId(),
                 configuration);
 
-        final var saved = this.createPort.create(newProduct);
+        final var savedProduct = this.createPort.create(newProduct);
+        final var savedProductId = savedProduct.getId();
 
-        this.eventPort.publish(new ProductCreated(saved.getId()));
-        return this.mapper.toView(saved);
+        final var savedSoldCount = this.initializeSoldCountPort.initialize(savedProductId);
+        final var savedRating = this.initializeRatingPort.initialize(savedProductId);
+
+        this.eventPort.publish(new ProductCreated(savedProductId));
+        return this.mapper.toView(
+                savedProduct,
+                savedSoldCount,
+                savedRating);
     }
 
     private void validateCategoryExists(

@@ -14,6 +14,8 @@ import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductInfoUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;
@@ -29,6 +31,8 @@ import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockExce
 @RequiredArgsConstructor
 public class UpdateProductInfoService implements UpdateProductInfoUseCase {
     private final LoadProductPort loadPort;
+    private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductRatingPort loadRatingPort;
     private final UpdateProductPort updatePort;
     private final CheckProductCategoryExistsPort checkCategoryExistsPort;
     private final CheckProductBrandExistsPort checkBrandExistsPort;
@@ -43,12 +47,18 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
         final var product = this.loadPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(productId);
+        final var rating = this.loadRatingPort.loadByIdOrZero(productId);
+
         final var nameSet = command.name().getSet();
         final var categoryIdSet = command.categoryId().getSet();
         final var brandIdSet = command.brandId().getSet();
 
         if ((nameSet == null) && (categoryIdSet == null) && (brandIdSet == null)) {
-            return this.mapper.toView(product);
+            return this.mapper.toView(
+                    product,
+                    soldCount,
+                    rating);
         }
 
         final var expectedVersion = command.expectedVersion();
@@ -65,13 +75,19 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
                 categoryIdSet,
                 brandIdSet);
         if (next == null) {
-            return this.mapper.toView(product);
+            return this.mapper.toView(
+                    product,
+                    soldCount,
+                    rating);
         }
 
-        final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new ProductUpdated(saved.getId()));
+        final var savedProduct = this.updatePort.update(next);
+        this.eventPort.publish(new ProductUpdated(savedProduct.getId()));
 
-        return this.mapper.toView(saved);
+        return this.mapper.toView(
+                savedProduct,
+                soldCount,
+                rating);
     }
 
     private @Nullable Product applyChanges(
@@ -117,15 +133,12 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
             return null;
         }
 
-        // FIXME: what if the sold updated right before updating info?
         return new Product(
                 current.getId(),
                 newName,
                 newCategoryId,
                 newBrandId,
                 current.getPriceRange(),
-                current.getSoldCount(),
-                current.getRating(),
                 current.getConfiguration(),
                 current.getImageKeys(),
                 current.getVersion(),

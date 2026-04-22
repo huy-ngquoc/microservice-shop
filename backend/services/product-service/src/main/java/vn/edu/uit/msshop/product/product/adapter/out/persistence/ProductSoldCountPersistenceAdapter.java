@@ -1,9 +1,8 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -82,17 +81,8 @@ public class ProductSoldCountPersistenceAdapter
                 .setOnInsert(ProductSoldCountDocument.Fields.soldCount, 0)
                 .setOnInsert(ProductSoldCountDocument.Fields.version, 0L)
                 .setOnInsert(ProductSoldCountDocument.Fields.lastUpdatedTime, Instant.now());
-        final var options = FindAndModifyOptions
-                .options()
-                .returnNew(true)
-                .upsert(true);
 
-        final var doc = this.mongoTemplate.findAndModify(
-                query,
-                update,
-                options,
-                ProductSoldCountDocument.class);
-        return this.mapper.toDomain(doc);
+        return this.upsertAndReturnDomain(query, update);
     }
 
     @Override
@@ -121,5 +111,22 @@ public class ProductSoldCountPersistenceAdapter
             final ProductId id) {
         final var jpaId = id.value();
         this.repository.deleteById(jpaId);
+    }
+
+    private ProductSoldCount upsertAndReturnDomain(
+            final Query query,
+            final Update update) {
+        final var options = FindAndModifyOptions
+                .options()
+                .returnNew(true)
+                .upsert(true);
+        final var doc = this.mongoTemplate.findAndModify(
+                query,
+                update,
+                options,
+                ProductSoldCountDocument.class);
+        Objects.requireNonNull(doc, "find-and-modify with upsert must return a non-null document");
+
+        return this.mapper.toDomain(doc);
     }
 }
