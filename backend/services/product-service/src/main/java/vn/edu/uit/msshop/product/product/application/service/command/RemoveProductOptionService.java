@@ -15,6 +15,8 @@ import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductOptionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteVariantsForProductPort;
@@ -23,6 +25,8 @@ import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
+import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
+import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
@@ -41,6 +45,8 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
     private final SoftDeleteVariantsForProductPort softDeleteVariantsForProductPort;
     private final CreateAllProductVariantsPort createVariantsPort;
     private final UpdateAllProductVariantTraitsPort updateAllVariantTraitsPort;
+    private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductRatingPort loadRatingPort;
     private final PublishProductEventPort eventPort;
     private final ProductViewMapper mapper;
 
@@ -67,17 +73,25 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
                 product.getCategoryId(),
                 product.getBrandId(),
                 newPriceRange,
-                product.getSoldCount(),
-                product.getRating(),
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),
                 product.getDeletionTime());
 
-        final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new ProductUpdated(saved.getId()));
+        final var savedProduct = this.updatePort.update(next);
+        final var savedProductId = savedProduct.getId();
 
-        return this.mapper.toView(saved);
+        final var soldCount = this.loadSoldCountPort.loadById(savedProductId)
+                .orElse(ProductSoldCount.zero(savedProductId));
+        final var rating = this.loadRatingPort.loadById(savedProductId)
+                .orElse(ProductRating.zero(savedProductId));
+
+        this.eventPort.publish(new ProductUpdated(savedProductId));
+
+        return this.mapper.toView(
+                savedProduct,
+                soldCount,
+                rating);
     }
 
     private ProductConfiguration removeOptionFromConfiguration(

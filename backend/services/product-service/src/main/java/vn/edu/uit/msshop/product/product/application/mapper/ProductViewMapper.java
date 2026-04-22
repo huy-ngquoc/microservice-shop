@@ -7,13 +7,17 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductVariantView;
 import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
+import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
+import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 
 @Component
 public class ProductViewMapper {
     public ProductView toView(
-            final Product product) {
+            final Product product,
+            final ProductSoldCount soldCount,
+            final ProductRating rating) {
         return new ProductView(
                 product.getId().value(),
                 product.getName().value(),
@@ -21,9 +25,9 @@ public class ProductViewMapper {
                 product.getBrandId().value(),
                 product.getPriceRange().minPrice().value(),
                 product.getPriceRange().maxPrice().value(),
-                product.getSoldCount().value(),
-                product.getRating().average(),
-                product.getRating().count(),
+                soldCount.getValue().value(),
+                rating.getAverage().value(),
+                rating.getAmount().value(),
                 product.getOptions().unwrap(),
                 this.toView(product.getVariants()),
                 product.getImageKeys().unwrap(),

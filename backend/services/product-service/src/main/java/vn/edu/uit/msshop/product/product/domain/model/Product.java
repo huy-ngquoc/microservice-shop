@@ -11,8 +11,6 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKeys;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRating;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
 
@@ -31,10 +29,6 @@ public final class Product {
     private final ProductBrandId brandId;
 
     private final ProductPriceRange priceRange;
-
-    private final ProductSoldCount soldCount;
-
-    private final ProductRating rating;
 
     private final ProductConfiguration configuration;
 
@@ -55,8 +49,6 @@ public final class Product {
             final ProductCategoryId categoryId,
             final ProductBrandId brandId,
             final ProductPriceRange priceRange,
-            final ProductSoldCount soldCount,
-            final ProductRating rating,
             final ProductConfiguration configuration,
             final ProductImageKeys imageKeys,
             final ProductVersion version,
@@ -67,8 +59,6 @@ public final class Product {
         this.categoryId = Domains.requireNonNull(categoryId, "Category ID CANNOT be null");
         this.brandId = Domains.requireNonNull(brandId, "Brand ID CANNOT be null");
         this.priceRange = Domains.requireNonNull(priceRange, "Price range CANNOT be null");
-        this.soldCount = Domains.requireNonNull(soldCount, "Sold count CANNOT be null");
-        this.rating = Domains.requireNonNull(rating, "Rating CANNOT be null");
         this.configuration = Domains.requireNonNull(configuration, "Configuration CANNOT be null");
         this.imageKeys = Domains.requireNonNull(imageKeys, "Product image keys CANNOT be null");
         this.version = Domains.requireNonNull(version, "Product version CANNOT be null");

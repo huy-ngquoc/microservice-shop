@@ -42,8 +42,6 @@ public class RemoveProductVariantForVariantService implements RemoveProductVaria
                 product.getCategoryId(),
                 product.getBrandId(),
                 product.getPriceRange(),
-                product.getSoldCount(),
-                product.getRating(),
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),

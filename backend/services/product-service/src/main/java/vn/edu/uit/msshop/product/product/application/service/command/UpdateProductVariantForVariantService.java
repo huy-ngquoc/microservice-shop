@@ -45,8 +45,6 @@ public class UpdateProductVariantForVariantService
                 product.getCategoryId(),
                 product.getBrandId(),
                 newPriceRange,
-                product.getSoldCount(),
-                product.getRating(),
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),

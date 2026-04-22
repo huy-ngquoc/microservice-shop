@@ -34,12 +34,6 @@ public class ProductDocument {
 
     private final long maxPrice;
 
-    private final int soldCount;
-
-    private final float ratingAverage;
-
-    private final int ratingCount;
-
     private final List<String> options;
 
     private final List<ProductVariantDocument> variants;
@@ -61,9 +55,6 @@ public class ProductDocument {
             final UUID brandId,
             final long minPrice,
             final long maxPrice,
-            final int soldCount,
-            final float ratingAverage,
-            final int ratingCount,
             final List<String> options,
             final List<ProductVariantDocument> variants,
             final List<String> imageKeys,
@@ -77,9 +68,6 @@ public class ProductDocument {
         this.brandId = brandId;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
-        this.soldCount = soldCount;
-        this.ratingAverage = ratingAverage;
-        this.ratingCount = ratingCount;
         this.options = List.copyOf(options);
         this.variants = List.copyOf(variants);
         this.imageKeys = List.copyOf(imageKeys);
