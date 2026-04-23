@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.mapper.InventoryJpaMapper;
+import vn.uit.edu.msshop.inventory.application.common.Change;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.inventory.application.port.out.DeleteInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.DeleteRedisPort;
@@ -108,6 +110,7 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
     @Override
     public List<Inventory> loadFromRedis(List<VariantId> variantIds) {
         List<Inventory> result = new ArrayList<>();
+        try {
     for (VariantId variantId : variantIds) {
         String key = "inventory:variant:" + variantId.value().toString();
         
@@ -137,6 +140,9 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         result.add(Inventory.reconstitue(snapshot));
     }
     return result;
+}catch(Exception e) {
+    return findByListVariantId(variantIds);
+}
         
     }
 
@@ -157,6 +163,7 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
     @Override
     public Inventory loadById(VariantId variantId) {
         String key = "inventory:variant:" + variantId.value().toString();
+        try{
         
         // 1. Dùng entries() để lấy toàn bộ Hash thay vì get() của String
         Map<Object, Object> val = redisTemplate.opsForHash().entries(key);
@@ -182,12 +189,30 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         .build();
         return Inventory.reconstitue(snapshot);
     }
+    catch(Exception e) {
+        return loadByVariantId(variantId).orElse(null);
+    }
+    }
 
     @Override
     public void delete(VariantId variantId) {
         String key = "inventory:variant:" + variantId.value().toString();
     
-    
+    try {
     redisTemplate.delete(key);
+    
+    }
+    catch(Exception e) {
+
+    }
+    finally {
+        repository.deleteById(variantId.value());
+    }
+    }
+
+    @Override
+    public List<Inventory> saveFromSet(Set<Inventory> inventories) {
+        List<InventoryJpaEntity> listInventories = inventories.stream().map(mapper::toEntity).toList();
+        return repository.saveAll(listInventories).stream().map(mapper::toDomain).toList();
     }
 }

@@ -25,6 +25,7 @@ public class InventoryUpdatedDocument {
     private Instant createdAt;
     private Instant updatedAt; 
     private String lastError;
+    private boolean isRead;
     
 
     

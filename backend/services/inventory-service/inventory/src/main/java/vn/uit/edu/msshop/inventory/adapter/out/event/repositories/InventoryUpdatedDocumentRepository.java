@@ -16,4 +16,5 @@ public interface InventoryUpdatedDocumentRepository extends MongoRepository<Inve
     public List<InventoryUpdatedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
     public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public List<InventoryUpdatedDocument> findByIsReadOrderByCreatedAtAsc(boolean isRead);
 }

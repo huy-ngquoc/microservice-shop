@@ -133,7 +133,12 @@ public class CreateOrderService implements CreateOrderUseCase {
         final var saved = Order.create(draft);
 
         //final var saved = savePort.save(order);
+        try {
         saveRedisStreamPort.saveToStream(saved);
+        }
+        catch(Exception e) {
+            savePort.save(saved);
+        }
         return saved.getId().value();
     }
     private void canPlaceOrder(List<OrderDetail> details) {
