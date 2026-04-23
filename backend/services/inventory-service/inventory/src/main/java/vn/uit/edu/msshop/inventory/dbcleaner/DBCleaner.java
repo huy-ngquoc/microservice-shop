@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.SpringDataInventoryJpaRepository;
 
-@Component
+//@Component
 public class DBCleaner {
     private SpringDataInventoryJpaRepository repository;
     public DBCleaner(SpringDataInventoryJpaRepository repository) {
