@@ -70,6 +70,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null)
+        .isRead(true)
         .build();
         final var savedEvent=inventoryUpdatedDocumentRepo.save(event);
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
@@ -114,13 +115,12 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null)
+        .isRead(false)
         .build();
             events.add(event);
             
         }
-                for(final var event:events) {
-                    publishEventPort.publishInventoryUpdateEvent(event);
-                }
+                
             
         
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
@@ -129,6 +129,14 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             //System.out.println("Call check and reserve, amount "+command.getQuantity().value());
             processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getReserveStockScript());
         }
+         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                for(final var event:events) {
+                    publishEventPort.publishInventoryUpdateEvent(event);
+                }
+            }
+        });
         
         return toSaves.stream().map(mapper::toView).toList();
     
@@ -186,6 +194,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null)
+        .isRead(false)
         .build();
             events.add(event);
             
@@ -241,6 +250,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null)
+        .isRead(false)
         .build();
             events.add(event);
 

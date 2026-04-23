@@ -30,7 +30,7 @@ public class InventorySyncJob {
     private final SaveInventoryPort saveInventoryPort; 
 
     
-    @Scheduled(fixedRate = 1800000) 
+    //@Scheduled(fixedRate = 1800000) 
     public void syncRedisToDb() {
         
         ScanOptions options = ScanOptions.scanOptions()
