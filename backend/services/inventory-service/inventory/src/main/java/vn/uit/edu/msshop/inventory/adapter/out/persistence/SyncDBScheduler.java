@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +18,6 @@ import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.InventoryUpdat
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
-import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
@@ -27,11 +29,34 @@ public class SyncDBScheduler {
     private final LoadInventoryPort loadPort;
     private final InventoryUpdatedDocumentRepository inventoryUpdatedRepo;
     @Scheduled(fixedRate=5000)
-    @Transactional
+    
     public void syncDatabase() {
         System.out.println("Call sync jobbbbbbbb");
-        List<InventoryUpdatedDocument> inventoryUpdatedDocuments = inventoryUpdatedRepo.findByIsReadOrderByCreatedAtAsc(false);
-        System.out.println("Inventory updated documents size "+inventoryUpdatedDocuments.size());
+        int currentPage=0;
+        int batchSize=50;
+        Pageable pageable = PageRequest.of(currentPage, batchSize);
+        Page<InventoryUpdatedDocument> batch = inventoryUpdatedRepo.findByIsReadOrderByCreatedAtAsc(false, pageable);
+        int totalPages=batch.getTotalPages();
+        currentPage = batch.getNumber();
+        while(currentPage<=totalPages-1) {
+            processOneBatch(batch.getContent());
+            currentPage++;
+            pageable = PageRequest.of(currentPage, batchSize);
+            batch = inventoryUpdatedRepo.findByIsReadOrderByCreatedAtAsc(false, pageable);
+
+        }
+
+    }
+    private Inventory findByVariantIdInList(List<Inventory> inventories, VariantId variantId) {
+        for(Inventory i: inventories) {
+            if(i.getVariantId().value().equals(variantId.value())) return i;
+            
+        }
+        return null;
+
+    }
+    @Transactional
+    private void processOneBatch(List<InventoryUpdatedDocument> inventoryUpdatedDocuments) {
         List<Inventory> inventories = loadPort.findByListVariantId(inventoryUpdatedDocuments.stream().map(item->new VariantId(item.getVariantId())).toList());
         System.out.println("Inventories size "+inventories.size());
         Set<Inventory> toSaves = new HashSet<>();
@@ -52,14 +77,5 @@ public class SyncDBScheduler {
         }
         savePort.saveFromSet(toSaves);
         inventoryUpdatedRepo.saveAll(inventoryUpdatedDocuments);
-
-    }
-    private Inventory findByVariantIdInList(List<Inventory> inventories, VariantId variantId) {
-        for(Inventory i: inventories) {
-            if(i.getVariantId().value().equals(variantId.value())) return i;
-            
-        }
-        return null;
-
     }
 }

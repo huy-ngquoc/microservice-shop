@@ -1,6 +1,8 @@
 package vn.uit.edu.msshop.inventory.adapter.out.persistence;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -214,5 +216,25 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
     public List<Inventory> saveFromSet(Set<Inventory> inventories) {
         List<InventoryJpaEntity> listInventories = inventories.stream().map(mapper::toEntity).toList();
         return repository.saveAll(listInventories).stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public Inventory saveToRedis(Inventory inventory) {
+         String key = "inventory:variant:" + inventory.getVariantId().toString();
+       Map<String, String> stockData = new HashMap<>();
+        stockData.put("quantity", String.valueOf(inventory.getQuantity().value()));
+        stockData.put("reservedQuantity", String.valueOf(inventory.getReservedQuantity().value()));
+        stockData.put("id",String.valueOf(inventory.getId().value()));
+        stockData.put("status", String.valueOf(inventory.getStatus().value()));
+        redisTemplate.opsForHash().putAll(key, stockData);
+        
+        redisTemplate.expire(key, Duration.ofDays(1));
+        return inventory;
+    }
+
+    @Override
+    public List<Inventory> saveToRedis(List<Inventory> inventories) {
+        return inventories.stream().map(this::saveToRedis).toList();
+
     }
 }

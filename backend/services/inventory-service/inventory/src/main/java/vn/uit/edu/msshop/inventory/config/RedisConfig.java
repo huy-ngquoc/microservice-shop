@@ -21,6 +21,12 @@ public class RedisConfig {
     private DefaultRedisScript<Long> cancelStockScript;
     private DefaultRedisScript<Long> releaseStockScript;
     private DefaultRedisScript<Long> updateInventoryStatus;
+    private DefaultRedisScript<Long> reserveAllScript;
+    private DefaultRedisScript<Long> cancelAllScript;
+    private DefaultRedisScript<Long> changeStatusAllScript;
+    private DefaultRedisScript<Long> releaseStockAllScript;
+    private DefaultRedisScript<Long> reverseShipAllScript;
+
 
     public RedisConfig() {
         reserveStockScript=  reserveStockScript();
@@ -28,6 +34,36 @@ public class RedisConfig {
         cancelStockScript = cancelStockScript();
         releaseStockScript=releaseStockScript();
         updateInventoryStatus=updateStatusScript();
+        reserveAllScript = reserveAllScript();
+        cancelAllScript= cancellAllScript();
+        changeStatusAllScript= changeStatusAllScript();
+        releaseStockAllScript=releaseStockAllScript();
+        reverseShipAllScript=reverseShipAllScript();
+
+    }
+    public DefaultRedisScript<Long> reverseShipAllScript() {
+        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+        
+        script.setLocation(new ClassPathResource("reverse_ship_all.lua"));
+        
+        script.setResultType(Long.class);
+        return script;
+    }
+    public DefaultRedisScript<Long> releaseStockAllScript() {
+        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+        
+        script.setLocation(new ClassPathResource("reserve_stock_all.lua"));
+        
+        script.setResultType(Long.class);
+        return script;
+    }
+    public DefaultRedisScript<Long> changeStatusAllScript() {
+        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+        
+        script.setLocation(new ClassPathResource("reserve_status_all.lua"));
+        
+        script.setResultType(Long.class);
+        return script;
     }
     
     
@@ -35,6 +71,14 @@ public class RedisConfig {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
         
         script.setLocation(new ClassPathResource("reserve_stock.lua"));
+        
+        script.setResultType(Long.class);
+        return script;
+    }
+    public DefaultRedisScript<Long> cancellAllScript() {
+        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+        
+        script.setLocation(new ClassPathResource("cancell_stock_all.lua"));
         
         script.setResultType(Long.class);
         return script;
@@ -61,6 +105,14 @@ public class RedisConfig {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
         
         script.setLocation(new ClassPathResource("reverse_ship.lua"));
+        
+        script.setResultType(Long.class);
+        return script;
+    }
+    public DefaultRedisScript<Long> reserveAllScript() {
+        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+        
+        script.setLocation(new ClassPathResource("reserve_all.lua"));
         
         script.setResultType(Long.class);
         return script;
