@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +18,5 @@ public interface InventoryUpdatedDocumentRepository extends MongoRepository<Inve
     public List<InventoryUpdatedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
     public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
-    public List<InventoryUpdatedDocument> findByIsReadOrderByCreatedAtAsc(boolean isRead);
+    public Page<InventoryUpdatedDocument> findByIsReadOrderByCreatedAtAsc(boolean isRead,Pageable pageable );
 }

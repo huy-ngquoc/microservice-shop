@@ -35,6 +35,7 @@ import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
 import vn.uit.edu.msshop.inventory.config.RedisConfig;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
+import vn.uit.edu.msshop.inventory.domain.model.OrderDetail;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
@@ -175,6 +176,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         List<Inventory> toSaves= new ArrayList<>();
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         boolean isShipping = commands.getOrderStatus().value().equals("SHIPPING");
+        
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
             Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
             if(inventory==null) throw new RuntimeException("Invalid variant id");
@@ -200,23 +202,40 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             
         }
        
-                for(final var event:events) {
-                    publishEventPort.publishInventoryUpdateEvent(event);
-                }
+                
             
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
+        
         inventoryUpdatedDocumentRepo.saveAll(events);
         
-        for(OrderDetailCommand command: commands.getDetailCommands()){
+        /*for(OrderDetailCommand command: commands.getDetailCommands()){
             if(isShipping) {
                 processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getReserveShippingStockScript());
             }
             else {
                 processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getCancelStockScript());
             }
+        }*/
+        List<OrderDetail> details = commands.getDetailCommands().stream().map(item->new OrderDetail(item.getVariantId(),new Quantity(item.getQuantity().value()))).toList();
+        if(isShipping) {
+            processOrderDetail(details, redisConfig.getReverseShipAllScript());
         }
+        else {
+            processOrderDetail(details, redisConfig.getCancelAllScript());
+        }
+        
+         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                for(final var event:events) {
+                    publishEventPort.publishInventoryUpdateEvent(event);
+                }
+            }
+        });
        
         return toSaves.stream().map(mapper::toView).toList();
+    
+    
     
     }
     private Inventory findByVariantIdInList(VariantId id, List<Inventory> inventories) {
@@ -257,19 +276,28 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             
         }
         
-                for(final var event:events) {
-                    publishEventPort.publishInventoryUpdateEvent(event);
-                }
             
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
         
-        for(OrderDetailCommand command: commands.getDetailCommands()) {
+        /*for(OrderDetailCommand command: commands.getDetailCommands()) {
             
             processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getReleaseStockScript());
-        }
-        
+        }*/
+        List<OrderDetail> details = commands.getDetailCommands().stream().map(item->new OrderDetail(item.getVariantId(), new Quantity(item.getQuantity().value()))).toList();
+        processOrderDetail(details, redisConfig.getReleaseStockAllScript());
         inventoryUpdatedDocumentRepo.saveAll(events);
+         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                for(final var event:events) {
+                    publishEventPort.publishInventoryUpdateEvent(event);
+                }
+            }
+        });
+    
+
         return toSaves.stream().map(mapper::toView).toList();
+    
     
     
     }
@@ -290,5 +318,25 @@ private void handleForceCancel(UUID orderId) {
     forceCancellOrderDocumentRepo.save(cancelEvent);
     publishEventPort.publishForceCancellOrderEvent(cancelEvent);
 }
+public void processOrderDetail(List<OrderDetail> orderDetails, DefaultRedisScript<Long> script) {
+        
+        List<String> keys = orderDetails.stream()
+                .map(item -> "inventory:variant:" + item.getVariantId().toString())
+                .toList();
+        Object[] args = orderDetails.stream()
+                .map(item -> String.valueOf(item.getQuantity().value()))
+                .toArray();
+
+        
+        Long result = redisTemplate.execute(script, keys, args);
+
+        if (result == null || result == 0||result==-1||result==-2) {
+            
+            throw new RuntimeException("Loi, vui long xem lai");
+        }
+
+        
+        System.out.println("Thanh cong");
+    }
 
 }

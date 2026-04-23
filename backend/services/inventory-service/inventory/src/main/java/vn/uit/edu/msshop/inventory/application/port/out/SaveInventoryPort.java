@@ -1,7 +1,7 @@
 package vn.uit.edu.msshop.inventory.application.port.out;
 import java.util.List;
-
 import java.util.Set;
+
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
@@ -14,4 +14,6 @@ public interface SaveInventoryPort {
     public Inventory createFromCommand(VariantId variantId, Quantity quantity);
     public List<Inventory> createNews(List<VariantId> variantIds);
     public List<Inventory> saveFromSet(Set<Inventory> inventory);
+    public Inventory saveToRedis(Inventory inventory);
+    public List<Inventory> saveToRedis(List<Inventory> inventories);
 }
