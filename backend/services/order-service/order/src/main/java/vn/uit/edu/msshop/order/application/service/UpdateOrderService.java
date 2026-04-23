@@ -10,12 +10,15 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
+import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
+import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentCancelledDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentReceivedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderUpdatedEventDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentCancelledDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentReceivedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderUpdatedRepository;
+import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
 import vn.uit.edu.msshop.order.application.exception.WrongUpdateInfoException;
@@ -44,6 +47,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     private final CodPaymentReceivedDocumentRepository codPaymentReceivedDocumentRepo;
    
     private final OrderUpdatedRepository orderUpdatedRepo;
+    private final InventoryChecker inventoryChecker;
     /*
     private UUID eventId;
     private UUID orderId;
@@ -84,12 +88,16 @@ public class UpdateOrderService implements UpdateOrderUseCase {
                 throw new WrongUpdateInfoException("Invalid order status");
             }
         }
+    
         final var updateInfo = Order.UpdateInfo.builder().id(command.id()).shippingInfo(command.shippingInfo().apply(order.getShippingInfo())).orderStatus(command.status().apply(order.getStatus()))
         .build();
         var next = order.applyUpdateInfo(updateInfo);
         if(next.getStatus().value().equals("CANCELLED")) {
             next= next.updatePaymentStatus(new PaymentStatus("CANCELLED"));
         }
+        List<OrderDetailRequest> detailRequests = next.getDetails().stream().map(item->new OrderDetailRequest(item.variantId(), item.amount())).toList();
+        UpdateInventoryFromOrderServiceRequest request = new UpdateInventoryFromOrderServiceRequest(next.getStatus().value(), oldStatus, detailRequests, next.getId().value());
+        inventoryChecker.updateFromOrderService(request);
         final var saved = saveOrderPort.save(next);
         boolean isSendEvent = !oldStatus.equals(saved.getStatus().value());
         if(isSendEvent) {

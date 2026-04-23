@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.in.web.mapper.InventoryWebMapper;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.CreateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderDetailRequest;
+import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.response.InventoryResponse;
 import vn.uit.edu.msshop.inventory.adapter.out.redis.InventorySyncJob;
@@ -115,6 +116,17 @@ public class InventoryController {
         final var command = mapper.toCommand(request);
         InventoryView result = updateUseCase.update(command);
         return ResponseEntity.ok(mapper.toResponse(result));
+    }
+    @PutMapping("/update_from_order")
+    public ResponseEntity<Void> updateFromOrderService(@RequestBody UpdateInventoryFromOrderServiceRequest request) {
+        if(request.getStatus().equals("SHIPPING")) {
+            updateUseCase.updateWhenOrderShipped(mapper.toOrderShippedCommand(request));
+        }
+        if(request.getStatus().equals("CANCELLED")) {
+            updateUseCase.updateWhenOrderCancelled(mapper.toOrderCancelledCommand(request));
+        }
+        return ResponseEntity.ok().build();
+
     }
     @PostMapping("/")
     public ResponseEntity<InventoryResponse> create(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestBody CreateInventoryRequest request) {

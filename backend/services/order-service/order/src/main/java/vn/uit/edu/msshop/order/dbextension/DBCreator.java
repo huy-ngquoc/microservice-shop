@@ -31,18 +31,19 @@ public class DBCreator {
     
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
+        variantInfoRepo.deleteAll();
         String idFilePath = "generated_variant_ids.txt";
         
         
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(idFilePath)))) {
             Random rand = new Random();
 
-            for (int i = 0; i < 200; i++) {
+            for (int i = 0; i < 1; i++) {
                 try {
                     List<VariantInfo> variantInfos = new ArrayList<>();
                     List<CreateInventoryRequest> requests = new ArrayList<>();
 
-                    for (int j = 0; j < 500; j++) {
+                    for (int j = 0; j < 100; j++) {
                         VariantInfo info = generateRandomVariantInfo(rand);
                         variantInfos.add(info);
                         requests.add(new CreateInventoryRequest(info.getVariantId(), 1000000));

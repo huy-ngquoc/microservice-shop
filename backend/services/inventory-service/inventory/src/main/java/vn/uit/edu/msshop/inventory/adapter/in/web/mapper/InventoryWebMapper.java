@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.CreateInventoryRequest;
+import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.common.ChangeRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.response.InventoryResponse;
@@ -16,7 +17,6 @@ import vn.uit.edu.msshop.inventory.application.dto.command.OrderShippedCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.UpdateInventoryCommand;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.domain.event.OrderCreated;
-import vn.uit.edu.msshop.inventory.domain.event.OrderUpdatedEvent;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.OrderQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
@@ -38,16 +38,18 @@ public class InventoryWebMapper {
         List<OrderDetailCommand> detailCommands = event.getDetails().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getAmount()))).toList();
         return new OrderCreateCommand(detailCommands,event.getOrderId());
     }
-    public OrderCancelledCommand toCancelledCommand(OrderUpdatedEvent event) {
-        List<OrderDetailCommand> detailCommands = event.getDetails().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getAmount()))).toList();
-        return new OrderCancelledCommand(detailCommands,event.getOrderId(), new OrderStatus(event.getOldStatus()));
-    }
+   
     public CreateInventoryCommand toCommand(CreateInventoryRequest request) {
         return new CreateInventoryCommand(new VariantId(request.getVariantId()),new Quantity(request.getQuantity()));
     }
-    public OrderShippedCommand toShippedCommand(OrderUpdatedEvent event) {
-        List<OrderDetailCommand> detailCommands = event.getDetails().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getAmount()))).toList();
-        return new OrderShippedCommand(detailCommands,event.getOrderId());
+    
+    public OrderShippedCommand toOrderShippedCommand(UpdateInventoryFromOrderServiceRequest request) {
+        List<OrderDetailCommand> detailCommands = request.getDetailRequests().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getQuantity()))).toList();
+        return new OrderShippedCommand(detailCommands,request.getOrderId());
+    }
+    public OrderCancelledCommand toOrderCancelledCommand(UpdateInventoryFromOrderServiceRequest  request ) {
+        List<OrderDetailCommand> detailCommands = request.getDetailRequests().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getQuantity()))).toList();
+        return new OrderCancelledCommand(detailCommands,request.getOrderId(), new OrderStatus(request.getOldStatus()));
     }
     
     
