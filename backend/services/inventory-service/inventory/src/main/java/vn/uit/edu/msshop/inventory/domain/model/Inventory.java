@@ -1,6 +1,7 @@
 package vn.uit.edu.msshop.inventory.domain.model;
 
 import java.time.Instant;
+import java.util.Objects;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,13 +18,12 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Version;
 
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+
 @AllArgsConstructor(
         access = AccessLevel.PRIVATE)
 @Builder(
         access = AccessLevel.PRIVATE)
-public class Inventory {
+public class Inventory  {
     private InventoryId id;
     private VariantId variantId;
     private Quantity quantity;
@@ -31,6 +31,20 @@ public class Inventory {
     private LastUpdate lastUpdate;
     private Version version;
     private InventoryStatus status;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Inventory i = (Inventory) o;
+        return Objects.equals(this.variantId.value(), i.variantId.value());
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.variantId.value());
+    }
+
+
+    
 
     @Builder
     public static record Draft (
