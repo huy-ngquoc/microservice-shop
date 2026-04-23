@@ -96,6 +96,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         List<OrderDetailRequest> requests= command.details().stream().map(item->new OrderDetailRequest(item.variantId(), item.quantity())).toList();
         List<OrderDetail> listDetails = loadOrderDetailPort.loadByListDetail(requests);
         try {
+            System.out.println("Call invnetory api");
           processOrder(listDetails);
         }
         catch(FeignException e) {

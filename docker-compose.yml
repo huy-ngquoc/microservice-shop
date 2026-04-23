@@ -269,6 +269,48 @@ services:
             - microservices-net
         command:
             - "start-dev"
+    redis_order:
+        image: redis:7.2-alpine
+        container_name: redis_order
+        restart: always
+        ports:
+            - "6380:6379"
+        command: redis-server --save 300 10 --requirepass binh123 --appendonly yes --appendfsync everysec --loglevel warning
+        volumes:
+            - redis_order:/data
+        networks:
+            - microservices-net
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.50'
+                    memory: 512M
+        healthcheck:
+            test: ["CMD", "redis-cli", "-a", "binh123", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+    redis_inventory:
+        image: redis:7.2-alpine
+        container_name: redis_inventory
+        restart: always
+        ports:
+            - "6381:6379"
+        command: redis-server --save 300 10 --requirepass binh123 --appendonly yes --appendfsync everysec --loglevel warning
+        volumes:
+            - redis_inventory:/data
+        networks:
+            - microservices-net
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.50'
+                    memory: 512M
+        healthcheck:
+            test: ["CMD", "redis-cli", "-a", "binh123", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
     redis:
         image: redis:7.2-alpine
         container_name: redis_cart
@@ -310,3 +352,5 @@ volumes:
     mongo_inventory:
     mongo_payment:
     mongo_notification:
+    redis_order:
+    redis_inventory:
