@@ -60,7 +60,7 @@ public class RedisConfig {
     public DefaultRedisScript<Long> changeStatusAllScript() {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
         
-        script.setLocation(new ClassPathResource("reserve_status_all.lua"));
+        script.setLocation(new ClassPathResource("change_status_all.lua"));
         
         script.setResultType(Long.class);
         return script;
@@ -78,7 +78,7 @@ public class RedisConfig {
     public DefaultRedisScript<Long> cancellAllScript() {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
         
-        script.setLocation(new ClassPathResource("cancell_stock_all.lua"));
+        script.setLocation(new ClassPathResource("cancel_stock_all.lua"));
         
         script.setResultType(Long.class);
         return script;
