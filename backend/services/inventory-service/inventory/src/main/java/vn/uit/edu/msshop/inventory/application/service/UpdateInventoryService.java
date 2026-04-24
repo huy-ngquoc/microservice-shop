@@ -93,7 +93,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderCancelled(OrderCancelledCommand commands) {
         List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
-        List<Inventory> toSaves= new ArrayList<>();
+        
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         boolean isShipping = commands.getOrderStatus().value().equals("SHIPPING");
         
@@ -153,7 +153,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             }
         });
        
-        return toSaves.stream().map(mapper::toView).toList();
+        return inventories.stream().map(mapper::toView).toList();
     
     
     
@@ -169,7 +169,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderShipped(OrderShippedCommand commands) {
         List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
-        List<Inventory> toSaves = new ArrayList<>();
+        
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
             Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
@@ -216,7 +216,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         });
     
 
-        return toSaves.stream().map(mapper::toView).toList();
+        return inventories.stream().map(mapper::toView).toList();
     
     
     
