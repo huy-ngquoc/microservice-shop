@@ -91,6 +91,8 @@ public class ProductSoldCountPersistenceAdapter
             return;
         }
 
+        final var instantNow = Instant.now();
+
         final var ops = this.mongoTemplate.bulkOps(
                 BulkOperations.BulkMode.UNORDERED,
                 ProductSoldCountDocument.class);
@@ -98,7 +100,7 @@ public class ProductSoldCountPersistenceAdapter
             final var query = new Query(Criteria.where("_id").is(entry.getKey().value()));
             final var update = new Update()
                     .inc(ProductSoldCountDocument.Fields.soldCount, entry.getValue())
-                    .set(ProductSoldCountDocument.Fields.lastUpdatedTime, Instant.now());
+                    .set(ProductSoldCountDocument.Fields.lastUpdatedTime, instantNow);
             ops.upsert(query, update);
         }
         ops.execute();
