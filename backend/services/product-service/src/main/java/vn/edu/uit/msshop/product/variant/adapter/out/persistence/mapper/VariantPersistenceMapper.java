@@ -12,7 +12,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
@@ -26,7 +25,6 @@ public class VariantPersistenceMapper {
         final var productId = new VariantProductId(entity.getProductId());
         final var imageKey = VariantImageKey.ofNullable(entity.getImageKey());
         final var price = new VariantPrice(entity.getPrice());
-        final var sold = new VariantSoldCount(entity.getSold());
         final var traits = VariantTraits.of(entity.getTraits());
         final var targets = VariantTargets.of(entity.getTargets());
 
@@ -41,7 +39,6 @@ public class VariantPersistenceMapper {
                 id,
                 productId,
                 price,
-                sold,
                 traits,
                 targets,
                 imageKey,
@@ -55,7 +52,6 @@ public class VariantPersistenceMapper {
                 variant.getId().value(),
                 variant.getProductId().value(),
                 variant.getPrice().value(),
-                variant.getSoldCount().value(),
                 variant.getTraits().unwrap(),
                 variant.getTargets().unwrap(),
                 VariantImageKey.unwrap(variant.getImageKey()),
@@ -69,7 +65,6 @@ public class VariantPersistenceMapper {
                 newVariant.getId().value(),
                 newVariant.getProductId().value(),
                 newVariant.getPrice().value(),
-                VariantSoldCount.zero().value(),
                 newVariant.getTraits().unwrap(),
                 newVariant.getTargets().unwrap(),
                 null,

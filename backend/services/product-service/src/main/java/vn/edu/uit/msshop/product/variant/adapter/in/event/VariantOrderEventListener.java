@@ -9,6 +9,7 @@ import vn.edu.uit.msshop.product.variant.adapter.in.event.payload.SetVariantSold
 import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantOrderSoldCount;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SetVariantSoldCountsUseCase;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCountValue;
 
 @Component
 @KafkaListener(
@@ -32,6 +33,6 @@ public class VariantOrderEventListener {
             final SetVariantSoldCountsEvent.Detail detail) {
         return new VariantOrderSoldCount(
                 new VariantId(detail.variantId()),
-                detail.newTotal());
+                new VariantSoldCountValue(detail.newTotal()));
     }
 }

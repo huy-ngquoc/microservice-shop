@@ -9,6 +9,7 @@ import vn.edu.uit.msshop.product.variant.adapter.out.sync.response.SoldCountResp
 import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantOrderSoldCount;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.FetchOrderSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCountValue;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +27,6 @@ public class OrderSoldCountFeignAdapter implements FetchOrderSoldCountsPort {
             final SoldCountResponse response) {
         return new VariantOrderSoldCount(
                 new VariantId(response.variantId()),
-                response.soldCount());
+                new VariantSoldCountValue(response.soldCount()));
     }
 }

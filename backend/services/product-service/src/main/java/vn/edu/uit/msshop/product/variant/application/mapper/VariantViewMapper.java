@@ -5,13 +5,15 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
 
 @Component
 public class VariantViewMapper {
     public VariantView toView(
-            final Variant variant) {
+            final Variant variant,
+            final VariantSoldCount soldCount) {
         final var traits = variant.getTraits().values()
                 .stream().map(VariantTrait::value).toList();
 
@@ -19,7 +21,7 @@ public class VariantViewMapper {
                 variant.getId().value(),
                 variant.getProductId().value(),
                 variant.getPrice().value(),
-                variant.getSoldCount().value(),
+                soldCount.getValue().value(),
                 traits,
                 VariantImageKey.unwrap(variant.getImageKey()),
                 variant.getVersion().value());

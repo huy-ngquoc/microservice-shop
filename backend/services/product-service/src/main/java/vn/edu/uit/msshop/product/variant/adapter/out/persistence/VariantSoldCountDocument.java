@@ -3,11 +3,9 @@ package vn.edu.uit.msshop.product.variant.adapter.out.persistence;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.PersistenceCreator;
-import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.EqualsAndHashCode;
@@ -22,37 +20,33 @@ import lombok.experimental.FieldNameConstants;
 public final class VariantSoldCountDocument {
     @Id
     @EqualsAndHashCode.Include
-    private final UUID id;
+    private final UUID variantId;
 
-    private final int soldCount;
+    private final UUID productId;
 
-    @Version
-    @Nullable
-    private final Long version;
+    private final int value;
 
-    @LastModifiedDate
-    private final Instant lastModifiedDate;
+    private final Instant lastUpdatedTime;
 
     public VariantSoldCountDocument(
-            final UUID id,
-            final int soldCount,
-            @Nullable
-            final Long version) {
-        this.id = id;
-        this.soldCount = soldCount;
-        this.version = version;
-        this.lastModifiedDate = Instant.now();
+            final UUID variantId,
+            final UUID productId,
+            final int value) {
+        this.variantId = variantId;
+        this.productId = productId;
+        this.value = value;
+        this.lastUpdatedTime = Instant.now();
     }
 
     @PersistenceCreator
     VariantSoldCountDocument(
-            final UUID id,
-            final int soldCount,
-            final long version,
-            final Instant lastModifiedDate) {
-        this.id = id;
-        this.soldCount = soldCount;
-        this.version = version;
-        this.lastModifiedDate = lastModifiedDate;
+            final UUID variantId,
+            final UUID productId,
+            final int value,
+            final Instant lastUpdatedTime) {
+        this.variantId = variantId;
+        this.productId = productId;
+        this.value = value;
+        this.lastUpdatedTime = lastUpdatedTime;
     }
 }
