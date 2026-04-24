@@ -43,12 +43,15 @@ public class AccountController {
         return ResponseEntity.ok(response);  
     }
     @PostMapping("/create") 
-    public ResponseEntity<Void> create(@RequestBody CreateAccountRequest request) {
-        
-
+    public ResponseEntity<?> create(@RequestBody CreateAccountRequest request) {
+        try {
         final var createAccountCommand = webMapper.toCommand(request);
-        this.createUseCase.create(createAccountCommand);
-        return ResponseEntity.noContent().build();
+        final var view= this.createUseCase.create(createAccountCommand);
+        return ResponseEntity.ok(webMapper.toResponse(view));
+        }
+        catch(RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     } 
     @PutMapping("/update")
     public ResponseEntity<Void> update(@RequestBody UpdateAccountRequest request) {

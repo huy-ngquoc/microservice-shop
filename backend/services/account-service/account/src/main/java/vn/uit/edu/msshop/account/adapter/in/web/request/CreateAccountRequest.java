@@ -1,9 +1,5 @@
 package vn.uit.edu.msshop.account.adapter.in.web.request;
 
-import java.util.UUID;
-
-import org.antlr.v4.runtime.misc.NotNull;
-
 public record CreateAccountRequest(
     
     String name, 
@@ -12,9 +8,7 @@ public record CreateAccountRequest(
     String role,
     String status,
     String shippingAddress,
-    String phoneNumber, 
-    String firstName,
-    String lastName
+    String phoneNumber
 ) {
 
 }

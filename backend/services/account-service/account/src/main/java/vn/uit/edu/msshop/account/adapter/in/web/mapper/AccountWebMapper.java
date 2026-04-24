@@ -35,6 +35,7 @@ public class AccountWebMapper {
         
         final var shippingAddress = new ShippingAddress(request.shippingAddress());
         final var phoneNumber = new PhoneNumber(request.phoneNumber());
+       
         return new CreateAccountCommand(name, email, password, shippingAddress, phoneNumber,role);
     }
     public UpdateAccountCommand toCommand(UpdateAccountRequest request) {
@@ -54,7 +55,7 @@ public class AccountWebMapper {
     }
     
     public AccountResponse toResponse(AccountView view) {
-        return new AccountResponse(view.id(),view.name(),view.email(),view.password(),view.role(),view.status(),view.avatarUrl(),view.phoneNumber(),view.shippingAddress());
+        return new AccountResponse(view.id(),view.name(),view.email(),view.role(),view.status(),view.avatarUrl(),view.phoneNumber(),view.shippingAddress());
     }
     public CreateAccountCommand toCommand(AccountCreated accountCreated) {
         

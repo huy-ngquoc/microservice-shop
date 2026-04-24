@@ -51,7 +51,7 @@ app:
             server-url: http://localhost:9098
             realm: ms_shop
             client-id: ms_shop_rest_api
-            client-secret: 4pzCHL2IbARbQqb2ICrIY7XzlTHw0Vnq
+            client-secret: TwuErGtX4JylPHbrL930Qcfe7tjdZaId
 eureka:
     instance:
         lease-renewal-interval-in-seconds: 5 

@@ -14,7 +14,8 @@ public class AccountMapper {
         UserRepresentation user = new UserRepresentation();
         user.setUsername(request.name());
         user.setEmail(request.email());
-        user.setEnabled(true);
+        user.setEnabled(true); 
+        
 
        
         CredentialRepresentation cred = new CredentialRepresentation();
