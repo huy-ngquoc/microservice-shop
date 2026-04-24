@@ -53,6 +53,7 @@ app:
             client-id: ms_shop_rest_api
             client-secret: TwuErGtX4JylPHbrL930Qcfe7tjdZaId
             token-uri: http://localhost:9098/realms/ms_shop/protocol/openid-connect/token
+            
 
 eureka:
     instance:

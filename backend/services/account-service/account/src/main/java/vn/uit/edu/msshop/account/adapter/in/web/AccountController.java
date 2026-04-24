@@ -23,6 +23,8 @@ import vn.uit.edu.msshop.account.adapter.in.web.response.AccountResponse;
 import vn.uit.edu.msshop.account.application.port.in.CreateAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.in.FindAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.in.LoginUseCase;
+import vn.uit.edu.msshop.account.application.port.in.LogoutUseCase;
+import vn.uit.edu.msshop.account.application.port.in.RefreshTokenUseCase;
 import vn.uit.edu.msshop.account.application.port.in.UpdateAccountUseCase;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
@@ -37,6 +39,8 @@ public class AccountController {
     private final UpdateAccountUseCase updateUseCase;
     private final AccountWebMapper webMapper;
     private final LoginUseCase loginUseCase;
+    private final RefreshTokenUseCase refreshTokenUseCase;
+    private final LogoutUseCase logoutUseCase;
     
     @GetMapping("/{id}")
     public ResponseEntity<AccountResponse> findById(@PathVariable UUID id) {
@@ -59,6 +63,25 @@ public class AccountController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
             return ResponseEntity.ok(loginUseCase.login(request));
+        }
+        catch(RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+    @PostMapping("/refresh_token")
+    public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) {
+        try {
+            return ResponseEntity.ok(refreshTokenUseCase.refreshToken(refreshToken));
+        }
+        catch(RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody String refreshToken) {
+        try {
+            logoutUseCase.logout(refreshToken);
+            return ResponseEntity.noContent().build();
         }
         catch(RuntimeException e) {
             return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(e.getMessage());
