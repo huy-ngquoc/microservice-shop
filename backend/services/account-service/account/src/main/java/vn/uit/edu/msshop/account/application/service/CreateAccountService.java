@@ -52,7 +52,7 @@ public class CreateAccountService implements CreateAccountUseCase {
 
 
         final var draft = Account.Draft.builder().id(new AccountId(UUID.fromString(userId))).name(createAccountCommand.name())
-        .email(createAccountCommand.email()).password(createAccountCommand.password()).role(createAccountCommand.role()).status(new AccountStatus("ACTIVE")).
+        .email(createAccountCommand.email()).password(createAccountCommand.password()).role(createAccountCommand.role()).status(new AccountStatus("PENDING")).
         shippingAddress(createAccountCommand.shippingAddress()).phoneNumber(createAccountCommand.phoneNumber()).build();
         
         final var account = Account.create(draft);
@@ -62,6 +62,8 @@ public class CreateAccountService implements CreateAccountUseCase {
         .userEmail(saved.getEmail())
         .password(createAccountCommand.password().value())
         .userRole(createAccountCommand.role().value())
+        .firstName(createAccountCommand.firstName().value())
+        .lastName(createAccountCommand.lastName().value())
         .isCheck(false)
         .createdAt(Instant.now())
         .updatedAt(null)

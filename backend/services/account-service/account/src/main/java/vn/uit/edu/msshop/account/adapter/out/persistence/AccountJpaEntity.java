@@ -23,9 +23,10 @@ public class AccountJpaEntity {
     @Id
     @EqualsAndHashCode.Include
     private UUID id;
-
+    @Column(unique=true)
     private String name;
     private String password;
+    @Column(unique=true)
     private String email;
     private String role;
     private String status;

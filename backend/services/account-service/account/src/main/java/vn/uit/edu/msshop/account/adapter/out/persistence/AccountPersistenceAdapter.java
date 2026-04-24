@@ -11,6 +11,7 @@ import vn.uit.edu.msshop.account.application.port.out.LoadAccountPort;
 import vn.uit.edu.msshop.account.application.port.out.SaveAccountPort;
 import vn.uit.edu.msshop.account.domain.model.Account;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
 
 @Component
 @RequiredArgsConstructor
@@ -44,6 +45,13 @@ public class AccountPersistenceAdapter implements LoadAccountPort, SaveAccountPo
     @Override
     public AccountJpaEntity saveAndReturnJpa(Account account) {
         return repository.save(mapper.toEntity(account));
+    }
+
+    @Override
+    public Account loadByUsername(AccountName name) {
+        final var result = repository.findByName(name.value());
+        if(result==null) return null;
+        return mapper.toDomain(result);
     }
 
    
