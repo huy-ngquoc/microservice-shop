@@ -33,6 +33,8 @@ public class AccountOutboxEntity {
     private String password;
     private String userRole;
     private String userEmail;
+    private String firstName;
+    private String lastName;
     private boolean isCheck;
     private Instant createdAt;
     private Instant updatedAt;

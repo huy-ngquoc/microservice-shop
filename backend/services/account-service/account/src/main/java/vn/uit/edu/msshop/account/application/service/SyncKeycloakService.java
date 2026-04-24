@@ -31,7 +31,7 @@ public class SyncKeycloakService implements SyncKeycloakUseCase {
 
     @Override
     @Transactional
-    @Scheduled(fixedRate=5000)
+    @Scheduled(fixedRate=5000*600)
     public void syncKeyCloak() {
         List<AccountOutboxEntity> pendingAccountOutboxEntities = accountOutboxRepo.findTop50ByIsCheckOrderByCreatedAtAsc(false);
         List<AccountOutboxEntity> toDelete= new ArrayList<>();
@@ -66,6 +66,8 @@ public class SyncKeycloakService implements SyncKeycloakUseCase {
         cred.setType(CredentialRepresentation.PASSWORD);
         cred.setValue(outboxEntity.getPassword());
         user.setCredentials(Collections.singletonList(cred));
+        user.setFirstName(outboxEntity.getFirstName());
+        user.setLastName(outboxEntity.getLastName());
         Map<String, List<String>> clientRolesMap = new HashMap<>();
         String clientUuid = "fdaa89dd-7602-4f4b-8500-400870ee4b48"; 
     

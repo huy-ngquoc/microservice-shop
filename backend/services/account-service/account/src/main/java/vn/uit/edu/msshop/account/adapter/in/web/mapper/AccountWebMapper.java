@@ -20,7 +20,9 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountRole;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AvatarPublicId;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AvatarUrl;
+import vn.uit.edu.msshop.account.domain.model.valueobject.FirstName;
 import vn.uit.edu.msshop.account.domain.model.valueobject.ImageSize;
+import vn.uit.edu.msshop.account.domain.model.valueobject.LastName;
 import vn.uit.edu.msshop.account.domain.model.valueobject.PhoneNumber;
 import vn.uit.edu.msshop.account.domain.model.valueobject.ShippingAddress;
 
@@ -35,8 +37,10 @@ public class AccountWebMapper {
         
         final var shippingAddress = new ShippingAddress(request.shippingAddress());
         final var phoneNumber = new PhoneNumber(request.phoneNumber());
+        final var firstName = new FirstName(request.firstName());
+        final var lastName = new LastName(request.lastName());
        
-        return new CreateAccountCommand(name, email, password, shippingAddress, phoneNumber,role);
+        return new CreateAccountCommand(name, email, password, shippingAddress, phoneNumber,role, firstName, lastName);
     }
     public UpdateAccountCommand toCommand(UpdateAccountRequest request) {
         final var id = new AccountId(request.id());
@@ -66,7 +70,7 @@ public class AccountWebMapper {
         
         final var shippingAddress = new ShippingAddress(accountCreated.shippingAddress());
         final var phoneNumber = new PhoneNumber(accountCreated.phoneNumber());
-        return new CreateAccountCommand(name,email,password,shippingAddress,phoneNumber,role);
+        return new CreateAccountCommand(name,email,password,shippingAddress,phoneNumber,role,null,null);
     }
     public UpdateAvatarCommand toCommand(ImageRemoveSuccess event) {
         return new UpdateAvatarCommand(new AvatarUrl(event.getUrl()), new AvatarPublicId(event.getPublicId()), new ImageSize(event.getWidth(),event.getHeight()), new AccountId(event.getObjectId()));

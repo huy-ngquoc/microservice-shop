@@ -8,7 +8,9 @@ public record CreateAccountRequest(
     String role,
     String status,
     String shippingAddress,
-    String phoneNumber
+    String phoneNumber,
+    String firstName,
+    String lastName
 ) {
 
 }

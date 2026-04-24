@@ -15,6 +15,7 @@ import vn.uit.edu.msshop.account.application.mapper.AccountViewMapper;
 import vn.uit.edu.msshop.account.application.port.in.FindAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.out.LoadAccountPort;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
+import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,13 @@ public class FindAccountService implements FindAccountUseCase{
     public AccountView findAccountById(@NotNull AccountId accountId) {
         return this.loadPort.loadById(accountId).map(this.accountViewMapper::toView).orElseThrow(
             ()->new AccountNotFoundException(accountId));
+    }
+
+    @Override
+    public AccountView findByAccountName(AccountName name) {
+        final var result = loadPort.loadByUsername(name);
+        if(result==null) return null;
+        return accountViewMapper.toView(result);
     }
 
 }
