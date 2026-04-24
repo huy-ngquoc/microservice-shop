@@ -33,6 +33,10 @@ spring:
                         locator:
                             enabled: true
                     routes:
+                      - id: account-service
+                        uri: lb:http://ACCOUNT-SERVICE
+                        predicates:
+                        - Path=/account/**
                       - id: payment-service
                         uri: lb:http://PAYMENT-SERVICE
                         predicates:
@@ -75,7 +79,7 @@ app:
             server-url: http://localhost:9098
             realm: ms_shop
             client-id: ms_shop_rest_api
-            client-secret: s0ZJzUh3n4LKcAsOZYDhxFeF8JzlpSSQ
+            client-secret: TwuErGtX4JylPHbrL930Qcfe7tjdZaId
 logging:
   level:
     org.apache.kafka: ERROR

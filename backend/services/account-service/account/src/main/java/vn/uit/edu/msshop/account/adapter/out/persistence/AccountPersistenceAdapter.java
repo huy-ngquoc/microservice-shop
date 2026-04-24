@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.account.adapter.out.persistence;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -32,6 +33,17 @@ public class AccountPersistenceAdapter implements LoadAccountPort, SaveAccountPo
     public Optional<Account> loadById(AccountId id) {
        final var jpaId = id.value();
        return this.repository.findById(jpaId).map(this.mapper::toDomain);
+    }
+
+    @Override
+    public List<Account> saveAll(List<Account> accounts) {
+        final var result = this.repository.saveAll(accounts.stream().map(mapper::toEntity).toList());
+        return result.stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public AccountJpaEntity saveAndReturnJpa(Account account) {
+        return repository.save(mapper.toEntity(account));
     }
 
    

@@ -2,19 +2,20 @@ package vn.uit.edu.msshop.account.application.service;
 
 
 
-import java.util.Collections;
+import java.time.Instant;
 import java.util.UUID;
 
-import org.keycloak.admin.client.CreatedResponseUtil;
-import org.keycloak.representations.idm.UserRepresentation;
-import org.keycloak.representations.idm.CredentialRepresentation;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.msshop.account.adapter.in.web.request.CreateAccountRequest;
+import vn.uit.edu.msshop.account.adapter.out.persistence.AccountOutboxEntity;
+import vn.uit.edu.msshop.account.adapter.out.persistence.AccountOutboxEntityRepository;
+import vn.uit.edu.msshop.account.adapter.out.persistence.mapper.AccountEntityMapper;
 import vn.uit.edu.msshop.account.application.dto.command.CreateAccountCommand;
+import vn.uit.edu.msshop.account.application.dto.query.AccountView;
+import vn.uit.edu.msshop.account.application.mapper.AccountViewMapper;
 import vn.uit.edu.msshop.account.application.port.in.CreateAccountUseCase;
-import vn.uit.edu.msshop.account.application.port.out.CreateKeyCloakAccountPort;
 import vn.uit.edu.msshop.account.application.port.out.PublishAccountEventPort;
 import vn.uit.edu.msshop.account.application.port.out.SaveAccountPort;
 import vn.uit.edu.msshop.account.domain.event.normal.AccountCreated;
@@ -26,32 +27,52 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
 public class CreateAccountService implements CreateAccountUseCase {
     private final SaveAccountPort savePort;
     private final PublishAccountEventPort eventPort;
-    private final CreateKeyCloakAccountPort createKeyCloakPort;
+    
+    private final AccountViewMapper mapper;
+    private final AccountOutboxEntityRepository accountOutboxEntityRepo;
+    private final AccountEntityMapper entityMapper;
+    /*
+    private String userName;
+    private String password;
+    private String userRole;
+    private String userEmail;
+    private boolean isCheck;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private int retryCount;
+    private String lastError; */
     @Override
-    public void create(CreateAccountCommand createAccountCommand) {
-        final var userPresentation = toUserRepresentation(createAccountCommand);
-        final var response = createKeyCloakPort.createAccount(userPresentation);
-        final var draft = Account.Draft.builder().id(new AccountId(UUID.fromString(CreatedResponseUtil.getCreatedId(response)))).name(createAccountCommand.name())
+    @Transactional
+    public AccountView create(CreateAccountCommand createAccountCommand) {
+        String userId = UUID.randomUUID().toString();
+        
+        
+
+        
+
+
+        final var draft = Account.Draft.builder().id(new AccountId(UUID.fromString(userId))).name(createAccountCommand.name())
         .email(createAccountCommand.email()).password(createAccountCommand.password()).role(createAccountCommand.role()).status(new AccountStatus("ACTIVE")).
         shippingAddress(createAccountCommand.shippingAddress()).phoneNumber(createAccountCommand.phoneNumber()).build();
+        
         final var account = Account.create(draft);
-        final var saved = this.savePort.save(account);
-        this.eventPort.publish(new AccountCreated(saved.getId()));
+        final var saved = this.savePort.saveAndReturnJpa(account);
+        final var outboxEntity = AccountOutboxEntity.builder().account(saved)
+        .userName(saved.getName())
+        .userEmail(saved.getEmail())
+        .password(createAccountCommand.password().value())
+        .userRole(createAccountCommand.role().value())
+        .isCheck(false)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .retryCount(0)
+        .lastError(null).build();
+        accountOutboxEntityRepo.save(outboxEntity);
 
+        this.eventPort.publish(new AccountCreated(new AccountId(saved.getId())));
+        
+        return mapper.toView(entityMapper.toDomain(saved));
     }
-    private UserRepresentation toUserRepresentation(CreateAccountCommand command) {
-        UserRepresentation user = new UserRepresentation();
-        user.setUsername(command.name().value());
-        user.setEmail(command.email().value());
-        user.setEnabled(true);
-
-       
-        CredentialRepresentation cred = new CredentialRepresentation();
-        cred.setTemporary(false);
-        cred.setType(CredentialRepresentation.PASSWORD);
-        cred.setValue(command.password().value());
-        user.setCredentials(Collections.singletonList(cred));
-        return user;
-    }
+    
 
 }

@@ -15,7 +15,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedDocument;
-import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.ForceCancellOrderDocumentRepository;
 import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.InventoryUpdatedDocumentRepository;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderCancelledCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderDetailCommand;
@@ -46,7 +45,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     private final InventoryViewMapper mapper; 
     private final PublishInventoryEventPort publishEventPort;
     private final InventoryUpdatedDocumentRepository inventoryUpdatedDocumentRepo;
-    private final ForceCancellOrderDocumentRepository forceCancellOrderDocumentRepo;
+    
     private final RedisTemplate<String,Map<String,String>> redisTemplate;
     private final RedisConfig redisConfig;
     private final SyncInventoryPort syncPort;

@@ -3,7 +3,6 @@ public record AccountResponse(
     String id,
     String name,
     String email,
-    String password,
     String role,
     String status,
     String avatarUrl,
