@@ -52,7 +52,7 @@ public class RedisConfig {
     public DefaultRedisScript<Long> releaseStockAllScript() {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
         
-        script.setLocation(new ClassPathResource("reserve_stock_all.lua"));
+        script.setLocation(new ClassPathResource("release_stock_all.lua"));
         
         script.setResultType(Long.class);
         return script;
