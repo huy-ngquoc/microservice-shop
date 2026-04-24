@@ -31,22 +31,16 @@ public class SyncDBScheduler {
     @Scheduled(fixedRate=5000)
     
     public void syncDatabase() {
-        System.out.println("Call sync jobbbbbbbb");
-        int currentPage=0;
-        int batchSize=50;
-        Pageable pageable = PageRequest.of(currentPage, batchSize);
-        Page<InventoryUpdatedDocument> batch = inventoryUpdatedRepo.findByIsReadOrderByCreatedAtAsc(false, pageable);
-        int totalPages=batch.getTotalPages();
-        currentPage = batch.getNumber();
-        while(currentPage<=totalPages-1) {
-            processOneBatch(batch.getContent());
-            currentPage++;
-            pageable = PageRequest.of(currentPage, batchSize);
-            batch = inventoryUpdatedRepo.findByIsReadOrderByCreatedAtAsc(false, pageable);
-
-        }
-
+    int batchSize = 50;
+    Pageable pageable = PageRequest.of(0, batchSize);
+    while (true) {
+        Page<InventoryUpdatedDocument> batch =
+            inventoryUpdatedRepo.findByIsReadOrderByCreatedAtAsc(false, pageable);
+        if (batch.isEmpty()) break;
+        processOneBatch(batch.getContent());
     }
+}
+
     private Inventory findByVariantIdInList(List<Inventory> inventories, VariantId variantId) {
         for(Inventory i: inventories) {
             if(i.getVariantId().value().equals(variantId.value())) return i;
@@ -56,7 +50,7 @@ public class SyncDBScheduler {
 
     }
     @Transactional
-    private void processOneBatch(List<InventoryUpdatedDocument> inventoryUpdatedDocuments) {
+    public void processOneBatch(List<InventoryUpdatedDocument> inventoryUpdatedDocuments) {
         List<Inventory> inventories = loadPort.findByListVariantId(inventoryUpdatedDocuments.stream().map(item->new VariantId(item.getVariantId())).toList());
         System.out.println("Inventories size "+inventories.size());
         Set<Inventory> toSaves = new HashSet<>();

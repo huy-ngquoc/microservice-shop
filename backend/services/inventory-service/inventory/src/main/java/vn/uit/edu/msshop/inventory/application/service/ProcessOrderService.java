@@ -46,7 +46,7 @@ public class ProcessOrderService implements ProcessOrderUseCase {
         List<Inventory> inventories = loadFromRedisPort.loadFromRedis(ids);
         List<OrderProcessJob> orderProcessJobs = new ArrayList<>();
         List<InventoryUpdatedDocument> events = new ArrayList<>();
-        try {
+        
         for(OrderDetail o:orderDetails) {
             Inventory i = findInList(inventories, o.getVariantId());
             if(i==null) throw new InventoryNotFoundException(o.getVariantId());
@@ -78,11 +78,7 @@ public class ProcessOrderService implements ProcessOrderUseCase {
                 }
             }
         });
-    }
-    catch(RuntimeException e) {
-        savePort.saveToRedis(inventories);
-        throw e;
-    }
+    
 
 
     }

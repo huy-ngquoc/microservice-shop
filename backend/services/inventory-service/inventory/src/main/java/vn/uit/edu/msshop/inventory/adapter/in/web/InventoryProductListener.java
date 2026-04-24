@@ -110,6 +110,7 @@ public class InventoryProductListener {
 
     @KafkaHandler(isDefault = true)
     public void ignoreOthers(Object event) {
+        
         System.out.println("Received strange event, ignore");
     }
     private void updateInventoryStatus(UUID variantId, String status, DefaultRedisScript<Long> updateStatusScript) {
