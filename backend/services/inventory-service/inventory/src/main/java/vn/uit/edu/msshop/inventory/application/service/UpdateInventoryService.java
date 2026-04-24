@@ -110,7 +110,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
         .variantId(toSave.getVariantId().value())
         .newQuantity(toSave.getQuantity().value())
-        .newReservedQuantity(0)
+        .newReservedQuantity(toSave.getReservedQuantity().value())
         .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())
@@ -125,11 +125,12 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             
         
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
-        inventoryUpdatedDocumentRepo.saveAll(events);
+        
         for(OrderDetailCommand command: commands.getDetailCommands()) {
             //System.out.println("Call check and reserve, amount "+command.getQuantity().value());
             processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getReserveStockScript());
         }
+        inventoryUpdatedDocumentRepo.saveAll(events);
          TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
@@ -190,7 +191,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
         .variantId(toSave.getVariantId().value())
         .newQuantity(toSave.getQuantity().value())
-        .newReservedQuantity(0)
+        .newReservedQuantity(toSave.getReservedQuantity().value())
         .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())
@@ -206,7 +207,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             
         //publishEventPort.publicUpdateManyInventoriesEvent(new UpdateManyInventoriesEvent(events));
         
-        inventoryUpdatedDocumentRepo.saveAll(events);
+        
         
         /*for(OrderDetailCommand command: commands.getDetailCommands()){
             if(isShipping) {
@@ -223,7 +224,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         else {
             processOrderDetail(details, redisConfig.getCancelAllScript());
         }
-        
+        inventoryUpdatedDocumentRepo.saveAll(events);
          TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
@@ -263,7 +264,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
         .variantId(toSave.getVariantId().value())
         .newQuantity(toSave.getQuantity().value())
-        .newReservedQuantity(0)
+        .newReservedQuantity(toSave.getQuantity().value())
         .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())

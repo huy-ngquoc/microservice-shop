@@ -8,6 +8,7 @@ for i, key in ipairs(KEYS) do
     if quantity==nil then
         return -2
     end
+end
 for i, key in ipairs(KEYS) do
     local amount = tonumber(ARGV[i])
     redis.call('HINCRBY', key, 'quantity', amount)
