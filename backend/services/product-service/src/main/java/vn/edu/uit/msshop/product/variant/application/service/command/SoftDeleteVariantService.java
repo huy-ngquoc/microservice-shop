@@ -44,7 +44,6 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
                 variant.getId(),
                 variant.getProductId(),
                 variant.getPrice(),
-                variant.getSoldCount(),
                 variant.getTraits(),
                 variant.getTargets(),
                 variant.getImageKey(),

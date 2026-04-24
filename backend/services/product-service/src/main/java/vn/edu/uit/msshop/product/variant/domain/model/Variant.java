@@ -10,7 +10,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
@@ -25,9 +24,6 @@ public final class Variant {
     private final VariantProductId productId;
 
     private final VariantPrice price;
-
-    // TODO: update each hour... resolve version conflict.
-    private final VariantSoldCount soldCount;
 
     private final VariantTraits traits;
 
@@ -50,8 +46,6 @@ public final class Variant {
 
             final VariantPrice price,
 
-            final VariantSoldCount soldCount,
-
             final VariantTraits traits,
 
             final VariantTargets targets,
@@ -66,7 +60,6 @@ public final class Variant {
         this.id = Domains.requireNonNull(id, "Variant ID must not be null");
         this.productId = Domains.requireNonNull(productId, "Variant Product ID must not be null");
         this.price = Domains.requireNonNull(price, "Variant price must not be null");
-        this.soldCount = Domains.requireNonNull(soldCount, "Variant sold must not be null");
         this.traits = Domains.requireNonNull(traits, "Variant traits must not be null");
         this.targets = Domains.requireNonNull(targets, "Variant targets must not be null");
         this.imageKey = imageKey;

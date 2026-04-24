@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -12,23 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantOrderSoldCount;
-import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantProductSoldCountIncrement;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SetVariantSoldCountsUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantSoldCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCountValue;
 
 @Service
 @RequiredArgsConstructor
 public class SetVariantSoldCountsService
         implements SetVariantSoldCountsUseCase {
-    private final LoadAllVariantsPort loadAllPort;
-    private final UpdateAllVariantsPort updateAllPort;
+    private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
+    private final UpdateAllVariantSoldCountsPort updateAllSoldCountsPort;
     private final IncreaseProductSoldCountsPort increaseProductSoldCountsPort;
 
     @Override
@@ -40,86 +38,74 @@ public class SetVariantSoldCountsService
         }
 
         final var resolved = this.resolve(orderSoldCounts);
-
-        final var updated = resolved.stream()
-                .map(ResolvedItem::updated)
-                .toList();
-        this.updateAllPort.updateAll(updated);
-
-        final var productIncrements = SetVariantSoldCountsService.toProductIncrements(resolved);
-        if (!productIncrements.isEmpty()) {
-            this.increaseProductSoldCountsPort.increaseSoldCounts(productIncrements);
-        }
+        this.persistUpdates(resolved);
+        this.propagateIncrements(resolved);
     }
 
-    private static ResolvedItem resolve(
-            final VariantOrderSoldCount sc,
-            final Map<VariantId, Variant> loadedById) {
-        final var variant = loadedById.get(sc.variantId());
-        if (variant == null) {
-            throw new VariantNotFoundException(sc.variantId());
-        }
-        return new ResolvedItem(variant, sc);
-    }
-
-    private static List<VariantProductSoldCountIncrement> toProductIncrements(
-            final List<ResolvedItem> resolved) {
-        final var byProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
-        for (final var item : resolved) {
-            final var delta = item.delta();
-            if (delta > 0) {
-                byProductId.merge(item.current().getProductId(), delta, Integer::sum);
-            }
-        }
-        return byProductId.entrySet().stream()
-                .map(e -> new VariantProductSoldCountIncrement(e.getKey(), e.getValue()))
-                .toList();
-    }
-
-    private static Variant withNewSoldCount(
-            final Variant current,
-            final int newSoldCount) {
-        return new Variant(
-                current.getId(),
-                current.getProductId(),
-                current.getPrice(),
-                new VariantSoldCount(newSoldCount),
-                current.getTraits(),
-                current.getTargets(),
-                current.getImageKey(),
-                current.getVersion(),
-                current.getDeletionTime());
-    }
-
-    private List<ResolvedItem> resolve(
+    private List<ResolvedSoldCount> resolve(
             final Collection<VariantOrderSoldCount> orderSoldCounts) {
         final var variantIds = orderSoldCounts.stream()
                 .map(VariantOrderSoldCount::variantId)
-                .toList();
-        final var loadedById = this.loadVariants(variantIds);
+                .collect(Collectors.toUnmodifiableSet());
+        final var currentByVariantId = this.loadAllSoldCountsPort.loadAllByIds(variantIds);
 
         return orderSoldCounts.stream()
-                .map(sc -> SetVariantSoldCountsService.resolve(sc, loadedById))
+                .map(order -> SetVariantSoldCountsService.resolveOne(order, currentByVariantId))
                 .toList();
     }
 
-    private Map<VariantId, Variant> loadVariants(
-            final Collection<VariantId> ids) {
-        return this.loadAllPort.loadAllByIds(ids).stream()
-                .collect(Collectors.toMap(Variant::getId, Function.identity()));
+    private static ResolvedSoldCount resolveOne(
+            final VariantOrderSoldCount order,
+            final Map<VariantId, VariantSoldCount> currentByVariantId) {
+        final var current = currentByVariantId.get(order.variantId());
+        if (current == null) {
+            throw new VariantNotFoundException(order.variantId());
+        }
+        return new ResolvedSoldCount(current, order.value());
     }
 
-    private record ResolvedItem(
-            Variant current,
-            VariantOrderSoldCount orderSoldCount) {
+    private void persistUpdates(
+            final List<ResolvedSoldCount> resolved) {
+        final var updated = resolved.stream()
+                .map(ResolvedSoldCount::toUpdated)
+                .toList();
+        this.updateAllSoldCountsPort.updateAll(updated);
+    }
 
-        Variant updated() {
-            return SetVariantSoldCountsService.withNewSoldCount(
-                    this.current, this.orderSoldCount.soldCount());
+    private void propagateIncrements(
+            final List<ResolvedSoldCount> resolved) {
+        final var incrementByProductId = SetVariantSoldCountsService.toIncrementByProductId(resolved);
+        if (incrementByProductId.isEmpty()) {
+            return;
+        }
+        this.increaseProductSoldCountsPort.increaseAll(incrementByProductId);
+    }
+
+    private static Map<VariantProductId, Integer> toIncrementByProductId(
+            final List<ResolvedSoldCount> resolved) {
+        final var byProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
+        for (final var item : resolved) {
+            final var delta = item.delta();
+            if (delta != 0) {
+                byProductId.merge(item.current().getProductId(), delta, Integer::sum);
+            }
+        }
+        return byProductId;
+    }
+
+    private record ResolvedSoldCount(
+            VariantSoldCount current,
+            VariantSoldCountValue newValue) {
+
+        VariantSoldCount toUpdated() {
+            return new VariantSoldCount(
+                    this.current.getId(),
+                    this.current.getProductId(),
+                    this.newValue);
         }
 
         int delta() {
-            return this.orderSoldCount.soldCount() - this.current.getSoldCount().value();
+            return this.newValue.value() - this.current.getValue().value();
         }
     }
 }

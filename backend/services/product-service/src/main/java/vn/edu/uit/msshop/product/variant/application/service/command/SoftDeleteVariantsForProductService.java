@@ -32,20 +32,20 @@ public class SoftDeleteVariantsForProductService implements SoftDeleteVariantsFo
         }
 
         final var next = variants.stream()
-                .map(this::toSoftDeleted).toList();
+                .map(SoftDeleteVariantsForProductService::toSoftDeleted)
+                .toList();
 
         final var saved = this.updateAllPort.updateAll(next);
 
         saved.forEach(s -> this.eventPort.publish(new VariantSoftDeleted(s.getId())));
     }
 
-    private Variant toSoftDeleted(
+    private static Variant toSoftDeleted(
             final Variant variant) {
         return new Variant(
                 variant.getId(),
                 variant.getProductId(),
                 variant.getPrice(),
-                variant.getSoldCount(),
                 variant.getTraits(),
                 variant.getTargets(),
                 variant.getImageKey(),

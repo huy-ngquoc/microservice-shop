@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.sync;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,6 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
-import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantProductSoldCountIncrement;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
@@ -93,19 +93,19 @@ public class VariantToProductSyncAdapter
     }
 
     @Override
-    public void increaseSoldCounts(
-            Collection<VariantProductSoldCountIncrement> increments) {
-        final var commandItems = increments.stream()
-                .map(VariantToProductSyncAdapter::toIncreaseProductSoldCountsForVariantCommandItem)
+    public void increaseAll(
+            final Map<VariantProductId, Integer> incrementByProductId) {
+        final var commandItems = incrementByProductId.entrySet().stream()
+                .map(VariantToProductSyncAdapter::toCommandItem)
                 .toList();
         this.increaseProductSoldCountsForVariantUseCase.execute(
                 new IncreaseProductSoldCountsForVariantCommand(commandItems));
     }
 
-    private static IncreaseProductSoldCountsForVariantCommand.Item toIncreaseProductSoldCountsForVariantCommandItem(
-            final VariantProductSoldCountIncrement increment) {
+    private static IncreaseProductSoldCountsForVariantCommand.Item toCommandItem(
+            final Map.Entry<VariantProductId, Integer> entry) {
         return new IncreaseProductSoldCountsForVariantCommand.Item(
-                new ProductId(increment.productId().value()),
-                increment.value());
+                new ProductId(entry.getKey().value()),
+                entry.getValue());
     }
 }

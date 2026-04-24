@@ -54,7 +54,6 @@ public class UpdateAllVariantTraitsForProductService
                 variant.getId(),
                 variant.getProductId(),
                 variant.getPrice(),
-                variant.getSoldCount(),
                 newTraits,
                 variant.getTargets(),
                 variant.getImageKey(),

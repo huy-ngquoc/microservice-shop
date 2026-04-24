@@ -26,8 +26,6 @@ public class VariantDocument {
 
     private final long price;
 
-    private final int sold;
-
     private final List<String> traits;
 
     private final List<String> targets;
@@ -50,8 +48,6 @@ public class VariantDocument {
 
             final long price,
 
-            final int sold,
-
             final List<String> traits,
 
             final List<String> targets,
@@ -67,7 +63,6 @@ public class VariantDocument {
         this.id = id;
         this.productId = productId;
         this.price = price;
-        this.sold = sold;
         this.traits = List.copyOf(traits);
         this.targets = List.copyOf(targets);
         this.imageKey = imageKey;
