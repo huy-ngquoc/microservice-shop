@@ -3,10 +3,8 @@ package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
-import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.EqualsAndHashCode;
@@ -25,20 +23,13 @@ public final class ProductSoldCountDocument {
 
     private final int soldCount;
 
-    @Version
-    @Nullable
-    private final Long version;
-
     private final Instant lastUpdatedTime;
 
     public ProductSoldCountDocument(
             final UUID id,
-            final int soldCount,
-            @Nullable
-            final Long version) {
+            final int soldCount) {
         this.id = id;
         this.soldCount = soldCount;
-        this.version = version;
         this.lastUpdatedTime = Instant.now();
     }
 
@@ -46,11 +37,9 @@ public final class ProductSoldCountDocument {
     ProductSoldCountDocument(
             final UUID id,
             final int soldCount,
-            final long version,
             final Instant lastUpdatedTime) {
         this.id = id;
         this.soldCount = soldCount;
-        this.version = version;
         this.lastUpdatedTime = lastUpdatedTime;
     }
 }
