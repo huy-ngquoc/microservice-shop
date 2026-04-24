@@ -70,6 +70,10 @@ public class VariantSoldCountPersistenceAdapter
     @Override
     public Map<VariantId, VariantSoldCount> loadAllByIds(
             final Set<VariantId> ids) {
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
+
         final var jpaIds = ids.stream()
                 .map(VariantId::value)
                 .toList();

@@ -58,6 +58,10 @@ public class ProductRatingPersistenceAdapter
     @Override
     public Map<ProductId, ProductRating> loadAllByIds(
             final Set<ProductId> ids) {
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
+
         final var jpaIds = ids.stream()
                 .map(ProductId::value)
                 .toList();
