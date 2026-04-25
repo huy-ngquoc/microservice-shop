@@ -5,5 +5,5 @@ import org.keycloak.representations.idm.UserRepresentation;
 import jakarta.ws.rs.core.Response;
 
 public interface CreateKeyCloakAccountPort {
-    public Response createAccount(UserRepresentation user);
+    public Response createAccount(UserRepresentation user, String role);
 }

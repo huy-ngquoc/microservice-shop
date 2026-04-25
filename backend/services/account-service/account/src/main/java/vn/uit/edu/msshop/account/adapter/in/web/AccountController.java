@@ -56,6 +56,7 @@ public class AccountController {
         return ResponseEntity.ok(webMapper.toResponse(view));
         }
         catch(RuntimeException e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     } 

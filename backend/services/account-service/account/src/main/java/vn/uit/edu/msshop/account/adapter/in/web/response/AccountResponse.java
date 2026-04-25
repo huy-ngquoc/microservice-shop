@@ -7,7 +7,8 @@ public record AccountResponse(
     String status,
     String avatarUrl,
     String phoneNumber,
-    String shippingAddress
+    String shippingAddress, 
+    String keycloakId
 ) {
 
 }

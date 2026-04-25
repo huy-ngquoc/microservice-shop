@@ -29,7 +29,7 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.ShippingAddress;
 @Component
 public class AccountWebMapper {
     public CreateAccountCommand toCommand(CreateAccountRequest request) {
-       
+       System.out.println("Nammeeeeee "+request.name());
         final var name = new AccountName(request.name());
         final var email = new AccountEmail(request.email());
         final var password = new AccountPassword(request.password());
@@ -59,7 +59,7 @@ public class AccountWebMapper {
     }
     
     public AccountResponse toResponse(AccountView view) {
-        return new AccountResponse(view.id(),view.name(),view.email(),view.role(),view.status(),view.avatarUrl(),view.phoneNumber(),view.shippingAddress());
+        return new AccountResponse(view.id(),view.name(),view.email(),view.role(),view.status(),view.avatarUrl(),view.phoneNumber(),view.shippingAddress(),view.keyCloakId());
     }
     public CreateAccountCommand toCommand(AccountCreated accountCreated) {
         

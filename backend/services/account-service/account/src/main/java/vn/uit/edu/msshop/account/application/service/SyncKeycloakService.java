@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.account.adapter.out.persistence.AccountOutboxEntity;
 import vn.uit.edu.msshop.account.adapter.out.persistence.AccountOutboxEntityRepository;
@@ -31,7 +32,7 @@ public class SyncKeycloakService implements SyncKeycloakUseCase {
 
     @Override
     @Transactional
-    @Scheduled(fixedRate=5000*600)
+    @Scheduled(fixedRate=5000)
     public void syncKeyCloak() {
         List<AccountOutboxEntity> pendingAccountOutboxEntities = accountOutboxRepo.findTop50ByIsCheckOrderByCreatedAtAsc(false);
         List<AccountOutboxEntity> toDelete= new ArrayList<>();
@@ -39,9 +40,10 @@ public class SyncKeycloakService implements SyncKeycloakUseCase {
         for(AccountOutboxEntity accountOutboxEntity: pendingAccountOutboxEntities) {
             System.out.println("Call create accountttttt");
             try {
-               createKeyCloakPort.createAccount(toUserRepresentation(accountOutboxEntity));
+               Response respone= createKeyCloakPort.createAccount(toUserRepresentation(accountOutboxEntity), accountOutboxEntity.getUserRole());
             }
             catch(RuntimeException e) {
+                e.printStackTrace();
                 accountOutboxEntity.handleFailure(e.getMessage());
                 continue;
             }

@@ -32,6 +32,7 @@ public class AccountJpaEntity {
     private String status;
     private String avatarUrl;
     private String avatarPublicId;
+    private String keycloakId;
     @Column(name = "avatar_width", nullable = false, columnDefinition = "integer default 0")
     private int avatarWidth;
      @Column(name = "avatar_height", nullable = false, columnDefinition = "integer default 0")
@@ -43,8 +44,8 @@ public class AccountJpaEntity {
             nullable = false)
     private long version;
 
-    public static AccountJpaEntity of(UUID id, String name, String password, String email, String role, String status, String avatarUrl, String avatarPublicId, int avatarWidth, int avatarHeight, String shippingAddress, String phoneNumber) {
-        return new AccountJpaEntity(id, name, password, email, role, status,avatarUrl,avatarPublicId,avatarWidth,avatarHeight,shippingAddress,phoneNumber,0L);
+    public static AccountJpaEntity of(UUID id, String name, String password, String email, String role, String status, String avatarUrl, String avatarPublicId, int avatarWidth, int avatarHeight, String shippingAddress, String phoneNumber, String keyCloakId) {
+        return new AccountJpaEntity(id, name, password, email, role, status,avatarUrl,avatarPublicId,keyCloakId,avatarWidth,avatarHeight,shippingAddress,phoneNumber,0L);
     }
     
     

@@ -34,7 +34,7 @@ public class AccountCreatedOutboxPublisher {
     UUID eventId */
      @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<AccountCreatedDocument> pendingEvents = accountCreatedDocumentRepo.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+        List<AccountCreatedDocument> pendingEvents = accountCreatedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (AccountCreatedDocument event : pendingEvents) {
             try {
@@ -79,7 +79,7 @@ public class AccountCreatedOutboxPublisher {
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
     
-    accountCreatedDocumentRepo.deleteByStatusAndUpdatedAtBefore("SENT", threshold);
+    accountCreatedDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
    
 }
 }
