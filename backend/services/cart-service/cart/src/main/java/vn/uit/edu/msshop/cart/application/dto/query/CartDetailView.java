@@ -14,10 +14,9 @@ import lombok.Setter;
 @Setter
 public class CartDetailView {
     private UUID variantId;
-    private List<String> imageUrls;
-    private String color;
+    private List<String> traits;
+    private String imageKey;
     private String name;
-    private String size;
     private long price;
     private int amount;
     private int inventoryAmount;

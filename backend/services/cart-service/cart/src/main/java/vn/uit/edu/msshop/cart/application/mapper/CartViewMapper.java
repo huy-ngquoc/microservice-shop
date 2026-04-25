@@ -19,7 +19,7 @@ import vn.uit.edu.msshop.cart.domain.model.CartDetail;
 public class CartViewMapper {
     private final LoadInventoryService loadInventoryService;
     public CartDetailView toView(CartDetail cartDetail, int inventoryAmount) {
-        return new CartDetailView(cartDetail.getVariantId().value(), cartDetail.getImageUrls().images(), cartDetail.getColor().value(), cartDetail.getName().value(), cartDetail.getSize().value(), cartDetail.getPrice().value(), cartDetail.getAmount().value(),inventoryAmount);
+        return new CartDetailView(cartDetail.getVariantId().value(),cartDetail.getTraits().value(), cartDetail.getImageKey().value(), cartDetail.getName().value(), cartDetail.getPrice().value(), cartDetail.getAmount().value(),inventoryAmount);
     }
     public CartView toView(Cart cart) {
         CartView result=  new CartView(cart.getUserId().value(),new ArrayList<>());

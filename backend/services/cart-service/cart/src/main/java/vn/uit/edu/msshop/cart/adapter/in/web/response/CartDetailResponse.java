@@ -15,9 +15,8 @@ import lombok.Setter;
 public class CartDetailResponse {
     private UUID variantId;
     private String productName;
-    private List<String> images;
-    private String color;
-    private String size;
+    private List<String> traits;
+    private String imageKey;
     private long price;
     private int amount;
     private int inventoryAmount;

@@ -48,10 +48,8 @@ public class UpdateCartInfoService implements UpdateCartInfoUseCase {
             CartDetail detail = cart.findByVariantId(item.variantId());
             if(detail==null) throw new IllegalArgumentException("Invalid argument");
             return CartDetail.UpdateInfo.builder().variantId(item.variantId())
-            .imageUrls(item.imageUrls().apply(detail.getImageUrls()))
+            .imageKey(item.imageKey().apply(detail.getImageKey()))
             .name(item.name().apply(detail.getName()))
-            .size(item.size().apply(detail.getSize()))
-            .color(item.color().apply(detail.getColor()))
             .price(item.unitPrice().apply(detail.getPrice()))
             .build();
         }).toList();
