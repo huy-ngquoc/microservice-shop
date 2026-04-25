@@ -18,6 +18,7 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountPassword;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountRole;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountStatus;
 import vn.uit.edu.msshop.account.domain.model.valueobject.Avatar;
+import vn.uit.edu.msshop.account.domain.model.valueobject.KeyCloakId;
 import vn.uit.edu.msshop.account.domain.model.valueobject.PhoneNumber;
 import vn.uit.edu.msshop.account.domain.model.valueobject.ShippingAddress;
 
@@ -37,6 +38,7 @@ public class Account {
     private Avatar avatar;
     private ShippingAddress shippingAddress;
     private PhoneNumber phoneNumber;
+    private KeyCloakId keyCloakId;
     
     public Account() {
 
@@ -81,6 +83,12 @@ public class Account {
     public void setAvatar(Avatar avatar) {
         this.avatar = avatar;
     }
+    public KeyCloakId getKeyCloakId() {
+        return this.keyCloakId;
+    }
+    public void setKeyCloakId(KeyCloakId keyCloakId) {
+        this.keyCloakId=keyCloakId;
+    }
 
     @Builder
     public static record Draft(
@@ -120,7 +128,8 @@ public class Account {
         AccountStatus status,
         Avatar avatar,
         ShippingAddress shippingAdress,
-        PhoneNumber phoneNumber
+        PhoneNumber phoneNumber,
+        KeyCloakId keyCloakId
     ) {
 
     }
@@ -133,7 +142,9 @@ public class Account {
         if(d.id()==null) {
             throw new IllegalArgumentException("Id must not be null");
         }
-        return Account.builder().id(d.id()).name(d.name()).email(d.email()).password(d.password()).role(d.role()).status(d.status()).avatar(null).shippingAddress(d.shippingAddress()).phoneNumber(d.phoneNumber()).build();
+        return Account.builder().id(d.id()).name(d.name()).email(d.email()).password(d.password()).role(d.role()).status(d.status()).avatar(null).shippingAddress(d.shippingAddress()).phoneNumber(d.phoneNumber())
+        .keyCloakId(new KeyCloakId(null))
+        .build();
     }
     @NullMarked
     public static Account reconstitue(SnapShot s) {
@@ -143,7 +154,9 @@ public class Account {
         if(s.id()==null) {
             throw new IllegalArgumentException("Id must not be null");
         }
-        return Account.builder().id(s.id()).name(s.name()).email(s.email()).password(s.password()).role(s.role()).status(s.status()).avatar(s.avatar()).shippingAddress(s.shippingAdress()).phoneNumber(s.phoneNumber()).build();
+        return Account.builder().id(s.id()).name(s.name()).email(s.email()).password(s.password()).role(s.role()).status(s.status()).avatar(s.avatar()).shippingAddress(s.shippingAdress()).phoneNumber(s.phoneNumber())
+        .keyCloakId(s.keyCloakId())
+        .build();
     }
     @NullMarked
     public Account applyUpdateInfo(UpdateInfo u) {
@@ -157,13 +170,17 @@ public class Account {
         if(this.isSameInfoWithUpdateInfo(u)) {
             return this;
         } 
-        return Account.builder().id(this.id).name(u.name()).email(u.email()).password(u.password()).role(u.role()).status(u.status()).avatar(this.avatar).shippingAddress(u.shippingAddress()).phoneNumber(u.phoneNumber()).build();
+        return Account.builder().id(this.id).name(u.name()).email(u.email()).password(u.password()).role(u.role()).status(u.status()).avatar(this.avatar).shippingAddress(u.shippingAddress()).phoneNumber(u.phoneNumber())
+        .keyCloakId(this.keyCloakId)
+        .build();
 
 
     }
     @NullMarked
     public SnapShot snapShot() {
-        return SnapShot.builder().id(this.id).name(this.name).email(this.email).password(this.password).role(this.role).status(this.status).avatar(this.avatar).shippingAdress(this.shippingAddress).phoneNumber(this.phoneNumber).build();
+        return SnapShot.builder().id(this.id).name(this.name).email(this.email).password(this.password).role(this.role).status(this.status).avatar(this.avatar).shippingAdress(this.shippingAddress).phoneNumber(this.phoneNumber)
+        .keyCloakId(this.keyCloakId)
+        .build();
     }
     @NullMarked
     private  boolean isSameInfoWithUpdateInfo(UpdateInfo u) {
