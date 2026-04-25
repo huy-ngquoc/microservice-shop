@@ -28,7 +28,7 @@ public class SoftDeleteVariantsForProductService implements SoftDeleteVariantsFo
             final VariantProductId productId) {
         final var variants = this.loadForProductPort.loadAllByProductId(productId);
         if (variants.isEmpty()) {
-            throw new VariantProductNotFoundException(productId);
+            return;
         }
 
         final var next = variants.stream()
