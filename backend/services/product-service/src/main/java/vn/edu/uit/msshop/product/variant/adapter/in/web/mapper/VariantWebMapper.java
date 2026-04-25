@@ -44,7 +44,7 @@ public class VariantWebMapper {
 
         final var price = ChangeRequest.toChange(request.price(), VariantPrice::new);
         final var traits = ChangeRequest.toChange(request.traits(), VariantTraits::of);
-        final var targets = ChangeRequest.toChange(request.traits(), VariantTargets::of);
+        final var targets = ChangeRequest.toChange(request.targets(), VariantTargets::of);
 
         return new UpdateVariantInfoCommand(
                 variantId,
