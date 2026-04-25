@@ -152,20 +152,7 @@ public class OrderController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/update/cod_success") 
-    public ResponseEntity<Void> codOrderSuccess(@RequestParam UUID orderId,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
-        if(!checkPermission.isUser(role)) {
-             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        try {
-            this.updateService.codOrderSuccess(new OrderId(orderId), userFromHeader);
-        }
-        catch(RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        return ResponseEntity.noContent().build();
-
-    }
+    
     @DeleteMapping("/clear")
     public ResponseEntity<Void> clearDatabase() {
         deleteOrderUseCase.deleteAll();
