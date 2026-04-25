@@ -91,7 +91,6 @@ public class UpdateProductOptionService implements UpdateProductOptionUseCase {
                 current.getName(),
                 current.getCategoryId(),
                 current.getBrandId(),
-                current.getPriceRange(),
                 configuration,
                 current.getImageKeys(),
                 current.getVersion(),

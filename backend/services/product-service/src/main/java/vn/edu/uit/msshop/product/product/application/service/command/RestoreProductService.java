@@ -46,7 +46,6 @@ public class RestoreProductService implements RestoreProductUseCase {
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                product.getPriceRange(),
                 product.getConfiguration(),
                 product.getImageKeys(),
                 product.getVersion(),

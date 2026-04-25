@@ -31,6 +31,7 @@ public class RemoveProductVariantForVariantService implements RemoveProductVaria
 
         // TODO: what if that variant is the only one?
         final var newVariants = product.getVariants().removeById(command.variantId());
+        final var newPriceRange = newVariants.getPriceRange();
         final var newConfiguration = new ProductConfiguration(
                 product.getOptions(),
                 newVariants);
@@ -41,7 +42,6 @@ public class RemoveProductVariantForVariantService implements RemoveProductVaria
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                product.getPriceRange(),
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),

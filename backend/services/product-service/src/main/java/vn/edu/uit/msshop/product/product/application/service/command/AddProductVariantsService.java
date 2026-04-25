@@ -57,8 +57,6 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
                 command.newVariants());
 
         final var newVariants = product.getVariants().addAll(createdVariants);
-        final var newPriceRange = newVariants.getPriceRange();
-
         final var newConfiguration = new ProductConfiguration(
                 product.getOptions(),
                 newVariants);
@@ -68,7 +66,6 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                newPriceRange,
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),

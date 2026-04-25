@@ -19,8 +19,6 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductDeletio
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKeys;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
@@ -35,9 +33,6 @@ public class ProductPersistenceMapper {
         final var name = new ProductName(entity.getName());
         final var categoryId = new ProductCategoryId(entity.getCategoryId());
         final var brandId = new ProductBrandId(entity.getBrandId());
-        final var priceRange = new ProductPriceRange(
-                new ProductPrice(entity.getMinPrice()),
-                new ProductPrice(entity.getMaxPrice()));
 
         final var options = ProductOptions.of(entity.getOptions());
 
@@ -61,7 +56,6 @@ public class ProductPersistenceMapper {
                 name,
                 categoryId,
                 brandId,
-                priceRange,
                 configuration,
                 imageKeys,
                 version,
@@ -82,6 +76,7 @@ public class ProductPersistenceMapper {
 
     public ProductDocument toPersistence(
             final Product product) {
+        final var priceRange = product.getPriceRange();
         final var variantDocs = product.getVariants().values().stream()
                 .map(ProductPersistenceMapper::toPersistence)
                 .toList();
@@ -91,8 +86,8 @@ public class ProductPersistenceMapper {
                 product.getName().value(),
                 product.getCategoryId().value(),
                 product.getBrandId().value(),
-                product.getPriceRange().minPrice().value(),
-                product.getPriceRange().maxPrice().value(),
+                priceRange.minPrice().value(),
+                priceRange.maxPrice().value(),
                 product.getOptions().unwrap(),
                 variantDocs,
                 product.getImageKeys().unwrap(),

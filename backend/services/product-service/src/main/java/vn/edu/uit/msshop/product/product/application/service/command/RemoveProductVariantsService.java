@@ -53,7 +53,6 @@ public class RemoveProductVariantsService implements RemoveProductVariantsUseCas
             productVariants = productVariants.removeById(variantId);
         }
 
-        final var newPriceRange = productVariants.getPriceRange();
         final var newConfiguration = new ProductConfiguration(
                 product.getOptions(),
                 productVariants);
@@ -62,7 +61,6 @@ public class RemoveProductVariantsService implements RemoveProductVariantsUseCas
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                newPriceRange,
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),
