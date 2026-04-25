@@ -94,6 +94,7 @@ public class OrderController {
         if(!checkPermission.isAdmin(role)&&!checkPermission.isSameUser(userFromHeader,view.userId().value().toString() )) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+       
         return ResponseEntity.ok(this.mapper.toResponse(view));
     }
 
@@ -137,6 +138,7 @@ public class OrderController {
     @PutMapping("/update")
     public ResponseEntity<?> updateOrder(@RequestBody UpdateOrderRequest request,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
         final var command = this.mapper.toCommand(request);
+        
         try {
         this.updateService.update(command,userFromHeader,role);}
         

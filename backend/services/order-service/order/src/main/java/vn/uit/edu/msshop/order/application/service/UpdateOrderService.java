@@ -84,7 +84,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         
         String commandStatus = command.status().apply(order.getStatus()).value();
         if(!oldStatus.equals(commandStatus)) {
-            if(!preUpdateCheck(order, new OrderStatus(commandStatus))) {
+            if(!preUpdateCheck(order, new OrderStatus(commandStatus),role)) {
                 throw new WrongUpdateInfoException("Invalid order status");
             }
         }
@@ -208,13 +208,14 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
         saveOrderPort.save(order.applyUpdateInfo(updateInfo));
     }
-    private boolean preUpdateCheck(Order order, OrderStatus newStatus) {
+    private boolean preUpdateCheck(Order order, OrderStatus newStatus, String role) {
         String newStatusValue = newStatus.getValue();
         String oldStatusValue = order.getStatus().value();
         String paymentStatus = order.getPaymentStatus().value();
         String paymentMethod = order.getPaymentMethod().value();
         if(newStatusValue.equals("PENDING")) return false;
         if(newStatusValue.equals("SHIPPING")) {
+            if(!checkPermission.isAdmin(role)) return false;
             if(!oldStatusValue.equals("PENDING")) return false;
             if(paymentMethod.equals("ONLINE")&&!paymentStatus.equals("SUCCESS")) return false;
         }
