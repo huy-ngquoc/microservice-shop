@@ -46,7 +46,6 @@ public class SoftDeleteProductService implements SoftDeleteProductUseCase {
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                product.getPriceRange(),
                 product.getConfiguration(),
                 product.getImageKeys(),
                 product.getVersion(),

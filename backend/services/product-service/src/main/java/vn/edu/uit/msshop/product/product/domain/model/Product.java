@@ -28,8 +28,6 @@ public final class Product {
 
     private final ProductBrandId brandId;
 
-    private final ProductPriceRange priceRange;
-
     private final ProductConfiguration configuration;
 
     private final ProductImageKeys imageKeys;
@@ -41,14 +39,11 @@ public final class Product {
     @Nullable
     private final ProductDeletionTime deletionTime;
 
-    // TODO: should we omit "priceRange"?
-    // as it can be got from configuration.getVariant.getPriceRange()
     public Product(
             final ProductId id,
             final ProductName name,
             final ProductCategoryId categoryId,
             final ProductBrandId brandId,
-            final ProductPriceRange priceRange,
             final ProductConfiguration configuration,
             final ProductImageKeys imageKeys,
             final ProductVersion version,
@@ -58,7 +53,6 @@ public final class Product {
         this.name = Domains.requireNonNull(name, "Product name CANNOT be null");
         this.categoryId = Domains.requireNonNull(categoryId, "Category ID CANNOT be null");
         this.brandId = Domains.requireNonNull(brandId, "Brand ID CANNOT be null");
-        this.priceRange = Domains.requireNonNull(priceRange, "Price range CANNOT be null");
         this.configuration = Domains.requireNonNull(configuration, "Configuration CANNOT be null");
         this.imageKeys = Domains.requireNonNull(imageKeys, "Product image keys CANNOT be null");
         this.version = Domains.requireNonNull(version, "Product version CANNOT be null");
@@ -71,5 +65,9 @@ public final class Product {
 
     public ProductVariants getVariants() {
         return this.configuration.variants();
+    }
+
+    public ProductPriceRange getPriceRange() {
+        return this.getVariants().getPriceRange();
     }
 }

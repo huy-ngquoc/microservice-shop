@@ -61,7 +61,6 @@ public class AddProductOptionService implements AddProductOptionUseCase {
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                product.getPriceRange(),
                 newConfig,
                 product.getImageKeys(),
                 product.getVersion(),

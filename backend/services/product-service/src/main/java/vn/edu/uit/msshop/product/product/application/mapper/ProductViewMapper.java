@@ -18,13 +18,15 @@ public class ProductViewMapper {
             final Product product,
             final ProductSoldCount soldCount,
             final ProductRating rating) {
+        final var priceRange = product.getPriceRange();
+
         return new ProductView(
                 product.getId().value(),
                 product.getName().value(),
                 product.getCategoryId().value(),
                 product.getBrandId().value(),
-                product.getPriceRange().minPrice().value(),
-                product.getPriceRange().maxPrice().value(),
+                priceRange.minPrice().value(),
+                priceRange.maxPrice().value(),
                 soldCount.getValue().value(),
                 rating.getAverage().value(),
                 rating.getAmount().value(),

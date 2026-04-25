@@ -66,13 +66,11 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
 
         final var newConfiguration = this.removeOptionFromConfiguration(
                 product, command.optionIndex(), command.defaultPrice());
-        final var newPriceRange = newConfiguration.variants().getPriceRange();
         final var next = new Product(
                 product.getId(),
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                newPriceRange,
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),
