@@ -53,6 +53,7 @@ public class CartController {
         return ResponseEntity.ok(cartWebMapper.toResponse(result));
         
     }
+    
     @DeleteMapping("/clear")
     public ResponseEntity<Void> clearCart(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
         if(!checkPermission.isUser(role)) {

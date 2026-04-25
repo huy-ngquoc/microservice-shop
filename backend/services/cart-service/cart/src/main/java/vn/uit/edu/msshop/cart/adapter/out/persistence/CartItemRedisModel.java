@@ -15,11 +15,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CartItemRedisModel {
     private String variantId;
-    private List<String> imageUrls;
+    private List<String> traits;
+    private String imageKey;
     private String name;
     private BigDecimal price; 
-    private String color;
-    private String size;
+    
     private int amount;
 
 }

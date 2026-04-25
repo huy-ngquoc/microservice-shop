@@ -12,24 +12,22 @@ import vn.uit.edu.msshop.cart.adapter.out.persistence.CartRedisModel;
 import vn.uit.edu.msshop.cart.domain.model.Cart;
 import vn.uit.edu.msshop.cart.domain.model.CartDetail;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.Amount;
-import vn.uit.edu.msshop.cart.domain.model.valueobject.Color;
-import vn.uit.edu.msshop.cart.domain.model.valueobject.ImageUrls;
+import vn.uit.edu.msshop.cart.domain.model.valueobject.ImageKey;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.ProductName;
-import vn.uit.edu.msshop.cart.domain.model.valueobject.Size;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.UnitPrice;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.UserId;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantId;
+import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantTraits;
 
 @Component
 public class CartRedisModelMapper {
     private CartDetail.Draft toDraft(CartItemRedisModel model) {
         return CartDetail.Draft.builder().variantId(new VariantId(UUID.fromString(model.getVariantId())))
-        .imageUrls(new ImageUrls(model.getImageUrls()))
+        .imageKey(new ImageKey(model.getImageKey()))
         .name(new ProductName(model.getName()))
         .amount(new Amount(model.getAmount()))
         .price(new UnitPrice(model.getPrice().longValue()))
-        .color(new Color(model.getColor()))
-        .size(new Size(model.getSize()))
+        .traits(new VariantTraits(model.getTraits()))
         .build();
     }
     
@@ -39,7 +37,7 @@ public class CartRedisModelMapper {
         return Cart.create(draft);
     }
     public CartItemRedisModel toModel(CartDetail domain) {
-        return new CartItemRedisModel(domain.getVariantId().value().toString(), domain.getImageUrls().images(), domain.getName().value(), BigDecimal.valueOf(domain.getPrice().value()), domain.getColor().value(), domain.getSize().value(), domain.getAmount().value());
+        return new CartItemRedisModel(domain.getVariantId().value().toString(),domain.getTraits().value(),domain.getImageKey().value() , domain.getName().value(), BigDecimal.valueOf(domain.getPrice().value()), domain.getAmount().value());
     }
     public CartRedisModel toModel(Cart cart){
         return new CartRedisModel(cart.getUserId().value().toString(), cart.getDetails().stream().map(this::toModel).toList());

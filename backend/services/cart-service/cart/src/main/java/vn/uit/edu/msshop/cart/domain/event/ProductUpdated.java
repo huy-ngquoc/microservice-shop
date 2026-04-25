@@ -15,9 +15,8 @@ import lombok.Setter;
 public class ProductUpdated {
     private UUID eventId;
     private UUID variantId;
-    private List<String> imageUrls;
+    private List<String> traits;
     private long unitPrice;
     private String name;
-    private String color;
-    private String size;
+    private String imageKey;
 }

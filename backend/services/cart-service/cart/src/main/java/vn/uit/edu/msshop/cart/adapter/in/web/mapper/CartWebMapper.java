@@ -24,13 +24,12 @@ import vn.uit.edu.msshop.cart.domain.event.OrderCreatedSuccess;
 import vn.uit.edu.msshop.cart.domain.event.ProductUpdated;
 import vn.uit.edu.msshop.cart.domain.model.CartDetail;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.Amount;
-import vn.uit.edu.msshop.cart.domain.model.valueobject.Color;
-import vn.uit.edu.msshop.cart.domain.model.valueobject.ImageUrls;
+import vn.uit.edu.msshop.cart.domain.model.valueobject.ImageKey;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.ProductName;
-import vn.uit.edu.msshop.cart.domain.model.valueobject.Size;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.UnitPrice;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.UserId;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantId;
+import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantTraits;
 
 @Component
 @RequiredArgsConstructor
@@ -48,7 +47,7 @@ public class CartWebMapper {
         return new CartResponse(view.getUserId(), listDetailResponses);
     } 
     public CartDetailResponse toDetailResponse(CartDetailView view) {
-        return new CartDetailResponse(view.getVariantId(), view.getName(), view.getImageUrls(), view.getColor(), view.getSize(), view.getPrice(), view.getAmount(), view.getInventoryAmount());
+        return new CartDetailResponse(view.getVariantId(), view.getName(), view.getTraits(), view.getImageKey(), view.getPrice(), view.getAmount(), view.getInventoryAmount());
     }
     public ClearCartCommand toCommand(String userId) {
         return new ClearCartCommand(new UserId(UUID.fromString(userId)));
@@ -60,12 +59,12 @@ public class CartWebMapper {
         return event.variantIds().stream().map(item->new DeleteCartItemCommand(new UserId(event.userId()),new VariantId(item))).toList();
     }
     public UpdateCartInfoCommand toCommand(ProductUpdated event, String userId) {
-        final var color = Change.set(new Color(event.getColor()));
-        final var imageUrls = Change.set(new ImageUrls(event.getImageUrls()));
+
+        final var imageKey= Change.set(new ImageKey(event.getImageKey()));
         final var name = Change.set(new ProductName(event.getName()));
-        final var size = Change.set(new Size(event.getSize()));
+        final var traits = Change.set(new VariantTraits(event.getTraits()));
         final var unitPrice = Change.set(new UnitPrice(event.getUnitPrice()));
 
-        return new UpdateCartInfoCommand(new UserId(UUID.fromString(userId)), new VariantId(event.getVariantId()), color, imageUrls, name, size, unitPrice);
+        return new UpdateCartInfoCommand(new UserId(UUID.fromString(userId)), new VariantId(event.getVariantId()),imageKey, name,traits, unitPrice);
     }
 }
