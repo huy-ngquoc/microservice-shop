@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.mapper.InventoryJpaMapper;
-import vn.uit.edu.msshop.inventory.application.common.Change;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.inventory.application.port.out.DeleteInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.DeleteRedisPort;
@@ -110,6 +109,7 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
     }
 
     @Override
+    @Transactional
     public List<Inventory> loadFromRedis(List<VariantId> variantIds) {
         List<Inventory> result = new ArrayList<>();
         try {
@@ -133,7 +133,7 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         String inventoryStatus = val.get("status").toString();
         
         // Tạo domain object thông qua Mapper hoặc constructor
-        var snapshot = Inventory.Snapshot.builder().id(new InventoryId(UUID.randomUUID()))
+        var snapshot = Inventory.Snapshot.builder().id(new InventoryId(UUID.fromString(val.get("id").toString())))
         .quantity(new Quantity(quantity))
         .variantId(variantId)
         .reservedQuantity(new ReservedQuantity(reservedQuantity))
