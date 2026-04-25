@@ -1,6 +1,5 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.sync;
 
-import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;

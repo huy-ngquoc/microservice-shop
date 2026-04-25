@@ -13,6 +13,9 @@ public interface VariantMongoRepository
     List<VariantDocument> findAllByIdAndDeletionTimeIsNull(
             final Iterable<UUID> ids);
 
+    List<VariantDocument> findAllByIdAndDeletionTimeIsNotNull(
+            final Iterable<UUID> ids);
+
     Optional<VariantDocument> findByIdAndDeletionTimeIsNull(
             final UUID id);
 

@@ -86,7 +86,7 @@ public class VariantPersistenceAdapter
         final var jpaIds = ids.stream()
                 .map(VariantId::value)
                 .toList();
-        return this.repository.findAllById(jpaIds).stream()
+        return this.repository.findAllByIdAndDeletionTimeIsNotNull(jpaIds).stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }
