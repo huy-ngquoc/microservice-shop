@@ -133,73 +133,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         }
     }
 
-    @Override
-    @Transactional
-    public void codOrderSuccess(OrderId orderId, String userIdFromHeader) {
-
-        Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
-        if(!checkPermission.isSameUser(userIdFromHeader, order.getUserId().value().toString())) {
-            throw new RuntimeException("Unauthorized");
-        }
-        final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("RECEIVED")).build();
-        final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
-        CodPaymentReceivedDocument outboxEvent = CodPaymentReceivedDocument.builder().eventId(UUID.randomUUID())
-        .orderId(saved.getId().value())
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
-        final var savedEvent = codPaymentReceivedDocumentRepo.save(outboxEvent);
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishEventPort.publishCodPaymentReceived(savedEvent);
-            }
-        });
-        
-    }
-
-    @Override
-    @Transactional
-    public void codOrderCancelled(OrderId orderId) {
-       Order order = loadOrderPort.loadById(orderId).orElseThrow(()->new OrderNotFoundException(orderId));
-       String oldStatus = order.getStatus().value();
-        final var updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
-        final var saved = saveOrderPort.save(order.applyUpdateInfo(updateInfo));
-        //final var listEvent = saved.getDetails().stream().map(item->new OrderDetail(item.variantId(),item.amount())).toList();
-        CodPaymentCancelledDocument outboxEvent = CodPaymentCancelledDocument.builder().eventId(UUID.randomUUID())
-            .orderId(saved.getId().value())
-            .eventStatus("PENDING")
-            .retryCount(0)
-            .createdAt(Instant.now())
-            .updatedAt(null)
-            .lastError(null).build();
-            final var savedEvent = codPaymentCancelledDocumentRepo.save(outboxEvent);
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishEventPort.publishCodPaymentCancelled(savedEvent);
-            }
-        });
-       /*  OrderCancelledDocument outboxOrderCancelled = OrderCancelledDocument.builder().eventId(UUID.randomUUID())
-        .orderId(saved.getId().value())
-        .oldStatus(oldStatus)
-        .orderDetails(saved.getDetails().stream().map(item->new OrderDetailDocument(item.variantId(), item.amount())).toList())
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
-        final var savedOutboxOrderCancelled = orderCancelledDocumentRepo.save(outboxOrderCancelled);
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishEventPort.publishOrderCancelled_InventoryEvent(savedOutboxOrderCancelled);
-            }
-        });*/
-        //publishEventPort.publishOrderCancelled_InventoryEvent(new OrderCancelled(saved.getId().value(),listEvent,oldStatus));
-    }
+   
 
     @Override
     @Transactional

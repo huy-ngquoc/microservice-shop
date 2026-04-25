@@ -5,7 +5,5 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 
 public interface UpdateOrderUseCase {
     public void update(UpdateOrderCommand command, String userIdFromHeader, String role);
-    public void codOrderSuccess(OrderId orderId, String userFromHeader);
-    public void codOrderCancelled(OrderId orderId);
     public void forceCancellOrder(OrderId orderId);
 }
