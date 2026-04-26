@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notification Center - MS Shop</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body style="font-family: sans-serif; padding: 20px;">
+    <h2>🔔 Thông báo đơn hàng (Real-time)</h2>
+    <div id="notifications" style="border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px;">
+        </div>
+
+    <script>
+        // Địa chỉ Notification Service của bạn
+        var socket = new SockJS('http://localhost:8092/ws-notification');
+        var stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            // Subscribe vào topic (Thay "binh123" bằng ID bạn đang test)
+            stompClient.subscribe('/topic/order/d6e4a67a-90ed-42ce-8eae-2993b2bf7f9d', function (notification) {
+                var msg = JSON.parse(notification.body);
+                var node = document.createElement("P");
+                node.innerHTML = "<b>[MỚI]</b> Đơn hàng #" + msg.orderId + " trạng thái: " + msg.status;
+                node.style.color = "green";
+                document.getElementById("notifications").appendChild(node);
+            });
+        });
+    </script>
+</body>
+</html>

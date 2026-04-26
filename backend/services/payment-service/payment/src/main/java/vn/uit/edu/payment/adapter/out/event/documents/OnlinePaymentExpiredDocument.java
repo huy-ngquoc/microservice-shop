@@ -22,6 +22,7 @@ public class OnlinePaymentExpiredDocument {
     private UUID eventId;
     private UUID orderId;
     private String eventStatus;
+    private UUID userId;
     private Integer retryCount; 
     private Instant createdAt;
     private Instant updatedAt; 

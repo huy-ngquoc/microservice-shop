@@ -27,7 +27,7 @@ public class PaymentLinkCreatedOutboxPublisher {
 
         for (PaymentLinkCreatedDocument event : pendingEvents) {
             try {
-                PaymentLinkCreated paymentLinkCreated= new PaymentLinkCreated(event.getEventId(), event.getPaymentLink(), event.getOrderId(), event.getUserEmail());
+                PaymentLinkCreated paymentLinkCreated= new PaymentLinkCreated(event.getEventId(), event.getPaymentLink(), event.getOrderId(), event.getUserEmail(), event.getUserId());
                 kafkaTemplate.send(PUBLISH_TOPIC, paymentLinkCreated)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {

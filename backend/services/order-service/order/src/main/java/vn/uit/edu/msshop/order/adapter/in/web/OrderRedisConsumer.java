@@ -5,15 +5,12 @@ import java.util.List;
 
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.stream.StreamListener;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
@@ -27,10 +24,10 @@ import vn.uit.edu.msshop.order.application.port.out.DeleteOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
 import vn.uit.edu.msshop.order.domain.model.Order;
-@Service
-@RequiredArgsConstructor
-public class OrderRedisConsumer implements StreamListener<String, MapRecord<String,String,String>> {
-    private final SaveOrderPort savePort;
+//@Service
+//@RequiredArgsConstructor
+public class OrderRedisConsumer /*implements StreamListener<String, MapRecord<String,String,String>>*/ {
+   /*  private final SaveOrderPort savePort;
     private final RedisTemplate redisTemplate;
     private final DeleteOrderPort deletePort;
     private final OrderCreatedInventoryDocumentRepository orderCreatedInventoryDocumentRepository;
@@ -42,13 +39,13 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
     private final InventoryChecker inventoryChecker;
     private final CreateOrderUseCase createUseCase;
 
-    @PostConstruct
+    //@PostConstruct
     public void setup() {
         objectMapper.registerModule(new JavaTimeModule());
         // Quan trọng: Để Instant trả về dạng chuỗi ISO thay vì mảng số
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
-    @Override
+    //@Override
     @Transactional
     public void onMessage(MapRecord<String, String, String> message) {
     
@@ -72,7 +69,7 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
         .lastError(null)
         .build();
         final var savedOutboxEventOrderCreatedInventory = orderCreatedInventoryDocumentRepository.save(outboxEventOrderCreatedInventory);*/
-        createUseCase.manualCreate(saved);
+        /*createUseCase.manualCreate(saved);
         redisTemplate.opsForStream().acknowledge("order_stream", "order-group", message.getId());
         redisTemplate.opsForStream().delete("order_stream", message.getId());
         }
@@ -88,6 +85,7 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
         }
 
     }
+    */
 
 
 }

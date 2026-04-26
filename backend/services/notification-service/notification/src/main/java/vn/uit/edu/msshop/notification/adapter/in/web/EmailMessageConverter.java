@@ -10,12 +10,13 @@ import vn.uit.edu.msshop.notification.domain.model.valueobject.EmailTitle;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.EmailType;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.UserEmail;
+import vn.uit.edu.msshop.notification.domain.model.valueobject.UserId;
 
 @Component
 public class EmailMessageConverter {
     private static final String ORDER_PREFIX = "http://localhost:8000/order/";
-    public CreateEmailCommand toCommand(String emailContent, String emailTitle, String emailType, UUID orderId, String userEmail) {
-        return new CreateEmailCommand(new EmailContent(emailContent), new EmailTitle(emailTitle), new EmailType(emailType), new OrderId(orderId), new UserEmail(userEmail));
+    public CreateEmailCommand toCommand(String emailContent, String emailTitle, String emailType, UUID orderId, String userEmail, UUID userId) {
+        return new CreateEmailCommand(new EmailContent(emailContent), new EmailTitle(emailTitle), new EmailType(emailType), new OrderId(orderId), new UserEmail(userEmail), new UserId(userId));
     }
     public String getCodOrderCreatedContent(UUID orderId) {
         StringBuilder content = new StringBuilder();
@@ -38,7 +39,7 @@ public class EmailMessageConverter {
     public String getOrderCancelledContent(UUID orderId) {
         StringBuilder content = new StringBuilder();
         content.append("Chào bạn,\n\n");
-    content.append("MSShop đã ghi nhận yêu cầu hủy đơn hàng của bạn. Dưới đây là thông tin quan trọng:\n\n");
+    content.append("Đơn hàng của bạn đã bị hủy. Dưới đây là thông tin quan trọng:\n\n");
     
     
     content.append("1. Xem chi tiết đơn hàng tại đây:\n");

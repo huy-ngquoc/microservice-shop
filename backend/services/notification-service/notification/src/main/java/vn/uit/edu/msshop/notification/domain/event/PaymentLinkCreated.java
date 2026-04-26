@@ -18,4 +18,5 @@ public class PaymentLinkCreated {
     private String paymentLink;
     private UUID orderId;
     private String userEmail;
+    private UUID userId;
 }

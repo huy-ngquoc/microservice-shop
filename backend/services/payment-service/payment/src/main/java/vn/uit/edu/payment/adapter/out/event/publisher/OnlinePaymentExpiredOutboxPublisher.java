@@ -29,7 +29,7 @@ public class OnlinePaymentExpiredOutboxPublisher {
 
         for (OnlinePaymentExpiredDocument event : pendingEvents) {
             try {
-                OnlinePaymentExpired onlinePaymentExpired = new OnlinePaymentExpired(event.getOrderId(), event.getEventId(), event.getUserEmail());
+                OnlinePaymentExpired onlinePaymentExpired = new OnlinePaymentExpired(event.getOrderId(), event.getEventId(), event.getUserEmail(), event.getUserId());
                 kafkaTemplate.send(PUBLISH_TOPIC, onlinePaymentExpired)
                     .whenComplete((result, ex) -> {
                         if (ex == null) {

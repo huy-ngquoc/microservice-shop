@@ -2,6 +2,6 @@ package vn.uit.edu.payment.domain.event;
 
 import java.util.UUID;
 
-public record OnlinePaymentExpired(UUID orderId, UUID eventId, String userEmail) {
+public record OnlinePaymentExpired(UUID orderId, UUID eventId, String userEmail, UUID userId) {
 
 }

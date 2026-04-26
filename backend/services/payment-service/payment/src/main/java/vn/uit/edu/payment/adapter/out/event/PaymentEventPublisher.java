@@ -91,7 +91,7 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
 
     @Override
     public void publishPaymentExpired(OnlinePaymentExpiredDocument outboxEvent) {
-        OnlinePaymentExpired event = new OnlinePaymentExpired(outboxEvent.getOrderId(), outboxEvent.getEventId(), outboxEvent.getUserEmail());
+        OnlinePaymentExpired event = new OnlinePaymentExpired(outboxEvent.getOrderId(), outboxEvent.getEventId(), outboxEvent.getUserEmail(), outboxEvent.getUserId());
         Message<OnlinePaymentExpired> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
         try {
         paymentExpiredTemplate.send(message).whenComplete((result,ex)->{
@@ -147,7 +147,7 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
 
     @Override
     public void publishPaymentLinkCreated(PaymentLinkCreatedDocument outboxEvent) {
-        PaymentLinkCreated event = new PaymentLinkCreated(outboxEvent.getEventId(), outboxEvent.getPaymentLink(), outboxEvent.getOrderId(),outboxEvent.getUserEmail());
+        PaymentLinkCreated event = new PaymentLinkCreated(outboxEvent.getEventId(), outboxEvent.getPaymentLink(), outboxEvent.getOrderId(),outboxEvent.getUserEmail(), outboxEvent.getUserId());
         Message<PaymentLinkCreated> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
         try {
         paymentLinkCreatedTemplate.send(message).whenComplete((result,ex)->{
@@ -166,7 +166,7 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
 
     @Override
     public void publishOnlinePaymentSuccess(OnlinePaymentSuccessDocument outboxEvent) {
-        OnlinePaymentSuccess event = new OnlinePaymentSuccess(outboxEvent.getEventId(),  outboxEvent.getOrderId(),outboxEvent.getUserEmail());
+        OnlinePaymentSuccess event = new OnlinePaymentSuccess(outboxEvent.getEventId(),  outboxEvent.getOrderId(),outboxEvent.getUserEmail(), outboxEvent.getUserId());
         System.out.println("Send online payment success event");
         Message<OnlinePaymentSuccess> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
         try {

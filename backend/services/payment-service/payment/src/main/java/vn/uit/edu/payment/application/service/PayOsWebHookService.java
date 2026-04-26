@@ -105,6 +105,7 @@ public void processPaymentUpdate(WebhookData webhookData) {
     .orderId(saved.getOrderId().value())
     .userEmail(saved.getUserEmail().value())
     .eventStatus("PENDING")
+    .userId(saved.getUserId().value())
         .retryCount(0)
         .createdAt(Instant.now())
         .updatedAt(null)

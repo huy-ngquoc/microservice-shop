@@ -57,6 +57,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
         .paymentLink(result)
         .orderId(payment.getOrderId().value())
         .userEmail(payment.getUserEmail().value())
+        .userId(payment.getUserId().value())
         .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())
