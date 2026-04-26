@@ -15,4 +15,5 @@ public class OnlinePaymentSuccess {
     private UUID eventId;
     private UUID orderId;
     private String userEmail;
+    private UUID userId;
 }

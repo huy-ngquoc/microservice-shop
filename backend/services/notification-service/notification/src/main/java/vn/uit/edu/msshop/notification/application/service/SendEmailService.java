@@ -44,7 +44,7 @@ public class SendEmailService implements SendMailUseCase{
         message.setTo(email.getUserEmail().value()); 
         message.setSubject(email.getEmailTitle().value());
         message.setText(email.getEmailContent().value()); // Nội dung lấy trực tiếp từ field
-        message.setFrom("");
+        message.setFrom("leyen15121971@gmail.com");
 
         // 3. Thực hiện gửi
         mailSender.send(message);
@@ -66,7 +66,7 @@ public class SendEmailService implements SendMailUseCase{
     @Override
     public Email createEmail(CreateEmailCommand command) {
 
-        Email email = new Email(new EmailId(UUID.randomUUID()), command.getEmailContent(), new EmailStatus("UNSENT"), command.getEmailTitle(), command.getEmailType(), new SendTime(Instant.now()), new UpdateTime(null), command.getOrderId(), command.getUserEmail(), new CreationTime(Instant.now()));
+        Email email = new Email(new EmailId(UUID.randomUUID()), command.getEmailContent(), new EmailStatus("UNSENT"), command.getEmailTitle(), command.getEmailType(), new SendTime(Instant.now()), new UpdateTime(null), command.getOrderId(), command.getUserEmail(), new CreationTime(Instant.now()), command.getUserId());
         return savePort.save(sendEmail(email));
     }
 

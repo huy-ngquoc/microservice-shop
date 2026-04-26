@@ -9,6 +9,7 @@ import vn.uit.edu.msshop.notification.domain.model.valueobject.EmailTitle;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.EmailType;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.UserEmail;
+import vn.uit.edu.msshop.notification.domain.model.valueobject.UserId;
 
 @Getter
 @Setter
@@ -21,5 +22,5 @@ public class CreateEmailCommand {
     private EmailType emailType;
     private OrderId orderId;
     private UserEmail userEmail;
-
+    private UserId userId;
 }

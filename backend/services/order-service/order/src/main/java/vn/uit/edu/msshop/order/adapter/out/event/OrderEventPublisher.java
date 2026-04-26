@@ -79,6 +79,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
 
     @Override
     public void publishOrderCreatedEvent( OrderCreatedDocument outboxEvent) {
+        System.out.println("Publish order createddddd");
         
         OrderCreated event = new OrderCreated(outboxEvent.getEventId(),outboxEvent.getCurrency(), outboxEvent.getOrderId(), outboxEvent.getPaymentMethod(), outboxEvent.getPaymentValue(), outboxEvent.getUserId(), outboxEvent.getUserEmail());
         Message<OrderCreated> message=MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, ORDER_CREATED_TOPIC).build();

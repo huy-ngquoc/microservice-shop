@@ -53,6 +53,7 @@ public class CheckOnlinePaymentStatusService implements CheckOnlinePaymentStatus
                 .eventId(UUID.randomUUID())
         .orderId(p.getOrderId().value())
         .userEmail(p.getUserEmail().value())
+        .userId(p.getUserId().value())
         .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())

@@ -142,17 +142,13 @@ public class CreateOrderService implements CreateOrderUseCase {
             if(command.shippingInfo().email().equals("email@gmail.com")) {
         throw new RuntimeException("Simulate error");
     }
-        saveRedisStreamPort.saveToStream(saved);
+        manualCreate(saved);
         }
         catch(Exception e) {
-            try {
-                System.out.println("Luu redis that bai, luu db chinh");
-              manualCreate(saved);
-            }
-            catch(Exception ex) {
+            
                 inventoryChecker.rollback(requests, "CREATE_ORDER_FAILED");
-                throw new RuntimeException(ex);
-            }
+                throw new RuntimeException(e);
+            
         }
         return saved.getId().value();
     }

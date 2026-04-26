@@ -62,7 +62,9 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
         OnlinePaymentExpiredDocument outboxEvent = OnlinePaymentExpiredDocument.builder()
         .eventId(UUID.randomUUID())
         .orderId(saved.getOrderId().value())
+        .userId(saved.getUserId().value())
         .eventStatus("PENDING")
+
         .retryCount(0)
         .createdAt(Instant.now())
         .updatedAt(null)
@@ -90,6 +92,7 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
         OnlinePaymentCancelledDocument outboxEvent = OnlinePaymentCancelledDocument.builder()
         .eventId(UUID.randomUUID())
         .orderId(saved.getOrderId().value())
+        
         .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())

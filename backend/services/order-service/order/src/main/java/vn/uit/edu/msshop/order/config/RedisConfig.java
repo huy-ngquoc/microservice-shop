@@ -52,7 +52,7 @@ public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connec
     template.afterPropertiesSet();
     return template;
 }
-@Bean
+/*@Bean
 public Subscription subscription(RedisConnectionFactory factory, OrderRedisConsumer consumer) {
     var options = StreamMessageListenerContainer.StreamMessageListenerContainerOptions
             .builder()
@@ -70,5 +70,5 @@ public Subscription subscription(RedisConnectionFactory factory, OrderRedisConsu
     container.start(); 
 
     return subscription;
-}
+}*/
 }

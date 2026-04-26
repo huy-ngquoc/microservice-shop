@@ -24,6 +24,7 @@ import vn.uit.edu.msshop.notification.domain.model.valueobject.OriginOrderValue;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.SendTime;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.UpdateTime;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.UserEmail;
+import vn.uit.edu.msshop.notification.domain.model.valueobject.UserId;
 
 @Component
 public class EmailDocumentMapper {
@@ -35,9 +36,9 @@ public class EmailDocumentMapper {
         return new OrderDocument(orderInfo.getOrderId().value(), orderInfo.getOrderCurrency().value(), orderDetailDocuments, orderInfo.getOrderDiscount().value(), orderInfo.getOrderTotalPrice().value(), orderInfo.getOriginOrderValue().value());
     }
     public EmailDocument toDocument(Email email) {
-        OrderDocument orderDocument =null;
+       
         
-        return new EmailDocument(email.getEmailId().value(), email.getEmailContent().value(), email.getEmailStatus().value(), email.getEmailContent().value(), email.getEmailType().value(), email.getOrderId().value(),email.getUserEmail().value(),email.getCreationTime().value(), email.getSendTime().value(), email.getUpdateTime().value());
+        return new EmailDocument(email.getEmailId().value(), email.getEmailContent().value(), email.getEmailStatus().value(), email.getEmailContent().value(), email.getEmailType().value(), email.getOrderId().value(),email.getUserEmail().value(),email.getCreationTime().value(), email.getSendTime().value(), email.getUpdateTime().value(), email.getUserId().value());
     }
     public OrderDetail toDomain(OrderDetailDocument document) {
         return new OrderDetail(document.getVariantId(), document.getProductName(), document.getUnitPrice(), document.getAmount());
@@ -48,6 +49,6 @@ public class EmailDocumentMapper {
     }
     public Email toDomain(EmailDocument document) {
         
-        return new Email(new EmailId(document.getEmailId()), new EmailContent(document.getEmailContent()), new EmailStatus(document.getEmailStatus()), new EmailTitle(document.getEmailTitle()), new EmailType(document.getEmailType()), new SendTime(document.getSendTime()), new UpdateTime(document.getUpdateTime()), new OrderId(document.getOrderId()),new UserEmail(document.getUserEmail()), new CreationTime(document.getCreationTime()));
+        return new Email(new EmailId(document.getEmailId()), new EmailContent(document.getEmailContent()), new EmailStatus(document.getEmailStatus()), new EmailTitle(document.getEmailTitle()), new EmailType(document.getEmailType()), new SendTime(document.getSendTime()), new UpdateTime(document.getUpdateTime()), new OrderId(document.getOrderId()),new UserEmail(document.getUserEmail()), new CreationTime(document.getCreationTime()), new UserId(document.getUserId()));
     }
 }

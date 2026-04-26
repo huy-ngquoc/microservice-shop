@@ -21,6 +21,7 @@ public class PaymentLinkCreatedDocument {
     private UUID eventId;
     private String paymentLink;
     private UUID orderId;
+    private UUID userId;
     private String userEmail;
     private String eventStatus;
     private Integer retryCount; 

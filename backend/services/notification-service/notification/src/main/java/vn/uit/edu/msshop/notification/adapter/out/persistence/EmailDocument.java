@@ -31,6 +31,7 @@ public class EmailDocument {
     private Instant sendTime;
     @LastModifiedDate
     private Instant updateTime;
+    private UUID userId;
 
    
 }

@@ -77,6 +77,7 @@ public class OrderEventListener {
     }
     @KafkaHandler(isDefault=true) 
     public void onObjectReceived(Object event) {
+        System.out.println("Nhan event la");
         
     }
     private void handleOnlinePaymentCancelled(UUID orderId) {

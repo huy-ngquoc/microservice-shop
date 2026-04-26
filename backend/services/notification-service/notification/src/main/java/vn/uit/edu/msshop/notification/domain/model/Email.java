@@ -14,6 +14,7 @@ import vn.uit.edu.msshop.notification.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.SendTime;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.UpdateTime;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.UserEmail;
+import vn.uit.edu.msshop.notification.domain.model.valueobject.UserId;
 
 @Getter
 @Setter
@@ -30,4 +31,5 @@ public class Email {
     private OrderId orderId;
     private UserEmail userEmail;
     private CreationTime creationTime;
+    private UserId userId;
 }

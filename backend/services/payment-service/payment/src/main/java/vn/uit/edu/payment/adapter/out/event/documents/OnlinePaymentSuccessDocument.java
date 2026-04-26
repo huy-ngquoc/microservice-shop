@@ -21,6 +21,7 @@ public class OnlinePaymentSuccessDocument {
     @Id
     private UUID eventId;
     private UUID orderId;
+    private UUID userId;
     private String userEmail;
     private String eventStatus;
     private Integer retryCount; 
