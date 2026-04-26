@@ -16,40 +16,46 @@ import lombok.Getter;
 @Configuration
 @Getter
 public class RedisConfig {
-    private DefaultRedisScript<Long> reserveStockScript;
-    private DefaultRedisScript<Long> reserveShippingStockScript;
-    private DefaultRedisScript<Long> cancelStockScript;
-    private DefaultRedisScript<Long> releaseStockScript;
+    
     private DefaultRedisScript<Long> updateInventoryStatus;
     private DefaultRedisScript<Long> reserveAllScript;
     private DefaultRedisScript<Long> cancelAllScript;
     private DefaultRedisScript<Long> changeStatusAllScript;
     private DefaultRedisScript<Long> releaseStockAllScript;
     private DefaultRedisScript<Long> reverseShipAllScript;
-    private DefaultRedisScript<Long> rollbackAllScript;
-
+    private DefaultRedisScript<Long> plusReserveQuantityScript;
+    private DefaultRedisScript<Long> minusAllQuantityScript;
 
     public RedisConfig() {
-        reserveStockScript=  reserveStockScript();
-        reserveShippingStockScript= reserveShippingStockScript();
-        cancelStockScript = cancelStockScript();
-        releaseStockScript=releaseStockScript();
+        
         updateInventoryStatus=updateStatusScript();
         reserveAllScript = reserveAllScript();
         cancelAllScript= cancellAllScript();
         changeStatusAllScript= changeStatusAllScript();
         releaseStockAllScript=releaseStockAllScript();
         reverseShipAllScript=reverseShipAllScript();
+        plusReserveQuantityScript=plusReserveAllScript();
+        minusAllQuantityScript=minusAllQuantityScript();
 
     }
-    public DefaultRedisScript<Long> rollbackAllScript() {
+    public DefaultRedisScript<Long> minusAllQuantityScript() {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
         
-        script.setLocation(new ClassPathResource("rollback_all.lua"));
+        script.setLocation(new ClassPathResource("minus_quantity_all.lua"));
         
         script.setResultType(Long.class);
         return script;
     }
+    public DefaultRedisScript<Long> plusReserveAllScript() {
+        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+        
+        script.setLocation(new ClassPathResource("plus_reserve_all.lua"));
+        
+        script.setResultType(Long.class);
+        return script;
+    }
+
+    
     public DefaultRedisScript<Long> reverseShipAllScript() {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
         
@@ -76,14 +82,7 @@ public class RedisConfig {
     }
     
     
-    public DefaultRedisScript<Long> reserveStockScript() {
-        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
-        
-        script.setLocation(new ClassPathResource("reserve_stock.lua"));
-        
-        script.setResultType(Long.class);
-        return script;
-    }
+    
     public DefaultRedisScript<Long> cancellAllScript() {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
         
@@ -93,31 +92,10 @@ public class RedisConfig {
         return script;
     }
     
-    public DefaultRedisScript<Long> cancelStockScript() {
-        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
-        
-        script.setLocation(new ClassPathResource("cancel_stock.lua"));
-        
-        script.setResultType(Long.class);
-        return script;
-    } 
+    
 
-    public DefaultRedisScript<Long> releaseStockScript() {
-        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
-        
-        script.setLocation(new ClassPathResource("release_stock.lua"));
-        
-        script.setResultType(Long.class);
-        return script;
-    }
-    public DefaultRedisScript<Long> reserveShippingStockScript() {
-        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
-        
-        script.setLocation(new ClassPathResource("reverse_ship.lua"));
-        
-        script.setResultType(Long.class);
-        return script;
-    }
+    
+    
     public DefaultRedisScript<Long> reserveAllScript() {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();
         

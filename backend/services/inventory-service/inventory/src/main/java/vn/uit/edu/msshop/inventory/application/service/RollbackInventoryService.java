@@ -88,9 +88,11 @@ public class RollbackInventoryService implements RollbackInventoryUseCase {
             
             //int newQuantity = i.getQuantity().value()+o.getQuantity().value();
             int newReservedQuantity = i.getReservedQuantity().value()+o.getQuantity().value();
+            
              
             events.add(getInventoryUpdatedDocument(i, i.getQuantity().value(), newReservedQuantity));
         }
+        processOrderDetail(orderDetails,redisConfig.plusReserveAllScript());
         //processOrderDetail(orderDetails);
     
         inventoryUpdatedRepo.saveAll(events);
@@ -125,7 +127,7 @@ public class RollbackInventoryService implements RollbackInventoryUseCase {
              
             events.add(getInventoryUpdatedDocument(i, newQuantity, newReservedQuantity));
         }
-        //processOrderDetail(orderDetails);
+        processOrderDetail(orderDetails,redisConfig.reserveAllScript());
     
         inventoryUpdatedRepo.saveAll(events);
          TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
@@ -159,7 +161,7 @@ public class RollbackInventoryService implements RollbackInventoryUseCase {
              
             events.add(getInventoryUpdatedDocument(i, newQuantity, newReservedQuantity));
         }
-        //processOrderDetail(orderDetails);
+        processOrderDetail(orderDetails,redisConfig.minusAllQuantityScript());
     
         inventoryUpdatedRepo.saveAll(events);
          TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
