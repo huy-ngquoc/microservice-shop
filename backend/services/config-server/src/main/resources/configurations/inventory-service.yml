@@ -1,6 +1,9 @@
 server:
     port: 8090
     address: 0.0.0.0
+redis:
+    host: localhost
+    port: 6381
 spring:
     data:
         redis:

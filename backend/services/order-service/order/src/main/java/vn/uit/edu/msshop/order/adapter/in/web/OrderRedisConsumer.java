@@ -1,16 +1,13 @@
 package vn.uit.edu.msshop.order.adapter.in.web;
 
 
-import java.time.Instant;
-import java.util.UUID;
+import java.util.List;
 
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -18,13 +15,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDocument;
+import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCreatedInventoryDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderDocument;
 import vn.uit.edu.msshop.order.adapter.out.persistence.mapper.OrderDataMapper;
+import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
+import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.DeleteOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
@@ -41,6 +39,8 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
     private final OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo;
     private final OrderDataMapper mapper;
     private final ObjectMapper objectMapper;
+    private final InventoryChecker inventoryChecker;
+    private final CreateOrderUseCase createUseCase;
 
     @PostConstruct
     public void setup() {
@@ -72,43 +72,19 @@ public class OrderRedisConsumer implements StreamListener<String, MapRecord<Stri
         .lastError(null)
         .build();
         final var savedOutboxEventOrderCreatedInventory = orderCreatedInventoryDocumentRepository.save(outboxEventOrderCreatedInventory);*/
-        OrderCreatedDocument outboxEventOrderCreated = OrderCreatedDocument.builder().currency(saved.getCurrency().value())
-        .orderId(saved.getId().value())
-        .paymentMethod(saved.getPaymentMethod().value())
-        .paymentValue(saved.getTotalPrice().value())
-        .userEmail(saved.getShippingInfo().email())
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null).eventId(UUID.randomUUID())
-        .lastError(null).userId(saved.getUserId().value()).build();
-        final var savedEvent=orderCreatedDocumentRepo.save(outboxEventOrderCreated);
-         OrderCreatedSuccessDocument outboxOrderCreatedSuccess = OrderCreatedSuccessDocument.builder().eventId(UUID.randomUUID())
-        .userId(order.getUserId().value())
-        .variantIds(order.getDetails().stream().map(item->item.variantId()).toList())
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
-        final var savedOutboxOrderCreatedSuccess = orderCreatedSuccessDocumentRepo.save(outboxOrderCreatedSuccess);
-        
-        
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                //publishPort.publishOrderCreated_InventoryEvent(savedOutboxEventOrderCreatedInventory);
-                publishPort.publishOrderCreatedEvent(savedEvent);
-                publishPort.publishClearCartEvent(savedOutboxOrderCreatedSuccess);
-                redisTemplate.opsForStream().acknowledge("order_stream", "order-group", message.getId());
-                redisTemplate.opsForStream().delete("order_stream", message.getId());
-            }
-        });
+        createUseCase.manualCreate(saved);
+        redisTemplate.opsForStream().acknowledge("order_stream", "order-group", message.getId());
+        redisTemplate.opsForStream().delete("order_stream", message.getId());
         }
         catch(Exception e) {
             e.printStackTrace();
             if(order==null) return;
             deletePort.deleteById(order.getId());
+            redisTemplate.opsForStream().acknowledge("order_stream", "order-group", message.getId());
+        redisTemplate.opsForStream().delete("order_stream", message.getId());
+            List<OrderDetailRequest> requests = order.getDetails().stream().map(item->new OrderDetailRequest(item.variantId(), item.amount())).toList();
+            inventoryChecker.rollback(requests, "CREATE_ORDER_FAILED");
+
         }
 
     }

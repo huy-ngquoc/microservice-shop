@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,4 +27,6 @@ public interface InventoryChecker {
     public ResponseEntity<Void> create( @RequestBody List<CreateInventoryRequest> requests);
     @PutMapping("/inventory/update_from_order")
     public ResponseEntity<Void> updateFromOrderService(@RequestBody UpdateInventoryFromOrderServiceRequest request);
+    @PostMapping("inventory/public/roll_back/{messageType}")
+    public ResponseEntity<?> rollback(@RequestBody List<OrderDetailRequest> requests, @PathVariable String messageType);
 }

@@ -6,14 +6,15 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import feign.FeignException;
-import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
-import vn.uit.edu.msshop.order.adapter.exception.VariantNotFoundException;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedDocument;
+import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCreatedInventoryDocumentRepository;
@@ -79,6 +80,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     private final OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo;
     private final OrderCreatedInventoryDocumentRepository orderCreatedInventoryDocumentRepository;
     private final SaveRedisStreamPort saveRedisStreamPort;
+    
 /*private String currency;
     private UUID orderId;
     private String paymentMethod;
@@ -90,27 +92,11 @@ public class CreateOrderService implements CreateOrderUseCase {
     private String lastError; */
     @Override
     @Transactional
-    @Observed(name = "mongodb.save.order")
+    //@Observed(name = "mongodb.save.order")
     public UUID create(CreateOrderCommand command) {
         this.checkUserPort.isUserAvailable(command.userId().value());
         List<OrderDetailRequest> requests= command.details().stream().map(item->new OrderDetailRequest(item.variantId(), item.quantity())).toList();
         List<OrderDetail> listDetails = loadOrderDetailPort.loadByListDetail(requests);
-        try {
-            System.out.println("Call invnetory api");
-          processOrder(listDetails);
-        }
-        catch(FeignException e) {
-            int status = e.status();
-
-            switch (status) {
-                case 404:
-                    throw new InventoryNotFoundException(e.getMessage());
-                case 400:
-                    throw new InsufficientStockException(e.getMessage());
-                default:
-                    throw new RuntimeException(e.getMessage());
-            }
-    }
         long originPrice =0;
         for(OrderDetail d : listDetails) {
             originPrice+=d.amount()*d.unitPrice();
@@ -131,30 +117,46 @@ public class CreateOrderService implements CreateOrderUseCase {
         .paymentStatus(new PaymentStatus("PENDING"))
         .build();
         final var saved = Order.create(draft);
+        try {
+            System.out.println("Call invnetory api");
+          processOrder(listDetails);
+        }
+        catch(FeignException e) {
+            int status = e.status();
+
+            switch (status) {
+                case 404:
+                    throw new InventoryNotFoundException(e.getMessage());
+                case 400:
+                    throw new InsufficientStockException(e.getMessage());
+                default:
+                    throw new RuntimeException(e.getMessage());
+            }
+    }
+    
+   
+        
 
         //final var saved = savePort.save(order);
         try {
+            if(command.shippingInfo().email().equals("email@gmail.com")) {
+        throw new RuntimeException("Simulate error");
+    }
         saveRedisStreamPort.saveToStream(saved);
         }
         catch(Exception e) {
-            savePort.save(saved);
+            try {
+                System.out.println("Luu redis that bai, luu db chinh");
+              manualCreate(saved);
+            }
+            catch(Exception ex) {
+                inventoryChecker.rollback(requests, "CREATE_ORDER_FAILED");
+                throw new RuntimeException(ex);
+            }
         }
         return saved.getId().value();
     }
-    private void canPlaceOrder(List<OrderDetail> details) {
-        List<UUID> variantIds = details.stream().map(item->item.variantId()).toList();
-        List<InventoryResponse> responses = inventoryChecker.getInventoryBatch(variantIds);
-        
-        for(OrderDetail orderDetail: details) {
-            InventoryResponse inventoryResponse = findInListByVariantId(responses, orderDetail.variantId());
-            if(inventoryResponse==null) {
-                throw new VariantNotFoundException(orderDetail.variantId());
-            }
-            if(inventoryResponse.getQuantity()<orderDetail.amount()) {
-                throw new VariantNotEnoughException(orderDetail.variantId());
-            }
-        }
-    }
+   
     private void processOrder(List<OrderDetail> orderDetails) {
         List<OrderDetailRequest> requests = orderDetails.stream().map(item->new OrderDetailRequest(item.variantId(), item.amount())).toList();
         inventoryChecker.processOrder(requests);
@@ -167,5 +169,45 @@ public class CreateOrderService implements CreateOrderUseCase {
         }
         return null;
     }
+
+    @Override
+    @Transactional
+    public Order manualCreate(Order order) {
+        if(order.getShippingInfo().email().equals("email@gmail.com")) {
+        throw new RuntimeException("Simulate error");
+    }
+        OrderCreatedDocument outboxEventOrderCreated = OrderCreatedDocument.builder().currency(order.getCurrency().value())
+        .orderId(order.getId().value())
+        .paymentMethod(order.getPaymentMethod().value())
+        .paymentValue(order.getTotalPrice().value())
+        .userEmail(order.getShippingInfo().email())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null).eventId(UUID.randomUUID())
+        .lastError(null).userId(order.getUserId().value()).build();
+        final var savedEvent=orderCreatedDocumentRepo.save(outboxEventOrderCreated);
+         OrderCreatedSuccessDocument outboxOrderCreatedSuccess = OrderCreatedSuccessDocument.builder().eventId(UUID.randomUUID())
+        .userId(order.getUserId().value())
+        .variantIds(order.getDetails().stream().map(item->item.variantId()).toList())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        final var savedOutboxOrderCreatedSuccess = orderCreatedSuccessDocumentRepo.save(outboxOrderCreatedSuccess);
+              final var result =savePort.save(order);
+              TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                //publishPort.publishOrderCreated_InventoryEvent(savedOutboxEventOrderCreatedInventory);
+                publishPort.publishOrderCreatedEvent(savedEvent);
+                publishPort.publishClearCartEvent(savedOutboxOrderCreatedSuccess);
+                
+            }
+        });
+        return  result;
+    }
+
 
 }
