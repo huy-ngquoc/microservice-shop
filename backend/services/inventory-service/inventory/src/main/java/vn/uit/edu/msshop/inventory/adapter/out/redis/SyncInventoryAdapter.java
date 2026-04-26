@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
+import vn.uit.edu.msshop.inventory.application.port.out.RedisPressureValve;
 import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryStatus;
@@ -20,12 +21,15 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 public class SyncInventoryAdapter implements SyncInventoryPort {
     private final LoadInventoryPort loadPort;
     private final RedisTemplate<String,Map<String,String>> redisTemplate;
-    public SyncInventoryAdapter(@Lazy LoadInventoryPort loadPort, RedisTemplate<String,Map<String,String>> redisTemplate) {
+    private final RedisPressureValve redisPressureValve;
+    public SyncInventoryAdapter(@Lazy LoadInventoryPort loadPort, RedisTemplate<String,Map<String,String>> redisTemplate, RedisPressureValve redisPressureValve) {
         this.loadPort=loadPort;
         this.redisTemplate=redisTemplate;
+        this.redisPressureValve=redisPressureValve;
     }
     @Override
     public Inventory loadFromMainDatabase(UUID variantId) {
+        redisPressureValve.relief();
 
         VariantId id = new VariantId(variantId);
         Inventory inventory = loadPort.loadByVariantIdAndStatus(id, new InventoryStatus("ENABLE")).orElse(null);

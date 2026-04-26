@@ -133,7 +133,7 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         String inventoryStatus = val.get("status").toString();
         
         // Tạo domain object thông qua Mapper hoặc constructor
-        var snapshot = Inventory.Snapshot.builder().id(new InventoryId(UUID.fromString(val.get("id").toString())))
+        var snapshot = Inventory.Snapshot.builder().id(new InventoryId(UUID.randomUUID()))
         .quantity(new Quantity(quantity))
         .variantId(variantId)
         .reservedQuantity(new ReservedQuantity(reservedQuantity))

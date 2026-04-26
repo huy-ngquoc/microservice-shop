@@ -91,7 +91,7 @@ public class ProcessOrderService implements ProcessOrderUseCase {
     public void processOrderDetail(List<OrderDetail> orderDetails) {
         
         List<String> keys = orderDetails.stream()
-                .map(item -> "inventory:variant:" + item.getVariantId().toString())
+                .map(item -> "inventory:variant:" + item.getVariantId().value().toString())
                 .toList();
         Object[] args = orderDetails.stream()
                 .map(item -> String.valueOf(item.getQuantity().value()))
@@ -99,7 +99,7 @@ public class ProcessOrderService implements ProcessOrderUseCase {
 
         
         Long result = redisTemplate.execute(redisConfig.reserveAllScript(), keys, args);
-
+        System.out.println("Ressulllt "+ result);
         if (result == null || result == 0) {
             
             throw new InsufficientStockException("Một hoặc nhiều sản phẩm không đủ tồn kho!");
