@@ -54,7 +54,7 @@ public class RestoreVariantService implements RestoreVariantUseCase {
                 null);
         final var saved = this.updatePort.update(next);
 
-        this.addToProductPort.addToProduct(variant);
+        this.addToProductPort.addToProduct(saved);
 
         this.eventPort.publish(new VariantRestored(saved.getId()));
     }
