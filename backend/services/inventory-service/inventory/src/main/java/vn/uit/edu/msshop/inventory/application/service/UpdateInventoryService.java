@@ -182,7 +182,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
         .variantId(toSave.getVariantId().value())
         .newQuantity(toSave.getQuantity().value())
-        .newReservedQuantity(toSave.getQuantity().value())
+        .newReservedQuantity(toSave.getReservedQuantity().value())
         .eventStatus("PENDING")
         .retryCount(0)
         .createdAt(Instant.now())
@@ -225,7 +225,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
 public void processOrderDetail(List<OrderDetail> orderDetails, DefaultRedisScript<Long> script) {
         
         List<String> keys = orderDetails.stream()
-                .map(item -> "inventory:variant:" + item.getVariantId().toString())
+                .map(item -> "inventory:variant:" + item.getVariantId().value().toString())
                 .toList();
         Object[] args = orderDetails.stream()
                 .map(item -> String.valueOf(item.getQuantity().value()))

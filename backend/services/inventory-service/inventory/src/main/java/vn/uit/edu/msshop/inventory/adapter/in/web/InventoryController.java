@@ -31,6 +31,7 @@ import vn.uit.edu.msshop.inventory.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.CreateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.FindInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.ProcessOrderUseCase;
+import vn.uit.edu.msshop.inventory.application.port.in.RollbackInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.UpdateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.domain.model.OrderDetail;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
@@ -48,6 +49,7 @@ public class InventoryController {
     private final CreateInventoryUseCase createUseCase;
     private final InventorySyncJob syncJob;
     private final ProcessOrderUseCase processOrderUseCase;
+    private final RollbackInventoryUseCase rollbackInventoryUseCase;
     @GetMapping("/")
     public ResponseEntity<Page<InventoryResponse>> getAll(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestParam(defaultValue="7") int pageSize, @RequestParam(defaultValue="0") int pageNumber) {
         if(!checkPermission.isAdmin(role)) {
@@ -107,6 +109,27 @@ public class InventoryController {
         List<VariantId> listIds = variantIds.stream().map(item->new VariantId(item)).toList();
         List<InventoryView> views = findUseCase.findByListVariantIdFromRedis(listIds);
         return ResponseEntity.ok(views.stream().map(mapper::toResponse).toList());
+    }
+    @PostMapping("/public/roll_back/{messageType}")
+    public ResponseEntity<?> rollback(@RequestBody List<OrderDetailRequest> requests, @PathVariable String messageType) {
+        try {
+            List<OrderDetail> details = requests.stream().map(item->new OrderDetail(new VariantId(item.getVariantId()), new Quantity(item.getQuantity()))).toList();
+            if(messageType.equals("CREATE_ORDER_FAILED")) {
+                rollbackInventoryUseCase.orderCreateFail(details);
+
+            }
+            
+            return ResponseEntity.ok().build();
+        }
+        catch(Exception e) {
+            if(e instanceof InventoryNotFoundException) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            }
+            if(e instanceof InsufficientStockException) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
     @PutMapping("/")
     public ResponseEntity<InventoryResponse> update(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestBody UpdateInventoryRequest request) {

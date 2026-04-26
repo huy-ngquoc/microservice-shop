@@ -23,13 +23,13 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@KafkaListener(topics="payment-status-topic",groupId="order-payment-group")
+//@KafkaListener(topics="payment-status-topic",groupId="order-payment-group")
 public class PaymentStatusEventListener {
     private final LoadPaymentPort loadPort;
     private final SavePaymentPort savePort;
     private final EventDocumentRepository eventDocumentRepo;
     private final CancellPaymentLinkPort cancelPaymentLinkPort;
-    @KafkaHandler
+    //@KafkaHandler
     public void handleCodOrderReceived(CodPaymentReceived event) {
         if(!eventDocumentRepo.existsById(event.eventId())) {
             Payment payment = loadPort.loadPaymentByOrderId(new OrderId(event.orderId()));
@@ -44,7 +44,7 @@ public class PaymentStatusEventListener {
         }
         
     }
-    @KafkaHandler
+    //@KafkaHandler
     public void handleCodOrderCancelled(CodPaymentCancelled event) {
         if(!eventDocumentRepo.existsById(event.eventId())) {
             Payment payment = loadPort.loadPaymentByOrderId(new OrderId(event.orderId()));
@@ -59,7 +59,7 @@ public class PaymentStatusEventListener {
         }
         
     }
-    @KafkaHandler
+    //@KafkaHandler
     public void handleOnlineOrderCancelled(OnlinePaymentCancelled event) {
         if(!eventDocumentRepo.existsById(event.eventId())) {
             Payment payment = loadPort.loadPaymentByOrderId(new OrderId(event.orderId()));

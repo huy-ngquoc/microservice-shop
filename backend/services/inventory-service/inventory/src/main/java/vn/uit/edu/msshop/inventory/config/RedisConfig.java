@@ -26,6 +26,7 @@ public class RedisConfig {
     private DefaultRedisScript<Long> changeStatusAllScript;
     private DefaultRedisScript<Long> releaseStockAllScript;
     private DefaultRedisScript<Long> reverseShipAllScript;
+    private DefaultRedisScript<Long> rollbackAllScript;
 
 
     public RedisConfig() {
@@ -40,6 +41,14 @@ public class RedisConfig {
         releaseStockAllScript=releaseStockAllScript();
         reverseShipAllScript=reverseShipAllScript();
 
+    }
+    public DefaultRedisScript<Long> rollbackAllScript() {
+        DefaultRedisScript<Long> script = new DefaultRedisScript<>();
+        
+        script.setLocation(new ClassPathResource("rollback_all.lua"));
+        
+        script.setResultType(Long.class);
+        return script;
     }
     public DefaultRedisScript<Long> reverseShipAllScript() {
         DefaultRedisScript<Long> script = new DefaultRedisScript<>();

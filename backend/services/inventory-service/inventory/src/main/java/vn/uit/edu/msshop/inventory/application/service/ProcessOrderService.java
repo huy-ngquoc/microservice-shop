@@ -25,7 +25,6 @@ import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
 import vn.uit.edu.msshop.inventory.config.RedisConfig;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.OrderDetail;
-import vn.uit.edu.msshop.inventory.domain.model.OrderProcessJob;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @Service
@@ -42,16 +41,17 @@ public class ProcessOrderService implements ProcessOrderUseCase {
     @Override
     @Transactional
     public void processOrder(List<OrderDetail> orderDetails) {
+        
         List<VariantId> ids = orderDetails.stream().map(item->item.getVariantId()).toList();
         List<Inventory> inventories = loadFromRedisPort.loadFromRedis(ids);
-        List<OrderProcessJob> orderProcessJobs = new ArrayList<>();
+        
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         
         for(OrderDetail o:orderDetails) {
             Inventory i = findInList(inventories, o.getVariantId());
             if(i==null) throw new InventoryNotFoundException(o.getVariantId());
             //if(i.getQuantity().value()<o.getQuantity().value()) throw new InsufficientStockException(o.getVariantId());
-            orderProcessJobs.add(new OrderProcessJob(i,o.getQuantity()));
+            
             int newQuantity = i.getQuantity().value()-o.getQuantity().value();
             int newReservedQuantity = i.getReservedQuantity().value()+o.getQuantity().value();
              InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
@@ -70,6 +70,7 @@ public class ProcessOrderService implements ProcessOrderUseCase {
         processOrderDetail(orderDetails);
     
         inventoryUpdatedRepo.saveAll(events);
+        System.out.println("Tao don hang thanh cong");
          TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {

@@ -58,7 +58,7 @@ public class KeyCloakAdapter implements CreateKeyCloakAccountPort {
 
     } catch (Exception e) {
         System.err.println("!!! LỖI TỔNG THỂ !!!");
-        e.printStackTrace(); // Chắc chắn nó sẽ hiện ra lỗi gì (404, 403, hay Null)
+        throw new RuntimeException(e.getMessage());
     }
 
     return response;
