@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -33,6 +35,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 
 @Component
 @RequiredArgsConstructor
@@ -175,18 +178,48 @@ public class ProductPersistenceAdapter
     public Product update(
             final Product product) {
         final var toSave = this.mapper.toPersistence(product);
-        final var saved = this.repository.save(toSave);
+
+        final ProductDocument saved;
+        try {
+            saved = this.repository.save(toSave);
+        } catch (final OptimisticLockingFailureException _) {
+            final var expected = product.getVersion().value();
+            final var current = this.repository.findById(toSave.getId())
+                    .map(ProductDocument::getVersion)
+                    .orElse(-1L);
+            throw new OptimisticLockException(expected, current);
+        }
+
         return this.mapper.toDomain(saved);
     }
 
     @Override
     public List<Product> updateAll(
             final Collection<Product> products) {
-        final var toSave = products.stream()
+        if (products.isEmpty()) {
+            return List.of();
+        }
+
+        final var toSaveAll = products.stream()
                 .map(this.mapper::toPersistence)
                 .toList();
-        final var saved = this.repository.saveAll(toSave);
-        return saved.stream()
+        final var savedAll = new ArrayList<ProductDocument>(toSaveAll.size());
+        for (final var toSave : toSaveAll) {
+            final ProductDocument saved;
+            try {
+                saved = this.repository.save(toSave);
+            } catch (final OptimisticLockingFailureException _) {
+                final var expected = toSave.getVersion();
+                final var current = this.repository.findById(toSave.getId())
+                        .map(ProductDocument::getVersion)
+                        .orElse(null);
+                throw new OptimisticLockException(expected, current);
+            }
+
+            savedAll.add(saved);
+        }
+
+        return savedAll.stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }
