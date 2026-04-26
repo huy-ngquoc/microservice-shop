@@ -2,6 +2,7 @@ package vn.uit.edu.msshop.inventory.application.service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,7 +35,6 @@ import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.OrderDetail;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
-import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
@@ -94,10 +94,14 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         
         List<InventoryUpdatedDocument> events = new ArrayList<>();
+        Map<UUID, Inventory> inventoryMap=  new HashMap<>();
+        for(Inventory i: inventories) {
+            inventoryMap.put(i.getVariantId().value(), i);
+        }
         boolean isShipping = commands.getOrderStatus().value().equals("SHIPPING");
         
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
-            Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
+            Inventory inventory = inventoryMap.get(detailCommand.getVariantId().value());
             if(inventory==null) throw new RuntimeException("Invalid variant id");
             
             int newQuantity = inventory.getQuantity().value()+detailCommand.getQuantity().value();
@@ -157,21 +161,18 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     
     
     }
-    private Inventory findByVariantIdInList(VariantId id, List<Inventory> inventories) {
-        for(Inventory inventory:inventories) {
-            if(id.value().equals(inventory.getVariantId().value())) return inventory;
-        }
-        return null;
-    }
 
     @Override
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderShipped(OrderShippedCommand commands) {
         List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
-        
+        Map<UUID, Inventory> inventoryMap=  new HashMap<>();
+        for(Inventory i: inventories) {
+            inventoryMap.put(i.getVariantId().value(), i);
+        }
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         for(OrderDetailCommand detailCommand: commands.getDetailCommands()) {
-            Inventory inventory = findByVariantIdInList(detailCommand.getVariantId(), inventories);
+            Inventory inventory = inventoryMap.get(detailCommand.getVariantId().value());
             if(inventory==null) throw new RuntimeException("Invalid variant id");
             
             
