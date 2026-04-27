@@ -4,8 +4,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@Document(collection="outbox_events_force_cancel_order")
+@Entity
+@Table(name="force_cancell_order")
 public class ForceCancellOrderDocument {
     @Id
     private UUID eventId;
