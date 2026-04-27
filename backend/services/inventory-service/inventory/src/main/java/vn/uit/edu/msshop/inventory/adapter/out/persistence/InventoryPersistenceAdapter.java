@@ -1,13 +1,11 @@
 package vn.uit.edu.msshop.inventory.adapter.out.persistence;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,27 +16,22 @@ import org.springframework.stereotype.Component;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.mapper.InventoryJpaMapper;
-import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.inventory.application.port.out.DeleteInventoryPort;
-import vn.uit.edu.msshop.inventory.application.port.out.DeleteRedisPort;
-import vn.uit.edu.msshop.inventory.application.port.out.LoadFromRedisPort;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
-import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryStatus;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
-import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @Component
 @RequiredArgsConstructor
-public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInventoryPort, DeleteInventoryPort, LoadFromRedisPort,DeleteRedisPort {
+public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInventoryPort, DeleteInventoryPort {
     private final InventoryJpaMapper mapper;
     private final SpringDataInventoryJpaRepository repository;
     private final RedisTemplate<String,Map<String,String>> redisTemplate;
-    private final SyncInventoryPort syncInventoryPort;
+    
 
     @Override
     @Transactional
@@ -108,45 +101,7 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         repository.delete(jpaEntity);
     }
 
-    @Override
-    @Transactional
-    public List<Inventory> loadFromRedis(List<VariantId> variantIds) {
-        List<Inventory> result = new ArrayList<>();
-        try {
-    for (VariantId variantId : variantIds) {
-        String key = "inventory:variant:" + variantId.value().toString();
-        
-        // 1. Dùng entries() để lấy toàn bộ Hash thay vì get() của String
-        Map<Object, Object> val = redisTemplate.opsForHash().entries(key);
-
-        // 2. Với Hash, nếu không tồn tại, Redis trả về Map trống chứ không phải null
-        if (val == null || val.isEmpty()) {
-            Inventory inventory = syncInventoryPort.loadFromMainDatabase(variantId.value());
-            if (inventory == null) throw new InventoryNotFoundException(variantId);
-            result.add(inventory);
-            continue;
-        }
-
-        // 3. Ép kiểu và lấy dữ liệu (Vì opsForHash trả về Map<Object, Object>)
-        int quantity = Integer.parseInt(val.get("quantity").toString());
-        int reservedQuantity = Integer.parseInt(val.get("reservedQuantity").toString());
-        String inventoryStatus = val.get("status").toString();
-        
-        // Tạo domain object thông qua Mapper hoặc constructor
-        var snapshot = Inventory.Snapshot.builder().id(new InventoryId(UUID.randomUUID()))
-        .quantity(new Quantity(quantity))
-        .variantId(variantId)
-        .reservedQuantity(new ReservedQuantity(reservedQuantity))
-        .status(new InventoryStatus(inventoryStatus))
-        .build();
-        result.add(Inventory.reconstitue(snapshot));
-    }
-    return result;
-}catch(Exception e) {
-    return findByListVariantId(variantIds);
-}
-        
-    }
+    
 
     @Override
     public Optional<Inventory> loadByVariantIdAndStatus(VariantId id, InventoryStatus status) {
@@ -162,55 +117,9 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
         return results.stream().map(mapper::toDomain).toList();
     }
 
-    @Override
-    public Inventory loadById(VariantId variantId) {
-        String key = "inventory:variant:" + variantId.value().toString();
-        try{
-        
-        // 1. Dùng entries() để lấy toàn bộ Hash thay vì get() của String
-        Map<Object, Object> val = redisTemplate.opsForHash().entries(key);
-
-        
-        if (val == null || val.isEmpty()) {
-            Inventory inventory = syncInventoryPort.loadFromMainDatabase(variantId.value());
-            if (inventory == null) return null;
-            return inventory;
-        }
-
-        // 3. Ép kiểu và lấy dữ liệu (Vì opsForHash trả về Map<Object, Object>)
-        int quantity = Integer.parseInt(val.get("quantity").toString());
-        int reservedQuantity = Integer.parseInt(val.get("reservedQuantity").toString());
-        String inventoryStatus = val.get("status").toString();
-        
-        // Tạo domain object thông qua Mapper hoặc constructor
-        var snapshot = Inventory.Snapshot.builder().id(new InventoryId(UUID.randomUUID()))
-        .quantity(new Quantity(quantity))
-        .variantId(variantId)
-        .reservedQuantity(new ReservedQuantity(reservedQuantity))
-        .status(new InventoryStatus(inventoryStatus))
-        .build();
-        return Inventory.reconstitue(snapshot);
-    }
-    catch(Exception e) {
-        return loadByVariantId(variantId).orElse(null);
-    }
-    }
-
-    @Override
-    public void delete(VariantId variantId) {
-        String key = "inventory:variant:" + variantId.value().toString();
     
-    try {
-    redisTemplate.delete(key);
-    
-    }
-    catch(Exception e) {
 
-    }
-    finally {
-        repository.deleteById(variantId.value());
-    }
-    }
+    
 
     @Override
     public List<Inventory> saveFromSet(Set<Inventory> inventories) {

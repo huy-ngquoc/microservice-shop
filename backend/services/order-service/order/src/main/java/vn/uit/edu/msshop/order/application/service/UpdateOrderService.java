@@ -149,7 +149,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         if(newStatusValue.equals("PENDING")||newStatusValue.equals("CONFIRMED")) return false;
         if(newStatusValue.equals("SHIPPING")) {
             if(!checkPermission.isAdmin(role)) return false;
-            if(!oldStatusValue.equals("PENDING")) return false;
+            if(!oldStatusValue.equals("CONFIRMED")) return false;
             if(paymentMethod.equals("ONLINE")&&!paymentStatus.equals("SUCCESS")) return false;
         }
         if(newStatusValue.equals("CANCELLED")) {

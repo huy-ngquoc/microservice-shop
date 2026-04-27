@@ -31,6 +31,6 @@ public interface InventoryChecker {
     @PostMapping("inventory/public/roll_back/{messageType}")
     public ResponseEntity<?> rollback(@RequestBody List<OrderDetailRequest> requests, @PathVariable String messageType);
 
-    @PostMapping("/public/process_order_outbox")
+    @PostMapping("inventory/public/process_order_outbox")
     public ResponseEntity<String> process(@RequestBody OrderOutbox request);
 }

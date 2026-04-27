@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -25,14 +24,10 @@ import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.inventory.application.mapper.InventoryViewMapper;
 import vn.uit.edu.msshop.inventory.application.port.in.UpdateInventoryUseCase;
-import vn.uit.edu.msshop.inventory.application.port.out.LoadFromRedisPort;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.PublishInventoryEventPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
-import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
-import vn.uit.edu.msshop.inventory.config.RedisConfig;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
-import vn.uit.edu.msshop.inventory.domain.model.OrderDetail;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
 
@@ -41,14 +36,13 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
 public class UpdateInventoryService implements UpdateInventoryUseCase {
     private final SaveInventoryPort savePort;
     private final LoadInventoryPort loadPort;
-    private final LoadFromRedisPort loadFromRedisPort;
+    
     private final InventoryViewMapper mapper; 
     private final PublishInventoryEventPort publishEventPort;
     private final InventoryUpdatedDocumentRepository inventoryUpdatedDocumentRepo;
     
     private final RedisTemplate<String,Map<String,String>> redisTemplate;
-    private final RedisConfig redisConfig;
-    private final SyncInventoryPort syncPort;
+    
 
     @Override
     @Transactional
@@ -74,7 +68,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             @Override
             public void afterCommit() {
                 publishEventPort.publishInventoryUpdateEvent(savedEvent);
-                syncPort.loadFromMainDatabase(saved.getVariantId().value());
+                
             }
         });
         return mapper.toView(saved);
@@ -91,10 +85,11 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @Override
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderCancelled(OrderCancelledCommand commands) {
-        List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
+        List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         Map<UUID, Inventory> inventoryMap=  new HashMap<>();
+        List<Inventory> toSaves = new ArrayList<>();
         for(Inventory i: inventories) {
             inventoryMap.put(i.getVariantId().value(), i);
         }
@@ -110,6 +105,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             if(newReservedQuantity<0) throw new RuntimeException("Invalid info");
             final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity)).build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
+            toSaves.add(toSave);
             InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
         .variantId(toSave.getVariantId().value())
         .newQuantity(toSave.getQuantity().value())
@@ -139,13 +135,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
                 processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getCancelStockScript());
             }
         }*/
-        List<OrderDetail> details = commands.getDetailCommands().stream().map(item->new OrderDetail(item.getVariantId(),new Quantity(item.getQuantity().value()))).toList();
-        if(isShipping) {
-            processOrderDetail(details, redisConfig.getReverseShipAllScript());
-        }
-        else {
-            processOrderDetail(details, redisConfig.getCancelAllScript());
-        }
+        savePort.saveAll(toSaves);
         inventoryUpdatedDocumentRepo.saveAll(events);
          TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
@@ -165,8 +155,9 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @Override
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderShipped(OrderShippedCommand commands) {
-        List<Inventory> inventories = loadFromRedisPort.loadFromRedis(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
+        List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         Map<UUID, Inventory> inventoryMap=  new HashMap<>();
+        List<Inventory> toSaves = new ArrayList<>();
         for(Inventory i: inventories) {
             inventoryMap.put(i.getVariantId().value(), i);
         }
@@ -192,6 +183,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         .isRead(false)
         .build();
             events.add(event);
+            toSaves.add(toSave);
 
             
         }
@@ -203,8 +195,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             
             processScript(command.getVariantId().value(), command.getQuantity().value(), redisConfig.getReleaseStockScript());
         }*/
-        List<OrderDetail> details = commands.getDetailCommands().stream().map(item->new OrderDetail(item.getVariantId(), new Quantity(item.getQuantity().value()))).toList();
-        processOrderDetail(details, redisConfig.getReleaseStockAllScript());
+        savePort.saveAll(toSaves);
         inventoryUpdatedDocumentRepo.saveAll(events);
          TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
@@ -223,25 +214,6 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     }
 
     
-public void processOrderDetail(List<OrderDetail> orderDetails, DefaultRedisScript<Long> script) {
-        
-        List<String> keys = orderDetails.stream()
-                .map(item -> "inventory:variant:" + item.getVariantId().value().toString())
-                .toList();
-        Object[] args = orderDetails.stream()
-                .map(item -> String.valueOf(item.getQuantity().value()))
-                .toArray();
 
-        
-        Long result = redisTemplate.execute(script, keys, args);
-
-        if (result == null || result == 0||result==-1||result==-2) {
-            
-            throw new RuntimeException("Loi, vui long xem lai");
-        }
-
-        
-        System.out.println("Thanh cong");
-    }
 
 }

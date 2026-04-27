@@ -52,6 +52,7 @@ spring:
                     VariantDeleted:vn.uit.edu.msshop.inventory.domain.event.product.VariantDeleted,
                     VariantRestore:vn.uit.edu.msshop.inventory.domain.event.product.VariantRestore,
                     VariantPurge:vn.uit.edu.msshop.inventory.domain.event.product.VariantPurge,
+                    OrderUpdatedEvent:vn.uit.edu.msshop.inventory.domain.event.OrderUpdatedEvent,
                     ProductCreated:java.lang.Object,
                     ProductUpdated:java.lang.Object,
                     ProductDeleted:java.lang.Object

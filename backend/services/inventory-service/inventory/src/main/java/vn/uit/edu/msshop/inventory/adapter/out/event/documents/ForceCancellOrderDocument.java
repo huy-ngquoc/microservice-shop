@@ -3,12 +3,13 @@ package vn.uit.edu.msshop.inventory.adapter.out.event.documents;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.data.annotation.Id;
-
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
@@ -17,6 +18,8 @@ import lombok.Setter;
 @Builder
 @Entity
 @Table(name="force_cancell_order")
+@AllArgsConstructor
+@NoArgsConstructor
 public class ForceCancellOrderDocument {
     @Id
     private UUID eventId;

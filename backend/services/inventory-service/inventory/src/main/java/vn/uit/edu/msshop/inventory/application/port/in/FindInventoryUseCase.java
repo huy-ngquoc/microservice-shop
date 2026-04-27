@@ -13,5 +13,5 @@ public interface FindInventoryUseCase {
     public InventoryView findByVariantId(VariantId id);
     public Page<InventoryView> findAll(int pageNumber, int pageSize);
     public List<InventoryView> findByListVariantId(List<VariantId> listVariantIds);
-    public List<InventoryView> findByListVariantIdFromRedis(List<VariantId> variantIds);
+   
 }
