@@ -17,6 +17,7 @@ import vn.uit.edu.msshop.inventory.application.dto.command.OrderShippedCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.UpdateInventoryCommand;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.domain.event.OrderCreated;
+import vn.uit.edu.msshop.inventory.domain.event.OrderUpdatedEvent;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.OrderQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
@@ -50,6 +51,14 @@ public class InventoryWebMapper {
     public OrderCancelledCommand toOrderCancelledCommand(UpdateInventoryFromOrderServiceRequest  request ) {
         List<OrderDetailCommand> detailCommands = request.getDetailRequests().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getQuantity()))).toList();
         return new OrderCancelledCommand(detailCommands,request.getOrderId(), new OrderStatus(request.getOldStatus()));
+    }
+    public OrderShippedCommand toShippedCommand(OrderUpdatedEvent event) {
+        List<OrderDetailCommand> detailCommands = event.getDetails().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getAmount()))).toList();
+        return new OrderShippedCommand(detailCommands, event.getOrderId());
+    }
+    public OrderCancelledCommand toCancelledCommand(OrderUpdatedEvent event) {
+        List<OrderDetailCommand> detailCommands = event.getDetails().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getAmount()))).toList();
+         return new OrderCancelledCommand(detailCommands, event.getOrderId(), new OrderStatus(event.getOldStatus()));
     }
     
     
