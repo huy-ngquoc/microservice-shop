@@ -7,8 +7,6 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,6 @@ import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSucces
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderUpdatedRepository;
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
-import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
 import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 import vn.uit.edu.msshop.order.domain.model.Order;
@@ -36,9 +33,19 @@ public class OrderOutboxProcessor {
     private final InventoryChecker inventoryChecker;
     private final OrderCreatedDocumentRepository orderCreatedDocumentRepo;
     private final OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo;
-    private final PublishOrderEventPort publishPort;
+    
     private final OrderUpdatedRepository orderUpdatedRepo;
     @Transactional
+    public void confirmOrderAndCreateEvent(OrderOutbox outbox, Order order) {
+        final var toSave=order.updateStatus(new OrderStatus("CONFIRMED"));
+        outbox.setOutboxStatus("COMPLETED");
+            savePort.save(toSave);
+            orderOutboxRepo.save(outbox);
+            orderCreatedDocumentRepo.save(createOrderCreatedEvent(order));
+             orderCreatedSuccessDocumentRepo.save(createOrderCreatedSuccessDocument(order));
+    }
+    
+    
     public void updateStatus(OrderOutbox outbox) {
         Order order= loadPort.loadById(new OrderId(outbox.getOrderId())).orElse(null);
             
@@ -49,27 +56,23 @@ public class OrderOutboxProcessor {
             }
         try {
             ResponseEntity<String> processResult = inventoryChecker.process(outbox);
-           
-            final var toSave=order.updateStatus(new OrderStatus("CONFIRMED"));
+            
+            confirmOrderAndCreateEvent(outbox, order);
+            
                 
-                //ToDo: them logic ban su kien gui mail, tao payment
-            outbox.setOutboxStatus("COMPLETED");
-            savePort.save(toSave);
-            orderOutboxRepo.save(outbox);
-            final var orderCreatedEvent=orderCreatedDocumentRepo.save(createOrderCreatedEvent(order));
-            final var orderCreatedSuccessEvent= orderCreatedSuccessDocumentRepo.save(createOrderCreatedSuccessDocument(order));
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                //publishPort.publishOrderCreated_InventoryEvent(savedOutboxEventOrderCreatedInventory);
-                publishPort.publishOrderCreatedEvent(orderCreatedEvent);
-                publishPort.publishClearCartEvent(orderCreatedSuccessEvent);
                 
-            }
-        });
+            
+            
         }
         catch(FeignException e) {
-            outbox.setRetryCount(outbox.getRetryCount()+1);
+            
+           handleError(e, order, outbox);
+        }
+            
+    }
+    @Transactional
+    public void handleError(FeignException e, Order order, OrderOutbox outbox) {
+        outbox.setRetryCount(outbox.getRetryCount()+1);
             
             if(outbox.getRetryCount()>=5) {
                 outbox.setOutboxStatus("COMPLETED");
@@ -78,20 +81,9 @@ public class OrderOutboxProcessor {
                 final var toSave= order.updateStatus(new OrderStatus(newOrderStatus));
                 savePort.save(toSave);
                 final var savedEvent = orderUpdatedRepo.save(getOrderUpdatedEvent(order));
-                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                //publishPort.publishOrderCreated_InventoryEvent(savedOutboxEventOrderCreatedInventory);
-                publishPort.publishOrderUpdatedEvent(savedEvent);
-                
-            }
-        });
 
             }
             orderOutboxRepo.save(outbox);
-            return;
-        }
-            
     }
     private OrderCreatedDocument createOrderCreatedEvent(Order order) {
         return OrderCreatedDocument.builder().currency(order.getCurrency().value())
