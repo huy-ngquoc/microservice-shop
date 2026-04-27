@@ -33,7 +33,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.Update
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 @Component
 @RequiredArgsConstructor
@@ -84,13 +83,10 @@ public class VariantSoldCountPersistenceAdapter
 
     @Override
     public VariantSoldCount initialize(
-            final VariantId id,
-            final VariantProductId productId) {
-        final var jpaId = id.value();
-
-        final var query = new Query(Criteria.where("_id").is(jpaId));
+            final NewVariantSoldCount newSoldCount) {
+        final var query = new Query(Criteria.where("_id").is(newSoldCount.getVariantId().value()));
         final var update = new Update()
-                .setOnInsert(VariantSoldCountDocument.Fields.productId, productId.value())
+                .setOnInsert(VariantSoldCountDocument.Fields.productId, newSoldCount.getProductId().value())
                 .setOnInsert(VariantSoldCountDocument.Fields.value, 0)
                 .setOnInsert(VariantSoldCountDocument.Fields.lastUpdatedTime, Instant.now());
 
