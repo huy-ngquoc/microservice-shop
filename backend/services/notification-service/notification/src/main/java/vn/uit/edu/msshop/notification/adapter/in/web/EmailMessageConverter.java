@@ -36,6 +36,24 @@ public class EmailMessageConverter {
     content.append("Đội ngũ hỗ trợ khách hàng.");
     return content.toString();
     }
+    public String getInsufficientStockContent(UUID orderId) {
+        StringBuilder content = new StringBuilder();
+    
+    content.append("Chào bạn,\n\n");
+    content.append("Rất tiếc, đơn hàng của bạn không được tiếp nhận do sản phẩm đã hết hàng. Dưới đây là thông tin quan trọng:\n\n");
+    
+    
+    content.append("1. Xem chi tiết đơn hàng tại đây:\n");
+    content.append(ORDER_PREFIX).append(orderId.toString()).append("\n\n"); 
+    
+    
+    content.append("Chúng tôi xin lỗi vì sự bất tiện này\n");
+    
+    
+    content.append("Cảm ơn bạn đã ủng hộ MSShop!\n");
+    content.append("Đội ngũ hỗ trợ khách hàng.");
+    return content.toString();
+    }
     public String getOrderCancelledContent(UUID orderId) {
         StringBuilder content = new StringBuilder();
         content.append("Chào bạn,\n\n");

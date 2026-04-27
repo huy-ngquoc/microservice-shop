@@ -27,4 +27,5 @@ public class OrderOutbox {
     private String orderStatus;
     private String outboxStatus;//PENDING, COMPLETED
     private Instant createdAt;
+    private int retryCount;
 }

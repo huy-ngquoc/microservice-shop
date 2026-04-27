@@ -174,6 +174,7 @@ public class InventoryController {
             return ResponseEntity.ok("Thanh cong");
         } catch (RuntimeException e) {
             if(e.getMessage().equals("Trung du lieu")) return ResponseEntity.ok("Trung du lieu");
+            if(e instanceof InsufficientStockException) return ResponseEntity.badRequest().build();
             throw e;
         }
     }

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
-import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCreatedInventoryDocumentRepository;
@@ -119,34 +118,11 @@ public class CreateOrderService implements CreateOrderUseCase {
         
 
         //final var saved = savePort.save(order);
-        try {
-            if(command.shippingInfo().email().equals("email@gmail.com")) {
-        throw new RuntimeException("Simulate error");
-    }
         manualCreate(saved);
-        }
-        catch(Exception e) {
-            
-                inventoryChecker.rollback(requests, "CREATE_ORDER_FAILED");
-                throw new RuntimeException(e);
-            
-        }
         return saved.getId().value();
     }
    
-    private void processOrder(List<OrderDetail> orderDetails) {
-        List<OrderDetailRequest> requests = orderDetails.stream().map(item->new OrderDetailRequest(item.variantId(), item.amount())).toList();
-        inventoryChecker.processOrder(requests);
-    }
-    private InventoryResponse findInListByVariantId(List<InventoryResponse> responses, UUID variantId) {
-        for(InventoryResponse response:responses) {
-            if(response.getVariantId().equals(variantId)) {
-                return response;
-            }
-        }
-        return null;
-    }
-
+    
     @Override
     @Transactional
     public Order manualCreate(Order order) {
@@ -185,7 +161,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         });*/
         final var result = savePort.save(order);
         final var details = result.getDetails().stream().map(item-> new OrderDetailRequest(item.variantId(), item.amount())).toList();
-        final var orderOutbox = new OrderOutbox(UUID.randomUUID(), result.getId().value(), "PROCESS_ORDER", details, "PENDING","PENDING", Instant.now());
+        final var orderOutbox = new OrderOutbox(UUID.randomUUID(), result.getId().value(), "PROCESS_ORDER", details, "PENDING","PENDING", Instant.now(),0);
         orderOutboxRepo.save(orderOutbox);
         return  result;
     }
