@@ -4,6 +4,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -18,11 +22,13 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSo
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsProductNameForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
 
 @Component
 @RequiredArgsConstructor
@@ -37,10 +43,12 @@ public class VariantPersistenceAdapter
         CreateAllVariantsPort,
         UpdateVariantPort,
         UpdateAllVariantsPort,
+        UpdateAllVariantsProductNameForProductPort,
         DeleteVariantPort,
         DeleteVariantsForProductPort {
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public Optional<Variant> loadById(
@@ -129,6 +137,18 @@ public class VariantPersistenceAdapter
         return saved.stream()
                 .map(this.mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public void updateProductNameByProductId(
+            final VariantProductId productId,
+            final VariantProductName productName) {
+        final var query = Query.query(Criteria.where(VariantDocument.Fields.productId).is(productId.value()));
+        final var update = Update.update(VariantDocument.Fields.productName, productName.value());
+        this.mongoTemplate.updateMulti(
+                query,
+                update,
+                VariantDocument.class);
     }
 
     @Override
