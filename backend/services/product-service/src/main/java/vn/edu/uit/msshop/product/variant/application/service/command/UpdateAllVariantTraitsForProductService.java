@@ -53,6 +53,7 @@ public class UpdateAllVariantTraitsForProductService
         return new Variant(
                 variant.getId(),
                 variant.getProductId(),
+                variant.getProductName(),
                 variant.getPrice(),
                 newTraits,
                 variant.getTargets(),

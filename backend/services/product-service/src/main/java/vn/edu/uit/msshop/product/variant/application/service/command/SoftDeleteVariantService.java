@@ -43,6 +43,7 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
         final var next = new Variant(
                 variant.getId(),
                 variant.getProductId(),
+                variant.getProductName(),
                 variant.getPrice(),
                 variant.getTraits(),
                 variant.getTargets(),

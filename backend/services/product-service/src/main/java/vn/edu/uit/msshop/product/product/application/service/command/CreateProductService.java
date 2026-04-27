@@ -56,6 +56,7 @@ public class CreateProductService implements CreateProductUseCase {
 
         final var savedVariants = this.createVariantsForNewProductPort.create(
                 productId,
+                command.name(),
                 command.newConfiguration().newVariants());
 
         final var configuration = new ProductConfiguration(

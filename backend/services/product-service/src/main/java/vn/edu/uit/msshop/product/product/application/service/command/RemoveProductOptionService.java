@@ -129,7 +129,9 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
                 ProductVariantTraits.empty(),
                 ProductVariantTargets.empty());
         final var newVariants = this.createVariantsPort.create(
-                productId, new NewProductVariants(List.of(newVariant)));
+                productId,
+                product.getName(),
+                new NewProductVariants(List.of(newVariant)));
 
         return new ProductConfiguration(ProductOptions.empty(), newVariants);
     }

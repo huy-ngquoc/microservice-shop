@@ -20,6 +20,7 @@ public class VariantViewMapper {
         return new VariantView(
                 variant.getId().value(),
                 variant.getProductId().value(),
+                variant.getProductName().value(),
                 variant.getPrice().value(),
                 soldCount.getValue().value(),
                 traits,
