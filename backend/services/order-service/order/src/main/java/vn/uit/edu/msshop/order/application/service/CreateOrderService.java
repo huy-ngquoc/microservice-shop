@@ -7,7 +7,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
@@ -18,8 +17,6 @@ import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutbox;
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutboxRepository;
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.dto.command.CreateOrderCommand;
-import vn.uit.edu.msshop.order.application.exception.InsufficientStockException;
-import vn.uit.edu.msshop.order.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.CheckUserPort;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderDetailPort;
@@ -116,22 +113,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         .paymentStatus(new PaymentStatus("PENDING"))
         .build();
         final var saved = Order.create(draft);
-        try {
-            System.out.println("Call invnetory api");
-          processOrder(listDetails);
-        }
-        catch(FeignException e) {
-            int status = e.status();
-
-            switch (status) {
-                case 404:
-                    throw new InventoryNotFoundException(e.getMessage());
-                case 400:
-                    throw new InsufficientStockException(e.getMessage());
-                default:
-                    throw new RuntimeException(e.getMessage());
-            }
-    }
+        
     
    
         
