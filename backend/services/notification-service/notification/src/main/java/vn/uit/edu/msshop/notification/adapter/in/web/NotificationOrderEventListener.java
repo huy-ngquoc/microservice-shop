@@ -63,6 +63,11 @@ public class NotificationOrderEventListener {
             title="Đơn hàng đã bị hủy";
              emailType="ORDER_CANCELLED";
         }
+        else if(event.getStatus().equals("INSUFFICIENT_STOCK")) {
+            content = messageConverter.getInsufficientStockContent(event.getOrderId());
+            title="Sản phẩm đã hết hàng";
+            emailType="INSUFFICIENT_STOCK";
+        }
         else {
             return;
         }

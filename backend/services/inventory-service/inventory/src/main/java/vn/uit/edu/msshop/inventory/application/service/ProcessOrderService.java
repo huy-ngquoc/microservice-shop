@@ -118,10 +118,13 @@ public class ProcessOrderService implements ProcessOrderUseCase {
     }
 
     @Override
+    @jakarta.transaction.Transactional
     public void processOrderOutbox(OrderOutbox outbox) {
         if(processedOrderRepo.existsById(outbox.getId())) throw new RuntimeException("Trung du lieu");
         List<OrderDetail> details = outbox.getRequests().stream().map(item->new OrderDetail(new VariantId(item.getVariantId()), new Quantity(item.getQuantity()))).toList();
+        
         processedOrderRepo.save(new ProcessedOrder(outbox.getId(), outbox.getOutboxStatus()));
+       
         processOrder(details);
 
     }
