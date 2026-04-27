@@ -3,15 +3,17 @@ import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+@Entity
+@Table(name="online_payment_success")
 
-@Document(collection="online_payment_success")
 @Getter
 @Setter
 @AllArgsConstructor

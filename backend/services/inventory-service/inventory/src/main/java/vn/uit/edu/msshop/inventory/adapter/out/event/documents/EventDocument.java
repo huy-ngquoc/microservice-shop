@@ -3,14 +3,15 @@ package vn.uit.edu.msshop.inventory.adapter.out.event.documents;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Document(collection="outbox_events_event_document")
+@Entity
+@Table(name="event_document")
 @Getter
 @Setter
 @Builder

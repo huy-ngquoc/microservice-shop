@@ -12,8 +12,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentCancelledDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.CodPaymentReceivedDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderUpdatedEventDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentCancelledDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentReceivedDocumentRepository;
@@ -97,7 +95,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         }
         List<OrderDetailRequest> detailRequests = next.getDetails().stream().map(item->new OrderDetailRequest(item.variantId(), item.amount())).toList();
         UpdateInventoryFromOrderServiceRequest request = new UpdateInventoryFromOrderServiceRequest(next.getStatus().value(), oldStatus, detailRequests, next.getId().value());
-        inventoryChecker.updateFromOrderService(request);
+        //inventoryChecker.updateFromOrderService(request);
         final var saved = saveOrderPort.save(next);
         boolean isSendEvent = !oldStatus.equals(saved.getStatus().value());
         if(isSendEvent) {
@@ -143,11 +141,12 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         saveOrderPort.save(order.applyUpdateInfo(updateInfo));
     }
     private boolean preUpdateCheck(Order order, OrderStatus newStatus, String role) {
+        
         String newStatusValue = newStatus.getValue();
         String oldStatusValue = order.getStatus().value();
         String paymentStatus = order.getPaymentStatus().value();
         String paymentMethod = order.getPaymentMethod().value();
-        if(newStatusValue.equals("PENDING")) return false;
+        if(newStatusValue.equals("PENDING")||newStatusValue.equals("CONFIRMED")) return false;
         if(newStatusValue.equals("SHIPPING")) {
             if(!checkPermission.isAdmin(role)) return false;
             if(!oldStatusValue.equals("PENDING")) return false;

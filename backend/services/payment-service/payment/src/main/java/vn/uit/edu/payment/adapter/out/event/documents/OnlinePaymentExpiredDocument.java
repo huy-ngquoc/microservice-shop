@@ -2,16 +2,17 @@ package vn.uit.edu.payment.adapter.out.event.documents;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document(collection="outbox_events_online_payment_expired")
+@Entity
+@Table(name="online_payment_expired")
 @Getter
 @Setter
 @AllArgsConstructor
