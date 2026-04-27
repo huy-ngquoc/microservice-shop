@@ -8,21 +8,11 @@ public record VariantSoldCountValue(
 
     public VariantSoldCountValue {
         if (value < 0) {
-            throw new DomainException("Variant sold must NOT be negative");
+            throw new DomainException("Variant sold count must NOT be negative");
         }
     }
 
     public static VariantSoldCountValue zero() {
         return VariantSoldCountValue.ZERO;
-    }
-
-    public VariantSoldCountValue increase(
-            final int increment) {
-        if (increment < 0) {
-            throw new DomainException("Variant sold count increment cannot be negative");
-        }
-
-        final var newValue = this.value + increment;
-        return new VariantSoldCountValue(newValue);
     }
 }

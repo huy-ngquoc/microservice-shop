@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCou
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
 public final class VariantSoldCount {
+    @EqualsAndHashCode.Include
     private final VariantId id;
 
     private final VariantProductId productId;
