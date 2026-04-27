@@ -51,6 +51,13 @@ public class PaymentController {
         final var result = mapper.toResponse(payment);
         return ResponseEntity.ok(result);
     }
+    @GetMapping("/public/order/{orderId}")
+    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId) {
+        final var payment = loadPaymentUseCase.loadByOrderId(new OrderId(orderId));
+        if(payment==null) return ResponseEntity.notFound().build();
+        final var result = mapper.toResponse(payment);
+        return ResponseEntity.ok(result);
+    }
     @PostMapping("/create")
     public ResponseEntity<PaymentResponse> createPayment(@RequestBody CreatePaymentRequest request) {
         final var command = mapper.toCommand(request);

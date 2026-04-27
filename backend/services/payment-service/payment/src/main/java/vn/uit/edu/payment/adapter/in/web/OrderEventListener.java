@@ -3,22 +3,29 @@ package vn.uit.edu.payment.adapter.in.web;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.uit.edu.payment.adapter.in.web.mapper.PaymentWebMapper;
 import vn.uit.edu.payment.adapter.out.event.documents.EventDocument;
+import vn.uit.edu.payment.adapter.out.event.documents.PaymentCreatedFailDocument;
 import vn.uit.edu.payment.adapter.out.event.repositories.EventDocumentRepository;
+import vn.uit.edu.payment.adapter.out.event.repositories.PaymentCreatedFailedRepository;
 import vn.uit.edu.payment.adapter.out.persistence.PaybackPaymentRepository;
 import vn.uit.edu.payment.adapter.out.persistence.PaybackPayments;
 import vn.uit.edu.payment.application.dto.command.CreatePaymentCommand;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
 import vn.uit.edu.payment.application.port.out.CancellPaymentLinkPort;
 import vn.uit.edu.payment.application.port.out.LoadPaymentPort;
+import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.application.port.out.SavePaymentPort;
 import vn.uit.edu.payment.domain.event.OrderCreated;
 import vn.uit.edu.payment.domain.event.OrderUpdatedEvent;
@@ -29,6 +36,10 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@RetryableTopic(
+    attempts = "4", 
+    include = {RuntimeException.class} 
+)
 @KafkaListener(topics="order-topic",groupId="order-payment-group")
 public class OrderEventListener {
     private final PaymentWebMapper mapper;
@@ -38,8 +49,11 @@ public class OrderEventListener {
     private final LoadPaymentPort loadPort;
     private final SavePaymentPort savePort;
     private final CancellPaymentLinkPort cancelPaymentLinkPort;
+    private final PaymentCreatedFailedRepository paymentCreatedFailRepo;
+    private final PublishPaymentEventPort publishEventPort;
 
     @KafkaHandler
+    
     public void handleOrderCreated(OrderCreated event) {
         System.out.println("Listen to event");
         if(!eventDocumentRepo.existsById(event.eventId())) {
@@ -47,6 +61,30 @@ public class OrderEventListener {
         createUseCase.create(command);
         eventDocumentRepo.save(new EventDocument(event.eventId(), Instant.now()));
         }
+    }
+    @jakarta.transaction.Transactional
+    public void saveAndSendPaymentCreatedFail(PaymentCreatedFailDocument document) {
+        final var savedEvent = paymentCreatedFailRepo.save(document);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                publishEventPort.publishPaymentCreatedFail(savedEvent);
+            }
+        });
+    }
+    @DltHandler
+    public void paymentCreatedFail(OrderCreated event) {
+        PaymentCreatedFailDocument document = PaymentCreatedFailDocument.builder()
+        .eventId(UUID.randomUUID())
+        .orderId(event.orderId())
+        .userId(event.userId())
+        .userEmail(event.userEmail())
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        saveAndSendPaymentCreatedFail(document);
+
     }
     @KafkaHandler
     @Transactional

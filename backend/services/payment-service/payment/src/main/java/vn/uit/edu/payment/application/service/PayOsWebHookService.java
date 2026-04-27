@@ -7,15 +7,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.payos.PayOS;
 import vn.payos.model.webhooks.Webhook;
 import vn.payos.model.webhooks.WebhookData;
+import vn.uit.edu.payment.adapter.in.web.response.OrderResponse;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentSuccessDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.PaymentSuccessDocument;
 import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentSuccessRepository;
 import vn.uit.edu.payment.adapter.out.event.repositories.PaymentSuccessDocumentRepository;
+import vn.uit.edu.payment.adapter.out.persistence.PaybackPaymentRepository;
+import vn.uit.edu.payment.adapter.out.persistence.PaybackPayments;
+import vn.uit.edu.payment.adapter.out.remote.OrderChecker;
 import vn.uit.edu.payment.application.exception.PaymentNotFoundException;
 import vn.uit.edu.payment.application.port.out.LoadOnlinePaymentInfoPort;
 import vn.uit.edu.payment.application.port.out.LoadPaymentPort;
@@ -41,6 +46,8 @@ public class PayOsWebHookService implements PayOsWebHookPort {
     private final PaymentSuccessDocumentRepository paymentSuccessRepo;
     private final PublishPaymentEventPort publishEventPort;
     private final OnlinePaymentSuccessRepository onlinePaymentSuccessRepo;
+    private final PaybackPaymentRepository paybackPaymentRepo;
+    private final OrderChecker orderChecker;
     @Override
 
 public void handlePayOSWebHook(Webhook body) {
@@ -74,8 +81,21 @@ public void processPaymentUpdate(WebhookData webhookData) {
     
     Payment payment = loadPaymentPort.loadPaymentById(onlinePaymentInfo.getPaymentId())
             .orElseThrow(() -> new PaymentNotFoundException(onlinePaymentInfo.getPaymentId()));
-
-   
+            OrderResponse orderResponse =null;
+    try {
+    orderResponse= orderChecker.getById(payment.getOrderId().value()).getBody();
+    if( !orderResponse.status().equals("CONFIRMED")) {
+        paybackPaymentRepo.save(new PaybackPayments(payment.getOrderId().value(), payment.getUserId().value(), payment.getPaymentValue().value()));
+        return;
+    }
+    }
+    catch(FeignException e) {
+        if(e.status()==404) {
+            paybackPaymentRepo.save(new PaybackPayments(payment.getOrderId().value(), payment.getUserId().value(), payment.getPaymentValue().value()));
+            return;
+        }
+    }
+    
     if (!"PENDING".equals(payment.getPaymentStatus().value())) return;
 
    
