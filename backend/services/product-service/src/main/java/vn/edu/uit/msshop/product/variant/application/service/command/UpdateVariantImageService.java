@@ -77,6 +77,7 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
             final var next = new Variant(
                     current.getId(),
                     current.getProductId(),
+                    current.getProductName(),
                     current.getPrice(),
                     current.getTraits(),
                     current.getTargets(),

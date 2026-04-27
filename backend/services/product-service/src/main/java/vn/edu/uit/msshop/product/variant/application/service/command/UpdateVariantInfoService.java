@@ -129,6 +129,7 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         return new Variant(
                 current.getId(),
                 current.getProductId(),
+                current.getProductName(),
                 newPrice,
                 newTraits,
                 newTargets,

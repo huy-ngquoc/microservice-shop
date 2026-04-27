@@ -12,22 +12,28 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.experimental.FieldNameConstants;
 
 @Document("Variants")
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-public class VariantDocument {
+@FieldNameConstants
+// TODO: add field "stockAmount"
+public final class VariantDocument {
     @Id
     @EqualsAndHashCode.Include
     private final UUID id;
 
     private final UUID productId;
 
+    private final String productName;
+
     private final long price;
 
     private final List<String> traits;
 
+    // TODO: endpoint find by targets, match one?
     private final List<String> targets;
 
     @Nullable
@@ -46,6 +52,8 @@ public class VariantDocument {
 
             final UUID productId,
 
+            final String productName,
+
             final long price,
 
             final List<String> traits,
@@ -62,6 +70,7 @@ public class VariantDocument {
             final Instant deletionTime) {
         this.id = id;
         this.productId = productId;
+        this.productName = productName;
         this.price = price;
         this.traits = List.copyOf(traits);
         this.targets = List.copyOf(targets);

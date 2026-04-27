@@ -17,6 +17,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadPr
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.UpdateProductNameOnVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
@@ -34,6 +35,7 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
     private final LoadProductSoldCountPort loadSoldCountPort;
     private final LoadProductRatingPort loadRatingPort;
     private final UpdateProductPort updatePort;
+    private final UpdateProductNameOnVariantsPort updateVariantProductNamePort;
     private final CheckProductCategoryExistsPort checkCategoryExistsPort;
     private final CheckProductBrandExistsPort checkBrandExistsPort;
     private final ProductViewMapper mapper;
@@ -82,6 +84,7 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
         }
 
         final var savedProduct = this.updatePort.update(next);
+        this.syncProductNameToVariantsIfChanged(product, savedProduct);
         this.eventPort.publish(new ProductUpdated(savedProduct.getId()));
 
         return this.mapper.toView(
@@ -156,5 +159,17 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
         if (!this.checkBrandExistsPort.existsById(newBrandId)) {
             throw new ProductBrandNotFoundException(newBrandId);
         }
+    }
+
+    private void syncProductNameToVariantsIfChanged(
+            final Product before,
+            final Product after) {
+        if (after.getName().equals(before.getName())) {
+            return;
+        }
+
+        this.updateVariantProductNamePort.updateProductNameByProductId(
+                after.getId(),
+                after.getName());
     }
 }

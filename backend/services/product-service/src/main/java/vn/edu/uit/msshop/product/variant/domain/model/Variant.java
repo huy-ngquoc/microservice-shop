@@ -4,12 +4,14 @@ import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.experimental.FieldNameConstants;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
@@ -22,6 +24,8 @@ public final class Variant {
     private final VariantId id;
 
     private final VariantProductId productId;
+
+    private final VariantProductName productName;
 
     private final VariantPrice price;
 
@@ -44,6 +48,8 @@ public final class Variant {
 
             final VariantProductId productId,
 
+            final VariantProductName productName,
+
             final VariantPrice price,
 
             final VariantTraits traits,
@@ -59,6 +65,7 @@ public final class Variant {
             final VariantDeletionTime deletionTime) {
         this.id = Domains.requireNonNull(id, "Variant ID must not be null");
         this.productId = Domains.requireNonNull(productId, "Variant Product ID must not be null");
+        this.productName = Domains.requireNonNull(productName, "Variant Product name must not be null");
         this.price = Domains.requireNonNull(price, "Variant price must not be null");
         this.traits = Domains.requireNonNull(traits, "Variant traits must not be null");
         this.targets = Domains.requireNonNull(targets, "Variant targets must not be null");

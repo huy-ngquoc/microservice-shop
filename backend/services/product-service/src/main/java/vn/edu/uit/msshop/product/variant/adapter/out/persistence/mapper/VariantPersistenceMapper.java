@@ -12,6 +12,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
@@ -23,6 +24,7 @@ public class VariantPersistenceMapper {
         final var id = new VariantId(entity.getId());
 
         final var productId = new VariantProductId(entity.getProductId());
+        final var productName = new VariantProductName(entity.getProductName());
         final var imageKey = VariantImageKey.ofNullable(entity.getImageKey());
         final var price = new VariantPrice(entity.getPrice());
         final var traits = VariantTraits.of(entity.getTraits());
@@ -38,6 +40,7 @@ public class VariantPersistenceMapper {
         return new Variant(
                 id,
                 productId,
+                productName,
                 price,
                 traits,
                 targets,
@@ -51,6 +54,7 @@ public class VariantPersistenceMapper {
         return new VariantDocument(
                 variant.getId().value(),
                 variant.getProductId().value(),
+                variant.getProductName().value(),
                 variant.getPrice().value(),
                 variant.getTraits().unwrap(),
                 variant.getTargets().unwrap(),
@@ -64,6 +68,7 @@ public class VariantPersistenceMapper {
         return new VariantDocument(
                 newVariant.getId().value(),
                 newVariant.getProductId().value(),
+                newVariant.getProductName().value(),
                 newVariant.getPrice().value(),
                 newVariant.getTraits().unwrap(),
                 newVariant.getTargets().unwrap(),

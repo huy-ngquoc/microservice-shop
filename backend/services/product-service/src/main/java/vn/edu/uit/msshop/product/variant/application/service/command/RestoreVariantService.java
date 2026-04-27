@@ -46,6 +46,7 @@ public class RestoreVariantService implements RestoreVariantUseCase {
         final var next = new Variant(
                 variant.getId(),
                 variant.getProductId(),
+                variant.getProductName(),
                 variant.getPrice(),
                 variant.getTraits(),
                 variant.getTargets(),

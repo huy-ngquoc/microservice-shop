@@ -54,6 +54,7 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
 
         final var createdVariants = this.createAllVariantsPort.create(
                 productId,
+                product.getName(),
                 command.newVariants());
 
         final var newVariants = product.getVariants().addAll(createdVariants);

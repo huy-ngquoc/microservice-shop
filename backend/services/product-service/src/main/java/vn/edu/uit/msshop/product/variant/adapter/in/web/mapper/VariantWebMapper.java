@@ -110,6 +110,7 @@ public class VariantWebMapper {
         return new VariantResponse(
                 view.id(),
                 view.productId(),
+                view.productName(),
                 view.price(),
                 view.soldCount(),
                 view.traits(),

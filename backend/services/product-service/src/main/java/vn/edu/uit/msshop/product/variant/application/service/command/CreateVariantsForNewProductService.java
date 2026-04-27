@@ -23,6 +23,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantForNewP
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
 
 @Service
 @RequiredArgsConstructor
@@ -44,10 +45,12 @@ public class CreateVariantsForNewProductService implements CreateVariantsForNewP
 
     private static NewVariant toNewVariant(
             final VariantProductId productId,
+            final VariantProductName productName,
             final NewVariantForNewProduct newInputs) {
         return new NewVariant(
                 VariantId.newId(),
                 productId,
+                productName,
                 newInputs.price(),
                 newInputs.traits(),
                 newInputs.targets());
@@ -56,7 +59,10 @@ public class CreateVariantsForNewProductService implements CreateVariantsForNewP
     private List<Variant> createVariants(
             final CreateVariantsForNewProductCommand command) {
         final var newVariants = command.newVariantsForNewProduct().values().stream()
-                .map(v -> CreateVariantsForNewProductService.toNewVariant(command.productId(), v))
+                .map(v -> CreateVariantsForNewProductService.toNewVariant(
+                        command.productId(),
+                        command.productName(),
+                        v))
                 .toList();
         return this.createAllVariantsPort.createAll(newVariants);
     }
