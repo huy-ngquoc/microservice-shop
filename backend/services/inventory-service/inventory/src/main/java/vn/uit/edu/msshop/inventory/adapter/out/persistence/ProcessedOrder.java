@@ -2,9 +2,8 @@ package vn.uit.edu.msshop.inventory.adapter.out.persistence;
 
 import java.util.UUID;
 
-import org.springframework.data.annotation.Id;
-
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -27,6 +27,7 @@ public class InventoryOrderListener {
     public void onOrderUpdated(OrderUpdatedEvent event) {
         if(eventDocumentRepo.existsById(event.getEventId())) return;
         if(event.getStatus().equals("SHIPPING")) {
+            System.out.println("Shipping");
             updateUseCase.updateWhenOrderShipped(webMapper.toShippedCommand(event));
         }
         else if(event.getStatus().equals("CANCELLED")) {
