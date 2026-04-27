@@ -68,6 +68,12 @@ public class NotificationOrderEventListener {
             title="Sản phẩm đã hết hàng";
             emailType="INSUFFICIENT_STOCK";
         }
+        else if(event.getStatus().equals("CANCELLED_BEFORE_PROCESS")) {
+            content=messageConverter.getErrorContent(event.getOrderId());
+            title="Lỗi kỹ thuật";
+            emailType="CANCELLED_BEFORE_PROCESS";
+
+        }
         else {
             return;
         }

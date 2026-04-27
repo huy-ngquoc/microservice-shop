@@ -30,7 +30,8 @@ public class InventoryOrderListener {
             System.out.println("Shipping");
             updateUseCase.updateWhenOrderShipped(webMapper.toShippedCommand(event));
         }
-        else if(event.getStatus().equals("CANCELLED")) {
+        else if(event.getStatus().equals("CANCELLED")&&!event.getOldStatus().equals("PENDING")) {
+            
             updateUseCase.updateWhenOrderCancelled(webMapper.toCancelledCommand(event));
         }
         eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
