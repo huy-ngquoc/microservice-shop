@@ -14,6 +14,7 @@ import vn.uit.edu.msshop.order.adapter.in.web.request.CreateInventoryRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
+import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutbox;
 
 @FeignClient(name="inventory-service")
 public interface InventoryChecker {
@@ -29,4 +30,7 @@ public interface InventoryChecker {
     public ResponseEntity<Void> updateFromOrderService(@RequestBody UpdateInventoryFromOrderServiceRequest request);
     @PostMapping("inventory/public/roll_back/{messageType}")
     public ResponseEntity<?> rollback(@RequestBody List<OrderDetailRequest> requests, @PathVariable String messageType);
+
+    @PostMapping("/public/process_order_outbox")
+    public ResponseEntity<String> process(@RequestBody OrderOutbox request);
 }

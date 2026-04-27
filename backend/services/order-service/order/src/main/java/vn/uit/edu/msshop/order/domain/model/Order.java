@@ -249,4 +249,9 @@ public final class Order {
         .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(Instant.now())).version(this.version)
         .currency(this.currency).paymentMethod(this.paymentMethod).paymentStatus(paymentStatus).build();
     }
+    public Order updateStatus(OrderStatus status) {
+        return Order.builder().id(this.id).shippingInfo(this.shippingInfo).details(this.details).status(status).userId(this.userId)
+        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(Instant.now())).version(this.version)
+        .currency(this.currency).paymentMethod(this.paymentMethod).paymentStatus(this.paymentStatus).build();
+    }
 }

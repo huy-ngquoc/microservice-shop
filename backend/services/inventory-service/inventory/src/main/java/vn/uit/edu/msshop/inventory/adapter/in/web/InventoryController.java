@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.in.web.mapper.InventoryWebMapper;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.CreateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderDetailRequest;
+import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderOutbox;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.response.InventoryResponse;
@@ -165,6 +166,16 @@ public class InventoryController {
     public ResponseEntity<Void> create( @RequestBody List<CreateInventoryRequest> requests) {
         createUseCase.createMany(requests.stream().map(mapper::toCommand).toList());
         return ResponseEntity.ok().build();
+    }
+    @PostMapping("/public/process_order_outbox")
+    public ResponseEntity<String> process(@RequestBody OrderOutbox request) {
+        try {
+            processOrderUseCase.processOrderOutbox(request);
+            return ResponseEntity.ok("Thanh cong");
+        } catch (RuntimeException e) {
+            if(e.getMessage().equals("Trung du lieu")) return ResponseEntity.ok("Trung du lieu");
+            throw e;
+        }
     }
 
 

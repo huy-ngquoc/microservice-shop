@@ -13,8 +13,12 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
+import vn.uit.edu.msshop.inventory.adapter.in.web.mapper.InventoryWebMapper;
+import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderOutbox;
 import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedDocument;
 import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.InventoryUpdatedDocumentRepository;
+import vn.uit.edu.msshop.inventory.adapter.out.persistence.ProcessedOrder;
+import vn.uit.edu.msshop.inventory.adapter.out.persistence.ProcessedOrderRepository;
 import vn.uit.edu.msshop.inventory.application.exception.InsufficientStockException;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.inventory.application.port.in.ProcessOrderUseCase;
@@ -25,6 +29,7 @@ import vn.uit.edu.msshop.inventory.application.port.out.SyncInventoryPort;
 import vn.uit.edu.msshop.inventory.config.RedisConfig;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.OrderDetail;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @Service
@@ -37,6 +42,8 @@ public class ProcessOrderService implements ProcessOrderUseCase {
     private final InventoryUpdatedDocumentRepository inventoryUpdatedRepo;
     private final PublishInventoryEventPort publishPort;
     private final SaveInventoryPort savePort;
+    private final ProcessedOrderRepository processedOrderRepo;
+    private final InventoryWebMapper webMapper;
     
     @Override
     @Transactional
@@ -108,6 +115,15 @@ public class ProcessOrderService implements ProcessOrderUseCase {
 
         
         System.out.println("Đã giữ chỗ thành công cho toàn bộ đơn hàng trên Redis");
+    }
+
+    @Override
+    public void processOrderOutbox(OrderOutbox outbox) {
+        if(processedOrderRepo.existsById(outbox.getId())) throw new RuntimeException("Trung du lieu");
+        List<OrderDetail> details = outbox.getRequests().stream().map(item->new OrderDetail(new VariantId(item.getVariantId()), new Quantity(item.getQuantity()))).toList();
+        processedOrderRepo.save(new ProcessedOrder(outbox.getId(), outbox.getOutboxStatus()));
+        processOrder(details);
+
     }
 }
     

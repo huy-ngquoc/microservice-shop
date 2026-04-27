@@ -6,18 +6,16 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCreatedInventoryDocumentRepository;
+import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutbox;
+import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutboxRepository;
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.dto.command.CreateOrderCommand;
 import vn.uit.edu.msshop.order.application.exception.InsufficientStockException;
@@ -80,6 +78,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     private final OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo;
     private final OrderCreatedInventoryDocumentRepository orderCreatedInventoryDocumentRepository;
     private final SaveRedisStreamPort saveRedisStreamPort;
+    private final OrderOutboxRepository orderOutboxRepo;
     
 /*private String currency;
     private UUID orderId;
@@ -172,7 +171,7 @@ public class CreateOrderService implements CreateOrderUseCase {
         if(order.getShippingInfo().email().equals("email@gmail.com")) {
         throw new RuntimeException("Simulate error");
     }
-        OrderCreatedDocument outboxEventOrderCreated = OrderCreatedDocument.builder().currency(order.getCurrency().value())
+        /*OrderCreatedDocument outboxEventOrderCreated = OrderCreatedDocument.builder().currency(order.getCurrency().value())
         .orderId(order.getId().value())
         .paymentMethod(order.getPaymentMethod().value())
         .paymentValue(order.getTotalPrice().value())
@@ -201,7 +200,11 @@ public class CreateOrderService implements CreateOrderUseCase {
                 publishPort.publishClearCartEvent(savedOutboxOrderCreatedSuccess);
                 
             }
-        });
+        });*/
+        final var result = savePort.save(order);
+        final var details = result.getDetails().stream().map(item-> new OrderDetailRequest(item.variantId(), item.amount())).toList();
+        final var orderOutbox = new OrderOutbox(UUID.randomUUID(), result.getId().value(), "PROCESS_ORDER", details, "PENDING","PENDING", Instant.now());
+        orderOutboxRepo.save(orderOutbox);
         return  result;
     }
 
