@@ -1,17 +1,15 @@
 package vn.uit.edu.payment.adapter.out.remote;
 
-import org.springframework.stereotype.Component;
+import java.util.UUID;
 
-import vn.uit.edu.payment.application.port.out.CheckOrderPort;
-import vn.uit.edu.payment.domain.model.valueobject.OrderId;
-import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
-import vn.uit.edu.payment.domain.model.valueobject.PaymentValue;
-@Component
-public class OrderChecker implements CheckOrderPort{
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
-    @Override
-    public void checkOrder(PaymentId paymentId, PaymentValue paymentValue, OrderId orderId) {
-        
-    }
-
+import vn.uit.edu.payment.adapter.in.web.response.OrderResponse;
+@FeignClient(name="inventory-service")
+public interface OrderChecker {
+    @GetMapping("/public/{id}")
+    public ResponseEntity<OrderResponse> getById(@PathVariable UUID id);
 }

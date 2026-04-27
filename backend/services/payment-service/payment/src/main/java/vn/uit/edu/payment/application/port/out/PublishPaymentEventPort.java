@@ -4,6 +4,7 @@ import vn.uit.edu.payment.adapter.out.event.documents.CodPaymentCreatedDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentCancelledDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentSuccessDocument;
+import vn.uit.edu.payment.adapter.out.event.documents.PaymentCreatedFailDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.PaymentLinkCreatedDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.PaymentSuccessDocument;
 import vn.uit.edu.payment.domain.event.PaymentCreated;
@@ -21,4 +22,5 @@ public interface PublishPaymentEventPort {
     public void publishPaymentSuccess(PaymentSuccessDocument outboxEvent);
     public void publishPaymentLinkCreated(PaymentLinkCreatedDocument outboxEvent);
     public void publishOnlinePaymentSuccess(OnlinePaymentSuccessDocument outboxEvent);
+    public void publishPaymentCreatedFail(PaymentCreatedFailDocument outboxEvent);
 }

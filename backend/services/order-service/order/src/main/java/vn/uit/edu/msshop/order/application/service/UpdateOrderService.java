@@ -153,7 +153,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             if(paymentMethod.equals("ONLINE")&&!paymentStatus.equals("SUCCESS")) return false;
         }
         if(newStatusValue.equals("CANCELLED")) {
-            if(oldStatusValue.equals("RECEIVED")) return false;
+            if(!oldStatusValue.equals("PENDING")&&!oldStatusValue.equals("SHIPPING")&&!oldStatusValue.equals("CONFIRMED")) return false;
         }
         if(newStatusValue.equals("RECEIVED")) {
             if(!oldStatusValue.equals("SHIPPING")) return false;
