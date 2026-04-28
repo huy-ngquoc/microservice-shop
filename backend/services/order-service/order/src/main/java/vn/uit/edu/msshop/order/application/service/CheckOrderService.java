@@ -19,6 +19,7 @@ import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
 import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 import vn.uit.edu.msshop.order.domain.model.Order;
+import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentStatus;
 
 @Service
@@ -35,8 +36,11 @@ public class CheckOrderService {
         try {
            PaymentResponse payment = paymentChecker.getPaymentByOrderId(order.getId().value()).getBody();
            if(!payment.paymentStatus().equals("SUCCESS")) {
-            order=order.updatePaymentStatus(new PaymentStatus("PAYMENT_EXPIRED"));
+            order=order.updatePaymentStatus(new PaymentStatus("EXPIRED"));
+            String oldStatus = order.getStatus().value();
+            order=order.updateStatus(new OrderStatus("PAYMENT_EXPIRED"));
             savePort.save(order);
+            if(oldStatus.equals("PAYMENT_EXPIRED")) return;
             eventDocument= orderUpdatedRepo.save(getOrderUpdatedEvent(order));
            }
            else {
@@ -45,8 +49,11 @@ public class CheckOrderService {
         }
         catch(FeignException e) {
             if(e.status()==404) {
-            order=order.updatePaymentStatus(new PaymentStatus("PAYMENT_ERROR"));
+            order=order.updatePaymentStatus(new PaymentStatus("ERROR"));
+            String oldStatus = order.getStatus().value();
+            order=order.updateStatus(new OrderStatus("PAYMENT_ERROR"));
             savePort.save(order);
+            if(oldStatus.equals("PAYMENT_ERROR")) return;
             eventDocument= orderUpdatedRepo.save(getOrderUpdatedEvent(order));
             }
             

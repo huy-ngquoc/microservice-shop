@@ -48,7 +48,7 @@ public class OrderOutboxProcessor {
     
     public void updateStatus(OrderOutbox outbox) {
         Order order= loadPort.loadById(new OrderId(outbox.getOrderId())).orElse(null);
-            
+            //System.out.println("Update status");
             if(order==null) {
                 outbox.setOutboxStatus("COMPLETED");
                 orderOutboxRepo.save(outbox);
@@ -67,6 +67,9 @@ public class OrderOutboxProcessor {
         catch(FeignException e) {
             
            handleError(e, order, outbox);
+        }
+        catch(RuntimeException e) {
+            e.printStackTrace();
         }
             
     }

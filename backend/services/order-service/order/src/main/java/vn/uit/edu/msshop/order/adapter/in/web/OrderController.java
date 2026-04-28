@@ -29,6 +29,7 @@ import vn.uit.edu.msshop.order.adapter.in.web.request.CreateOrderRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateOrderRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.OrderResponse;
 import vn.uit.edu.msshop.order.adapter.in.web.response.VariantSoldCountResponse;
+import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutboxRepository;
 import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfo;
 import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfoRepository;
 import vn.uit.edu.msshop.order.application.exception.InsufficientStockException;
@@ -61,6 +62,7 @@ public class OrderController {
     private final FindVariantSoldCountUseCase findVariantSoldCountUseCase;
     private final VariantSoldCountWebMapper variantSoldCountWebMapper;
     private final VariantInfoRepository variantInfoRepo;
+    private final OrderOutboxRepository orderOutboxRepo;
     @GetMapping("/test-trace")
     public String test() {
         
@@ -167,6 +169,7 @@ public class OrderController {
     @DeleteMapping("/clear")
     public ResponseEntity<Void> clearDatabase() {
         deleteOrderUseCase.deleteAll();
+        orderOutboxRepo.deleteAll();
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/all")

@@ -3,7 +3,6 @@ package vn.uit.edu.msshop.order.application.service;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,16 +24,14 @@ public class CleanExpiredOrderService implements CleanExpiredOrderPort {
     @Override
     @Scheduled(fixedRate=6000)
     public void clean() {
-        Instant threshold=Instant.now().minus(15, ChronoUnit.MINUTES);
-        List<Order> orders = orderRepo.findTop50ByStatusAndPaymentMethodAndCreatedAtBefore("PENDING","ONLINE", threshold).stream().map(mapper::toDomain).toList();
-        List<CompletableFuture<Void>> futures = orders.stream().map(order -> 
-        CompletableFuture.runAsync(() -> {
+        Instant threshold=Instant.now().minus(2, ChronoUnit.MINUTES);
+        System.out.println("Call schedule clean order");
+        List<Order> orders = orderRepo.findTop50ByStatusAndPaymentMethodAndCreateAtBefore("CONFIRMED","ONLINE", threshold).stream().map(mapper::toDomain).toList();
+        for(Order order:orders) {
             checkOrderService.checkAndUpdate(order);
-        }, taskExecutor)
-    ).toList();
-
+        }
    
-    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+    
 
     }
     
