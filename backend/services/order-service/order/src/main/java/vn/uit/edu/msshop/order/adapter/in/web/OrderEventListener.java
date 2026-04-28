@@ -112,7 +112,7 @@ public class OrderEventListener {
         }
         if(!eventDocumentRepo.existsById(event.getEventId())) {
         Order order = loadPort.loadById(new OrderId(event.getOrderId())).orElseThrow(()->new OrderNotFoundException(new OrderId(event.getOrderId())));
-        Order.UpdateInfo updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(new OrderStatus("CANCELLED")).build();
+        Order.UpdateInfo updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(order.getStatus()).build();
         final var saved = order.applyUpdateInfo(updateInfo).updatePaymentStatus(new PaymentStatus("SUCCESS"));
         
         savePort.save(saved);

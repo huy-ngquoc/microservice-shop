@@ -56,6 +56,7 @@ public class CheckOrderService {
             if(oldStatus.equals("PAYMENT_ERROR")) return;
             eventDocument= orderUpdatedRepo.save(getOrderUpdatedEvent(order));
             }
+           
             
     
 
@@ -64,6 +65,7 @@ public class CheckOrderService {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
+                if(event==null) return;
                 publishPort.publishOrderUpdatedEvent(event);
             }
         });

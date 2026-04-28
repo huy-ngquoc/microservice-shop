@@ -103,6 +103,7 @@ public class OrderEventListener {
                     paybackPaymentRepo.save(newPaybackPayment);
                 }
                 if(event.getStatus().equals("PAYMENT_EXPIRED")) {
+                    System.out.println("Link het han");
                     handleOnlinePaymentCancelled(event.getOrderId());
                 }
             }

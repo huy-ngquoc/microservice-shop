@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 
 import vn.uit.edu.msshop.order.adapter.in.web.request.CreateInventoryRequest;
 import vn.uit.edu.msshop.order.adapter.out.persistence.VariantInfo;
@@ -38,7 +37,7 @@ public class DBCreator {
         try (PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(idFilePath)))) {
             Random rand = new Random();
 
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 200; i++) {
                 try {
                     List<VariantInfo> variantInfos = new ArrayList<>();
                     List<CreateInventoryRequest> requests = new ArrayList<>();

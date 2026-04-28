@@ -1,8 +1,10 @@
 package vn.uit.edu.payment.adapter.in.web;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +21,8 @@ import vn.uit.edu.payment.adapter.in.web.mapper.PaymentWebMapper;
 import vn.uit.edu.payment.adapter.in.web.request.CreatePaymentRequest;
 import vn.uit.edu.payment.adapter.in.web.request.UpdatePaymentRequest;
 import vn.uit.edu.payment.adapter.in.web.response.PaymentResponse;
+import vn.uit.edu.payment.adapter.out.persistence.PaybackPaymentRepository;
+import vn.uit.edu.payment.adapter.out.persistence.PaybackPayments;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
 import vn.uit.edu.payment.application.port.in.LoadOnlinePaymentUseCase;
 import vn.uit.edu.payment.application.port.in.LoadPaymentUseCase;
@@ -37,6 +41,7 @@ public class PaymentController {
     private final PaymentWebMapper mapper;
     private final PayOsWebHookPort webHookPort;
     private final LoadOnlinePaymentUseCase loadOnlinePaymentUseCase;
+    private final PaybackPaymentRepository refundRepo;
 
     @GetMapping("/{paymentId}")
     public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable UUID paymentId) {
@@ -57,6 +62,15 @@ public class PaymentController {
         if(payment==null) return ResponseEntity.notFound().build();
         final var result = mapper.toResponse(payment);
         return ResponseEntity.ok(result);
+    }
+    @GetMapping("/public/refunds")
+    public ResponseEntity<List<PaybackPayments>> getRefunds() {
+        return ResponseEntity.ok(refundRepo.findAll());
+    }
+    @DeleteMapping("/clear_refunds")
+    public ResponseEntity<Void> clearRefunds() {
+        refundRepo.deleteAll();
+        return ResponseEntity.noContent().build();
     }
     @PostMapping("/create")
     public ResponseEntity<PaymentResponse> createPayment(@RequestBody CreatePaymentRequest request) {

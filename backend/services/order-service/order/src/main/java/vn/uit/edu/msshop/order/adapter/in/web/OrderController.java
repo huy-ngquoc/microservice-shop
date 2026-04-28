@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -88,6 +89,10 @@ public class OrderController {
     @GetMapping("/variant_info")
     public List<VariantInfo> getVariantInfos() {
         return variantInfoRepo.findAll();
+    }
+    @GetMapping("/page/variant_info")
+    public Page<VariantInfo> getVariantInfosByPage(@RequestParam(defaultValue="7") int pageSize, @RequestParam(defaultValue="0") int pageNumber) {
+        return variantInfoRepo.findAll(PageRequest.of(pageNumber,pageSize));
     }
 
     @GetMapping("/{id}")

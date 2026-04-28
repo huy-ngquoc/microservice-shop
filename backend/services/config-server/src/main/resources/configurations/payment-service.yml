@@ -16,7 +16,7 @@ spring:
         hibernate:
             ddl-auto: update
         database: postgresql
-        show-sql: true
+        show-sql: false
         properties:
             hibernate:
                 "[globally_quoted_identifiers]": true
@@ -38,7 +38,7 @@ spring:
                     CodPaymentCancelled:vn.uit.edu.payment.domain.event.CodPaymentCancelled,
                     CodPaymentReceived:vn.uit.edu.payment.domain.event.CodPaymentReceived,
                     OnlinePaymentCancelled:vn.uit.edu.payment.domain.event.OnlinePaymentCancelled,
-                    OrderUpdatedEvent:java.lang.Object
+                    OrderUpdatedEvent:vn.uit.edu.payment.domain.event.OrderUpdatedEvent
         producer:
             bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -58,5 +58,5 @@ logging:
     org.springframework.kafka: ERROR
 payos:
     client-id: 
-    api-key: 
-    checksum-key: 
+    api-key:
+    checksum-key:

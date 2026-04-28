@@ -3,6 +3,7 @@ package vn.uit.edu.payment.application.service;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -61,44 +62,82 @@ public void handlePayOSWebHook(Webhook body) {
     }
 
     
+    if ("success".equalsIgnoreCase(webhookData.getDesc()) || "00".equals(webhookData.getCode())) {
     try {
         this.processPaymentUpdate(webhookData);
     } catch (Exception ex) {
-        log.error("Lỗi cập nhật dữ liệu thanh toán: ", ex);
-        
+        log.error("Lỗi xử lý cập nhật: ", ex);
         throw ex; 
     }
+} else {
+    log.info("Nhận Webhook nhưng không phải trạng thái thành công (Desc: {}), bỏ qua.", webhookData.getDesc());
+    // Có thể xử lý thêm logic HỦY đơn ở đây nếu desc báo khách bấm Hủy
+}
 }
 
 @org.springframework.transaction.annotation.Transactional
 public void processPaymentUpdate(WebhookData webhookData) {
     long orderCode = webhookData.getOrderCode();
+    log.info("Bắt đầu xử lý Webhook cho OrderCode: {}", orderCode);
     
-    System.out.println("Order code "+orderCode);
-    if(orderCode == 123) return;
+    // 1. Kiểm tra mã test
+    if (orderCode == 123) return;
 
+    // 2. Tìm kiếm thông tin Payment
     OnlinePaymentInfo onlinePaymentInfo = loadOnlinePaymentInfoPort.loadByOrderCode(new OnlinePaymentNumber(orderCode));
-    
     Payment payment = loadPaymentPort.loadPaymentById(onlinePaymentInfo.getPaymentId())
             .orElseThrow(() -> new PaymentNotFoundException(onlinePaymentInfo.getPaymentId()));
-            OrderResponse orderResponse =null;
-    try {
-    orderResponse= orderChecker.getById(payment.getOrderId().value()).getBody();
-    if( !orderResponse.status().equals("CONFIRMED")) {
-        paybackPaymentRepo.save(new PaybackPayments(payment.getOrderId().value(), payment.getUserId().value(), payment.getPaymentValue().value()));
-        return;
-    }
-    }
-    catch(FeignException e) {
-        if(e.status()==404) {
-            paybackPaymentRepo.save(new PaybackPayments(payment.getOrderId().value(), payment.getUserId().value(), payment.getPaymentValue().value()));
-            return;
-        }
-    }
-    
-    if (!"PENDING".equals(payment.getPaymentStatus().value())) return;
 
-   
+    // 3. CHIẾN THUẬT IDEMPOTENCY: Nếu payment đã xử lý xong thì thoát ngay
+    
+
+    try {
+        // 4. Kiểm tra trạng thái Đơn hàng bên Order Service
+        boolean shouldPayback = false;
+        try {
+            ResponseEntity<OrderResponse> response = orderChecker.getById(payment.getOrderId().value());
+            if (response.getBody() == null || !"CONFIRMED".equals(response.getBody().status())) {
+                shouldPayback = true;
+            }
+        } catch (FeignException e) {
+            if (e.status() == 404) shouldPayback = true;
+            else throw e; // Lỗi mạng khác thì throw để Kafka/Webhook retry lại
+        }
+
+        // 5. Rẽ nhánh xử lý
+        if (shouldPayback) {
+            handlePaybackLogic(payment);
+        } else {
+            handlePaymentSuccessLogic(payment);
+        }
+
+    } catch (org.springframework.orm.ObjectOptimisticLockingFailureException e) {
+        // 6. XỬ LÝ LỖI STALE OBJECT: Có thread khác đã nhanh tay update version trước
+        log.warn("Xung đột Version (Optimistic Lock) cho đơn {}. Webhook trùng đã được xử lý an toàn.", orderCode);
+        // Không ném lỗi ra ngoài để tránh Webhook tiếp tục retry vô hạn
+    }
+}
+
+/**
+ * Xử lý hoàn tiền khi đơn hàng không hợp lệ
+ */
+private void handlePaybackLogic(Payment payment) {
+    // Check trùng ID để tránh StaleObjectStateException khi insert cùng lúc
+    if (!paybackPaymentRepo.existsById(payment.getOrderId().value())) {
+        paybackPaymentRepo.save(new PaybackPayments(
+            payment.getOrderId().value(), 
+            payment.getUserId().value(), 
+            payment.getPaymentValue().value()
+        ));
+        log.info("Đã ghi nhận yêu cầu hoàn tiền cho đơn: {}", payment.getOrderId().value());
+    }
+}
+
+/**
+ * Xử lý cập nhật thanh toán thành công và ghi Outbox Event
+ */
+private void handlePaymentSuccessLogic(Payment payment) {
+    // Cập nhật trạng thái Payment sang SUCCESS
     Payment.UpdateInfo updateInfo = Payment.UpdateInfo.builder()
             .paymentId(payment.getPaymentId())
             .currency(payment.getCurrency())
@@ -106,38 +145,42 @@ public void processPaymentUpdate(WebhookData webhookData) {
             .paymentStatus(new PaymentStatus("SUCCESS"))
             .build();
     
-    final var saved=savePaymentPort.save(payment.applyUpdateInfo(updateInfo));
+    Payment saved = savePaymentPort.save(payment.applyUpdateInfo(updateInfo));
 
-    
-   
-        //onlinePaymentInfo.setTransactionId(new TransactionId(""));
-    
-    //saveOnlinePaymentInfoPort.save(onlinePaymentInfo);
-    final var newPaymentSuccessEvent = PaymentSuccessDocument.builder().eventId(UUID.randomUUID()).orderId(saved.getOrderId().value())
-    .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
-        System.out.println("Publish payment success event");
-    final var savedPaymentSuccessEvent = paymentSuccessRepo.save(newPaymentSuccessEvent);
-    final var newOnlinePaymentSuccess = OnlinePaymentSuccessDocument.builder().eventId(UUID.randomUUID())
-    .orderId(saved.getOrderId().value())
-    .userEmail(saved.getUserEmail().value())
-    .eventStatus("PENDING")
-    .userId(saved.getUserId().value())
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
-    final var savedEvent = onlinePaymentSuccessRepo.save(newOnlinePaymentSuccess);
-     TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                eventPort.publishOnlinePaymentSuccess(savedEvent);
-                eventPort.publishPaymentSuccess(savedPaymentSuccessEvent);
-            }
-        });
+    // Tạo các tài liệu sự kiện (Outbox Pattern)
+    PaymentSuccessDocument paymentEvent = createPaymentSuccessEvent(saved);
+    OnlinePaymentSuccessDocument onlineEvent = createOnlinePaymentSuccessEvent(saved);
+
+    final var savedPaymentSuccessEvent = paymentSuccessRepo.save(paymentEvent);
+    final var savedOnlineEvent = onlinePaymentSuccessRepo.save(onlineEvent);
+
+    // Đăng ký bắn tin nhắn sau khi DB commit thành công
+    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+        @Override
+        public void afterCommit() {
+            eventPort.publishOnlinePaymentSuccess(savedOnlineEvent);
+            eventPort.publishPaymentSuccess(savedPaymentSuccessEvent);
+            log.info("Đã publish thành công các event thanh toán cho đơn: {}", saved.getOrderId().value());
+        }
+    });
 }
 
+// --- Helper methods để tạo Document ---
+private PaymentSuccessDocument createPaymentSuccessEvent(Payment p) {
+    return PaymentSuccessDocument.builder()
+            .eventId(UUID.randomUUID())
+            .orderId(p.getOrderId().value())
+            .eventStatus("PENDING").retryCount(0)
+            .createdAt(Instant.now()).build();
+}
+
+private OnlinePaymentSuccessDocument createOnlinePaymentSuccessEvent(Payment p) {
+    return OnlinePaymentSuccessDocument.builder()
+            .eventId(UUID.randomUUID())
+            .orderId(p.getOrderId().value())
+            .userEmail(p.getUserEmail().value())
+            .userId(p.getUserId().value())
+            .eventStatus("PENDING").retryCount(0)
+            .createdAt(Instant.now()).build();
+}
 }
