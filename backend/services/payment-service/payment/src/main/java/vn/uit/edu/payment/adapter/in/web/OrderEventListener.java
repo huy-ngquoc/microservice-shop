@@ -9,8 +9,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +31,7 @@ import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.OrderId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -51,6 +50,8 @@ public class OrderEventListener {
     private final CancellPaymentLinkPort cancelPaymentLinkPort;
     private final PaymentCreatedFailedRepository paymentCreatedFailRepo;
     private final PublishPaymentEventPort publishEventPort;
+    private final PaymentCreatedFailService paymentCreatedFailService;
+    
 
     @KafkaHandler
     
@@ -62,16 +63,7 @@ public class OrderEventListener {
         eventDocumentRepo.save(new EventDocument(event.eventId(), Instant.now()));
         }
     }
-    @jakarta.transaction.Transactional
-    public void saveAndSendPaymentCreatedFail(PaymentCreatedFailDocument document) {
-        final var savedEvent = paymentCreatedFailRepo.save(document);
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishEventPort.publishPaymentCreatedFail(savedEvent);
-            }
-        });
-    }
+    
     @DltHandler
     public void paymentCreatedFail(OrderCreated event) {
         PaymentCreatedFailDocument document = PaymentCreatedFailDocument.builder()
@@ -83,7 +75,7 @@ public class OrderEventListener {
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null).build();
-        saveAndSendPaymentCreatedFail(document);
+        paymentCreatedFailService.saveAndSendPaymentCreatedFail(document);
 
     }
     @KafkaHandler
@@ -109,6 +101,9 @@ public class OrderEventListener {
                     if(p==null) return;
                     PaybackPayments newPaybackPayment = PaybackPayments.builder().userId(event.getUserId()).value(p.getPaymentValue().value()).build();
                     paybackPaymentRepo.save(newPaybackPayment);
+                }
+                if(event.getStatus().equals("PAYMENT_EXPIRED")) {
+                    handleOnlinePaymentCancelled(event.getOrderId());
                 }
             }
         }

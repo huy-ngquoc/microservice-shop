@@ -23,7 +23,7 @@ import vn.uit.edu.payment.domain.model.valueobject.UpdateAt;
 @Service
 @RequiredArgsConstructor
 public class CreatePaymentService implements CreatePaymentUseCase {
-    private final CheckOrderPort checkOrderPort;
+    //private final CheckOrderPort checkOrderPort;
     private final SavePaymentPort savePort;
     private final PublishPaymentEventPort eventPort;
     private final PaymentViewMapper mapper;
@@ -32,7 +32,7 @@ public class CreatePaymentService implements CreatePaymentUseCase {
     @Override
     @Transactional
     public PaymentView create(CreatePaymentCommand command) {
-        checkOrderPort.checkOrder(command.paymentId(), command.paymentValue(), command.orderId());
+        //checkOrderPort.checkOrder(command.paymentId(), command.paymentValue(), command.orderId());
         Payment p = loadPort.loadPaymentByOrderId(command.orderId());
         if(p!=null) throw new RuntimeException("Payment for this order already exist");
         final var draft = Payment.Draft.builder().paymentId(command.paymentId()).createAt(new CreateAt(Instant.now())).currency(command.currency()).orderId(command.orderId()).paymentMethod(command.paymentMethod())

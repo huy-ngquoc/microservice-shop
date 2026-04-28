@@ -12,6 +12,6 @@ import vn.uit.edu.msshop.order.adapter.in.web.response.PaymentResponse;
 
 @FeignClient(name="payment-service")
 public interface PaymentChecker {
-    @GetMapping("/public/order/{orderId}")
+    @GetMapping("/payment/public/order/{orderId}")
     public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId);
 }

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class PaymentLinkCreatedDocument {
+    @Id
     private UUID eventId;
     private String paymentLink;
     private UUID orderId;

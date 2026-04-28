@@ -50,12 +50,13 @@ spring:
                     CodPaymentCreated:vn.uit.edu.payment.domain.event.CodPaymentCreated,
                     PaymentSuccess:vn.uit.edu.payment.domain.event.PaymentSuccess,
                     PaymentLinkCreated:vn.uit.edu.payment.domain.event.PaymentLinkCreated,
-                    OnlinePaymentSuccess:vn.uit.edu.payment.domain.event.OnlinePaymentSuccess
+                    OnlinePaymentSuccess:vn.uit.edu.payment.domain.event.OnlinePaymentSuccess,
+                    PaymentCreatedFail:vn.uit.edu.payment.domain.event.PaymentCreatedFail
 logging:
   level:
     org.apache.kafka: ERROR
     org.springframework.kafka: ERROR
 payos:
-    client-id:
-    api-key:
+    client-id: 
+    api-key: 
     checksum-key: 

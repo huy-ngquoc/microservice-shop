@@ -9,8 +9,6 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderOutbox;
@@ -81,14 +79,7 @@ public class ProcessOrderService implements ProcessOrderUseCase {
         inventoryUpdatedRepo.saveAll(events);
         savePort.saveAll(toSaves);
         System.out.println("Tao don hang thanh cong");
-         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                for(final var event:events) {
-                    publishPort.publishInventoryUpdateEvent(event);
-                }
-            }
-        });
+        
     
 
 

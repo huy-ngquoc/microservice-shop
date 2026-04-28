@@ -7,5 +7,5 @@ import java.util.UUID;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface OrderRepository extends MongoRepository<OrderDocument, UUID>{
-    public List<OrderDocument> findTop50ByStatusAndPaymentMethodAndCreatedAtBefore(String status,String paymentMethod,Instant threshold);
+    public List<OrderDocument> findTop50ByStatusAndPaymentMethodAndCreateAtBefore(String status,String paymentMethod,Instant threshold);
 }

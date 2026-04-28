@@ -143,14 +143,17 @@ public class InventoryController {
     }
     @PostMapping("/public/process_order_outbox")
     public ResponseEntity<String> process(@RequestBody OrderOutbox request) {
+        System.out.println("Bat dau");
         try {
             processOrderUseCase.processOrderOutbox(request);
+            System.out.println("Xong");
             return ResponseEntity.ok("Thanh cong");
         } catch (RuntimeException e) {
             if(e.getMessage().equals("Trung du lieu")) return ResponseEntity.ok("Trung du lieu");
             if(e instanceof InsufficientStockException) return ResponseEntity.badRequest().build();
             throw e;
         }
+        
     }
 
 

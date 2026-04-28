@@ -38,7 +38,8 @@ spring:
                     ProductDeleted:vn.uit.edu.msshop.order.domain.event.product.ProductDeleted,
                     PaymentSuccess:vn.uit.edu.msshop.order.domain.event.PaymentSuccess,
                     PaymentLinkCreated:java.lang.Object,
-                    OnlinePaymentSuccess:java.lang.Object
+                    OnlinePaymentSuccess:java.lang.Object,
+                    PaymentCreatedFail:vn.uit.edu.msshop.order.domain.event.PaymentCreatedFail
         producer:
             bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
