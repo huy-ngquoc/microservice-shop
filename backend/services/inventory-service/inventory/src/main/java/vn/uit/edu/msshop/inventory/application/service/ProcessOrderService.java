@@ -78,7 +78,7 @@ public class ProcessOrderService implements ProcessOrderUseCase {
     
         inventoryUpdatedRepo.saveAll(events);
         savePort.saveAll(toSaves);
-        System.out.println("Tao don hang thanh cong");
+        //System.out.println("Tao don hang thanh cong");
         
     
 
