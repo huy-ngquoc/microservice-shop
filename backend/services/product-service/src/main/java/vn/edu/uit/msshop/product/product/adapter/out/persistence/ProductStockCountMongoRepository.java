@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductSoldCountMongoRepository
-        extends MongoRepository<ProductSoldCountDocument, UUID> {
+public interface ProductStockCountMongoRepository
+        extends MongoRepository<ProductStockCountDocument, UUID> {
 }

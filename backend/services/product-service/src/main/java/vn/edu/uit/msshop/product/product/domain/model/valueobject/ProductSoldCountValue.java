@@ -18,6 +18,7 @@ public record ProductSoldCountValue(
 
     public ProductSoldCountValue increase(
             final int increment) {
+        // TODO: should check, because there maybe negative?
         if (increment < 0) {
             throw new DomainException("Product sold count increment cannot be negative");
         }
