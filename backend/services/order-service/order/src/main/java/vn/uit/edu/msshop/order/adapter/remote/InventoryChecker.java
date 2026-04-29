@@ -22,6 +22,8 @@ public interface InventoryChecker {
     List<InventoryResponse> getInventoryBatch(
         @RequestBody List<UUID> variantIds
     );
+    @PostMapping("/inventory/public/variants")
+    public ResponseEntity<List<InventoryResponse>> getByVariantIds(@RequestBody List<UUID> variantIds);
     @PostMapping("/inventory/public/process_order")
     void processOrder(@RequestBody List<OrderDetailRequest> requests);
     @PostMapping("/inventory/public/create") 

@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderOutbox;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.response.InventoryResponse;
+import vn.uit.edu.msshop.inventory.adapter.out.persistence.SpringDataInventoryJpaRepository;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.application.exception.InsufficientStockException;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
@@ -51,6 +53,13 @@ public class InventoryController {
     private final CreateInventoryUseCase createUseCase;
    
     private final ProcessOrderUseCase processOrderUseCase;
+    private final SpringDataInventoryJpaRepository inventoryRepo;
+
+    @DeleteMapping("/clear")
+    public ResponseEntity<Void> clearDB() {
+        inventoryRepo.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
     
     @GetMapping("/")
     public ResponseEntity<Page<InventoryResponse>> getAll(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestParam(defaultValue="7") int pageSize, @RequestParam(defaultValue="0") int pageNumber) {
@@ -101,14 +110,14 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
-    /*@PostMapping("/public/variants")
+    @PostMapping("/public/variants")
     public ResponseEntity<List<InventoryResponse>> getByVariantIds(@RequestBody List<UUID> variantIds) {
         
         List<VariantId> listIds = variantIds.stream().map(item->new VariantId(item)).toList();
-        List<InventoryView> views = findUseCase.findByListVariantIdFromRedis(listIds);
+        List<InventoryView> views = findUseCase.findByListVariantId(listIds);
         return ResponseEntity.ok(views.stream().map(mapper::toResponse).toList());
     }
-   */
+   
     @PutMapping("/")
     public ResponseEntity<InventoryResponse> update(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestBody UpdateInventoryRequest request) {
         if(!checkPermission.isAdmin(role)) {
