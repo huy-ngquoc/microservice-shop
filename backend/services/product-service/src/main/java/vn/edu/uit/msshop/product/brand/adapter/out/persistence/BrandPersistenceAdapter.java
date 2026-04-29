@@ -2,8 +2,6 @@ package vn.edu.uit.msshop.product.brand.adapter.out.persistence;
 
 import java.util.Optional;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +17,7 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBr
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.shared.adapter.out.persistence.PageRequests;
 import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 
@@ -40,7 +39,7 @@ public class BrandPersistenceAdapter
     @Override
     public PageResponseDto<Brand> list(
             final PageRequestDto pageRequest) {
-        final var pageable = BrandPersistenceAdapter.toPageable(
+        final var pageable = PageRequests.toPageable(
                 pageRequest,
                 BrandDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNull(pageable);
@@ -59,7 +58,7 @@ public class BrandPersistenceAdapter
     @Override
     public PageResponseDto<Brand> listSoftDeleted(
             final PageRequestDto pageRequest) {
-        final var pageable = BrandPersistenceAdapter.toPageable(
+        final var pageable = PageRequests.toPageable(
                 pageRequest,
                 BrandDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNotNull(pageable);
@@ -122,20 +121,5 @@ public class BrandPersistenceAdapter
             final BrandId id) {
         final var jpaId = id.value();
         this.repository.deleteById(jpaId);
-    }
-
-    private static PageRequest toPageable(
-            final PageRequestDto request,
-            final String defaultSortField) {
-        final var direction = switch (request.direction()) {
-            case ASC -> Sort.Direction.ASC;
-            case DESC -> Sort.Direction.DESC;
-        };
-
-        final var sortBy = request.sortBy();
-        final var sortField = (sortBy != null) ? sortBy : defaultSortField;
-        final var sort = Sort.by(direction, sortField);
-
-        return PageRequest.of(request.page(), request.size(), sort);
     }
 }
