@@ -20,8 +20,8 @@ import vn.edu.uit.msshop.product.category.application.dto.command.RestoreCategor
 import vn.edu.uit.msshop.product.category.application.dto.command.SoftDeleteCategoryCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
-import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
-import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
+import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView;
+import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;

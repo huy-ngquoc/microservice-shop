@@ -2,8 +2,8 @@ package vn.edu.uit.msshop.product.category.application.mapper;
 
 import org.springframework.stereotype.Component;
 
-import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
-import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
+import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView;
+import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 

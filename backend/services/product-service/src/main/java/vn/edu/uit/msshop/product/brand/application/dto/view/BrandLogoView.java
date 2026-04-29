@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.brand.application.dto.query;
+package vn.edu.uit.msshop.product.brand.application.dto.view;
 
 import java.util.UUID;
 

@@ -1,14 +1,16 @@
-package vn.edu.uit.msshop.product.variant.application.dto.query;
+package vn.edu.uit.msshop.product.brand.application.dto.view;
 
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
-public record VariantImageView(
+public record BrandView(
         UUID id,
 
+        String name,
+
         @Nullable
-        String imageKey,
+        String logoKey,
 
         long version) {
 }

@@ -1,11 +1,13 @@
-package vn.edu.uit.msshop.product.category.application.dto.query;
+package vn.edu.uit.msshop.product.category.application.dto.view;
 
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
-public record CategoryImageView(
+public record CategoryView(
         UUID id,
+
+        String name,
 
         @Nullable
         String imageKey,
