@@ -22,9 +22,9 @@ public class CleanExpiredOrderService implements CleanExpiredOrderPort {
     private final CheckOrderService checkOrderService;
     private final TaskExecutor taskExecutor;
     @Override
-    @Scheduled(fixedRate=6000)
+    @Scheduled(fixedRate=6000*100)
     public void clean() {
-        Instant threshold=Instant.now().minus(15, ChronoUnit.MINUTES);
+        Instant threshold=Instant.now().minus(10, ChronoUnit.MINUTES);
         //System.out.println("Call schedule clean order");
         List<Order> orders = orderRepo.findTop50ByStatusAndPaymentMethodAndUpdateAtBefore("CONFIRMED","ONLINE", threshold).stream().map(mapper::toDomain).toList();
         for(Order order:orders) {

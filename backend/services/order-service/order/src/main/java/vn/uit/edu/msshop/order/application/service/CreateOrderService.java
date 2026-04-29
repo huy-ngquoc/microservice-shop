@@ -9,19 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
-import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedDocumentRepository;
-import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderCreatedSuccessDocumentRepository;
-import vn.uit.edu.msshop.order.adapter.out.event.repositories.inventory.OrderCreatedInventoryDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutbox;
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutboxRepository;
-import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.dto.command.CreateOrderCommand;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.CheckUserPort;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderDetailPort;
-import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
-import vn.uit.edu.msshop.order.application.port.out.SaveRedisStreamPort;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.CreateAt;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
@@ -68,12 +62,9 @@ public class CreateOrderService implements CreateOrderUseCase {
     private final SaveOrderPort savePort;
     private final LoadOrderDetailPort loadOrderDetailPort;
     private final CheckUserPort checkUserPort;
-    private final PublishOrderEventPort publishPort;
-    private final InventoryChecker inventoryChecker;
-    private final OrderCreatedDocumentRepository orderCreatedDocumentRepo;
-    private final OrderCreatedSuccessDocumentRepository orderCreatedSuccessDocumentRepo;
-    private final OrderCreatedInventoryDocumentRepository orderCreatedInventoryDocumentRepository;
-    private final SaveRedisStreamPort saveRedisStreamPort;
+    
+   
+    
     private final OrderOutboxRepository orderOutboxRepo;
     
 /*private String currency;

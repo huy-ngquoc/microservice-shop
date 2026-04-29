@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderUpdatedEventDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentCancelledDocumentRepository;
-import vn.uit.edu.msshop.order.adapter.out.event.repositories.CodPaymentReceivedDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderUpdatedRepository;
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
@@ -41,8 +39,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
     private final SaveOrderPort saveOrderPort;
     private final PublishOrderEventPort publishEventPort;
     private final CheckPermissionUseCase checkPermission;
-    private final CodPaymentCancelledDocumentRepository codPaymentCancelledDocumentRepo;
-    private final CodPaymentReceivedDocumentRepository codPaymentReceivedDocumentRepo;
+   
    
     private final OrderUpdatedRepository orderUpdatedRepo;
     private final InventoryChecker inventoryChecker;

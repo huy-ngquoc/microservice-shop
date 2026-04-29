@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.adapter.out.event.documents;
+package vn.uit.edu.msshop.order.test;
 
 import java.util.UUID;
 
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class IncreaseSoldCountDetailDocument {
+public class VariantSumDto {
     private UUID variantId;
     private int amount;
 }

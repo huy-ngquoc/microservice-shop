@@ -15,7 +15,7 @@ public class OrderOutboxWorker {
     private final OrderOutboxRepository orderOutboxRepo;
     private final OrderOutboxProcessor processor;
     private final TaskExecutor taskExecutor;
-    @Scheduled(fixedRate=5000)
+    @Scheduled(fixedRate=10000)
     public void proccessPendingOrder() {
         List<OrderOutbox> outboxes = orderOutboxRepo.findTop50ByOutboxStatusOrderByCreatedAtAsc("PENDING");
         //System.out.println(outboxes.size());

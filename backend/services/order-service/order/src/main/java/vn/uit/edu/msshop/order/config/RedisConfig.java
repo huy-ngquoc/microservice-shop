@@ -23,7 +23,7 @@ import org.springframework.data.redis.stream.Subscription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import vn.uit.edu.msshop.order.adapter.in.web.OrderRedisConsumer;
+
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderDocument;
 
 @Configuration
