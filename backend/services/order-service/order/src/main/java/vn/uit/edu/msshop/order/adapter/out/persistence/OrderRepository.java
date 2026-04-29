@@ -8,4 +8,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface OrderRepository extends MongoRepository<OrderDocument, UUID>{
     public List<OrderDocument> findTop50ByStatusAndPaymentMethodAndUpdateAtBefore(String status,String paymentMethod,Instant threshold);
+    public long countByStatus(String status);
+    public long countByStatusAndPaymentStatus(String status, String paymentStatus);
 }
