@@ -109,11 +109,11 @@ public class VariantToProductSyncAdapter
     @Override
     public void increaseAllSoldCounts(
             final Map<VariantProductId, Integer> incrementByProductId) {
-        final var commandItems = incrementByProductId.entrySet().stream()
-                .map(VariantToProductSyncAdapter::toCommandItem)
-                .toList();
-        this.increaseProductSoldCountsForVariantUseCase.execute(
-                new IncreaseProductSoldCountsForVariantCommand(commandItems));
+        final var incrementById = incrementByProductId.entrySet().stream()
+                .collect(VariantToProductSyncAdapter.INCREMENT_BY_PRODUCT_ID_COLLECTOR);
+
+        final var command = new IncreaseProductSoldCountsForVariantCommand(incrementById);
+        this.increaseProductSoldCountsForVariantUseCase.execute(command);
     }
 
     @Override
@@ -121,14 +121,8 @@ public class VariantToProductSyncAdapter
             final Map<VariantProductId, Integer> incrementByProductId) {
         final var incrementById = incrementByProductId.entrySet().stream()
                 .collect(VariantToProductSyncAdapter.INCREMENT_BY_PRODUCT_ID_COLLECTOR);
-        this.increaseProductStockCountsForVariantsUseCase.execute(
-                new IncreaseProductStockCountsForVariantsCommand(incrementById));
-    }
 
-    private static IncreaseProductSoldCountsForVariantCommand.Item toCommandItem(
-            final Map.Entry<VariantProductId, Integer> entry) {
-        return new IncreaseProductSoldCountsForVariantCommand.Item(
-                new ProductId(entry.getKey().value()),
-                entry.getValue());
+        final var command = new IncreaseProductStockCountsForVariantsCommand(incrementById);
+        this.increaseProductStockCountsForVariantsUseCase.execute(command);
     }
 }

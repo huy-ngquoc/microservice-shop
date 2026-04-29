@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantOrderSoldCount;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.SetVariantSoldCountsUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantSoldCountsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
@@ -23,8 +23,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCou
 
 @Service
 @RequiredArgsConstructor
-public class SetVariantSoldCountsService
-        implements SetVariantSoldCountsUseCase {
+public class SetAllVariantSoldCountsService
+        implements SetAllVariantSoldCountsUseCase {
     private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
     private final UpdateAllVariantSoldCountsPort updateAllSoldCountsPort;
     private final IncreaseProductSoldCountsPort increaseProductSoldCountsPort;
@@ -50,7 +50,7 @@ public class SetVariantSoldCountsService
         final var currentByVariantId = this.loadAllSoldCountsPort.loadAllByIds(variantIds);
 
         return orderSoldCounts.stream()
-                .map(order -> SetVariantSoldCountsService.resolveOne(order, currentByVariantId))
+                .map(order -> SetAllVariantSoldCountsService.resolveOne(order, currentByVariantId))
                 .toList();
     }
 
@@ -74,7 +74,7 @@ public class SetVariantSoldCountsService
 
     private void propagateIncrements(
             final List<ResolvedSoldCount> resolved) {
-        final var incrementByProductId = SetVariantSoldCountsService.toIncrementByProductId(resolved);
+        final var incrementByProductId = SetAllVariantSoldCountsService.toIncrementByProductId(resolved);
         if (incrementByProductId.isEmpty()) {
             return;
         }

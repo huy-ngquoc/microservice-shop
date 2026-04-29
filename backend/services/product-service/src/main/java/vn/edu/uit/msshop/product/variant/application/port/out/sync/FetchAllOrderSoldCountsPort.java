@@ -4,6 +4,6 @@ import java.util.Collection;
 
 import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantOrderSoldCount;
 
-public interface FetchOrderSoldCountsPort {
+public interface FetchAllOrderSoldCountsPort {
     Collection<VariantOrderSoldCount> fetchAll();
 }

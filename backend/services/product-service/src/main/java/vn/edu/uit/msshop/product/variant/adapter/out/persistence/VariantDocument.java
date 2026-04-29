@@ -19,7 +19,6 @@ import lombok.experimental.FieldNameConstants;
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
 @FieldNameConstants
-// TODO: add field "stockAmount"
 public final class VariantDocument {
     @Id
     @EqualsAndHashCode.Include

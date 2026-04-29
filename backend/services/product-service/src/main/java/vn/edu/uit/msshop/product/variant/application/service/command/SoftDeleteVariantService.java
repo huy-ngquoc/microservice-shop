@@ -24,6 +24,7 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
     private final RemoveVariantFromProductPort removeFromProductPort;
     private final PublishVariantEventPort eventPort;
 
+    // TODO: adjust product sold count and stock count for variant.
     @Override
     @Transactional
     public void delete(
