@@ -1,6 +1,7 @@
 package vn.uit.edu.msshop.inventory.adapter.out.persistence;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +77,7 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
     @Override
     @Transactional
     public List<Inventory> findByListVariantId(List<VariantId> variantIds) {
-        List<InventoryJpaEntity> result = repository.findByVariantIdIn(variantIds.stream().map(item->item.value()).toList());
+        List<InventoryJpaEntity> result = repository.findByVariantIdInAndStatus(variantIds.stream().map(item->item.value()).toList(),"ENABLE");
         return result.stream().map(mapper::toDomain).toList();
     }
 
@@ -145,5 +146,17 @@ public class InventoryPersistenceAdapter implements LoadInventoryPort, SaveInven
     public List<Inventory> saveToRedis(List<Inventory> inventories) {
         return inventories.stream().map(this::saveToRedis).toList();
 
+    }
+
+    @Override
+    public List<Inventory> findAllByListVariantId(List<VariantId> variantIds) {
+        List<InventoryJpaEntity> result = repository.findByVariantIdIn(variantIds.stream().map(item->item.value()).toList());
+        return result.stream().map(mapper::toDomain).toList();
+    }
+
+    @Override
+    public Page<Inventory> findAllUpdatedInventory(Instant startFirst, Instant endFirst, Instant startSecond, Instant endSecond, Pageable pageable) {
+        Page<InventoryJpaEntity> result = repository.findByCreateAtBetweenOrLastUpdateBetween(startFirst, endFirst, startSecond, endSecond, pageable);
+        return result.map(mapper::toDomain);
     }
 }

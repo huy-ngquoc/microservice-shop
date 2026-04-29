@@ -34,6 +34,7 @@ public class InventoryJpaEntity {
     private int reservedQuantity;
     private Instant lastUpdate;
     private String status;
+    private Instant createAt;
 
     @Version
     @Column(
@@ -41,7 +42,8 @@ public class InventoryJpaEntity {
     private long version;
 
     public static InventoryJpaEntity of(UUID variantId, int quantity, int reservedQuantity, Instant lastUpdate, String status) {
-        return InventoryJpaEntity.builder().variantId(variantId).quantity(quantity).reservedQuantity(reservedQuantity).lastUpdate(lastUpdate).version(0L).status(status).build();
+        return InventoryJpaEntity.builder().variantId(variantId).quantity(quantity).reservedQuantity(reservedQuantity).lastUpdate(lastUpdate).version(0L).status(status)
+        .createAt(Instant.now()).build();
     }
 
     

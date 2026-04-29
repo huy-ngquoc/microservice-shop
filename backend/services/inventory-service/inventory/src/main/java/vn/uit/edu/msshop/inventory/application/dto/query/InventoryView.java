@@ -17,4 +17,5 @@ public class InventoryView {
     private int reservedQuantity;
     private Instant lastUpdate;
     private String status;
+    private Instant createAt;
 }

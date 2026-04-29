@@ -6,9 +6,9 @@ import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.uit.edu.msshop.inventory.application.exception.InsufficientStockException;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.CreateAt;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryStatus;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.LastUpdate;
@@ -31,6 +31,7 @@ public class Inventory  {
     private LastUpdate lastUpdate;
     private Version version;
     private InventoryStatus status;
+    private CreateAt createAt;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -64,7 +65,8 @@ public class Inventory  {
         ReservedQuantity reservedQuantity,
         LastUpdate lastUpdate,
         InventoryStatus status,
-        Version version
+        Version version,
+        CreateAt createAt
     ) {
 
     }
@@ -74,26 +76,27 @@ public class Inventory  {
     public static record UpdateInfo (
         InventoryId inventoryId,
         Quantity quantity,
-        ReservedQuantity reservedQuantity
+        ReservedQuantity reservedQuantity,
+        InventoryStatus status
     )  {}
 
     public static Inventory create(Draft draft) {
         if(draft==null) throw new IllegalArgumentException("Invalid draft");
-        return Inventory.builder().id(draft.id()).variantId(draft.variantId()).quantity(draft.quantity()).reservedQuantity(draft.reservedQuantity()).lastUpdate(new LastUpdate(null)).status(new InventoryStatus("ENABLE")).version(new Version(0)).build();
+        return Inventory.builder().id(draft.id()).variantId(draft.variantId()).quantity(draft.quantity()).reservedQuantity(draft.reservedQuantity()).lastUpdate(new LastUpdate(null)).status(new InventoryStatus("ENABLE")).version(new Version(0)).createAt(new CreateAt(Instant.now())).build();
     }
 
     public static Inventory reconstitue(Snapshot s) {
         if(s==null) throw new IllegalArgumentException("Invalid snapshot");
-        return Inventory.builder().id(s.id()).variantId(s.variantId()).quantity(s.quantity()).reservedQuantity(s.reservedQuantity()).lastUpdate(new LastUpdate(null)).version(s.version()).status(s.status()).build();
+        return Inventory.builder().id(s.id()).variantId(s.variantId()).quantity(s.quantity()).reservedQuantity(s.reservedQuantity()).lastUpdate(s.lastUpdate()).version(s.version()).status(s.status()).createAt(s.createAt).build();
     }
 
     public Snapshot snapshot() {
-        return Snapshot.builder().id(this.id).variantId(this.variantId).quantity(this.quantity).reservedQuantity(this.reservedQuantity).lastUpdate(this.lastUpdate).status(this.status).build();
+        return Snapshot.builder().id(this.id).variantId(this.variantId).quantity(this.quantity).reservedQuantity(this.reservedQuantity).lastUpdate(this.lastUpdate).status(this.status).createAt(this.createAt).build();
     }
     public Inventory applyUpdateInfo(UpdateInfo u) {
         if(u==null) throw new IllegalArgumentException("Update info must not be null");
         if(isTheSameInfoWithUpdate(u)) return this;
-        return Inventory.builder().id(this.id).variantId(this.variantId).quantity(u.quantity()).reservedQuantity(u.reservedQuantity()).lastUpdate(new LastUpdate(Instant.now())).version(this.version).status(this.status).build();
+        return Inventory.builder().id(this.id).variantId(this.variantId).quantity(u.quantity()).reservedQuantity(u.reservedQuantity()).lastUpdate(new LastUpdate(Instant.now())).version(this.version).status(u.status).createAt(this.createAt).build();
     }
     private boolean isTheSameInfoWithUpdate(UpdateInfo u) {
         return u.quantity().value()==this.quantity.value()&&u.reservedQuantity().value()==this.reservedQuantity.value();
@@ -104,11 +107,13 @@ public class Inventory  {
     }
     this.quantity = new Quantity(this.quantity.value() - amount);
     this.reservedQuantity = new ReservedQuantity(this.reservedQuantity.value() + amount);
+    this.lastUpdate=new LastUpdate(Instant.now());
 }
 
 public void releaseReservedStock(int amount) {
     this.reservedQuantity = new ReservedQuantity(this.reservedQuantity.value() - amount);
     this.quantity = new Quantity(this.quantity.value() + amount);
+    this.lastUpdate=new LastUpdate(Instant.now());
 }
 public Inventory disable() {
     return Inventory.builder().id(this.id).variantId(this.variantId).quantity(this.quantity).reservedQuantity(this.reservedQuantity).lastUpdate(new LastUpdate(Instant.now())).version(this.version).status(new InventoryStatus("DISABLE")).build();

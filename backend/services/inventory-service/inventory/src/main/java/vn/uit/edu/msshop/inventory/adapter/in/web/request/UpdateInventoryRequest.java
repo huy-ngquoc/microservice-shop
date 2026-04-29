@@ -14,4 +14,5 @@ public class UpdateInventoryRequest {
     private UUID variantId;
     private ChangeRequest<Integer> newQuantity;
     private ChangeRequest<Integer> newReservedQuantity;
+    private ChangeRequest<String> newInventoryStatus;
 }
