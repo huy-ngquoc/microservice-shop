@@ -20,8 +20,8 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.RestoreBrandComma
 import vn.edu.uit.msshop.product.brand.application.dto.command.SoftDeleteBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandInfoCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandLogoCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.query.BrandLogoView;
-import vn.edu.uit.msshop.product.brand.application.dto.query.BrandView;
+import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
+import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;

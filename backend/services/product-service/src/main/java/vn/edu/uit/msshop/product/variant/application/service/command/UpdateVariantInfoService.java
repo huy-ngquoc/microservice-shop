@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.shared.application.dto.Change;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
+import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantInfoUseCase;

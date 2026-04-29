@@ -2,8 +2,8 @@ package vn.edu.uit.msshop.product.variant.application.mapper;
 
 import org.springframework.stereotype.Component;
 
-import vn.edu.uit.msshop.product.variant.application.dto.query.VariantImageView;
-import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
+import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
+import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
