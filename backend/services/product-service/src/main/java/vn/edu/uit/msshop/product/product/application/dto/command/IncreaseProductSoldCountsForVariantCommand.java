@@ -1,18 +1,12 @@
 package vn.edu.uit.msshop.product.product.application.dto.command;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 public record IncreaseProductSoldCountsForVariantCommand(
-        Collection<Item> items) {
-    public record Item(
-            ProductId productId,
-            int soldCountIncrement) {
-    }
-
+        Map<ProductId, Integer> incrementById) {
     public IncreaseProductSoldCountsForVariantCommand {
-        items = List.copyOf(items);
+        incrementById = Map.copyOf(incrementById);
     }
 }

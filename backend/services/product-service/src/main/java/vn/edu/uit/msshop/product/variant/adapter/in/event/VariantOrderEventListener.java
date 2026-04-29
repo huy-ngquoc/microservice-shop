@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.in.event.payload.SetVariantSoldCountsEvent;
 import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantOrderSoldCount;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.SetVariantSoldCountsUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantSoldCountsUseCase;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCountValue;
 
@@ -17,7 +17,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCou
         groupId = "product-service")
 @RequiredArgsConstructor
 public class VariantOrderEventListener {
-    private final SetVariantSoldCountsUseCase setVariantSoldCountsUseCase;
+    private final SetAllVariantSoldCountsUseCase setAllUseCase;
 
     @KafkaHandler
     public void onSetSoldCounts(
@@ -26,7 +26,7 @@ public class VariantOrderEventListener {
                 .map(VariantOrderEventListener::toOrderSoldCount)
                 .toList();
 
-        this.setVariantSoldCountsUseCase.execute(orderSoldCounts);
+        this.setAllUseCase.execute(orderSoldCounts);
     }
 
     private static VariantOrderSoldCount toOrderSoldCount(

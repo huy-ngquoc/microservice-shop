@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantOrderSoldCount;
 
-public interface SetVariantSoldCountsUseCase {
+public interface SetAllVariantSoldCountsUseCase {
     void execute(
             final Collection<VariantOrderSoldCount> orderSoldCounts);
 }
