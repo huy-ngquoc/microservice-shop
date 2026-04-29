@@ -15,6 +15,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVaria
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
@@ -28,6 +29,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
     private final LoadVariantPort loadPort;
     private final LoadVariantSoldCountPort loadSoldCountPort;
+    private final LoadVariantStockCountPort loadStockCountPort;
     private final UpdateVariantPort updatePort;
     private final UpdateVariantInProductPort updateInProductPort;
     private final PublishVariantEventPort eventPort;
@@ -45,6 +47,9 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
                 id,
                 variant.getProductId());
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
+                id,
+                variant.getProductId());
 
         final var priceSet = command.price().getSet();
         final var traitsSet = command.traits().getSet();
@@ -55,7 +60,8 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
                 && (targetsSet == null)) {
             return this.mapper.toView(
                     variant,
-                    soldCount);
+                    soldCount,
+                    stockCount);
         }
 
         final var expectedVersion = command.expectedVersion();
@@ -74,7 +80,8 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         if (next == null) {
             return this.mapper.toView(
                     variant,
-                    soldCount);
+                    soldCount,
+                    stockCount);
         }
 
         final var saved = this.updatePort.update(next);
@@ -84,7 +91,8 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
 
         return this.mapper.toView(
                 saved,
-                soldCount);
+                soldCount,
+                stockCount);
     }
 
     private static @Nullable Variant applyChanges(

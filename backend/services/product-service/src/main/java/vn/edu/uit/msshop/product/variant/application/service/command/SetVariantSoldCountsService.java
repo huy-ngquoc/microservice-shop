@@ -78,7 +78,7 @@ public class SetVariantSoldCountsService
         if (incrementByProductId.isEmpty()) {
             return;
         }
-        this.increaseProductSoldCountsPort.increaseAll(incrementByProductId);
+        this.increaseProductSoldCountsPort.increaseAllSoldCounts(incrementByProductId);
     }
 
     private static Map<VariantProductId, Integer> toIncrementByProductId(

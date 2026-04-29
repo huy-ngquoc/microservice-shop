@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
+// TODO: add "Targets"
 public record VariantResponse(
         UUID id,
 
@@ -15,6 +16,8 @@ public record VariantResponse(
         long price,
 
         int soldCount,
+
+        int stockCount,
 
         List<String> traits,
 

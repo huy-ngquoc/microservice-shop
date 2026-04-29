@@ -17,6 +17,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProdu
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteVariantsForProductPort;
@@ -46,6 +47,7 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
     private final CreateAllProductVariantsPort createVariantsPort;
     private final UpdateAllProductVariantTraitsPort updateAllVariantTraitsPort;
     private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductStockCountPort loadStockCountPort;
     private final LoadProductRatingPort loadRatingPort;
     private final PublishProductEventPort eventPort;
     private final ProductViewMapper mapper;
@@ -79,16 +81,16 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
         final var savedProduct = this.updatePort.update(next);
         final var savedProductId = savedProduct.getId();
 
-        final var soldCount = this.loadSoldCountPort.loadById(savedProductId)
-                .orElse(ProductSoldCount.zero(savedProductId));
-        final var rating = this.loadRatingPort.loadById(savedProductId)
-                .orElse(ProductRating.zero(savedProductId));
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
+        final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
 
         this.eventPort.publish(new ProductUpdated(savedProductId));
 
         return this.mapper.toView(
                 savedProduct,
                 soldCount,
+                stockCount,
                 rating);
     }
 

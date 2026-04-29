@@ -1,16 +1,20 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.sync;
 
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.IncreaseProductSoldCountsForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.IncreaseProductStockCountsForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.IncreaseProductSoldCountsForVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.IncreaseProductStockCountsForVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
@@ -20,6 +24,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductStockCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -33,10 +38,20 @@ public class VariantToProductSyncAdapter
         AddVariantToProductPort,
         UpdateVariantInProductPort,
         IncreaseProductSoldCountsPort,
+        IncreaseProductStockCountsPort,
         RemoveVariantFromProductPort {
+    private static final Collector<
+            Map.Entry<VariantProductId, Integer>,
+            ?,
+            Map<ProductId, Integer>> INCREMENT_BY_PRODUCT_ID_COLLECTOR = Collectors
+                    .toUnmodifiableMap(
+                            entry -> new ProductId(entry.getKey().value()),
+                            Map.Entry::getValue);
+
     private final AddProductVariantForVariantUseCase addProductVariantForVariantUseCase;
     private final UpdateProductVariantForVariantUseCase updateProductVariantForVariantUseCase;
     private final IncreaseProductSoldCountsForVariantUseCase increaseProductSoldCountsForVariantUseCase;
+    private final IncreaseProductStockCountsForVariantsUseCase increaseProductStockCountsForVariantsUseCase;
     private final RemoveProductVariantForVariantUseCase removeProductVariantForVariantUseCase;
 
     @Override
@@ -92,13 +107,22 @@ public class VariantToProductSyncAdapter
     }
 
     @Override
-    public void increaseAll(
+    public void increaseAllSoldCounts(
             final Map<VariantProductId, Integer> incrementByProductId) {
         final var commandItems = incrementByProductId.entrySet().stream()
                 .map(VariantToProductSyncAdapter::toCommandItem)
                 .toList();
         this.increaseProductSoldCountsForVariantUseCase.execute(
                 new IncreaseProductSoldCountsForVariantCommand(commandItems));
+    }
+
+    @Override
+    public void increaseAllStockCounts(
+            final Map<VariantProductId, Integer> incrementByProductId) {
+        final var incrementById = incrementByProductId.entrySet().stream()
+                .collect(VariantToProductSyncAdapter.INCREMENT_BY_PRODUCT_ID_COLLECTOR);
+        this.increaseProductStockCountsForVariantsUseCase.execute(
+                new IncreaseProductStockCountsForVariantsCommand(incrementById));
     }
 
     private static IncreaseProductSoldCountsForVariantCommand.Item toCommandItem(

@@ -13,6 +13,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProdu
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
@@ -28,6 +29,7 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
     private final UpdateProductPort updatePort;
     private final CreateAllProductVariantsPort createAllVariantsPort;
     private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductStockCountPort loadStockCountPort;
     private final LoadProductRatingPort loadRatingPort;
     private final PublishProductEventPort eventPort;
     private final ProductViewMapper mapper;
@@ -76,6 +78,7 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
         final var savedProductId = savedProduct.getId();
 
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
         final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
 
         this.eventPort.publish(new ProductUpdated(savedProductId));
@@ -83,6 +86,7 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
         return this.mapper.toView(
                 savedProduct,
                 soldCount,
+                stockCount,
                 rating);
     }
 }

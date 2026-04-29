@@ -18,6 +18,8 @@ public record ProductView(
 
         int soldCount,
 
+        int stockCount,
+
         float ratingAverage,
 
         int ratingCount,

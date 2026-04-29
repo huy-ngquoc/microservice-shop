@@ -10,6 +10,7 @@ import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindSoftDeletedVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
@@ -17,6 +18,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 public class FindSoftDeletedVariantService implements FindSoftDeletedVariantUseCase {
     private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
     private final LoadVariantSoldCountPort loadSoldCountPort;
+    private final LoadVariantStockCountPort loadStockCountPort;
     private final VariantViewMapper mapper;
 
     @Override
@@ -30,9 +32,13 @@ public class FindSoftDeletedVariantService implements FindSoftDeletedVariantUseC
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
                 variant.getId(),
                 variant.getProductId());
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
+                variant.getId(),
+                variant.getProductId());
 
         return this.mapper.toView(
                 variant,
-                soldCount);
+                soldCount,
+                stockCount);
     }
 }

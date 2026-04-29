@@ -10,6 +10,7 @@ import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
@@ -17,6 +18,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 public class FindVariantService implements FindVariantUseCase {
     private final LoadVariantPort loadPort;
     private final LoadVariantSoldCountPort loadSoldCountPort;
+    private final LoadVariantStockCountPort loadStockCountPort;
     private final VariantViewMapper mapper;
 
     @Override
@@ -29,9 +31,13 @@ public class FindVariantService implements FindVariantUseCase {
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
                 variant.getId(),
                 variant.getProductId());
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
+                variant.getId(),
+                variant.getProductId());
 
         return this.mapper.toView(
                 variant,
-                soldCount);
+                soldCount,
+                stockCount);
     }
 }

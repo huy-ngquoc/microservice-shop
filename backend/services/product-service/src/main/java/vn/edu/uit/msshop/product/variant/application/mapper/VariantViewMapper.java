@@ -6,6 +6,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
 
@@ -13,7 +14,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
 public class VariantViewMapper {
     public VariantView toView(
             final Variant variant,
-            final VariantSoldCount soldCount) {
+            final VariantSoldCount soldCount,
+            final VariantStockCount stockCount) {
         final var traits = variant.getTraits().values()
                 .stream().map(VariantTrait::value).toList();
 
@@ -23,6 +25,7 @@ public class VariantViewMapper {
                 variant.getProductName().value(),
                 variant.getPrice().value(),
                 soldCount.getValue().value(),
+                stockCount.getValue().value(),
                 traits,
                 VariantImageKey.unwrap(variant.getImageKey()),
                 variant.getVersion().value());

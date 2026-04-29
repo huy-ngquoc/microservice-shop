@@ -4,7 +4,6 @@ import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.experimental.FieldNameConstants;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;

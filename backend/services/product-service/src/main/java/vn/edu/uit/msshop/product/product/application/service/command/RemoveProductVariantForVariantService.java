@@ -16,7 +16,8 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 
 @Service
 @RequiredArgsConstructor
-public class RemoveProductVariantForVariantService implements RemoveProductVariantForVariantUseCase {
+public class RemoveProductVariantForVariantService
+        implements RemoveProductVariantForVariantUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final PublishProductEventPort eventPort;
@@ -31,7 +32,6 @@ public class RemoveProductVariantForVariantService implements RemoveProductVaria
 
         // TODO: what if that variant is the only one?
         final var newVariants = product.getVariants().removeById(command.variantId());
-        final var newPriceRange = newVariants.getPriceRange();
         final var newConfiguration = new ProductConfiguration(
                 product.getOptions(),
                 newVariants);

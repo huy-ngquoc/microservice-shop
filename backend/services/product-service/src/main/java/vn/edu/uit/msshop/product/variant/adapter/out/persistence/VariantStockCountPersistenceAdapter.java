@@ -112,9 +112,9 @@ public class VariantStockCountPersistenceAdapter
         for (final var newStockCount : newStockCounts) {
             final var query = new Query(Criteria.where("_id").is(newStockCount.getVariantId().value()));
             final var update = new Update()
-                    .setOnInsert(VariantSoldCountDocument.Fields.productId, newStockCount.getProductId().value())
-                    .setOnInsert(VariantSoldCountDocument.Fields.value, 0)
-                    .setOnInsert(VariantSoldCountDocument.Fields.lastUpdatedTime, instantNow);
+                    .setOnInsert(VariantStockCountDocument.Fields.productId, newStockCount.getProductId().value())
+                    .setOnInsert(VariantStockCountDocument.Fields.value, 0)
+                    .setOnInsert(VariantStockCountDocument.Fields.lastUpdatedTime, instantNow);
             bulkOps.upsert(query, update);
 
             initialized.add(
@@ -133,9 +133,9 @@ public class VariantStockCountPersistenceAdapter
             final VariantStockCount stockCount) {
         final var query = new Query(Criteria.where("_id").is(stockCount.getVariantId().value()));
         final var update = new Update()
-                .setOnInsert(VariantSoldCountDocument.Fields.productId, stockCount.getProductId().value())
-                .set(VariantSoldCountDocument.Fields.value, stockCount.getValue().value())
-                .set(VariantSoldCountDocument.Fields.lastUpdatedTime, Instant.now());
+                .setOnInsert(VariantStockCountDocument.Fields.productId, stockCount.getProductId().value())
+                .set(VariantStockCountDocument.Fields.value, stockCount.getValue().value())
+                .set(VariantStockCountDocument.Fields.lastUpdatedTime, Instant.now());
 
         return this.upsertAndReturnDomain(query, update);
     }
@@ -155,9 +155,9 @@ public class VariantStockCountPersistenceAdapter
         for (final var stockCount : stockCounts) {
             final var query = new Query(Criteria.where("_id").is(stockCount.getVariantId().value()));
             final var update = new Update()
-                    .setOnInsert(VariantSoldCountDocument.Fields.productId, stockCount.getProductId().value())
-                    .set(VariantSoldCountDocument.Fields.value, 0)
-                    .set(VariantSoldCountDocument.Fields.lastUpdatedTime, instantNow);
+                    .setOnInsert(VariantStockCountDocument.Fields.productId, stockCount.getProductId().value())
+                    .set(VariantStockCountDocument.Fields.value, stockCount.getValue().value())
+                    .set(VariantStockCountDocument.Fields.lastUpdatedTime, instantNow);
             bulkOps.upsert(query, update);
         }
 

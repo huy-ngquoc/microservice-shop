@@ -15,12 +15,15 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.CreateVaria
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeAllVariantSoldCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeAllVariantStockCountsPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantCreated;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantForNewProduct;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
@@ -30,6 +33,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 public class CreateVariantsForNewProductService implements CreateVariantsForNewProductUseCase {
     private final CreateAllVariantsPort createAllVariantsPort;
     private final InitializeAllVariantSoldCountsPort initializeAllSoldCountsPort;
+    private final InitializeAllVariantStockCountsPort initializeAllStockCountsPort;
     private final PublishVariantEventPort eventPort;
     private final VariantViewMapper mapper;
 
@@ -39,8 +43,12 @@ public class CreateVariantsForNewProductService implements CreateVariantsForNewP
             final CreateVariantsForNewProductCommand command) {
         final var saved = this.createVariants(command);
         final var soldCountByVariantId = this.initializeSoldCounts(saved);
+        final var stockCountByVariantId = this.initializeStockCounts(saved);
         this.publishCreatedEvents(saved);
-        return this.toViews(saved, soldCountByVariantId);
+        return this.toViews(
+                saved,
+                soldCountByVariantId,
+                stockCountByVariantId);
     }
 
     private static NewVariant toNewVariant(
@@ -75,23 +83,44 @@ public class CreateVariantsForNewProductService implements CreateVariantsForNewP
         return this.initializeAllSoldCountsPort.initializeAll(newSoldCounts);
     }
 
+    private Map<VariantId, VariantStockCount> initializeStockCounts(
+            final List<Variant> saved) {
+        final var newStockCounts = saved.stream()
+                .map(v -> new NewVariantStockCount(v.getId(), v.getProductId()))
+                .toList();
+        return this.initializeAllStockCountsPort.initializeAll(newStockCounts);
+    }
+
     private List<VariantView> toViews(
             final List<Variant> saved,
-            final Map<VariantId, VariantSoldCount> soldCountByVariantId) {
+            final Map<VariantId, VariantSoldCount> soldCountByVariantId,
+            final Map<VariantId, VariantStockCount> stockCountByVariantId) {
         return saved.stream()
-                .map(v -> this.toView(v, soldCountByVariantId))
+                .map(v -> this.toView(
+                        v,
+                        soldCountByVariantId,
+                        stockCountByVariantId))
                 .toList();
     }
 
     private VariantView toView(
             final Variant variant,
-            final Map<VariantId, VariantSoldCount> soldCountByVariantId) {
+            final Map<VariantId, VariantSoldCount> soldCountByVariantId,
+            final Map<VariantId, VariantStockCount> stockCountByVariantId) {
         final var soldCount = soldCountByVariantId.get(variant.getId());
         Objects.requireNonNull(
                 soldCount,
                 () -> "Sold count must be initialized for variant " + variant.getId());
 
-        return this.mapper.toView(variant, soldCount);
+        final var stockCount = stockCountByVariantId.get(variant.getId());
+        Objects.requireNonNull(
+                stockCount,
+                () -> "Stock count must be initialized for variant " + variant.getId());
+
+        return this.mapper.toView(
+                variant,
+                soldCount,
+                stockCount);
     }
 
     private void publishCreatedEvents(
