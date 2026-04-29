@@ -87,7 +87,10 @@ public class SetAllVariantSoldCountsService
         for (final var item : resolved) {
             final var delta = item.delta();
             if (delta != 0) {
-                byProductId.merge(item.current().getProductId(), delta, Integer::sum);
+                final var productId = item.current().getProductId();
+                final var current = byProductId.getOrDefault(productId, 0);
+
+                byProductId.put(productId, current + delta);
             }
         }
         return byProductId;
