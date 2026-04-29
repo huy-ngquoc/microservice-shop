@@ -9,15 +9,11 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.uit.edu.payment.adapter.out.event.documents.CodPaymentCreatedDocument;
-import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentCancelledDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentSuccessDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.PaymentCreatedFailDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.PaymentLinkCreatedDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.PaymentSuccessDocument;
-import vn.uit.edu.payment.adapter.out.event.publisher.CodPaymentCreatedOutboxPublisher;
-import vn.uit.edu.payment.adapter.out.event.publisher.OnlinePaymentCancelledOutboxPublisher;
 import vn.uit.edu.payment.adapter.out.event.publisher.OnlinePaymentExpiredOutboxPublisher;
 import vn.uit.edu.payment.adapter.out.event.publisher.OnlinePaymentSuccessOutboxPublisher;
 import vn.uit.edu.payment.adapter.out.event.publisher.PaymentCreatedFailOutboxPublisher;
@@ -48,9 +44,9 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
     private final KafkaTemplate<String,OnlinePaymentSuccess> onlinePaymentSuccessTemplate;
     private final OnlinePaymentSuccessOutboxPublisher onlinePaymentSuccessOutboxPublisher;
     private final PaymentLinkCreatedOutboxPublisher paymentLinkCreatedOutboxPublisher;
-    private final OnlinePaymentCancelledOutboxPublisher onlinePaymentCancelledOutboxPublisher;
+   
     private final OnlinePaymentExpiredOutboxPublisher onlinePaymentExpiredOutboxPublisher;
-    private final CodPaymentCreatedOutboxPublisher codPaymentCreatedOutboxPublisher;
+    
     private final PaymentSuccessOutboxPublisher paymentSuccessOutboxPublisher;
     private final PaymentCreatedFailOutboxPublisher paymentCreatedFailOutboxPublisher;
     private static final String PAYMENT_ONLINE_TOPIC="payment-online-topic";
@@ -76,25 +72,7 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public void publishPaymentCancelled(OnlinePaymentCancelledDocument outboxEvent) {
-        OnlinePaymentCancelled cancelled = new OnlinePaymentCancelled(outboxEvent.getOrderId(), outboxEvent.getEventId());
-        Message<OnlinePaymentCancelled> message = MessageBuilder.withPayload(cancelled).setHeader(KafkaHeaders.TOPIC,PAYMENT_ONLINE_TOPIC).build();
-        try {
-        paymentCancelledTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                onlinePaymentCancelledOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
-    }
-    catch(Exception e) {
-        log.error("Error sending event");
-    }
-        
-    }
+    
 
     @Override
     public void publishPaymentExpired(OnlinePaymentExpiredDocument outboxEvent) {
@@ -114,24 +92,7 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
     }
     }
 
-    @Override
-    public void publishPaymentCodCreated(CodPaymentCreatedDocument outboxEvent) {
-        CodPaymentCreated event = new CodPaymentCreated(outboxEvent.getOrderId(), outboxEvent.getEventId());
-        Message<CodPaymentCreated> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC,PAYMENT_ONLINE_TOPIC).build();
-        try {
-        codPaymentCreatedTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                codPaymentCreatedOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
-    }
-    catch(Exception e) {
-        log.error("Error sending event");
-    }
-    }
+   
 
     @Override
     public void publishPaymentSuccess(PaymentSuccessDocument outboxEvent) {
