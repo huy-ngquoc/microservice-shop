@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +31,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
+import vn.edu.uit.msshop.product.shared.adapter.out.persistence.PageRequests;
 import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
@@ -62,7 +61,7 @@ public class ProductPersistenceAdapter
     @Override
     public PageResponseDto<Product> list(
             final PageRequestDto pageRequest) {
-        final var pageable = ProductPersistenceAdapter.toPageable(
+        final var pageable = PageRequests.toPageable(
                 pageRequest,
                 ProductDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNull(pageable);
@@ -81,7 +80,7 @@ public class ProductPersistenceAdapter
     @Override
     public PageResponseDto<Product> listSoftDeleted(
             final PageRequestDto pageRequest) {
-        final var pageable = ProductPersistenceAdapter.toPageable(
+        final var pageable = PageRequests.toPageable(
                 pageRequest,
                 ProductDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNotNull(pageable);
@@ -222,21 +221,6 @@ public class ProductPersistenceAdapter
         return savedAll.stream()
                 .map(this.mapper::toDomain)
                 .toList();
-    }
-
-    private static PageRequest toPageable(
-            final PageRequestDto request,
-            final String defaultSortField) {
-        final var direction = switch (request.direction()) {
-            case ASC -> Sort.Direction.ASC;
-            case DESC -> Sort.Direction.DESC;
-        };
-
-        final var sortBy = request.sortBy();
-        final var sortField = (sortBy != null) ? sortBy : defaultSortField;
-        final var sort = Sort.by(direction, sortField);
-
-        return PageRequest.of(request.page(), request.size(), sort);
     }
 
     @Override
