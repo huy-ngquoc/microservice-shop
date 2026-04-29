@@ -1,8 +1,10 @@
 package vn.uit.edu.msshop.inventory.application.service;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,14 @@ public class FindInventoryService implements FindInventoryUseCase{
         List<Inventory> listInventories = loadPort.findByListVariantId(listVariantIds);
         return listInventories.stream().map(mapper::toView).toList();
     }
+
+    @Override
+    public Page<InventoryView> findAllUpdatedInventory(Instant startFirst, Instant endFirst, Instant startSecond, Instant endSecond, Pageable pageable) {
+        Page<Inventory> result = loadPort.findAllUpdatedInventory(startFirst, endFirst, startSecond, endSecond, pageable);
+        return result.map(mapper::toView);
+    }
+
+    
 
      
 }

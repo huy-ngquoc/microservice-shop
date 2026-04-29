@@ -48,7 +48,9 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @Transactional
     public InventoryView update(UpdateInventoryCommand command) {
         Inventory inventory = loadPort.loadByVariantId(command.variantId()).orElseThrow(()->new InventoryNotFoundException(command.variantId()));
-        final var u = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(command.quantity().apply(inventory.getQuantity())).reservedQuantity(command.reservedQuantity().apply(inventory.getReservedQuantity())).build();
+        final var u = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(command.quantity().apply(inventory.getQuantity())).reservedQuantity(command.reservedQuantity().apply(inventory.getReservedQuantity()))
+        .status(command.newStatus().apply(inventory.getStatus()))
+        .build();
         final var next = inventory.applyUpdateInfo(u);
         final var saved = savePort.save(next);
         //publishEventPort.publishInventoryUpdateEvent(new InventoryUpdated(saved.getVariantId().value(), saved.getQuantity().value(), saved.getReservedQuantity().value()));
@@ -85,7 +87,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @Override
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderCancelled(OrderCancelledCommand commands) {
-        List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
+        List<Inventory> inventories = loadPort.findAllByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         
         List<InventoryUpdatedDocument> events = new ArrayList<>();
         Map<UUID, Inventory> inventoryMap=  new HashMap<>();
@@ -155,7 +157,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     @Override
     @org.springframework.transaction.annotation.Transactional
     public List<InventoryView> updateWhenOrderShipped(OrderShippedCommand commands) {
-        List<Inventory> inventories = loadPort.findByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
+        List<Inventory> inventories = loadPort.findAllByListVariantId(commands.getDetailCommands().stream().map(item->item.getVariantId()).toList());
         Map<UUID, Inventory> inventoryMap=  new HashMap<>();
         List<Inventory> toSaves = new ArrayList<>();
         for(Inventory i: inventories) {

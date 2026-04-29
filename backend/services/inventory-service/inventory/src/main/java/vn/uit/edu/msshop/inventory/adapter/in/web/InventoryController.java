@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.adapter.in.web.mapper.InventoryWebMapper;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.CreateInventoryRequest;
+import vn.uit.edu.msshop.inventory.adapter.in.web.request.GetUpdatedInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderOutbox;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
@@ -140,6 +143,12 @@ public class InventoryController {
     public ResponseEntity<Void> create( @RequestBody List<CreateInventoryRequest> requests) {
         createUseCase.createMany(requests.stream().map(mapper::toCommand).toList());
         return ResponseEntity.ok().build();
+    }
+    @PostMapping("/public/updated_inventory")
+    public ResponseEntity<Page<InventoryResponse>> getUpdatedInventory(@RequestBody GetUpdatedInventoryRequest request, @RequestParam(defaultValue="0") int pageNumber, @RequestParam(defaultValue="7") int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        final var result = findUseCase.findAllUpdatedInventory(request.getStartFirst(), request.getEndFirst(), request.getStartSecond(), request.getEndSecond(), pageable);
+        return ResponseEntity.ok(result.map(mapper::toResponse));
     }
     @PostMapping("/public/process_order_outbox")
     public ResponseEntity<String> process(@RequestBody OrderOutbox request) {

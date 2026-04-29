@@ -19,4 +19,5 @@ public class InventoryResponse {
     private int reservedQuantity;
     private Instant updateAt;
     private String status;
+    private Instant createAt;
 }

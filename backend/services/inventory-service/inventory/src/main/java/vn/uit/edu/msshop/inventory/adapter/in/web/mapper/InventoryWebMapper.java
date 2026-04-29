@@ -18,6 +18,7 @@ import vn.uit.edu.msshop.inventory.application.dto.command.UpdateInventoryComman
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.domain.event.OrderCreated;
 import vn.uit.edu.msshop.inventory.domain.event.OrderUpdatedEvent;
+import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryStatus;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.OrderQuantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
@@ -30,10 +31,11 @@ public class InventoryWebMapper {
         final var variantId = new VariantId(request.getVariantId());
         final var quantity = ChangeRequest.toChange(request.getNewQuantity(), Quantity::new);
         final var reservedQuantity=ChangeRequest.toChange(request.getNewReservedQuantity(), ReservedQuantity::new);
-        return new UpdateInventoryCommand(variantId, quantity, reservedQuantity);
+        final var status = ChangeRequest.toChange(request.getNewInventoryStatus(), InventoryStatus::new);
+        return new UpdateInventoryCommand(variantId, quantity, reservedQuantity,status);
     }
     public InventoryResponse toResponse(InventoryView view) {
-        return new InventoryResponse(view.getId(),view.getVariantId(),view.getQuantity(),view.getReservedQuantity(),view.getLastUpdate(), view.getStatus());
+        return new InventoryResponse(view.getId(),view.getVariantId(),view.getQuantity(),view.getReservedQuantity(),view.getLastUpdate(), view.getStatus(), view.getCreateAt());
     }
     public OrderCreateCommand toCommand(OrderCreated event) {
         List<OrderDetailCommand> detailCommands = event.getDetails().stream().map(item->new OrderDetailCommand(new VariantId(item.getVariantId()), new OrderQuantity(item.getAmount()))).toList();
