@@ -16,5 +16,6 @@ public interface SpringDataPaymentJpaRepository extends JpaRepository<PaymentJpa
     public Optional<PaymentJpaEntity> findFirstByOrderId(UUID orderId);
     @Query("SELECT p FROM PaymentJpaEntity p WHERE p.paymentStatus = 'PENDING' AND p.paymentMethod = 'ONLINE' AND p.createAt < :timeout")
     List<PaymentJpaEntity> findExpiredPayments(@Param("timeout") Instant timeout);
+    public long countByStatus(String status);
 
 }
