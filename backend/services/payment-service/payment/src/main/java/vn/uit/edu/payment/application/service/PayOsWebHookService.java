@@ -1,12 +1,15 @@
 package vn.uit.edu.payment.application.service;
 
 import java.time.Instant;
+import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,7 @@ import vn.uit.edu.payment.application.port.out.SavePaymentPort;
 import vn.uit.edu.payment.domain.model.OnlinePaymentInfo;
 import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.OnlinePaymentNumber;
+import vn.uit.edu.payment.domain.model.valueobject.OrderId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentStatus;
 
 @Service
@@ -49,13 +53,15 @@ public class PayOsWebHookService implements PayOsWebHookPort {
     private final OnlinePaymentSuccessRepository onlinePaymentSuccessRepo;
     private final PaybackPaymentRepository paybackPaymentRepo;
     private final OrderChecker orderChecker;
+    private final ObjectMapper objectMapper;
+    private static boolean isMockMode=true;
     @Override
 
 public void handlePayOSWebHook(Webhook body) {
     WebhookData webhookData;
     try {
         
-        webhookData = payOS.webhooks().verify(body);
+          webhookData = payOS.webhooks().verify(body);
     } catch (Exception ex) {
         log.error("Xác thực Webhook thất bại! Có thể là request giả mạo.");
         return;
@@ -73,6 +79,17 @@ public void handlePayOSWebHook(Webhook body) {
     log.info("Nhận Webhook nhưng không phải trạng thái thành công (Desc: {}), bỏ qua.", webhookData.getDesc());
     // Có thể xử lý thêm logic HỦY đơn ở đây nếu desc báo khách bấm Hủy
 }
+}
+
+private WebhookData mapBodyToWebhookData(Webhook body) {
+    try {
+        // body.getData() trong SDK của PayOS thường trả về một Object/LinkedHashMap
+        // Chúng ta dùng ObjectMapper để convert nó sang class WebhookData
+        return objectMapper.convertValue(body.getData(), WebhookData.class);
+    } catch (Exception e) {
+        log.error("Không thể map dữ liệu Webhook: ", e);
+        throw new RuntimeException("Lỗi chuyển đổi dữ liệu Mock Webhook");
+    }
 }
 
 @org.springframework.transaction.annotation.Transactional
@@ -183,4 +200,15 @@ private OnlinePaymentSuccessDocument createOnlinePaymentSuccessEvent(Payment p) 
             .eventStatus("PENDING").retryCount(0)
             .createdAt(Instant.now()).build();
 }
+
+    @Override
+    public void fakeWebHook(UUID orderId) {
+        Payment payment = loadPaymentPort.loadPaymentByOrderId(new OrderId(orderId));
+        Random rand = new Random();
+        int randNumber = rand.nextInt(10);
+        if(randNumber<=3) return;
+        handlePaymentSuccessLogic(payment);
+    }
+
+
 }

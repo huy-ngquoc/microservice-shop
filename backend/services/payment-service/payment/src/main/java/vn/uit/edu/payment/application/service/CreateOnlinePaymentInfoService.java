@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.payos.PayOS;
-import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
 import vn.uit.edu.payment.adapter.out.event.documents.PaymentLinkCreatedDocument;
 import vn.uit.edu.payment.adapter.out.event.repositories.PaymentLinkCreatedRepository;
 import vn.uit.edu.payment.application.port.in.CreateOnlinePaymentInfoUseCase;
@@ -38,7 +37,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
     @Transactional
     public String createPaymentLink(Payment payment) {
         
-        long orderCode=  System.currentTimeMillis();
+        /*long orderCode=  System.currentTimeMillis();
         CreatePaymentLinkRequest request = CreatePaymentLinkRequest.builder()
         .orderCode(orderCode)
         .amount(payment.getPaymentValue().value())
@@ -63,9 +62,28 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
         .createdAt(Instant.now())
         .updatedAt(null)
         .lastError(null).build();
+        publishEventPort.publishPaymentLinkCreated(paymentLinkCreatedRepo.save(paymentLinkCreatedDocument));*/
+
+       // return result;
+       String result = UUID.randomUUID().toString();
+       
+       OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new PaymentLink(result), new OnlinePaymentNumber(System.currentTimeMillis()),new TransactionId(null), new CreateAt(Instant.now()));
+       this.savePort.save(info);
+       var paymentLinkCreatedDocument = PaymentLinkCreatedDocument.builder()
+        .eventId(UUID.randomUUID())
+        .paymentLink(result)
+        .orderId(payment.getOrderId().value())
+        .userEmail(payment.getUserEmail().value())
+        .userId(payment.getUserId().value())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
         publishEventPort.publishPaymentLinkCreated(paymentLinkCreatedRepo.save(paymentLinkCreatedDocument));
 
-        return result;
+       return result;
 
     }
+    
 }

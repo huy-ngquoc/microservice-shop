@@ -9,9 +9,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentCancelledDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
-import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentCancelledDocumentRepository;
 import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentExpiredDocumentRepository;
 import vn.uit.edu.payment.application.dto.command.UpdatePaymentCommand;
 import vn.uit.edu.payment.application.dto.query.PaymentView;
@@ -33,7 +31,7 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
     private final SavePaymentPort savePort;
     private final PublishPaymentEventPort eventPort;
     private final PaymentViewMapper mapper;
-    private final OnlinePaymentCancelledDocumentRepository onlinePaymentCancelledDocumentRepo;
+    
     private final OnlinePaymentExpiredDocumentRepository onlinePaymentExpiredDocumentRepo;
 
     @Override
@@ -89,23 +87,6 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
         .build();
         final var next = payment.applyUpdateInfo(update);
         final Payment saved = savePort.save(next);
-        OnlinePaymentCancelledDocument outboxEvent = OnlinePaymentCancelledDocument.builder()
-        .eventId(UUID.randomUUID())
-        .orderId(saved.getOrderId().value())
-        
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
-        final var savedOutboxEvent = onlinePaymentCancelledDocumentRepo.save(outboxEvent);
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                eventPort.publishPaymentCancelled(savedOutboxEvent);
-            }
-        });
-        
     }
 
 }

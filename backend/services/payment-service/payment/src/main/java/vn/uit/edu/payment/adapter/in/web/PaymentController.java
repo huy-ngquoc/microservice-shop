@@ -23,6 +23,8 @@ import vn.uit.edu.payment.adapter.in.web.request.UpdatePaymentRequest;
 import vn.uit.edu.payment.adapter.in.web.response.PaymentResponse;
 import vn.uit.edu.payment.adapter.out.persistence.PaybackPaymentRepository;
 import vn.uit.edu.payment.adapter.out.persistence.PaybackPayments;
+import vn.uit.edu.payment.adapter.out.persistence.SpringDataOnlinePaymentInfoJpaRepository;
+import vn.uit.edu.payment.adapter.out.persistence.SpringDataPaymentJpaRepository;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
 import vn.uit.edu.payment.application.port.in.LoadOnlinePaymentUseCase;
 import vn.uit.edu.payment.application.port.in.LoadPaymentUseCase;
@@ -42,6 +44,8 @@ public class PaymentController {
     private final PayOsWebHookPort webHookPort;
     private final LoadOnlinePaymentUseCase loadOnlinePaymentUseCase;
     private final PaybackPaymentRepository refundRepo;
+    private final SpringDataOnlinePaymentInfoJpaRepository springDataOnlinePaymentInfoRepo;
+    private final SpringDataPaymentJpaRepository springDataPaymentJpaRepo;
 
     @GetMapping("/{paymentId}")
     public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable UUID paymentId) {
@@ -55,6 +59,12 @@ public class PaymentController {
         if(payment==null) return ResponseEntity.notFound().build();
         final var result = mapper.toResponse(payment);
         return ResponseEntity.ok(result);
+    }
+    @DeleteMapping("/clear")
+    public ResponseEntity<Void> clearDatabase() {
+        springDataOnlinePaymentInfoRepo.deleteAll();
+        springDataPaymentJpaRepo.deleteAll();
+        return ResponseEntity.noContent().build();
     }
     @GetMapping("/public/order/{orderId}")
     public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId) {
@@ -104,6 +114,11 @@ public class PaymentController {
     public ResponseEntity<String> getOnlinePaymentLink(@PathVariable UUID orderId) {
         String result = loadOnlinePaymentUseCase.getPaymentLink(new OrderId(orderId));
         return ResponseEntity.ok(result);
+    }
+    @PostMapping("/fake_web_hook")
+    public ResponseEntity<Void> fakeWebHook(@RequestBody UUID orderId) {
+        webHookPort.fakeWebHook(orderId);
+        return ResponseEntity.noContent().build();
     }
 
 }
