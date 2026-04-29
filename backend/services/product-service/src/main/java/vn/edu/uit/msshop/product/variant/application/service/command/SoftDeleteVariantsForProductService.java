@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.exception.VariantProductNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;

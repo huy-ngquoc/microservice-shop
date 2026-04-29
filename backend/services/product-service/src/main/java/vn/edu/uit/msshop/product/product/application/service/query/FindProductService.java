@@ -11,6 +11,7 @@ import vn.edu.uit.msshop.product.product.application.port.in.query.FindProductUs
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
@@ -18,6 +19,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 public class FindProductService implements FindProductUseCase {
     private final LoadProductPort loadPort;
     private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductStockCountPort loadStockCountPort;
     private final LoadProductRatingPort loadRatingPort;
     private final ProductViewMapper mapper;
 
@@ -28,12 +30,15 @@ public class FindProductService implements FindProductUseCase {
             final ProductId id) {
         final var product = this.loadPort.loadById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
+
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(id);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(id);
         final var rating = this.loadRatingPort.loadByIdOrZero(id);
 
         return this.mapper.toView(
                 product,
                 soldCount,
+                stockCount,
                 rating);
     }
 }

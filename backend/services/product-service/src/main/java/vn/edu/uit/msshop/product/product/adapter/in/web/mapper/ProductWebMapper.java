@@ -236,6 +236,7 @@ public class ProductWebMapper {
                 view.minPrice(),
                 view.maxPrice(),
                 view.soldCount(),
+                view.stockCount(),
                 view.ratingAverage(),
                 view.ratingCount(),
                 view.options(),

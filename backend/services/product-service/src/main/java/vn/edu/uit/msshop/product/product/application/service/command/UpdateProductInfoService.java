@@ -16,6 +16,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProdu
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.UpdateProductNameOnVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
@@ -33,6 +34,7 @@ import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockExce
 public class UpdateProductInfoService implements UpdateProductInfoUseCase {
     private final LoadProductPort loadPort;
     private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductStockCountPort loadStockCountPort;
     private final LoadProductRatingPort loadRatingPort;
     private final UpdateProductPort updatePort;
     private final UpdateProductNameOnVariantsPort updateVariantProductNamePort;
@@ -50,6 +52,7 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(productId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(productId);
         final var rating = this.loadRatingPort.loadByIdOrZero(productId);
 
         final var nameSet = command.name().getSet();
@@ -60,6 +63,7 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
             return this.mapper.toView(
                     product,
                     soldCount,
+                    stockCount,
                     rating);
         }
 
@@ -80,6 +84,7 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
             return this.mapper.toView(
                     product,
                     soldCount,
+                    stockCount,
                     rating);
         }
 
@@ -90,6 +95,7 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
         return this.mapper.toView(
                 savedProduct,
                 soldCount,
+                stockCount,
                 rating);
     }
 

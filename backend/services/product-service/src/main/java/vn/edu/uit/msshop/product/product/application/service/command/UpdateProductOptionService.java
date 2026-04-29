@@ -14,6 +14,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProdu
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
@@ -26,6 +27,7 @@ import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockExce
 public class UpdateProductOptionService implements UpdateProductOptionUseCase {
     private final LoadProductPort loadPort;
     private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductStockCountPort loadStockCountPort;
     private final LoadProductRatingPort loadRatingPort;
     private final UpdateProductPort updatePort;
     private final PublishProductEventPort eventPort;
@@ -47,6 +49,7 @@ public class UpdateProductOptionService implements UpdateProductOptionUseCase {
         }
 
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(productId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(productId);
         final var rating = this.loadRatingPort.loadByIdOrZero(productId);
 
         final var next = UpdateProductOptionService.applyChanges(
@@ -57,6 +60,7 @@ public class UpdateProductOptionService implements UpdateProductOptionUseCase {
             return this.mapper.toView(
                     product,
                     soldCount,
+                    stockCount,
                     rating);
         }
 
@@ -66,6 +70,7 @@ public class UpdateProductOptionService implements UpdateProductOptionUseCase {
         return this.mapper.toView(
                 saved,
                 soldCount,
+                stockCount,
                 rating);
     }
 

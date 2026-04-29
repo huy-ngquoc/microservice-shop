@@ -16,6 +16,8 @@ public record VariantView(
 
         int soldCount,
 
+        int stockCount,
+
         List<String> traits,
 
         @Nullable

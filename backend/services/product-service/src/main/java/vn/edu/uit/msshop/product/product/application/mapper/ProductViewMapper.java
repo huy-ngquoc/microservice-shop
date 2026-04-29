@@ -9,6 +9,7 @@ import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
+import vn.edu.uit.msshop.product.product.domain.model.ProductStockCount;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 
@@ -17,6 +18,7 @@ public class ProductViewMapper {
     public ProductView toView(
             final Product product,
             final ProductSoldCount soldCount,
+            final ProductStockCount stockCount,
             final ProductRating rating) {
         final var priceRange = product.getPriceRange();
 
@@ -28,6 +30,7 @@ public class ProductViewMapper {
                 priceRange.minPrice().value(),
                 priceRange.maxPrice().value(),
                 soldCount.getValue().value(),
+                stockCount.getValue().value(),
                 rating.getAverage().value(),
                 rating.getAmount().value(),
                 product.getOptions().unwrap(),

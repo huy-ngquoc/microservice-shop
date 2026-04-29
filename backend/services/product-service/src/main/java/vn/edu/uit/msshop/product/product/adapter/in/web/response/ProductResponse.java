@@ -11,6 +11,7 @@ public record ProductResponse(
         long minPrice,
         long maxPrice,
         int soldCount,
+        int stockCount,
         float ratingAverage,
         int ratingCount,
         List<String> options,
