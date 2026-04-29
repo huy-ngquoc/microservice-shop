@@ -3,7 +3,6 @@ package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collector;
@@ -49,11 +48,12 @@ public class ProductSoldCountPersistenceAdapter
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public Optional<ProductSoldCount> loadById(
+    public ProductSoldCount loadByIdOrZero(
             final ProductId id) {
         final var jpaId = id.value();
         return this.repository.findById(jpaId)
-                .map(this.mapper::toDomain);
+                .map(this.mapper::toDomain)
+                .orElseGet(() -> ProductSoldCount.zero(id));
     }
 
     @Override

@@ -3,7 +3,6 @@ package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collector;
@@ -48,11 +47,12 @@ public class ProductRatingPersistenceAdapter
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public Optional<ProductRating> loadById(
+    public ProductRating loadByIdOrZero(
             final ProductId id) {
         final var jpaId = id.value();
         return this.repository.findById(jpaId)
-                .map(this.mapper::toDomain);
+                .map(this.mapper::toDomain)
+                .orElseGet(() -> ProductRating.zero(id));
     }
 
     @Override
