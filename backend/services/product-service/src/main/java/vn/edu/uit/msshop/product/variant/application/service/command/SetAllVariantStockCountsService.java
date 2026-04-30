@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SetAllVariantStockCountsCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantInventoryStockCount;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantStockCountsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantStockCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantStockCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductStockCountsPort;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
+import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantInventoryStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCountValue;
