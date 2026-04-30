@@ -1,7 +1,8 @@
 package vn.edu.uit.msshop.product.variant.application.dto.command;
 
 import java.util.List;
-import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantInventoryStockCount;
+
+import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantInventoryStockCount;
 
 public record SetAllVariantStockCountsCommand(
         List<VariantInventoryStockCount> stockCounts) {

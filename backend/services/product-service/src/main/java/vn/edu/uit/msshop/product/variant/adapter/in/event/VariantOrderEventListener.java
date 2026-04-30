@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.in.event.payload.SetVariantSoldCountsEvent;
-import vn.edu.uit.msshop.product.variant.application.dto.sync.VariantOrderSoldCount;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantSoldCountsUseCase;
+import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantOrderSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCountValue;
 
