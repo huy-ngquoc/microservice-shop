@@ -19,7 +19,6 @@ import vn.uit.edu.payment.adapter.out.event.documents.PaymentCreatedFailDocument
 import vn.uit.edu.payment.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.payment.adapter.out.event.repositories.PaymentCreatedFailedRepository;
 import vn.uit.edu.payment.adapter.out.persistence.PaybackPaymentRepository;
-import vn.uit.edu.payment.adapter.out.persistence.PaybackPayments;
 import vn.uit.edu.payment.application.dto.command.CreatePaymentCommand;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
 import vn.uit.edu.payment.application.port.out.CancellPaymentLinkPort;
@@ -96,19 +95,10 @@ public class OrderEventListener {
             }
             else {
                 
-                if(event.getPaymentStatus().equals("UNPAID")&&event.getStatus().equals("CANCELLED")) {
+                if(event.getStatus().equals("CANCELLED")) {
                     handleOnlinePaymentCancelled(event.getOrderId());
                 }
-                if(event.getPaymentStatus().equals("PAID")&&event.getStatus().equals("CANCELLED")) {
-                    Payment p = loadPort.loadPaymentByOrderId(new OrderId(event.getOrderId()));
-                    if(p==null) return;
-                    PaybackPayments newPaybackPayment = PaybackPayments.builder().userId(event.getUserId()).value(p.getPaymentValue().value()).build();
-                    paybackPaymentRepo.save(newPaybackPayment);
-                }
-                if(event.getStatus().equals("PAYMENT_EXPIRED")) {
-                    System.out.println("Link het han");
-                    handleOnlinePaymentCancelled(event.getOrderId());
-                }
+                
             }
         }
     }

@@ -17,5 +17,6 @@ public interface SpringDataPaymentJpaRepository extends JpaRepository<PaymentJpa
     @Query("SELECT p FROM PaymentJpaEntity p WHERE p.paymentStatus = 'PENDING' AND p.paymentMethod = 'ONLINE' AND p.createAt < :timeout")
     List<PaymentJpaEntity> findExpiredPayments(@Param("timeout") Instant timeout);
     public long countByPaymentStatus(String status);
+    
 
 }

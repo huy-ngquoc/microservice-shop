@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.payment.adapter.out.persistence.mapper.OnlinePaymentEntityMapper;
 import vn.uit.edu.payment.application.exception.OnlinePaymentInfoNotFoundException;
@@ -22,6 +23,7 @@ public class OnlinePaymentInfoPersistenceAdapter implements LoadOnlinePaymentInf
     private final SpringDataOnlinePaymentInfoJpaRepository repo;
     private final OnlinePaymentEntityMapper mapper;
     private final LoadPaymentPort loadPaymentPort;
+    private final EntityManager entityManager;
     @Override
     public OnlinePaymentInfo loadById(PaymentId id) {
         final var result = repo.findById(id.value()).orElseThrow(()->new OnlinePaymentInfoNotFoundException(id));
@@ -31,8 +33,13 @@ public class OnlinePaymentInfoPersistenceAdapter implements LoadOnlinePaymentInf
     @Override
     public OnlinePaymentInfo save(OnlinePaymentInfo onlinePaymentInfo) {
         final var entity = mapper.toEntity(onlinePaymentInfo);
-        final var result = repo.save(entity);
-        return mapper.toDomain(result);
+        PaymentJpaEntity paymentRef = entityManager.getReference(
+            PaymentJpaEntity.class, 
+            onlinePaymentInfo.getPaymentId().value()
+        );
+        entity.setPayment(paymentRef);
+        
+        return mapper.toDomain(repo.save(entity));
     }
 
     @Override

@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ public class CleanExpiredOrderService implements CleanExpiredOrderPort {
     private final CheckOrderService checkOrderService;
     
     @Override
-    @Scheduled(fixedRate=6000)
+    //@Scheduled(fixedRate=6000)
     public void clean() {
         Instant threshold=Instant.now().minus(15, ChronoUnit.MINUTES);
         //System.out.println("Call schedule clean order");
