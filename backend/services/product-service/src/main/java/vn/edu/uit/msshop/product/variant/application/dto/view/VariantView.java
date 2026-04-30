@@ -20,11 +20,14 @@ public record VariantView(
 
         List<String> traits,
 
+        List<String> targets,
+
         @Nullable
         String imageKey,
 
         long version) {
     public VariantView {
         traits = List.copyOf(traits);
+        targets = List.copyOf(targets);
     }
 }

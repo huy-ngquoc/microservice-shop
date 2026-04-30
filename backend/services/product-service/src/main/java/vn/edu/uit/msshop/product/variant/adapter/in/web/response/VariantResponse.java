@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
-// TODO: add "Targets"
 public record VariantResponse(
         UUID id,
 
@@ -21,8 +20,14 @@ public record VariantResponse(
 
         List<String> traits,
 
+        List<String> targets,
+
         @Nullable
         String imageKey,
 
         long version) {
+    public VariantResponse {
+        traits = List.copyOf(traits);
+        targets = List.copyOf(targets);
+    }
 }
