@@ -8,7 +8,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
 
 @Component
 public class VariantViewMapper {
@@ -16,8 +15,8 @@ public class VariantViewMapper {
             final Variant variant,
             final VariantSoldCount soldCount,
             final VariantStockCount stockCount) {
-        final var traits = variant.getTraits().values()
-                .stream().map(VariantTrait::value).toList();
+        final var traits = variant.getTraits().unwrap();
+        final var targets = variant.getTargets().unwrap();
 
         return new VariantView(
                 variant.getId().value(),
@@ -27,6 +26,7 @@ public class VariantViewMapper {
                 soldCount.getValue().value(),
                 stockCount.getValue().value(),
                 traits,
+                targets,
                 VariantImageKey.unwrap(variant.getImageKey()),
                 variant.getVersion().value());
     }

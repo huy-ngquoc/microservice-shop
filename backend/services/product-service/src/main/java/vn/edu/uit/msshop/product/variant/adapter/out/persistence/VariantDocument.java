@@ -32,7 +32,6 @@ public final class VariantDocument {
 
     private final List<String> traits;
 
-    // TODO: endpoint find by targets, match one?
     private final List<String> targets;
 
     @Nullable
