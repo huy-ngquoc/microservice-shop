@@ -9,15 +9,14 @@ import java.util.UUID;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.stereotype.Service;
 
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 //@Service
-
 public class TestInventoryService   {
     private final MongoTemplate mongoTemplate;
     private final InventoryChecker inventoryChecker;
-    
 public List<VariantSumDto> reader(MongoTemplate mongoTemplate) {
     Aggregation aggregation = Aggregation.newAggregation(
         Aggregation.match(Criteria.where("status").is("CONFIRMED")),

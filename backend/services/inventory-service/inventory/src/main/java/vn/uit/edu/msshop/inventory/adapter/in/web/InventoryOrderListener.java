@@ -49,6 +49,7 @@ public class InventoryOrderListener {
         }
         else if(event.getStatus().equals("PAYMENT_ERROR")||event.getStatus().equals("PAYMENT_EXPIRED")) {
             if(orderCancelledRepo.existsById(event.getOrderId())) return;
+            System.out.println("Cancell order");
             updateUseCase.updateWhenOrderCancelled(webMapper.toCancelledCommand(event));
             orderCancelledRepo.save(new OrderCancelled(event.getOrderId(),Instant.now()));
         }

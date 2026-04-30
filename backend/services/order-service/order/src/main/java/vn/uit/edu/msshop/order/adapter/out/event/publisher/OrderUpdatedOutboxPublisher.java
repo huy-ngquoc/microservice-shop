@@ -59,12 +59,16 @@ public class OrderUpdatedOutboxPublisher {
                         if (ex == null) {
                             
                             updateStatus(event, "SENT", null);
+                            System.out.println("Sent event");
                         } else {
-                            
+                            System.out.println("Error");
+                            System.out.println(ex.getMessage());
                             handleFailure(event, ex.getMessage());
                         }
                     });
             } catch (Exception e) {
+                System.out.println("Error");
+                e.printStackTrace();
                 handleFailure(event, e.getMessage());
             }
         }

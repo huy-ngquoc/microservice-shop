@@ -37,7 +37,8 @@ public class OrderOutboxProcessor {
     private final OrderUpdatedRepository orderUpdatedRepo;
     @Transactional
     public void confirmOrderAndCreateEvent(OrderOutbox outbox, Order order) {
-        final var toSave=order.updateStatus(new OrderStatus("CONFIRMED"));
+        String newStatus = order.getPaymentMethod().value().equals("COD")?"CONFIRMED":"PENDING_PAYMENT";
+        final var toSave=order.updateStatus(new OrderStatus(newStatus));
         outbox.setOutboxStatus("COMPLETED");
             savePort.save(toSave);
             orderOutboxRepo.save(outbox);

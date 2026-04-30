@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +19,13 @@ public class CleanExpiredOrderService implements CleanExpiredOrderPort {
     private final OrderRepository orderRepo;
     private final OrderDataMapper mapper;
     private final CheckOrderService checkOrderService;
-    private final TaskExecutor taskExecutor;
+    
     @Override
-    @Scheduled(fixedRate=6000*100)
+    @Scheduled(fixedRate=6000)
     public void clean() {
-        Instant threshold=Instant.now().minus(10, ChronoUnit.MINUTES);
+        Instant threshold=Instant.now().minus(15, ChronoUnit.MINUTES);
         //System.out.println("Call schedule clean order");
-        List<Order> orders = orderRepo.findTop50ByStatusAndPaymentMethodAndUpdateAtBefore("CONFIRMED","ONLINE", threshold).stream().map(mapper::toDomain).toList();
+        List<Order> orders = orderRepo.findTop50ByStatusAndPaymentMethodAndUpdateAtBefore("WAITING_PAYMENT","ONLINE", threshold).stream().map(mapper::toDomain).toList();
         for(Order order:orders) {
             checkOrderService.checkAndUpdate(order);
         }

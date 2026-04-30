@@ -55,7 +55,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
         eventPublisher.publishEvent(orderUpdated);
     }
 
-    @Override
+   /*  @Override
     public void publishOrderCreatedEvent( OrderCreatedDocument outboxEvent) {
         System.out.println("Publish order createddddd");
         
@@ -77,7 +77,7 @@ public class OrderEventPublisher implements PublishOrderEventPort{
         //System.out.println("Kafka is dead");
     e.printStackTrace();
     }
-    }
+    }*/
 
     
 
@@ -114,14 +114,14 @@ public class OrderEventPublisher implements PublishOrderEventPort{
 
     @Override
     public void publishOrderUpdatedEvent(OrderUpdatedEventDocument event) {
-        System.out.println("Publish eventttttttt order updated");
+        //System.out.println("Publish eventttttttt order updated");
         OrderUpdatedEvent orderUpdatedEvent= new OrderUpdatedEvent(event.getEventId(), event.getOrderId(), event.getDetails(), event.getStatus(), event.getUserId(), event.getOriginPrice(), event.getShippingFee(), event.getDiscount(), event.getTotalPrice(), event.getCurrency(), event.getPaymentMethod(), event.getPaymentStatus(),event.getEmail(), event.getOldStatus());
          Message<OrderUpdatedEvent> message = MessageBuilder.withPayload(orderUpdatedEvent).setHeader(KafkaHeaders.TOPIC, ORDER_CREATED_TOPIC).build();
          try {
         orderUpdatedEventDocumentTemplate.send(message)
         .whenComplete((result,ex)->{
             if(ex==null) {
-                System.out.println("Ackkkkkkkkkkkkkkkkkkkk");
+                //System.out.println("Ackkkkkkkkkkkkkkkkkkkk");
                 //System.out.println("Send event with id "+event.getEventId());
                orderUpdatedOutboxPublisher.markAsSent(event);
             }
