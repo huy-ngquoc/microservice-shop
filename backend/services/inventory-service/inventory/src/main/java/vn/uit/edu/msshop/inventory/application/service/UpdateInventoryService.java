@@ -105,7 +105,9 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             int newReservedQuantity = inventory.getReservedQuantity().value()-detailCommand.getQuantity().value();
             if(isShipping) newReservedQuantity=inventory.getReservedQuantity().value();
             if(newReservedQuantity<0) throw new RuntimeException("Invalid info");
-            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity)).build();
+            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity))
+            .status(inventory.getStatus())
+            .build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
             toSaves.add(toSave);
             InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
@@ -171,7 +173,9 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
             
             int newReservedQuantity = inventory.getReservedQuantity().value()-detailCommand.getQuantity().value();
             if(newReservedQuantity<0) throw new RuntimeException("Invalid info");
-            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(inventory.getQuantity()).reservedQuantity(new ReservedQuantity(newReservedQuantity)).build();
+            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId()).quantity(inventory.getQuantity()).reservedQuantity(new ReservedQuantity(newReservedQuantity))
+            .status(inventory.getStatus())
+            .build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
             InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
         .variantId(toSave.getVariantId().value())

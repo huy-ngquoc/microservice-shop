@@ -28,6 +28,7 @@ import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderOutbox;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.response.InventoryResponse;
+import vn.uit.edu.msshop.inventory.adapter.out.persistence.InventoryJpaEntity;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.SpringDataInventoryJpaRepository;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.application.exception.InsufficientStockException;
@@ -109,6 +110,16 @@ public class InventoryController {
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+    @GetMapping("/reset")
+    public ResponseEntity<Void> reset() {
+        List<InventoryJpaEntity> inventoryJpaEntities= inventoryRepo.findAll();
+        for(InventoryJpaEntity i: inventoryJpaEntities) {
+            i.setQuantity(1000000);
+            i.setReservedQuantity(0);
+        }
+        inventoryRepo.saveAll(inventoryJpaEntities);
+        return ResponseEntity.noContent().build();
     }
     @PostMapping("/public/variants")
     public ResponseEntity<List<InventoryResponse>> getByVariantIds(@RequestBody List<UUID> variantIds) {

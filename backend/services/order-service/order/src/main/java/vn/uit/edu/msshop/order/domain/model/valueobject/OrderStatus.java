@@ -5,7 +5,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public record OrderStatus(String value) {
-    private static final Set<String> VALID_STATUS = Set.of("PENDING","CONFIRMED","SHIPPING","RECEIVED","CANCELLED","INSUFFICIENT_STOCK","CANCELLED_BEFORE_PROCESS","PAYMENT_ERROR","PAYMENT_EXPIRED");
+    private static final Set<String> VALID_STATUS = Set.of("PENDING","CONFIRMED","SHIPPING","RECEIVED","CANCELLED","INSUFFICIENT_STOCK","CANCELLED_BEFORE_PROCESS","PAYMENT_ERROR","PAYMENT_EXPIRED","WAITING_PAYMENT","PENDING_PAYMENT");
     public OrderStatus {
         if(!VALID_STATUS.contains(value)) {
             throw new IllegalArgumentException("Invalid status");

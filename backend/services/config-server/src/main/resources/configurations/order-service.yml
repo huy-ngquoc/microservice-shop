@@ -29,8 +29,6 @@ spring:
                 spring.json.type.mapping: 
                     OnlinePaymentExpired:vn.uit.edu.msshop.order.domain.event.OnlinePaymentExpired,
                     OnlinePaymentCancelled:vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled,
-                    CodPaymentCreated:vn.uit.edu.msshop.order.domain.event.CodPaymentCreated,
-                    ForceCancellOrder:vn.uit.edu.msshop.order.domain.event.inventory.ForceCancellOrder,
                     ProductCreated:vn.uit.edu.msshop.order.domain.event.product.ProductCreated,
                     ProductUpdated:vn.uit.edu.msshop.order.domain.event.product.ProductUpdate,
                     VariantUpdated:vn.uit.edu.msshop.order.domain.event.product.VariantUpdate,
@@ -53,12 +51,7 @@ spring:
                 request.timeout.ms: 10000
                 spring.json.type.mapping: 
                     OrderCreated:vn.uit.edu.msshop.order.domain.event.OrderCreated,
-                    OnlinePaymentCancelled:vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled,
-                    CodPaymentCancelled:vn.uit.edu.msshop.order.domain.event.CodPaymentCancelled,
-                    CodPaymentReceived:vn.uit.edu.msshop.order.domain.event.CodPaymentReceived,
                     OrderCreatedSuccess:vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess,
-                    OrderCreated_Inventory:vn.uit.edu.msshop.order.domain.event.inventory.OrderCreated,
-                    IncreaseSoldCountEvents:vn.uit.edu.msshop.order.domain.event.IncreaseSoldCountEvents,
                     OrderUpdatedEvent:vn.uit.edu.msshop.order.domain.event.OrderUpdatedEvent,
                     PaymentLinkCreated:java.lang.Object,
                     OnlinePaymentSuccess:java.lang.Object

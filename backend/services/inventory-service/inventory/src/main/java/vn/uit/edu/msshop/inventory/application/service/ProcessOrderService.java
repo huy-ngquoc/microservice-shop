@@ -57,7 +57,9 @@ public class ProcessOrderService implements ProcessOrderUseCase {
             
             int newQuantity = i.getQuantity().value()-o.getQuantity().value();
             int newReservedQuantity = i.getReservedQuantity().value()+o.getQuantity().value();
-            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(i.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity)).build();
+            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(i.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity))
+            .status(i.getStatus())
+            .build();
             final var toSave = i.applyUpdateInfo(updateInfo);
 
              InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())

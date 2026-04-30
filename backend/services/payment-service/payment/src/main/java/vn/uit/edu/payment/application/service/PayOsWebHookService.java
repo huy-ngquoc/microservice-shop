@@ -54,7 +54,7 @@ public class PayOsWebHookService implements PayOsWebHookPort {
     private final PaybackPaymentRepository paybackPaymentRepo;
     private final OrderChecker orderChecker;
     private final ObjectMapper objectMapper;
-    private static boolean isMockMode=true;
+    //private static boolean isMockMode=true;
     @Override
 
 public void handlePayOSWebHook(Webhook body) {
@@ -113,7 +113,7 @@ public void processPaymentUpdate(WebhookData webhookData) {
         boolean shouldPayback = false;
         try {
             ResponseEntity<OrderResponse> response = orderChecker.getById(payment.getOrderId().value());
-            if (response.getBody() == null || !"CONFIRMED".equals(response.getBody().status())) {
+            if (response.getBody() == null || !"WAITING_PAYMENT".equals(response.getBody().status())) {
                 shouldPayback = true;
             }
         } catch (FeignException e) {
@@ -204,6 +204,7 @@ private OnlinePaymentSuccessDocument createOnlinePaymentSuccessEvent(Payment p) 
     @Override
     public void fakeWebHook(UUID orderId) {
         Payment payment = loadPaymentPort.loadPaymentByOrderId(new OrderId(orderId));
+        if(payment==null) return;
         Random rand = new Random();
         int randNumber = rand.nextInt(10);
         if(randNumber<=3) return;

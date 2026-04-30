@@ -1,29 +1,20 @@
 package vn.uit.edu.msshop.order.adapter.in.web;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.EventDocument;
-import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderUpdatedEventDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.EventDocumentRepository;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderUpdatedRepository;
 import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
-import vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled;
-import vn.uit.edu.msshop.order.domain.event.OnlinePaymentExpired;
-import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 import vn.uit.edu.msshop.order.domain.event.PaymentSuccess;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
@@ -40,7 +31,7 @@ public class OrderEventListener {
     private final EventDocumentRepository eventDocumentRepo;
     private final OrderUpdatedRepository orderUpdatedRepo;
     private final PublishOrderEventPort publishEventPort;
-    @KafkaHandler
+    /*@KafkaHandler
     @Transactional
     public void onPaymentCancelled(OnlinePaymentCancelled event) {
         if(event.eventId()==null||event.orderId()==null) {
@@ -101,7 +92,7 @@ public class OrderEventListener {
             }
         });
         }
-    }
+    }*/
     @KafkaHandler
     public void onOnlinePaymentSuccess(PaymentSuccess event) {
         System.out.println("Nhan event");
@@ -113,7 +104,7 @@ public class OrderEventListener {
         if(!eventDocumentRepo.existsById(event.getEventId())) {
         Order order = loadPort.loadById(new OrderId(event.getOrderId())).orElseThrow(()->new OrderNotFoundException(new OrderId(event.getOrderId())));
         Order.UpdateInfo updateInfo = Order.UpdateInfo.builder().id(order.getId()).shippingInfo(order.getShippingInfo()).orderStatus(order.getStatus()).build();
-        final var saved = order.applyUpdateInfo(updateInfo).updatePaymentStatus(new PaymentStatus("SUCCESS"));
+        final var saved = order.applyUpdateInfo(updateInfo).updatePaymentStatus(new PaymentStatus("SUCCESS")).updateStatus(new OrderStatus("CONFIRMED"));
         
         savePort.save(saved);
         eventDocumentRepo.save(new EventDocument(event.getEventId(), Instant.now()));
