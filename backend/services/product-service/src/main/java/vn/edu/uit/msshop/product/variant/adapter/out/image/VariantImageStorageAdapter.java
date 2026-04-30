@@ -6,9 +6,13 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.api.exceptions.NotFound;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.shared.adapter.exception.ImageDeletionFailedException;
+import vn.edu.uit.msshop.product.shared.adapter.exception.ImageRenameFailedException;
+import vn.edu.uit.msshop.product.shared.adapter.exception.ImageStorageQueryFailedException;
 import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryFolders;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
@@ -30,9 +34,11 @@ public class VariantImageStorageAdapter
                     .resource(CloudinaryFolders.TEMP + "/" + key.value(), Map.of());
 
             return (result != null) && result.containsKey("public_id");
-        } catch (final Exception exception) {
-            log.warn("Image key '{}' not found in temp storage", key.value(), exception);
+        } catch (final NotFound _) {
+            log.debug("Image key '{}' not found in temp storage", key.value());
             return false;
+        } catch (final Exception e) {
+            throw new ImageStorageQueryFailedException(e);
         }
     }
 
@@ -60,7 +66,7 @@ public class VariantImageStorageAdapter
         try {
             this.cloudinary.uploader().destroy(VARIANTS_FOLDER + "/" + key.value(), Map.of());
         } catch (final IOException e) {
-            throw new RuntimeException("Failed to delete image: " + key.value(), e);
+            throw new ImageDeletionFailedException("Failed to delete image: " + key.value(), e);
         }
     }
 
@@ -70,7 +76,7 @@ public class VariantImageStorageAdapter
         try {
             this.cloudinary.uploader().rename(fromPublicId, toPublicId, Map.of());
         } catch (final IOException e) {
-            throw new RuntimeException("Failed to rename image: " + fromPublicId + " → " + toPublicId, e);
+            throw new ImageRenameFailedException("Failed to rename image: " + fromPublicId + " → " + toPublicId, e);
         }
     }
 }
