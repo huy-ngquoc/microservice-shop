@@ -16,7 +16,6 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.shared.adapter.exception.ImageUploadFailedException;
 import vn.edu.uit.msshop.product.shared.adapter.in.web.response.ApiErrorResponse;
 import vn.edu.uit.msshop.product.shared.adapter.in.web.response.ValidationError;
 import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
@@ -200,25 +199,6 @@ public class GlobalExceptionHandler {
         log.debug(message);
 
         final var status = HttpStatus.BAD_REQUEST;
-        final var response = GlobalExceptionHandler.buildResponse(
-                status,
-                message,
-                request);
-
-        return ResponseEntity.status(status).body(response);
-    }
-
-    @ExceptionHandler(ImageUploadFailedException.class)
-    public ResponseEntity<ApiErrorResponse> handleImageUploadFailed(
-            final ImageUploadFailedException ex,
-            final HttpServletRequest request) {
-        final var message = String.format(
-                "Image upload failed: %s",
-                ex.getMessage());
-
-        log.warn("Image upload failed", ex);
-
-        final var status = HttpStatus.BAD_GATEWAY;
         final var response = GlobalExceptionHandler.buildResponse(
                 status,
                 message,
