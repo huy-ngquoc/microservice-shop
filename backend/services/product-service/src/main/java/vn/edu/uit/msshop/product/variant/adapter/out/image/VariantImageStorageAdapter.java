@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.image;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import com.cloudinary.Cloudinary;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryFolders;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
@@ -16,7 +18,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 @Slf4j
 public class VariantImageStorageAdapter
         implements VariantImageStoragePort {
-    private static final String TEMP_FOLDER = "temp";
     private static final String VARIANTS_FOLDER = "variants";
 
     private final Cloudinary cloudinary;
@@ -26,7 +27,7 @@ public class VariantImageStorageAdapter
             final VariantImageKey key) {
         try {
             final var result = this.cloudinary.api()
-                    .resource(TEMP_FOLDER + "/" + key.value(), Map.of());
+                    .resource(CloudinaryFolders.TEMP + "/" + key.value(), Map.of());
 
             return (result != null) && result.containsKey("public_id");
         } catch (final Exception exception) {
@@ -38,7 +39,7 @@ public class VariantImageStorageAdapter
     @Override
     public void publishImage(
             final VariantImageKey key) {
-        final var fromPublicId = TEMP_FOLDER + "/" + key.value();
+        final var fromPublicId = CloudinaryFolders.TEMP + "/" + key.value();
         final var toPublicId = VARIANTS_FOLDER + "/" + key.value();
 
         this.renamePublicId(fromPublicId, toPublicId);
@@ -48,7 +49,7 @@ public class VariantImageStorageAdapter
     public void unpublishImage(
             final VariantImageKey key) {
         final var fromPublicId = VARIANTS_FOLDER + "/" + key.value();
-        final var toPublicId = TEMP_FOLDER + "/" + key.value();
+        final var toPublicId = CloudinaryFolders.TEMP + "/" + key.value();
 
         this.renamePublicId(fromPublicId, toPublicId);
     }
@@ -58,7 +59,7 @@ public class VariantImageStorageAdapter
             final VariantImageKey key) {
         try {
             this.cloudinary.uploader().destroy(VARIANTS_FOLDER + "/" + key.value(), Map.of());
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to delete image: " + key.value(), e);
         }
     }
@@ -68,7 +69,7 @@ public class VariantImageStorageAdapter
             final String toPublicId) {
         try {
             this.cloudinary.uploader().rename(fromPublicId, toPublicId, Map.of());
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Failed to rename image: " + fromPublicId + " → " + toPublicId, e);
         }
     }

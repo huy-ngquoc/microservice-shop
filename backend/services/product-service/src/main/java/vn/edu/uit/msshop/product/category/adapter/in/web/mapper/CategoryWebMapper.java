@@ -5,14 +5,13 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
-import com.cloudinary.Cloudinary;
-
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.CreateCategoryRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryImageRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryInfoRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
+import vn.edu.uit.msshop.product.category.adapter.out.image.CategoryImageStorageAdapter;
 import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategoryCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.DeleteCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.HardDeleteCategoryCommand;
@@ -27,11 +26,13 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImage
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryFolders;
+import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryImageUrlResolver;
 
 @Component
 @RequiredArgsConstructor
 public class CategoryWebMapper {
-    private final Cloudinary cloudinary;
+    private final CloudinaryImageUrlResolver urlResolver;
 
     public CreateCategoryCommand toCreateCommand(
             final CreateCategoryRequest request) {
@@ -70,7 +71,8 @@ public class CategoryWebMapper {
             final UUID id,
             final UpdateCategoryImageRequest request) {
         final var categoryId = new CategoryId(id);
-        final var imageKey = this.extractKeyFromTempPublicId(request.newImageKey());
+        final var imageKey = CategoryWebMapper
+                .extractKeyFromTempPublicId(request.newImageKey());
         final var version = new CategoryVersion(request.version());
 
         return new UpdateCategoryImageCommand(
@@ -134,23 +136,21 @@ public class CategoryWebMapper {
                 view.version());
     }
 
-    private CategoryImageKey extractKeyFromTempPublicId(
+    private static CategoryImageKey extractKeyFromTempPublicId(
             final String publicId) {
-        if (!publicId.startsWith("temp/")) {
+        final var prefix = CloudinaryFolders.TEMP + "/";
+        if (!publicId.startsWith(prefix)) {
             throw new IllegalArgumentException("Image key must be in temp folder");
         }
 
-        return new CategoryImageKey(publicId.substring("temp/".length()));
+        return new CategoryImageKey(publicId.substring(prefix.length()));
     }
 
     private @Nullable String toImageUrlString(
             @Nullable
             final String keyString) {
-        if (keyString == null) {
-            return null;
-        }
-
-        return this.cloudinary.url()
-                .generate("categories/" + keyString);
+        return this.urlResolver.resolve(
+                keyString,
+                CategoryImageStorageAdapter.CATEGORY_FOLDER);
     }
 }
