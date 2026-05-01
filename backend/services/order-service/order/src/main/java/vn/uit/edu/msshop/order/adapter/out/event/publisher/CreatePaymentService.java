@@ -59,11 +59,11 @@ public class CreatePaymentService {
     public void handleFailure(OrderCreatedDocument event, String error,Order order) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 5) {
-            System.out.println("Reach max retry");
+            
             updateStatus(event, "FAILED", "Max retries reached: " + error);
         if(order==null) return;
         final var toSave = order.updateStatus(new OrderStatus("PAYMENT_ERROR")).updatePaymentStatus(new PaymentStatus("FAILED"));
-        System.out.println(toSave.getStatus().value());
+        
         savePort.save(toSave);
         OrderUpdatedEventDocument orderUpdatedEventDocument = getOrderUpdatedEvent(toSave);
         orderUpdatedRepo.save(orderUpdatedEventDocument);

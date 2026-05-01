@@ -13,10 +13,11 @@ public class PaymentTestController {
     private final OrderRepository orderRepo;
     @GetMapping("/statistic")
     public ResponseEntity<TestResponse> getStatisticData() {
-        long confirmedPaid=orderRepo.countByStatusAndPaymentStatus("CONFIRMED", "SUCCESS");
-        long confirmedUnpaid=orderRepo.countByStatusAndPaymentStatus("CONFIRMED","PENDING");
-        long error=orderRepo.countByStatus("PAYMENT_ERROR");
+        long confirmed=orderRepo.countByStatus("CONFIRMED");
         long paymentExpired=orderRepo.countByStatus("PAYMENT_EXPIRED");
-        return ResponseEntity.ok(new TestResponse(confirmedPaid, confirmedUnpaid, error, paymentExpired));
+        long paymentError=orderRepo.countByStatus("PAYMENT_ERROR");
+        long waitingPayment=orderRepo.countByStatus("WAITING_PAYMENT");
+        long pendingPayment=orderRepo.countByStatus("PENDING_PAYMENT");
+        return ResponseEntity.ok(new TestResponse(confirmed, paymentExpired, paymentError, waitingPayment, pendingPayment));
     }
 }

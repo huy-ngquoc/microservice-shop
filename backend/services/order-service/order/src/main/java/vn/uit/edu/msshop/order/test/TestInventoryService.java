@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.stereotype.Service;
 
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
@@ -19,7 +18,7 @@ public class TestInventoryService   {
     private final InventoryChecker inventoryChecker;
 public List<VariantSumDto> reader(MongoTemplate mongoTemplate) {
     Aggregation aggregation = Aggregation.newAggregation(
-        Aggregation.match(Criteria.where("status").is("CONFIRMED")),
+        Aggregation.match(Criteria.where("status").in("CONFIRMED","PENDING_PAYMENT","WAITING_PAYMENT")),
         Aggregation.unwind("details"),
         Aggregation.group("details.variantId").sum("details.amount").as("amount"),
         Aggregation.project("amount").and("_id").as("variantId")

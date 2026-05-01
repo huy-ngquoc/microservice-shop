@@ -38,7 +38,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
     @Transactional
     public String createPaymentLink(Payment payment) {
         
-        long orderCode=  System.currentTimeMillis();
+        /*long orderCode=  System.currentTimeMillis();
         CreatePaymentLinkRequest request = CreatePaymentLinkRequest.builder()
         .orderCode(orderCode)
         .amount(payment.getPaymentValue().value())
@@ -65,8 +65,8 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
         .lastError(null).build();
         publishEventPort.publishPaymentLinkCreated(paymentLinkCreatedRepo.save(paymentLinkCreatedDocument));
 
-       return result;
-       /*String result = UUID.randomUUID().toString();
+       return result;*/
+       String result = UUID.randomUUID().toString();
        
        OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new PaymentLink(result), new OnlinePaymentNumber(System.currentTimeMillis()),new TransactionId(null), new CreateAt(Instant.now()));
        this.savePort.save(info);
@@ -83,7 +83,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
         .lastError(null).build();
         publishEventPort.publishPaymentLinkCreated(paymentLinkCreatedRepo.save(paymentLinkCreatedDocument));
 
-       return result;*/
+       return result;
 
     }
     

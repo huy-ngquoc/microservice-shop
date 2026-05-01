@@ -202,6 +202,7 @@ private OnlinePaymentSuccessDocument createOnlinePaymentSuccessEvent(Payment p) 
 }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional
     public void fakeWebHook(UUID orderId) {
         Payment payment = loadPaymentPort.loadPaymentByOrderId(new OrderId(orderId));
         if(payment==null) return;
