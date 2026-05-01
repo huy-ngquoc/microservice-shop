@@ -21,7 +21,7 @@ public class OrderCreatedOutboxPublisher {
     @Scheduled(fixedDelay=2000)
     public void publishPendingEvents() {
         List<OrderCreatedDocument> pendingEvents =orderCreatedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
-        System.out.println("Call with size "+pendingEvents.size());
+        
         for (OrderCreatedDocument event : pendingEvents) {
            createPaymentService.createPayment(event);
         }

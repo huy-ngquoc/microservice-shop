@@ -10,9 +10,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TestResponse {
-    private long confirmedPaid;
-    private long confirmedUnpaid;
-    private long error;
+    private long confirmed;
     private long paymentExpired;
+    private long paymentError;
+    private long waitingPayment;
+    private long pendingPayment;
 
 }

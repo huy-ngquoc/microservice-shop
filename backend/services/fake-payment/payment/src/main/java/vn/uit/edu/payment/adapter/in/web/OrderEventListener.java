@@ -54,7 +54,7 @@ public class OrderEventListener {
     private final PaymentCreatedFailService paymentCreatedFailService;
     
 
-    @KafkaHandler
+    //@KafkaHandler
     
     public void handleOrderCreated(OrderCreated event) {
         Random rand = new Random();

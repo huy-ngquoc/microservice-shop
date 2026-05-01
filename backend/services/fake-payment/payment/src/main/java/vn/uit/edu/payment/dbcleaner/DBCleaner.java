@@ -8,7 +8,7 @@ import vn.uit.edu.payment.adapter.out.event.repositories.PaymentSuccessDocumentR
 import vn.uit.edu.payment.adapter.out.persistence.SpringDataOnlinePaymentInfoJpaRepository;
 import vn.uit.edu.payment.adapter.out.persistence.SpringDataPaymentJpaRepository;
 
-@Component
+//@Component
 public class DBCleaner {
     
     private  OnlinePaymentExpiredDocumentRepository onlinePaymentExpiredRepo;
