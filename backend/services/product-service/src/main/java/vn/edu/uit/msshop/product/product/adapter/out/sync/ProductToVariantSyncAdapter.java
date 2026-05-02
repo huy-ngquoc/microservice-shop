@@ -3,6 +3,7 @@ package vn.edu.uit.msshop.product.product.adapter.out.sync;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -143,7 +144,7 @@ public class ProductToVariantSyncAdapter
         final var ids = variantIds.stream()
                 .map(ProductVariantId::value)
                 .map(VariantId::new)
-                .toList();
+                .collect(Collectors.toUnmodifiableSet());
         this.softDeleteAllUseCase.deleteByIds(ids);
     }
 

@@ -1,13 +1,12 @@
 package vn.edu.uit.msshop.product.variant.application.port.out.persistence;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 public interface LoadAllVariantsPort {
-    // TODO: method name is good?
-    List<Variant> loadAllByIds(
-            final Collection<VariantId> ids);
+    Map<VariantId, Variant> loadAllByIds(
+            final Set<VariantId> ids);
 }
