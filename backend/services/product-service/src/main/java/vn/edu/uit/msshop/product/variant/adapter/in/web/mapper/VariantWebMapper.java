@@ -1,13 +1,17 @@
 package vn.edu.uit.msshop.product.variant.adapter.in.web.mapper;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
 import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.product.variant.adapter.in.web.request.FindVariantsByIdsRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
@@ -57,6 +61,13 @@ public class VariantWebMapper {
         return new ListVariantsQuery(
                 pageRequest,
                 targets);
+    }
+
+    public Set<VariantId> toVariantIds(
+            final FindVariantsByIdsRequest request) {
+        return request.ids().stream()
+                .map(VariantId::new)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public RestoreVariantCommand toRestoreCommand(
@@ -152,6 +163,13 @@ public class VariantWebMapper {
                 view.targets(),
                 view.imageKey(),
                 view.version());
+    }
+
+    public List<VariantResponse> toListResponse(
+            final Collection<VariantView> views) {
+        return views.stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     public VariantImageResponse toImageResponse(
