@@ -3,12 +3,7 @@ package vn.edu.uit.msshop.product.product.adapter.in.web.request;
 import java.util.List;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

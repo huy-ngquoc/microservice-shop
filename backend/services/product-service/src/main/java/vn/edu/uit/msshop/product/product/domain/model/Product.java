@@ -4,8 +4,6 @@ import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.Amount;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.IncreaseAmount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductDeletionTime;
@@ -13,8 +11,6 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKeys;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRating;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
 
@@ -32,12 +28,6 @@ public final class Product {
 
     private final ProductBrandId brandId;
 
-    private final ProductPriceRange priceRange;
-
-    private final ProductSoldCount soldCount;
-
-    private final ProductRating rating;
-
     private final ProductConfiguration configuration;
 
     private final ProductImageKeys imageKeys;
@@ -49,16 +39,11 @@ public final class Product {
     @Nullable
     private final ProductDeletionTime deletionTime;
 
-    // TODO: should we omit "priceRange"?
-    // as it can be got from configuration.getVariant.getPriceRange()
     public Product(
             final ProductId id,
             final ProductName name,
             final ProductCategoryId categoryId,
             final ProductBrandId brandId,
-            final ProductPriceRange priceRange,
-            final ProductSoldCount soldCount,
-            final ProductRating rating,
             final ProductConfiguration configuration,
             final ProductImageKeys imageKeys,
             final ProductVersion version,
@@ -68,9 +53,6 @@ public final class Product {
         this.name = Domains.requireNonNull(name, "Product name CANNOT be null");
         this.categoryId = Domains.requireNonNull(categoryId, "Category ID CANNOT be null");
         this.brandId = Domains.requireNonNull(brandId, "Brand ID CANNOT be null");
-        this.priceRange = Domains.requireNonNull(priceRange, "Price range CANNOT be null");
-        this.soldCount = Domains.requireNonNull(soldCount, "Sold count CANNOT be null");
-        this.rating = Domains.requireNonNull(rating, "Rating CANNOT be null");
         this.configuration = Domains.requireNonNull(configuration, "Configuration CANNOT be null");
         this.imageKeys = Domains.requireNonNull(imageKeys, "Product image keys CANNOT be null");
         this.version = Domains.requireNonNull(version, "Product version CANNOT be null");
@@ -84,15 +66,8 @@ public final class Product {
     public ProductVariants getVariants() {
         return this.configuration.variants();
     }
-    public Product increaseSoldCount(IncreaseAmount amount) {
-        System.out.println("Increase amount "+amount.value());
-        return new Product(this.id, this.name, this.categoryId, this.brandId, this.priceRange,new ProductSoldCount(this.soldCount.value()+amount.value()), this.rating, this.configuration, this.imageKeys, this.version, this.deletionTime);
 
+    public ProductPriceRange getPriceRange() {
+        return this.getVariants().getPriceRange();
     }
-    public Product updateSoldCount(Amount amount) {
-        return new Product(this.id, this.name, this.categoryId, this.brandId, this.priceRange,new ProductSoldCount(amount.value()), this.rating, this.configuration, this.imageKeys, this.version, this.deletionTime);
-    }
-    /*public Product updateStock(Amount amount) {
-        return new Product(this.id, this.name, this.categoryId, this.brandId, this.priceRange,this.soldCount, this.rating, this.configuration, this.imageKeys, this.version, this.deletionTime);
-    }*/
 }

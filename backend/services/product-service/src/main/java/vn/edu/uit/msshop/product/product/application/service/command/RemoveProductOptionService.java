@@ -9,12 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductOptionCommand;
-import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
+import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductOptionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteVariantsForProductPort;
@@ -41,6 +44,9 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
     private final SoftDeleteVariantsForProductPort softDeleteVariantsForProductPort;
     private final CreateAllProductVariantsPort createVariantsPort;
     private final UpdateAllProductVariantTraitsPort updateAllVariantTraitsPort;
+    private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductStockCountPort loadStockCountPort;
+    private final LoadProductRatingPort loadRatingPort;
     private final PublishProductEventPort eventPort;
     private final ProductViewMapper mapper;
 
@@ -60,24 +66,30 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
 
         final var newConfiguration = this.removeOptionFromConfiguration(
                 product, command.optionIndex(), command.defaultPrice());
-        final var newPriceRange = newConfiguration.variants().getPriceRange();
         final var next = new Product(
                 product.getId(),
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                newPriceRange,
-                product.getSoldCount(),
-                product.getRating(),
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),
                 product.getDeletionTime());
 
-        final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new ProductUpdated(saved.getId()));
+        final var savedProduct = this.updatePort.update(next);
+        final var savedProductId = savedProduct.getId();
 
-        return this.mapper.toView(saved);
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
+        final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
+
+        this.eventPort.publish(new ProductUpdated(savedProductId));
+
+        return this.mapper.toView(
+                savedProduct,
+                soldCount,
+                stockCount,
+                rating);
     }
 
     private ProductConfiguration removeOptionFromConfiguration(
@@ -117,7 +129,9 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
                 ProductVariantTraits.empty(),
                 ProductVariantTargets.empty());
         final var newVariants = this.createVariantsPort.create(
-                productId, new NewProductVariants(List.of(newVariant)));
+                productId,
+                product.getName(),
+                new NewProductVariants(List.of(newVariant)));
 
         return new ProductConfiguration(ProductOptions.empty(), newVariants);
     }

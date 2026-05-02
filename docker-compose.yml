@@ -104,11 +104,14 @@ services:
             - prometheus
     mongodb:
         container_name: ms_mongo_db
-        image: mongo:8
+        build:
+            context: ./mongo
+            dockerfile: Dockerfile
+        image: mongo:8-rs
         ports:
             - 27017:27017
         volumes:
-            - mongo:/data
+            - mongo:/data/db
         environment:
             - MONGO_INITDB_ROOT_USERNAME=alibou
             - MONGO_INITDB_ROOT_PASSWORD=alibou
@@ -218,34 +221,46 @@ services:
         environment:
             - ME_CONFIG_MONGODB_ADMINUSERNAME=alibou
             - ME_CONFIG_MONGODB_ADMINPASSWORD=alibou
-            - ME_CONFIG_MONGODB_SERVER=mongodb
-
-    zookeeper:
-        container_name: ms_zookeeper
-        image: confluentinc/cp-zookeeper:7.7.7
-        environment:
-            ZOOKEEPER_SERVER_ID: 1
-            ZOOKEEPER_CLIENT_PORT: 2181
-            ZOOKEEPER_TICK_TIME: 2000
-        ports:
-            - "22181:2181"
+            - ME_CONFIG_MONGODB_SERVER=mongo
         networks:
             - microservices-net
 
+    # zookeeper:
+    #     container_name: ms_zookeeper
+    #     image: confluentinc/cp-zookeeper:8.1.2
+    #     environment:
+    #         ZOOKEEPER_SERVER_ID: 1
+    #         ZOOKEEPER_CLIENT_PORT: 2181
+    #         ZOOKEEPER_TICK_TIME: 2000
+    #     ports:
+    #         - "22181:2181"
+    #     networks:
+    #         - microservices-net
+
     kafka:
         container_name: ms_kafka
-        image: confluentinc/cp-kafka:7.7.7
+        image: confluentinc/cp-kafka:8.1.2
         ports:
             - "9092:9092"
-        depends_on:
-            - zookeeper
         environment:
+            # --- KRaft Specific Settings ---
+            KAFKA_NODE_ID: 1
+            KAFKA_PROCESS_ROLES: 'broker,controller'
+            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@ms_kafka:9093'
+            KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+            # Cluster ID is required for KRaft (You can change this later)
+            CLUSTER_ID: 'MkU3MTAzOTpDRjQxNTY5OTo='
+
+            # --- Listeners Configuration ---
+            KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:9092'
+            KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ms_kafka:29092,PLAINTEXT_HOST://localhost:9092'
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+            KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+
+            # --- Other Settings ---
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
             KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
             KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
             TZ: UTC
         networks:
             - microservices-net
@@ -256,6 +271,8 @@ services:
         ports:
             - 1080:1080
             - 1025:1025
+        networks:
+            - microservices-net
 
     keycloak:
         container_name: ms_keycloak

@@ -1,19 +1,16 @@
 package vn.edu.uit.msshop.product.variant.domain.model;
 
 import org.jspecify.annotations.Nullable;
-import org.springframework.lang.NonNull;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.edu.uit.msshop.product.shared.domain.Domains;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.IncreaseAmount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCount;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStock;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
@@ -27,10 +24,9 @@ public final class Variant {
 
     private final VariantProductId productId;
 
-    private final VariantPrice price;
+    private final VariantProductName productName;
 
-    // TODO: update each hour... resolve version conflict.
-    private final VariantSoldCount soldCount;
+    private final VariantPrice price;
 
     private final VariantTraits traits;
 
@@ -51,9 +47,9 @@ public final class Variant {
 
             final VariantProductId productId,
 
-            final VariantPrice price,
+            final VariantProductName productName,
 
-            final VariantSoldCount soldCount,
+            final VariantPrice price,
 
             final VariantTraits traits,
 
@@ -68,23 +64,13 @@ public final class Variant {
             final VariantDeletionTime deletionTime) {
         this.id = Domains.requireNonNull(id, "Variant ID must not be null");
         this.productId = Domains.requireNonNull(productId, "Variant Product ID must not be null");
+        this.productName = Domains.requireNonNull(productName, "Variant Product name must not be null");
         this.price = Domains.requireNonNull(price, "Variant price must not be null");
-        this.soldCount = Domains.requireNonNull(soldCount, "Variant sold must not be null");
         this.traits = Domains.requireNonNull(traits, "Variant traits must not be null");
         this.targets = Domains.requireNonNull(targets, "Variant targets must not be null");
         this.imageKey = imageKey;
 
         this.version = Domains.requireNonNull(version, "Variant version must not be null");
         this.deletionTime = deletionTime;
-    }
-    @NonNull
-    public Variant updateStock(VariantStock variantStock) {
-        return new Variant(this.id, this.productId, this.price, this.soldCount, this.traits, this.targets, this.imageKey, this.version, this.deletionTime);
-    }
-    public Variant increaseSoldCount(IncreaseAmount increaseAmount) {
-        return new Variant(this.id, this.productId, this.price, new VariantSoldCount(this.soldCount.value()+increaseAmount.value()) , this.traits, this.targets, this.imageKey, this.version, this.deletionTime);
-    }
-    public Variant updateSoldCount(VariantSoldCount variantSoldCount) {
-        return new Variant(this.id, this.productId, this.price, variantSoldCount, this.traits, this.targets, this.imageKey, this.version, this.deletionTime);
     }
 }

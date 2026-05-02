@@ -2,8 +2,8 @@ package vn.edu.uit.msshop.product.brand.application.mapper;
 
 import org.springframework.stereotype.Component;
 
-import vn.edu.uit.msshop.product.brand.application.dto.query.BrandLogoView;
-import vn.edu.uit.msshop.product.brand.application.dto.query.BrandView;
+import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
+import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 

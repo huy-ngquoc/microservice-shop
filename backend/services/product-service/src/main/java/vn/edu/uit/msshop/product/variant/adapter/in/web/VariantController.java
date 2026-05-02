@@ -3,6 +3,7 @@ package vn.edu.uit.msshop.product.variant.adapter.in.web;
 import java.util.List;
 import java.util.UUID;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.mapper.VariantWebMapper;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
@@ -30,12 +33,13 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVaria
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindSoftDeletedVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantImageUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantUseCase;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.ListVariantsUseCase;
 
 @RestController
 @RequestMapping("/variants")
 @RequiredArgsConstructor
 public class VariantController {
+    private final ListVariantsUseCase listUseCase;
     private final FindVariantUseCase findUseCase;
     private final FindVariantImageUseCase findImageUseCase;
     private final FindSoftDeletedVariantUseCase findSoftDeletedUseCase;
@@ -46,6 +50,42 @@ public class VariantController {
     private final SoftDeleteVariantUseCase softDeleteUseCase;
     private final HardDeleteVariantUseCase hardDeleteUseCase;
     private final VariantWebMapper mapper;
+
+    @GetMapping
+    public ResponseEntity<PageResponseDto<VariantResponse>> list(
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
+
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
+
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
+
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction,
+
+            @RequestParam(
+                    name = "target",
+                    required = false)
+            @Nullable
+            final List<String> targets) {
+        final var query = this.mapper.toListQuery(
+                page,
+                size,
+                sortBy,
+                direction,
+                targets);
+        final var views = this.listUseCase.list(query);
+
+        final var response = views.map(this.mapper::toResponse);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<VariantResponse> findById(
@@ -159,12 +199,5 @@ public class VariantController {
         this.hardDeleteUseCase.purge(command);
 
         return ResponseEntity.noContent().build();
-    }
-    @PostMapping("/")
-    public ResponseEntity<List<VariantResponse>> findByListId(@RequestBody List<UUID> ids) {
-        List<VariantId> listVariantId = ids.stream().map(VariantId::new).toList();
-        final var result = this.findUseCase.findByListIds(listVariantId);
-        final var response = result.stream().map(this.mapper::toResponse).toList();
-        return ResponseEntity.ok(response);
     }
 }

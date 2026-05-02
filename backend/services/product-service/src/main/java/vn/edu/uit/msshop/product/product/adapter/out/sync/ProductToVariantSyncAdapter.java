@@ -13,28 +13,33 @@ import vn.edu.uit.msshop.product.product.application.port.out.sync.RestoreVarian
 import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteVariantsForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.UpdateAllProductVariantTraitsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.UpdateProductNameOnVariantsPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantsForNewProductCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
+import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantProductNameForProductCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.CreateVariantsForNewProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteAllVariantsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateAllVariantTraitsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantProductNameForProductUseCase;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantForNewProduct;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantsForNewProduct;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTarget;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
@@ -47,12 +52,14 @@ public class ProductToVariantSyncAdapter
         CreateAllProductVariantsPort,
         RestoreVariantsForProductPort,
         UpdateAllProductVariantTraitsPort,
+        UpdateProductNameOnVariantsPort,
         SoftDeleteAllProductVariantsPort,
         SoftDeleteVariantsForProductPort,
         HardDeleteAllProductVariantsPort {
     private final CreateVariantsForNewProductUseCase createForNewProductUseCase;
     private final RestoreVariantsForProductUseCase restoreVariantsForProductUseCase;
     private final UpdateAllVariantTraitsForProductUseCase updateAllTraitsForProductUseCase;
+    private final UpdateVariantProductNameForProductUseCase updateVariantProductNameForProductUseCase;
     private final SoftDeleteAllVariantsUseCase softDeleteAllUseCase;
     private final SoftDeleteVariantsForProductUseCase softDeleteForProductUseCase;
     private final HardDeleteVariantsForProductUseCase hardDeleteVariantsForProductUseCase;
@@ -60,14 +67,17 @@ public class ProductToVariantSyncAdapter
     @Override
     public ProductVariants create(
             final ProductId id,
+            final ProductName name,
             final NewProductVariants newVariants) {
         final var variantProductId = new VariantProductId(id.value());
+        final var variantProductName = new VariantProductName(name.value());
         final var newVariantInputsList = newVariants.values().stream()
                 .map(this::toNewVariantInput).toList();
         final var newVariantInputs = new NewVariantsForNewProduct(newVariantInputsList);
 
         final var command = new CreateVariantsForNewProductCommand(
                 variantProductId,
+                variantProductName,
                 newVariantInputs);
 
         final var variantViewsList = this.createForNewProductUseCase.create(command);
@@ -105,6 +115,19 @@ public class ProductToVariantSyncAdapter
         }
 
         this.updateAllTraitsForProductUseCase.updateTraitsByIds(map);
+    }
+
+    @Override
+    public void updateProductNameByProductId(
+            final ProductId id,
+            final ProductName name) {
+        final var variantProductId = new VariantProductId(id.value());
+        final var variantProductName = new VariantProductName(name.value());
+
+        final var command = new UpdateVariantProductNameForProductCommand(
+                variantProductId,
+                variantProductName);
+        this.updateVariantProductNameForProductUseCase.execute(command);
     }
 
     @Override

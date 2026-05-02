@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.query.VariantImageView;
+import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdated;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -53,8 +53,8 @@ public class DeleteVariantImageService implements DeleteVariantImageUseCase {
         final var next = new Variant(
                 variant.getId(),
                 variant.getProductId(),
+                variant.getProductName(),
                 variant.getPrice(),
-                variant.getSoldCount(),
                 variant.getTraits(),
                 variant.getTargets(),
                 null,

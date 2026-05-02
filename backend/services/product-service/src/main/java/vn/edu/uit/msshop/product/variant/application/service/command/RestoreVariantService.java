@@ -55,8 +55,8 @@ public class RestoreVariantService implements RestoreVariantUseCase {
         final var next = new Variant(
                 variant.getId(),
                 variant.getProductId(),
+                variant.getProductName(),
                 variant.getPrice(),
-                variant.getSoldCount(),
                 variant.getTraits(),
                 variant.getTargets(),
                 variant.getImageKey(),
@@ -64,11 +64,7 @@ public class RestoreVariantService implements RestoreVariantUseCase {
                 null);
         final var saved = this.updatePort.update(next);
 
-        this.addToProductPort.addToProduct(variant);
-        VariantUpdateDocument eventDocument = new VariantUpdateDocument(UUID.randomUUID(), saved.getId().value(), saved.getProductId().value(), "",
-                 saved.getPrice().value(), getTraits(saved), saved.getImageKey()==null?"":saved.getImageKey().value(), "PENDING", 0, Instant.now(), null, null);
-        VariantUpdateDocument savedEventDodcument = variantUpdateRepo.save(eventDocument);
-        publishProductEventPort.publishVariantUpdated(savedEventDodcument);
+        this.addToProductPort.addToProduct(saved);
 
         this.eventPort.publish(new VariantRestored(saved.getId()));
     }

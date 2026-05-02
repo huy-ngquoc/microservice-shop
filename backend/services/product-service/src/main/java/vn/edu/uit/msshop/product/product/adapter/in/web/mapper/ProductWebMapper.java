@@ -1,7 +1,6 @@
 package vn.edu.uit.msshop.product.product.adapter.in.web.mapper;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -26,8 +25,8 @@ import vn.edu.uit.msshop.product.product.application.dto.command.RestoreProductC
 import vn.edu.uit.msshop.product.product.application.dto.command.SoftDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductOptionCommand;
-import vn.edu.uit.msshop.product.product.application.dto.query.ProductVariantView;
-import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
+import vn.edu.uit.msshop.product.product.application.dto.view.ProductVariantView;
+import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
@@ -237,6 +236,7 @@ public class ProductWebMapper {
                 view.minPrice(),
                 view.maxPrice(),
                 view.soldCount(),
+                view.stockCount(),
                 view.ratingAverage(),
                 view.ratingCount(),
                 view.options(),

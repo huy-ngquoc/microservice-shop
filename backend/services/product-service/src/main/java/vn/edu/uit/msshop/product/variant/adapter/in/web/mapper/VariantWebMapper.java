@@ -1,9 +1,13 @@
 package vn.edu.uit.msshop.product.variant.adapter.in.web.mapper;
 
+import java.util.List;
 import java.util.UUID;
+
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
@@ -14,17 +18,47 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantC
 import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.query.VariantImageView;
-import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
+import vn.edu.uit.msshop.product.variant.application.dto.query.ListVariantsQuery;
+import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
+import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTarget;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Component
 public class VariantWebMapper {
+    public ListVariantsQuery toListQuery(
+            int page,
+
+            int size,
+
+            @Nullable
+            String sortBy,
+
+            PageRequestDto.Direction direction,
+
+            @Nullable
+            List<String> rawTargets) {
+        final var pageRequest = new PageRequestDto(page, size, sortBy, direction);
+
+        final List<VariantTarget> targets;
+        if (rawTargets == null) {
+            targets = List.of();
+        } else {
+            targets = rawTargets.stream()
+                    .map(VariantTarget::new)
+                    .toList();
+        }
+
+        return new ListVariantsQuery(
+                pageRequest,
+                targets);
+    }
+
     public RestoreVariantCommand toRestoreCommand(
             final UUID id,
             final long expectedVersion) {
@@ -44,7 +78,7 @@ public class VariantWebMapper {
 
         final var price = ChangeRequest.toChange(request.price(), VariantPrice::new);
         final var traits = ChangeRequest.toChange(request.traits(), VariantTraits::of);
-        final var targets = ChangeRequest.toChange(request.traits(), VariantTargets::of);
+        final var targets = ChangeRequest.toChange(request.targets(), VariantTargets::of);
 
         return new UpdateVariantInfoCommand(
                 variantId,
@@ -110,9 +144,12 @@ public class VariantWebMapper {
         return new VariantResponse(
                 view.id(),
                 view.productId(),
+                view.productName(),
                 view.price(),
                 view.soldCount(),
+                view.stockCount(),
                 view.traits(),
+                view.targets(),
                 view.imageKey(),
                 view.version());
     }

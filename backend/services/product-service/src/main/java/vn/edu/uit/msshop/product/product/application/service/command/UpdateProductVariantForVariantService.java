@@ -37,16 +37,12 @@ public class UpdateProductVariantForVariantService
         final var newConfiguration = new ProductConfiguration(
                 product.getOptions(),
                 newVariants);
-        final var newPriceRange = newVariants.getPriceRange();
 
         final var next = new Product(
                 product.getId(),
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                newPriceRange,
-                product.getSoldCount(),
-                product.getRating(),
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),

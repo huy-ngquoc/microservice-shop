@@ -127,7 +127,7 @@
                     </annotationProcessorPaths>
                     <compilerArgs>
                         <arg>--add-modules</arg>
-                        <arg>jdk.compiler,jdk.net</arg>
+                        <arg>jdk.compiler</arg>
                         <arg>-XDcompilePolicy=simple</arg>
                         <arg>--should-stop=ifError=FLOW</arg>
                         <arg>
@@ -151,7 +151,6 @@
                         </exclude>
                     </excludes>
                     <jvmArguments>
-                        --add-modules jdk.net 
                         -Duser.timezone=UTC
                     </jvmArguments>
                 </configuration>
@@ -163,7 +162,6 @@
                 <configuration>
                     <argLine>
                         @{argLine}
-                        --add-modules jdk.net
                         -Duser.timezone=UTC
                     </argLine>
                 </configuration>

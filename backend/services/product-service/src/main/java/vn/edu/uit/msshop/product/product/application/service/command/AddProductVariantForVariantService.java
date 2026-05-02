@@ -34,16 +34,12 @@ public class AddProductVariantForVariantService
 
         final var newConfiguration = product.getConfiguration()
                 .addVariant(command.variant());
-        final var newPriceRange = newConfiguration.variants().getPriceRange();
 
         final var next = new Product(
                 product.getId(),
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                newPriceRange,
-                product.getSoldCount(),
-                product.getRating(),
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),

@@ -2,8 +2,6 @@ package vn.edu.uit.msshop.product.category.adapter.out.persistence;
 
 import java.util.Optional;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +17,7 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.Updat
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.shared.adapter.out.persistence.PageRequests;
 import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 
@@ -40,7 +39,7 @@ public class CategoryPersistenceAdapter
     @Override
     public PageResponseDto<Category> list(
             final PageRequestDto pageRequest) {
-        final var pageable = CategoryPersistenceAdapter.toPageable(
+        final var pageable = PageRequests.toPageable(
                 pageRequest,
                 CategoryDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNull(pageable);
@@ -59,7 +58,7 @@ public class CategoryPersistenceAdapter
     @Override
     public PageResponseDto<Category> listSoftDeleted(
             final PageRequestDto pageRequest) {
-        final var pageable = CategoryPersistenceAdapter.toPageable(
+        final var pageable = PageRequests.toPageable(
                 pageRequest,
                 CategoryDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNotNull(pageable);
@@ -121,21 +120,5 @@ public class CategoryPersistenceAdapter
             final CategoryId id) {
         final var jpaId = id.value();
         this.repository.deleteById(jpaId);
-    }
-
-    // TODO: place it somewhere shared as many places use it
-    private static PageRequest toPageable(
-            final PageRequestDto request,
-            final String defaultSortField) {
-        final var direction = switch (request.direction()) {
-            case ASC -> Sort.Direction.ASC;
-            case DESC -> Sort.Direction.DESC;
-        };
-
-        final var sortBy = request.sortBy();
-        final var sortField = (sortBy != null) ? sortBy : defaultSortField;
-        final var sort = Sort.by(direction, sortField);
-
-        return PageRequest.of(request.page(), request.size(), sort);
     }
 }

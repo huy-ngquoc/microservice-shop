@@ -15,12 +15,14 @@ import vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEvent
 import vn.edu.uit.msshop.product.shared.event.document.VariantUpdateDocument;
 import vn.edu.uit.msshop.product.shared.event.repository.VariantUpdateRepository;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.query.VariantView;
+import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantInfoUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
@@ -33,6 +35,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 @RequiredArgsConstructor
 public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
     private final LoadVariantPort loadPort;
+    private final LoadVariantSoldCountPort loadSoldCountPort;
+    private final LoadVariantStockCountPort loadStockCountPort;
     private final UpdateVariantPort updatePort;
     private final UpdateVariantInProductPort updateInProductPort;
     private final PublishVariantEventPort eventPort;
@@ -45,8 +49,16 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
     // TODO: traits size must be the same
     public VariantView updateInfo(
             final UpdateVariantInfoCommand command) {
+        final var id = command.id();
+
         final var variant = this.loadPort.loadById(command.id())
                 .orElseThrow(() -> new VariantNotFoundException(command.id()));
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
+                id,
+                variant.getProductId());
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
+                id,
+                variant.getProductId());
 
         final var priceSet = command.price().getSet();
         final var traitsSet = command.traits().getSet();
@@ -55,7 +67,10 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         if ((priceSet == null)
                 && (traitsSet == null)
                 && (targetsSet == null)) {
-            return this.mapper.toView(variant);
+            return this.mapper.toView(
+                    variant,
+                    soldCount,
+                    stockCount);
         }
 
         final var expectedVersion = command.expectedVersion();
@@ -72,7 +87,10 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
                 traitsSet,
                 targetsSet);
         if (next == null) {
-            return this.mapper.toView(variant);
+            return this.mapper.toView(
+                    variant,
+                    soldCount,
+                    stockCount);
         }
 
         final var saved = this.updatePort.update(next);
@@ -84,7 +102,10 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         this.updateInProductPort.updateInProduct(saved);
         publishProductEventPort.publishVariantUpdated(variantUpdateRepo.save(eventDocument));
 
-        return this.mapper.toView(saved);
+        return this.mapper.toView(
+                saved,
+                soldCount,
+                stockCount);
     }
     private List<String> getTraits(Variant v) {
         return v.getTraits().values().stream().map(item->item.value()).toList();
@@ -132,8 +153,8 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         return new Variant(
                 current.getId(),
                 current.getProductId(),
+                current.getProductName(),
                 newPrice,
-                current.getSoldCount(),
                 newTraits,
                 newTargets,
                 current.getImageKey(),
