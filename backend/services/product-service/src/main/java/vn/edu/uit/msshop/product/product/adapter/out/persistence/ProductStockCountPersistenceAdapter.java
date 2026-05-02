@@ -17,7 +17,9 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductStockCountPersistenceMapper;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductStockCountsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.IncreaseAllProductStockCountsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductStockCountPort;
@@ -28,12 +30,14 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ProductStockCountPersistenceAdapter
         implements
         LoadProductStockCountPort,
         LoadAllProductStockCountsPort,
         InitializeProductStockCountPort,
         IncreaseAllProductStockCountsPort,
+        DecreaseAllProductStockCountsPort,
         DeleteProductStockCountPort {
     private static final Collector<ProductStockCount, ?, Map<ProductId, ProductStockCount>> COLLECTOR = Collectors
             .toUnmodifiableMap(
@@ -112,6 +116,57 @@ public class ProductStockCountPersistenceAdapter
         }
 
         bulkOps.execute();
+    }
+
+    @Override
+    public void decreaseAll(
+            Map<ProductId, Integer> decrementByProductId) {
+        if (decrementByProductId.isEmpty()) {
+            return;
+        }
+
+        final var instantNow = Instant.now();
+        final var bulkOps = this.mongoTemplate.bulkOps(
+                BulkOperations.BulkMode.UNORDERED,
+                ProductStockCountDocument.class);
+
+        int expectedOps = 0;
+        for (final var entry : decrementByProductId.entrySet()) {
+            final var dec = entry.getValue();
+            if (dec <= 0) {
+                continue;
+            }
+
+            final var id = entry.getKey();
+            final var jpaId = id.value();
+
+            final var query = new Query(Criteria.where("_id").is(jpaId)
+                    .and(ProductStockCountDocument.Fields.value).gte(dec));
+            final var update = new Update()
+                    .inc(ProductStockCountDocument.Fields.value, -dec)
+                    .set(ProductStockCountDocument.Fields.lastUpdatedTime, instantNow);
+            bulkOps.updateOne(query, update);
+
+            ++expectedOps;
+        }
+
+        if (expectedOps <= 0) {
+            return;
+        }
+
+        final var result = bulkOps.execute();
+        final var modified = result.getModifiedCount();
+
+        if (modified < expectedOps) {
+            log.warn(
+                    "ProductStockCount decrease drift: expected={}, modified={}, productIds={}. "
+                            + "Possible causes: (1) document not initialized, (2) current value < decrement "
+                            + "(state divergence between variant and product aggregate). "
+                            + "Reconcile job should self-heal.",
+                    expectedOps,
+                    modified,
+                    decrementByProductId.keySet());
+        }
     }
 
     @Override

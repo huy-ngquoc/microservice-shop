@@ -9,5 +9,4 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 public interface LoadVariantPort {
     Optional<Variant> loadById(
             final VariantId id);
-    public List<Variant> loadByListIds(List<VariantId> ids);
 }

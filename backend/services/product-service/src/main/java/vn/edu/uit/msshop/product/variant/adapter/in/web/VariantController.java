@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.mapper.VariantWebMapper;
+import vn.edu.uit.msshop.product.variant.adapter.in.web.request.FindVariantsByIdsRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
@@ -33,6 +34,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVaria
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindSoftDeletedVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantImageUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.FindAllVariantsByIdsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.ListVariantsUseCase;
 
 @RestController
@@ -40,6 +42,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.query.ListVariantsU
 @RequiredArgsConstructor
 public class VariantController {
     private final ListVariantsUseCase listUseCase;
+    private final FindAllVariantsByIdsUseCase findAllByIdsUseCase;
     private final FindVariantUseCase findUseCase;
     private final FindVariantImageUseCase findImageUseCase;
     private final FindSoftDeletedVariantUseCase findSoftDeletedUseCase;
@@ -85,6 +88,19 @@ public class VariantController {
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
+    }
+
+    // TODO: move it to another controller and mark it "internal" in path.
+    @PostMapping("/order-search")
+    public ResponseEntity<List<VariantResponse>> findAllByIds(
+            @RequestBody
+            @Valid
+            FindVariantsByIdsRequest request) {
+        final var variantIds = this.mapper.toVariantIds(request);
+        final var variantById = this.findAllByIdsUseCase.findAllByIds(variantIds);
+
+        final var responses = this.mapper.toListResponse(variantById.values());
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
