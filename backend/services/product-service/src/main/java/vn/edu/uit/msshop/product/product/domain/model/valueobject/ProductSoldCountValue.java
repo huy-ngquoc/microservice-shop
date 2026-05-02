@@ -18,12 +18,27 @@ public record ProductSoldCountValue(
 
     public ProductSoldCountValue increase(
             final int increment) {
-        // TODO: should check, because there maybe negative?
         if (increment < 0) {
             throw new DomainException("Product sold count increment cannot be negative");
         }
 
         final var newValue = this.value + increment;
+        return new ProductSoldCountValue(newValue);
+    }
+
+    public ProductSoldCountValue decrease(
+            final int decrement) {
+        if (decrement < 0) {
+            throw new DomainException("Product sold count decrement cannot be negative");
+        }
+
+        final var newValue = this.value - decrement;
+        if (newValue < 0) {
+            throw new DomainException(
+                    "Product sold count cannot decrease below zero: current=" + this.value + ", decrement="
+                            + decrement);
+        }
+
         return new ProductSoldCountValue(newValue);
     }
 }
