@@ -109,7 +109,7 @@ public class VariantPersistenceAdapter
         final var jpaIds = ids.stream()
                 .map(VariantId::value)
                 .toList();
-        return this.repository.findAllByIdAndDeletionTimeIsNull(jpaIds).stream()
+        return this.repository.findAllByIdInAndDeletionTimeIsNull(jpaIds).stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }
@@ -129,7 +129,7 @@ public class VariantPersistenceAdapter
         final var jpaIds = ids.stream()
                 .map(VariantId::value)
                 .toList();
-        return this.repository.findAllByIdAndDeletionTimeIsNotNull(jpaIds).stream()
+        return this.repository.findAllByIdInAndDeletionTimeIsNotNull(jpaIds).stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }

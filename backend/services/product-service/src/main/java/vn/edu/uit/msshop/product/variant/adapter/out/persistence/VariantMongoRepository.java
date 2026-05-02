@@ -20,10 +20,10 @@ public interface VariantMongoRepository
             final Collection<String> targets,
             final Pageable pageable);
 
-    List<VariantDocument> findAllByIdAndDeletionTimeIsNull(
+    List<VariantDocument> findAllByIdInAndDeletionTimeIsNull(
             final Iterable<UUID> ids);
 
-    List<VariantDocument> findAllByIdAndDeletionTimeIsNotNull(
+    List<VariantDocument> findAllByIdInAndDeletionTimeIsNotNull(
             final Iterable<UUID> ids);
 
     Optional<VariantDocument> findByIdAndDeletionTimeIsNull(
