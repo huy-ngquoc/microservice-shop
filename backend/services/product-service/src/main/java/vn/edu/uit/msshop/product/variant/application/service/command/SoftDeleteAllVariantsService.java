@@ -1,6 +1,6 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +25,10 @@ public class SoftDeleteAllVariantsService implements SoftDeleteAllVariantsUseCas
     @Override
     @Transactional
     public void deleteByIds(
-            final List<VariantId> ids) {
-        final var variants = this.loadAllPort.loadAllByIds(ids);
+            final Set<VariantId> ids) {
+        final var variantById = this.loadAllPort.loadAllByIds(ids);
 
-        final var next = variants.stream()
+        final var next = variantById.values().stream()
                 .map(SoftDeleteAllVariantsService::toSoftDeleted)
                 .toList();
 

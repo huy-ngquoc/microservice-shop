@@ -2,7 +2,12 @@ package vn.edu.uit.msshop.product.variant.adapter.out.persistence;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -30,6 +35,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.Update
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsProductNameForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
@@ -53,6 +59,14 @@ public class VariantPersistenceAdapter
         UpdateAllVariantsProductNameForProductPort,
         DeleteVariantPort,
         DeleteVariantsForProductPort {
+    private static final Collector<Variant, ?, Map<VariantId, Variant>> COLLECTOR = Collectors
+            .toUnmodifiableMap(
+                    Variant::getId,
+                    Function.identity(),
+                    (
+                            existing,
+                            replacement) -> existing);
+
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
     private final MongoTemplate mongoTemplate;
@@ -104,14 +118,14 @@ public class VariantPersistenceAdapter
     }
 
     @Override
-    public List<Variant> loadAllByIds(
-            final Collection<VariantId> ids) {
+    public Map<VariantId, Variant> loadAllByIds(
+            final Set<VariantId> ids) {
         final var jpaIds = ids.stream()
                 .map(VariantId::value)
                 .toList();
         return this.repository.findAllByIdInAndDeletionTimeIsNull(jpaIds).stream()
                 .map(this.mapper::toDomain)
-                .toList();
+                .collect(VariantPersistenceAdapter.COLLECTOR);
     }
 
     @Override

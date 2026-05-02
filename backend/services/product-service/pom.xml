@@ -32,6 +32,7 @@
     <properties>
         <argLine></argLine>
         <java.version>25</java.version>
+        <open-api.version>3.0.3</open-api.version>
         <spring-cloud.version>2025.1.0</spring-cloud.version>
         <nullaway.version>0.13.1</nullaway.version>
         <error-prone.version>2.48.0</error-prone.version>
@@ -115,7 +116,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.0.2</version>
+            <version>${open-api.version}</version>
         </dependency>
 
         <dependency>

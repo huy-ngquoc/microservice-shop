@@ -87,7 +87,7 @@ public class SetAllVariantStockCountsService
         final var byProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
         for (final var item : resolved) {
             final var delta = item.delta();
-            if (delta != 0) {
+            if (delta > 0) {
                 final var productId = item.current().getProductId();
                 final var current = byProductId.getOrDefault(productId, 0);
 
