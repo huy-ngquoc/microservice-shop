@@ -246,10 +246,10 @@ services:
             # --- KRaft Specific Settings ---
             KAFKA_NODE_ID: 1
             KAFKA_PROCESS_ROLES: 'broker,controller'
-            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@ms_kafka:9093'
+            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:9093'
             KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
             # Cluster ID is required for KRaft (You can change this later)
-            CLUSTER_ID: 'MkU3MTAzOTpDRjQxNTY5OTo='
+            CLUSTER_ID: 'MAL1fjh8RCCL1yaIwenKDA'
 
             # --- Listeners Configuration ---
             KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:9092'
