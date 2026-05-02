@@ -2,14 +2,18 @@ package vn.edu.uit.msshop.product.variant.adapter.out.persistence;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -27,11 +31,11 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAl
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.SaveVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsProductNameForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
@@ -54,7 +58,15 @@ public class VariantPersistenceAdapter
         UpdateAllVariantsPort,
         UpdateAllVariantsProductNameForProductPort,
         DeleteVariantPort,
-        DeleteVariantsForProductPort, SaveVariantPort {
+        DeleteVariantsForProductPort {
+    private static final Collector<Variant, ?, Map<VariantId, Variant>> COLLECTOR = Collectors
+            .toUnmodifiableMap(
+                    Variant::getId,
+                    Function.identity(),
+                    (
+                            existing,
+                            replacement) -> existing);
+
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
     private final MongoTemplate mongoTemplate;
@@ -106,14 +118,14 @@ public class VariantPersistenceAdapter
     }
 
     @Override
-    public List<Variant> loadAllByIds(
-            final Collection<VariantId> ids) {
+    public Map<VariantId, Variant> loadAllByIds(
+            final Set<VariantId> ids) {
         final var jpaIds = ids.stream()
                 .map(VariantId::value)
                 .toList();
-        return this.repository.findAllByIdAndDeletionTimeIsNull(jpaIds).stream()
+        return this.repository.findAllByIdInAndDeletionTimeIsNull(jpaIds).stream()
                 .map(this.mapper::toDomain)
-                .toList();
+                .collect(VariantPersistenceAdapter.COLLECTOR);
     }
 
     @Override
@@ -131,7 +143,7 @@ public class VariantPersistenceAdapter
         final var jpaIds = ids.stream()
                 .map(VariantId::value)
                 .toList();
-        return this.repository.findAllByIdAndDeletionTimeIsNotNull(jpaIds).stream()
+        return this.repository.findAllByIdInAndDeletionTimeIsNotNull(jpaIds).stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }
@@ -203,25 +215,4 @@ public class VariantPersistenceAdapter
         this.repository.deleteAllByProductId(jpaProductId);
     }
 
-    @Override
-    public List<Variant> loadByListIds(List<VariantId> ids) {
-        final var jpaVariantIds = ids.stream().map(VariantId::value).toList();
-        System.out.println("First id "+jpaVariantIds.get(0).toString());
-        // TODO Auto-generated method stub
-        return this.repository.findByIdIn(jpaVariantIds).stream().map(mapper::toDomain).toList();
-    }
-
-    @Override
-    @NonNull
-    public Variant save(Variant v) {
-        final var result = this.repository.save(this.mapper.toPersistence(v));
-        return mapper.toDomain(result);
-    }
-
-    @Override
-    @NonNull
-    public List<Variant> saveAll(List<Variant> variants) {
-        final var result = this.repository.saveAll(variants.stream().map(mapper::toPersistence).toList());
-        return result.stream().map(mapper::toDomain).toList();
-    }
 }

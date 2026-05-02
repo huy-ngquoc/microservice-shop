@@ -1,8 +1,7 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +16,12 @@ import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundEx
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductStockCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantRestorablePort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantRestored;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -27,8 +30,12 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 @RequiredArgsConstructor
 public class RestoreVariantService implements RestoreVariantUseCase {
     private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
+    private final LoadVariantSoldCountPort loadSoldCountPort;
+    private final LoadVariantStockCountPort loadStockCountPort;
     private final CheckVariantRestorablePort checkRestorablePort;
     private final AddVariantToProductPort addToProductPort;
+    private final IncreaseProductSoldCountsPort increaseProductSoldPort;
+    private final IncreaseProductStockCountsPort increaseProductStockPort;
     private final UpdateVariantPort updatePort;
     private final PublishVariantEventPort eventPort;
     private final VariantUpdateRepository variantUpdateRepo;
@@ -52,6 +59,12 @@ public class RestoreVariantService implements RestoreVariantUseCase {
 
         this.checkRestorablePort.validateRestorable(variant);
 
+        final var productId = variant.getProductId();
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(variantId, productId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(variantId, productId);
+        final var soldIncrement = soldCount.getValue().value();
+        final var stockIncrement = stockCount.getValue().value();
+
         final var next = new Variant(
                 variant.getId(),
                 variant.getProductId(),
@@ -65,6 +78,15 @@ public class RestoreVariantService implements RestoreVariantUseCase {
         final var saved = this.updatePort.update(next);
 
         this.addToProductPort.addToProduct(saved);
+
+        if (soldIncrement > 0) {
+            this.increaseProductSoldPort.increaseAllSoldCounts(
+                    Map.of(productId, soldIncrement));
+        }
+        if (stockIncrement > 0) {
+            this.increaseProductStockPort.increaseAllStockCounts(
+                    Map.of(productId, stockIncrement));
+        }
 
         this.eventPort.publish(new VariantRestored(saved.getId()));
     }

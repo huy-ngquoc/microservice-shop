@@ -25,4 +25,20 @@ public record ProductStockCountValue(
         final var newValue = this.value + increment;
         return new ProductStockCountValue(newValue);
     }
+
+    public ProductStockCountValue decrease(
+            final int decrement) {
+        if (decrement < 0) {
+            throw new DomainException("Product stock count decrement cannot be negative");
+        }
+
+        final var newValue = this.value - decrement;
+        if (newValue < 0) {
+            throw new DomainException(
+                    "Product stock count cannot decrease below zero: current=" + this.value + ", decrement="
+                            + decrement);
+        }
+
+        return new ProductStockCountValue(newValue);
+    }
 }
