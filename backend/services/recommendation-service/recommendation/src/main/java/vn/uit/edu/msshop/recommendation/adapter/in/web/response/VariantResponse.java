@@ -3,15 +3,31 @@ package vn.uit.edu.msshop.recommendation.adapter.in.web.response;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-public class VariantResponse {
-    private UUID variantId;
-    private List<String> images;
-    private List<String> targets;
-    private String name;
+import org.jspecify.annotations.Nullable;
+
+public record VariantResponse(
+        UUID id,
+
+        UUID productId,
+
+        String productName,
+
+        long price,
+
+        int soldCount,
+
+        int stockCount,
+
+        List<String> traits,
+
+        List<String> targets,
+
+        @Nullable
+        String imageKey,
+
+        long version) {
+    public VariantResponse {
+        traits = List.copyOf(traits);
+        targets = List.copyOf(targets);
+    }
 }
