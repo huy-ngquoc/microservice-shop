@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
-import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
+import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
@@ -17,7 +17,11 @@ import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductInfoUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.UpdateProductNameOnVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
@@ -34,7 +38,11 @@ import vn.edu.uit.msshop.product.shared.event.repository.ProductUpdateRepository
 @RequiredArgsConstructor
 public class UpdateProductInfoService implements UpdateProductInfoUseCase {
     private final LoadProductPort loadPort;
+    private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductStockCountPort loadStockCountPort;
+    private final LoadProductRatingPort loadRatingPort;
     private final UpdateProductPort updatePort;
+    private final UpdateProductNameOnVariantsPort updateVariantProductNamePort;
     private final CheckProductCategoryExistsPort checkCategoryExistsPort;
     private final CheckProductBrandExistsPort checkBrandExistsPort;
     private final ProductViewMapper mapper;
@@ -50,12 +58,20 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
         final var product = this.loadPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(productId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(productId);
+        final var rating = this.loadRatingPort.loadByIdOrZero(productId);
+
         final var nameSet = command.name().getSet();
         final var categoryIdSet = command.categoryId().getSet();
         final var brandIdSet = command.brandId().getSet();
 
         if ((nameSet == null) && (categoryIdSet == null) && (brandIdSet == null)) {
-            return this.mapper.toView(product);
+            return this.mapper.toView(
+                    product,
+                    soldCount,
+                    stockCount,
+                    rating);
         }
 
         final var expectedVersion = command.expectedVersion();
@@ -72,17 +88,22 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
                 categoryIdSet,
                 brandIdSet);
         if (next == null) {
-            return this.mapper.toView(product);
+            return this.mapper.toView(
+                    product,
+                    soldCount,
+                    stockCount,
+                    rating);
         }
 
-        final var saved = this.updatePort.update(next);
+        final var savedProduct = this.updatePort.update(next);
+        this.syncProductNameToVariantsIfChanged(product, savedProduct);
+        this.eventPort.publish(new ProductUpdated(savedProduct.getId()));
 
-        ProductUpdateDocument eventDocument = new ProductUpdateDocument(UUID.randomUUID(), saved.getId().value(), saved.getName().value(), "PENDING", 0, Instant.now(), null, null);
-        ProductUpdateDocument savedEvent = productUpdateRepo.save(eventDocument);
-        publishProductEventPort.publishProductUpdated(savedEvent);
-        this.eventPort.publish(new ProductUpdated(saved.getId()));
-
-        return this.mapper.toView(saved);
+        return this.mapper.toView(
+                savedProduct,
+                soldCount,
+                stockCount,
+                rating);
     }
 
     private @Nullable Product applyChanges(
@@ -128,15 +149,11 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
             return null;
         }
 
-        // FIXME: what if the sold updated right before updating info?
         return new Product(
                 current.getId(),
                 newName,
                 newCategoryId,
                 newBrandId,
-                current.getPriceRange(),
-                current.getSoldCount(),
-                current.getRating(),
                 current.getConfiguration(),
                 current.getImageKeys(),
                 current.getVersion(),
@@ -155,5 +172,17 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
         if (!this.checkBrandExistsPort.existsById(newBrandId)) {
             throw new ProductBrandNotFoundException(newBrandId);
         }
+    }
+
+    private void syncProductNameToVariantsIfChanged(
+            final Product before,
+            final Product after) {
+        if (after.getName().equals(before.getName())) {
+            return;
+        }
+
+        this.updateVariantProductNamePort.updateProductNameByProductId(
+                after.getId(),
+                after.getName());
     }
 }

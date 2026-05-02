@@ -1,22 +1,25 @@
 package vn.edu.uit.msshop.product.shared.application.exception;
 
+import org.jspecify.annotations.Nullable;
+
+import lombok.Getter;
+
+@Getter
 public final class OptimisticLockException extends RuntimeException {
-    private final long expectedVersion;
-    private final long currentVersion;
+    @Nullable
+    private final Long expectedVersion;
+
+    @Nullable
+    private final Long currentVersion;
 
     public OptimisticLockException(
-            long expected,
-            long current) {
+            @Nullable
+            Long expected,
+
+            @Nullable
+            Long current) {
         super("Version mismatch (expected: " + expected + ", current: " + current + ")");
         this.expectedVersion = expected;
         this.currentVersion = current;
-    }
-
-    public long getExceptedVersion() {
-        return this.expectedVersion;
-    }
-
-    public long getCurrentVersion() {
-        return this.currentVersion;
     }
 }

@@ -20,6 +20,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteV
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantSoldCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantReferencedByProductPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantPurged;
@@ -31,6 +32,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 public class HardDeleteVariantService implements HardDeleteVariantUseCase {
     private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
     private final DeleteVariantPort deletePort;
+    private final DeleteVariantSoldCountPort deleteSoldCountPort;
     private final CheckVariantReferencedByProductPort checkReferencedPort;
     private final VariantImageStoragePort imageStoragePort;
     private final PublishVariantEventPort eventPort;
@@ -62,6 +64,8 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
         }
 
         this.deletePort.deleteById(variantId);
+        this.deleteSoldCountPort.deleteById(variantId);
+
         this.eventPort.publish(new VariantPurged(variantId));
 
 

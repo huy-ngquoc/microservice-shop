@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategoryCommand;
-import vn.edu.uit.msshop.product.category.application.dto.query.CategoryView;
+import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.command.CreateCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCategoryEventPort;

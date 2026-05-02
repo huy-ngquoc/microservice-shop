@@ -6,12 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductOptionCommand;
-import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
+import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductOptionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
@@ -23,6 +26,9 @@ import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockExce
 @RequiredArgsConstructor
 public class UpdateProductOptionService implements UpdateProductOptionUseCase {
     private final LoadProductPort loadPort;
+    private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductStockCountPort loadStockCountPort;
+    private final LoadProductRatingPort loadRatingPort;
     private final UpdateProductPort updatePort;
     private final PublishProductEventPort eventPort;
     private final ProductViewMapper mapper;
@@ -42,21 +48,33 @@ public class UpdateProductOptionService implements UpdateProductOptionUseCase {
                     product.getVersion().value());
         }
 
-        final var next = this.applyChanges(
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(productId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(productId);
+        final var rating = this.loadRatingPort.loadByIdOrZero(productId);
+
+        final var next = UpdateProductOptionService.applyChanges(
                 product,
                 command.optionIndex(),
                 command.newOption());
         if (next == null) {
-            return this.mapper.toView(product);
+            return this.mapper.toView(
+                    product,
+                    soldCount,
+                    stockCount,
+                    rating);
         }
 
         final var saved = this.updatePort.update(next);
         this.eventPort.publish(new ProductUpdated(saved.getId()));
 
-        return this.mapper.toView(saved);
+        return this.mapper.toView(
+                saved,
+                soldCount,
+                stockCount,
+                rating);
     }
 
-    private @Nullable Product applyChanges(
+    private static @Nullable Product applyChanges(
             final Product current,
             final int optionIndex,
             final ProductOption newOption) {
@@ -78,9 +96,6 @@ public class UpdateProductOptionService implements UpdateProductOptionUseCase {
                 current.getName(),
                 current.getCategoryId(),
                 current.getBrandId(),
-                current.getPriceRange(),
-                current.getSoldCount(),
-                current.getRating(),
                 configuration,
                 current.getImageKeys(),
                 current.getVersion(),

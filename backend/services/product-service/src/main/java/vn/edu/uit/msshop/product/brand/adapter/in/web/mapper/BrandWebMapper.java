@@ -5,14 +5,13 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
-import com.cloudinary.Cloudinary;
-
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
+import vn.edu.uit.msshop.product.brand.adapter.out.logo.BrandLogoStorageAdapter;
 import vn.edu.uit.msshop.product.brand.application.dto.command.CreateBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.DeleteBrandLogoCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.HardDeleteBrandCommand;
@@ -20,18 +19,20 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.RestoreBrandComma
 import vn.edu.uit.msshop.product.brand.application.dto.command.SoftDeleteBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandInfoCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandLogoCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.query.BrandLogoView;
-import vn.edu.uit.msshop.product.brand.application.dto.query.BrandView;
+import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
+import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryFolders;
+import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryImageUrlResolver;
 
 @Component
 @RequiredArgsConstructor
 public class BrandWebMapper {
-    private final Cloudinary cloudinary;
+    private final CloudinaryImageUrlResolver urlResolver;
 
     public CreateBrandCommand toCreateCommand(
             final CreateBrandRequest request) {
@@ -70,7 +71,7 @@ public class BrandWebMapper {
             final UUID id,
             final UpdateBrandLogoRequest request) {
         final var brandId = new BrandId(id);
-        final var logoKey = this.extractKeyFromTempPublicId(request.newLogoKey());
+        final var logoKey = BrandWebMapper.extractKeyFromTempPublicId(request.newLogoKey());
         final var version = new BrandVersion(request.version());
 
         return new UpdateBrandLogoCommand(
@@ -134,23 +135,21 @@ public class BrandWebMapper {
                 view.version());
     }
 
-    private BrandLogoKey extractKeyFromTempPublicId(
+    private static BrandLogoKey extractKeyFromTempPublicId(
             final String publicId) {
-        if (!publicId.startsWith("temp/")) {
+        final var prefix = CloudinaryFolders.TEMP + "/";
+        if (!publicId.startsWith(prefix)) {
             throw new IllegalArgumentException("Image key must be in temp folder");
         }
 
-        return new BrandLogoKey(publicId.substring("temp/".length()));
+        return new BrandLogoKey(publicId.substring(prefix.length()));
     }
 
     private @Nullable String toLogoUrlString(
             @Nullable
             final String keyString) {
-        if (keyString == null) {
-            return null;
-        }
-
-        return this.cloudinary.url()
-                .generate("brands/" + keyString);
+        return this.urlResolver.resolve(
+                keyString,
+                BrandLogoStorageAdapter.BRAND_FOLDER);
     }
 }

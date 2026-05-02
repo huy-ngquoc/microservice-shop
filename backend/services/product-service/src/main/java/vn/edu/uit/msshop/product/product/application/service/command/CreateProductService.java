@@ -11,13 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
-import vn.edu.uit.msshop.product.product.application.dto.query.ProductView;
+import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;
@@ -39,6 +42,9 @@ public class CreateProductService implements CreateProductUseCase {
     private final CheckProductCategoryExistsPort checkCategoryExistsPort;
     private final CheckProductBrandExistsPort checkBrandExistsPort;
     private final CreateAllProductVariantsPort createVariantsForNewProductPort;
+    private final InitializeProductSoldCountPort initializeSoldCountPort;
+    private final InitializeProductStockCountPort initializeStockCountPort;
+    private final InitializeProductRatingPort initializeRatingPort;
     private final PublishProductEventPort eventPort;
 
     private final ProductViewMapper mapper;
@@ -66,6 +72,7 @@ public class CreateProductService implements CreateProductUseCase {
 
         final var savedVariants = this.createVariantsForNewProductPort.create(
                 productId,
+                command.name(),
                 command.newConfiguration().newVariants());
 
         final var configuration = new ProductConfiguration(
@@ -79,21 +86,19 @@ public class CreateProductService implements CreateProductUseCase {
                 command.brandId(),
                 configuration);
 
-        final var saved = this.createPort.create(newProduct);
+        final var savedProduct = this.createPort.create(newProduct);
+        final var savedProductId = savedProduct.getId();
 
-        this.eventPort.publish(new ProductCreated(saved.getId()));
+        final var savedSoldCount = this.initializeSoldCountPort.initialize(savedProductId);
+        final var savedStockCount = this.initializeStockCountPort.initialize(savedProductId);
+        final var savedRating = this.initializeRatingPort.initialize(savedProductId);
 
-        List<VariantCreatedDocument> variantCreateds = saved.getVariants().values().stream().map(item->new VariantCreatedDocument(item.id().value(), item.price().value(),getTraits(item),"")).toList();
-
-        ProductCreatedDocument productCreatedDocument = new ProductCreatedDocument(UUID.randomUUID(), saved.getId().value(), saved.getName().value(), variantCreateds, "PENDING", 
-            0, Instant.now(), null, null);
-        final var savedEvent = productCreatedRepository.save(productCreatedDocument);
-        publishProductEventPort.publishProductCreated(savedEvent);
-        return this.mapper.toView(saved);
-    }
-    @NonNull
-    private List<String> getTraits(ProductVariant v) {
-        return v.traits().values().stream().map(item->item.value()).toList();
+        this.eventPort.publish(new ProductCreated(savedProductId));
+        return this.mapper.toView(
+                savedProduct,
+                savedSoldCount,
+                savedStockCount,
+                savedRating);
     }
 
     private void validateCategoryExists(

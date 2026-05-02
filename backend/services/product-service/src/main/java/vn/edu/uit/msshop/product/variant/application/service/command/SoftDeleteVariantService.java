@@ -32,6 +32,7 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
     private final VariantDeletedRepository variantDeletedRepo;
     private final PublishProductEventPort publishProductEventPort;
 
+    // TODO: adjust product sold count and stock count for variant.
     @Override
     @Transactional
     public void delete(
@@ -51,8 +52,8 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
         final var next = new Variant(
                 variant.getId(),
                 variant.getProductId(),
+                variant.getProductName(),
                 variant.getPrice(),
-                variant.getSoldCount(),
                 variant.getTraits(),
                 variant.getTargets(),
                 variant.getImageKey(),

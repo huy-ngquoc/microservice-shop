@@ -4,15 +4,24 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.shared.adapter.out.persistence.PageRequests;
+import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantPersistenceMapper;
+import vn.edu.uit.msshop.product.variant.application.dto.query.ListVariantsQuery;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantsForProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.ListVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
@@ -20,16 +29,20 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVa
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.SaveVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsProductNameForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTarget;
 
 @Component
 @RequiredArgsConstructor
 public class VariantPersistenceAdapter
         implements
+        ListVariantsPort,
         LoadVariantPort,
         LoadSoftDeletedVariantPort,
         LoadAllVariantsPort,
@@ -39,10 +52,40 @@ public class VariantPersistenceAdapter
         CreateAllVariantsPort,
         UpdateVariantPort,
         UpdateAllVariantsPort,
+        UpdateAllVariantsProductNameForProductPort,
         DeleteVariantPort,
         DeleteVariantsForProductPort, SaveVariantPort {
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
+    private final MongoTemplate mongoTemplate;
+
+    @Override
+    public PageResponseDto<Variant> list(
+            final ListVariantsQuery query) {
+        final var pageable = PageRequests.toPageable(
+                query.pageRequest(),
+                VariantDocument.Fields.id);
+
+        final Page<VariantDocument> page;
+        if (query.targets().isEmpty()) {
+            page = this.repository.findAllByDeletionTimeIsNull(pageable);
+        } else {
+            final var rawTargets = query.targets().stream()
+                    .map(VariantTarget::value)
+                    .toList();
+            page = this.repository.findAllByTargetsInAndDeletionTimeIsNull(rawTargets, pageable);
+        }
+
+        final var variants = page.getContent().stream()
+                .map(this.mapper::toDomain)
+                .toList();
+
+        return new PageResponseDto<>(
+                variants,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements());
+    }
 
     @Override
     public Optional<Variant> loadById(
@@ -88,7 +131,7 @@ public class VariantPersistenceAdapter
         final var jpaIds = ids.stream()
                 .map(VariantId::value)
                 .toList();
-        return this.repository.findAllById(jpaIds).stream()
+        return this.repository.findAllByIdAndDeletionTimeIsNotNull(jpaIds).stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }
@@ -131,6 +174,18 @@ public class VariantPersistenceAdapter
         return saved.stream()
                 .map(this.mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public void updateProductNameByProductId(
+            final VariantProductId productId,
+            final VariantProductName productName) {
+        final var query = Query.query(Criteria.where(VariantDocument.Fields.productId).is(productId.value()));
+        final var update = Update.update(VariantDocument.Fields.productName, productName.value());
+        this.mongoTemplate.updateMulti(
+                query,
+                update,
+                VariantDocument.class);
     }
 
     @Override

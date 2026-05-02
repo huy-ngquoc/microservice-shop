@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.exception.VariantProductNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
@@ -28,24 +27,25 @@ public class SoftDeleteVariantsForProductService implements SoftDeleteVariantsFo
             final VariantProductId productId) {
         final var variants = this.loadForProductPort.loadAllByProductId(productId);
         if (variants.isEmpty()) {
-            throw new VariantProductNotFoundException(productId);
+            return;
         }
 
         final var next = variants.stream()
-                .map(this::toSoftDeleted).toList();
+                .map(SoftDeleteVariantsForProductService::toSoftDeleted)
+                .toList();
 
         final var saved = this.updateAllPort.updateAll(next);
 
         saved.forEach(s -> this.eventPort.publish(new VariantSoftDeleted(s.getId())));
     }
 
-    private Variant toSoftDeleted(
+    private static Variant toSoftDeleted(
             final Variant variant) {
         return new Variant(
                 variant.getId(),
                 variant.getProductId(),
+                variant.getProductName(),
                 variant.getPrice(),
-                variant.getSoldCount(),
                 variant.getTraits(),
                 variant.getTargets(),
                 variant.getImageKey(),

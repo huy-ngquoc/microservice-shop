@@ -2,8 +2,6 @@ package vn.uit.edu.msshop.recommendation.adapter.in.web;
 
 import java.time.Instant;
 
-import org.springframework.kafka.annotation.KafkaHandler;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,7 @@ import vn.uit.edu.msshop.recommendation.domain.event.UpdateVariantEvent;
 
 @Component
 @RequiredArgsConstructor
-@KafkaListener(topics="", groupId="")
+//@KafkaListener(topics="", groupId="")
 public class VariantEventListener {
     private final CreateVariantUseCase createUseCase;
     private final UpdateVariantUseCase updateUseCase;
@@ -27,7 +25,7 @@ public class VariantEventListener {
     private final VariantWebMapper mapper;
     private final EventDocumentRepository eventDocumentRepo;
 
-    @KafkaHandler
+    //@KafkaHandler
     public void createVariantEventListener(CreateVariantEvent event) {
         if(!eventDocumentRepo.existsById(event.getEventId())) {
             createUseCase.create(mapper.toCommand(event));
@@ -35,7 +33,7 @@ public class VariantEventListener {
         }
         
     }
-    @KafkaHandler
+    //@KafkaHandler
     public void updateVariantEventListener(UpdateVariantEvent event) {
         if(!eventDocumentRepo.existsById(event.getEventId())) {
             updateUseCase.update(mapper.toCommand(event));
@@ -43,7 +41,7 @@ public class VariantEventListener {
         }
         
     }
-    @KafkaHandler
+    //@KafkaHandler
     public void deleteVariantEventListener(DeleteVariantEvent event) {
         if(!eventDocumentRepo.existsById(event.getEventId())) {
             deleteUseCase.delete(mapper.toCommand(event));

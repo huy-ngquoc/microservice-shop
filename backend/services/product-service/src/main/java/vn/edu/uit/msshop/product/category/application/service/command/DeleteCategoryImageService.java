@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.category.application.dto.command.DeleteCategoryImageCommand;
-import vn.edu.uit.msshop.product.category.application.dto.query.CategoryImageView;
+import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.command.DeleteCategoryImageUseCase;

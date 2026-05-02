@@ -16,7 +16,8 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 
 @Service
 @RequiredArgsConstructor
-public class RemoveProductVariantForVariantService implements RemoveProductVariantForVariantUseCase {
+public class RemoveProductVariantForVariantService
+        implements RemoveProductVariantForVariantUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final PublishProductEventPort eventPort;
@@ -41,9 +42,6 @@ public class RemoveProductVariantForVariantService implements RemoveProductVaria
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                product.getPriceRange(),
-                product.getSoldCount(),
-                product.getRating(),
                 newConfiguration,
                 product.getImageKeys(),
                 product.getVersion(),

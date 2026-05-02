@@ -13,7 +13,7 @@ public class PaymentTestController {
     private final OrderRepository orderRepo;
     @GetMapping("/statistic")
     public ResponseEntity<TestResponse> getStatisticData() {
-        long confirmed=orderRepo.countByStatus("CONFIRMED");
+        long confirmed=orderRepo.countByStatusAndPaymentMethod("CONFIRMED","ONLINE");
         long paymentExpired=orderRepo.countByStatus("PAYMENT_EXPIRED");
         long paymentError=orderRepo.countByStatus("PAYMENT_ERROR");
         long waitingPayment=orderRepo.countByStatus("WAITING_PAYMENT");
