@@ -30,9 +30,9 @@ public class UpdateAllVariantTraitsForProductService
     public void updateTraitsByIds(
             Map<VariantId, VariantTraits> newTraitsMap) {
         final var ids = newTraitsMap.keySet();
-        final var variants = this.loadAllPort.loadAllByIds(ids);
+        final var variantById = this.loadAllPort.loadAllByIds(ids);
 
-        final var next = variants.stream()
+        final var next = variantById.values().stream()
                 .map(v -> withNewTraits(v, newTraitsMap.get(v.getId())))
                 .toList();
 
