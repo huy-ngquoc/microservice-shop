@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
-@Service
+//@Service
 public class TestInventoryService   {
     private final MongoTemplate mongoTemplate;
     private final InventoryChecker inventoryChecker;
