@@ -19,6 +19,5 @@ public class CartDetailResponse {
     private String imageKey;
     private long price;
     private int amount;
-    private int inventoryAmount;
     
 }

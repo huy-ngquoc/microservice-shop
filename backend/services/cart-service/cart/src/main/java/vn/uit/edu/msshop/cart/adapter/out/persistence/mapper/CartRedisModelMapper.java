@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import vn.uit.edu.msshop.cart.adapter.out.persistence.CartDocument;
+import vn.uit.edu.msshop.cart.adapter.out.persistence.CartItemDocument;
 import vn.uit.edu.msshop.cart.adapter.out.persistence.CartItemRedisModel;
 import vn.uit.edu.msshop.cart.adapter.out.persistence.CartRedisModel;
 import vn.uit.edu.msshop.cart.domain.model.Cart;
@@ -42,4 +44,17 @@ public class CartRedisModelMapper {
     public CartRedisModel toModel(Cart cart){
         return new CartRedisModel(cart.getUserId().value().toString(), cart.getDetails().stream().map(this::toModel).toList());
     }
+    public CartItemDocument toDocument(CartItemRedisModel redisModel) {
+        return new CartItemDocument(redisModel.getVariantId(), redisModel.getTraits(), redisModel.getImageKey(), redisModel.getName(), redisModel.getPrice(), redisModel.getAmount());
+    }
+    public CartDocument toDocument(CartRedisModel redisModel) {
+        return new CartDocument(UUID.fromString(redisModel.getUserId()), redisModel.getItems().stream().map(item->toDocument(item)).toList());
+    }
+    public CartItemRedisModel toRedisModel(CartItemDocument document) {
+        return new CartItemRedisModel(document.getVariantId(), document.getTraits(), document.getVariantId(), document.getName(), document.getPrice(), document.getAmount());
+    }
+    public CartRedisModel toRedisModel(CartDocument cartDocument) {
+        return new CartRedisModel(cartDocument.getUserId().toString(), cartDocument.getItems().stream().map(item->toRedisModel(item)).toList());
+    }
+
 }

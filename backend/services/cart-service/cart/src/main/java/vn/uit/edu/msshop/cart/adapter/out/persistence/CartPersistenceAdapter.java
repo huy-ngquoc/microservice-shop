@@ -3,6 +3,7 @@ package vn.uit.edu.msshop.cart.adapter.out.persistence;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -23,17 +24,28 @@ public class CartPersistenceAdapter implements LoadCartPort, SaveCartPort, Delet
     private final CartRedisModelMapper mapper;
     private static final String KEY_PREFIX="cart_key:";
     private static final int CART_LIFE_TIME=7;
+    private final CartRepository cartRepo;
     
     @Override
     public Cart loadByUserId(UserId userId) {
         String key = KEY_PREFIX+userId.value().toString();
         CartRedisModel result =(CartRedisModel) redisTemplate.opsForValue().get(key);
-        if(result==null) return null;
+        if(result==null) {
+            CartDocument document = cartRepo.findById(userId.value()).orElse(null);
+            if(document==null) return null;
+            CartRedisModel redisModel = mapper.toRedisModel(document);
+            redisTemplate.opsForValue().set(key, redisModel, CART_LIFE_TIME, TimeUnit.DAYS);
+            return mapper.toDomain(redisModel);
+        }
         return mapper.toDomain(result); 
     }
 
     @Override
     public Cart save(Cart cart) {
+        long dbSize = redisTemplate.execute(RedisConnection::dbSize);
+        if(dbSize>=10000) {
+            redisTemplate.getConnectionFactory().getConnection().flushAll();
+        }
         String key = KEY_PREFIX + cart.getUserId().value().toString();
         redisTemplate.opsForValue().set(key, mapper.toModel(cart), CART_LIFE_TIME, TimeUnit.DAYS);
         return cart;
