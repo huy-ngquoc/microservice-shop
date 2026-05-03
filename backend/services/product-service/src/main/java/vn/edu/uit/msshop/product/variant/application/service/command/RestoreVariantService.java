@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +14,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVa
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductStockCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantRestorablePort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantRestored;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -30,8 +26,6 @@ public class RestoreVariantService implements RestoreVariantUseCase {
     private final LoadVariantStockCountPort loadStockCountPort;
     private final CheckVariantRestorablePort checkRestorablePort;
     private final AddVariantToProductPort addToProductPort;
-    private final IncreaseProductSoldCountsPort increaseProductSoldPort;
-    private final IncreaseProductStockCountsPort increaseProductStockPort;
     private final UpdateVariantPort updatePort;
     private final PublishVariantEventPort eventPort;
 
@@ -71,16 +65,10 @@ public class RestoreVariantService implements RestoreVariantUseCase {
                 null);
         final var saved = this.updatePort.update(next);
 
-        this.addToProductPort.addToProduct(saved);
-
-        if (soldIncrement > 0) {
-            this.increaseProductSoldPort.increaseAllSoldCounts(
-                    Map.of(productId, soldIncrement));
-        }
-        if (stockIncrement > 0) {
-            this.increaseProductStockPort.increaseAllStockCounts(
-                    Map.of(productId, stockIncrement));
-        }
+        this.addToProductPort.addToProduct(
+                saved,
+                soldIncrement,
+                stockIncrement);
 
         this.eventPort.publish(new VariantRestored(saved.getId()));
     }

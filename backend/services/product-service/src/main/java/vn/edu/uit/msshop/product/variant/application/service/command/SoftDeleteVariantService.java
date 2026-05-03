@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +13,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVa
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductStockCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -30,8 +26,6 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
     private final LoadVariantStockCountPort loadStockCountPort;
     private final UpdateVariantPort updatePort;
     private final RemoveVariantFromProductPort removeFromProductPort;
-    private final DecreaseProductSoldCountsPort decreaseProductSoldPort;
-    private final DecreaseProductStockCountsPort decreaseProductStockPort;
     private final PublishVariantEventPort eventPort;
 
     @Override
@@ -66,21 +60,13 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
                 variant.getImageKey(),
                 variant.getVersion(),
                 VariantDeletionTime.now());
-
         final var saved = this.updatePort.update(next);
 
         this.removeFromProductPort.removeFromProduct(
                 saved.getId(),
-                saved.getProductId());
-
-        if (soldDecrement > 0) {
-            this.decreaseProductSoldPort.decreaseAllSoldCounts(
-                    Map.of(productId, soldDecrement));
-        }
-        if (stockDecrement > 0) {
-            this.decreaseProductStockPort.decreaseAllStockCounts(
-                    Map.of(productId, stockDecrement));
-        }
+                saved.getProductId(),
+                soldDecrement,
+                stockDecrement);
 
         this.eventPort.publish(new VariantSoftDeleted(saved.getId()));
     }

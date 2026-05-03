@@ -4,5 +4,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 
 public interface AddVariantToProductPort {
     void addToProduct(
-            final Variant variant);
+            final Variant variant,
+            int soldIncrement,
+            int stockIncrement);
 }
