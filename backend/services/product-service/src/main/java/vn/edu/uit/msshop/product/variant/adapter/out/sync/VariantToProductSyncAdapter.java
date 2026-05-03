@@ -66,13 +66,17 @@ public class VariantToProductSyncAdapter
 
     @Override
     public void addToProduct(
-            final Variant variant) {
+            final Variant variant,
+            int soldIncrement,
+            int stockIncrement) {
         final var productId = new ProductId(variant.getProductId().value());
         final var productVariant = VariantToProductSyncAdapter.toProductVariant(variant);
 
         final var command = new AddProductVariantForVariantCommand(
                 productId,
-                productVariant);
+                productVariant,
+                soldIncrement,
+                stockIncrement);
 
         this.addProductVariantForVariantUseCase.addVariant(command);
     }
@@ -145,13 +149,17 @@ public class VariantToProductSyncAdapter
     @Override
     public void removeFromProduct(
             final VariantId variantId,
-            final VariantProductId variantProductId) {
+            final VariantProductId variantProductId,
+            int soldDecrement,
+            int stockDecrement) {
         final var productVariantId = new ProductVariantId(variantId.value());
         final var productId = new ProductId(variantProductId.value());
 
         final var command = new RemoveProductVariantForVariantCommand(
                 productId,
-                productVariantId);
+                productVariantId,
+                soldDecrement,
+                stockDecrement);
 
         this.removeProductVariantForVariantUseCase.removeVariant(command);
     }

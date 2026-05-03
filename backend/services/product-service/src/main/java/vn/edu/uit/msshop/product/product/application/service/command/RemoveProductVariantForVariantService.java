@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,6 +11,8 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductMustHaveAt
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductVariantForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductSoldCountsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductStockCountsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
@@ -20,6 +24,8 @@ public class RemoveProductVariantForVariantService
         implements RemoveProductVariantForVariantUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
+    private final DecreaseAllProductSoldCountsPort decreaseSoldPort;
+    private final DecreaseAllProductStockCountsPort decreaseStockPort;
     private final PublishProductEventPort eventPort;
 
     @Override
@@ -37,7 +43,6 @@ public class RemoveProductVariantForVariantService
         final var newConfiguration = product.getConfiguration()
                 .removeVariant(command.variantId());
 
-        // TODO: should we update sold count and stuffs as well?
         final var next = new Product(
                 product.getId(),
                 product.getName(),
@@ -47,8 +52,15 @@ public class RemoveProductVariantForVariantService
                 product.getImageKeys(),
                 product.getVersion(),
                 product.getDeletionTime());
-
         final var saved = this.updatePort.update(next);
+
+        if (command.soldDecrement() > 0) {
+            this.decreaseSoldPort.decreaseAll(Map.of(productId, command.soldDecrement()));
+        }
+        if (command.stockDecrement() > 0) {
+            this.decreaseStockPort.decreaseAll(Map.of(productId, command.stockDecrement()));
+        }
+
         this.eventPort.publish(new ProductUpdated(saved.getId()));
     }
 }
