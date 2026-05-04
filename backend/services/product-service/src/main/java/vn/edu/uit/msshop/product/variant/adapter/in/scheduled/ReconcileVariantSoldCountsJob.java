@@ -16,7 +16,7 @@ public class ReconcileVariantSoldCountsJob {
     private final ReconcileVariantSoldCountsUseCase reconcileVariantSoldCountsUseCase;
 
     @Scheduled(
-            fixedRate = 1,
+            fixedRate = 24,
             timeUnit = TimeUnit.HOURS)
     public void reconcile() {
         try {
