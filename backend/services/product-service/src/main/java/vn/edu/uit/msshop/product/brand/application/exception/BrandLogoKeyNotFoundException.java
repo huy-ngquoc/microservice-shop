@@ -7,11 +7,11 @@ public final class BrandLogoKeyNotFoundException extends NotFoundException {
     public BrandLogoKeyNotFoundException(
             final BrandLogoKey logoKey,
             final Throwable cause) {
-        super("Brand logo key", logoKey.value().toString(), cause);
+        super("Brand logo key", logoKey.value(), cause);
     }
 
     public BrandLogoKeyNotFoundException(
             final BrandLogoKey logoKey) {
-        super("Brand logo key", logoKey.value().toString());
+        super("Brand logo key", logoKey.value());
     }
 }
