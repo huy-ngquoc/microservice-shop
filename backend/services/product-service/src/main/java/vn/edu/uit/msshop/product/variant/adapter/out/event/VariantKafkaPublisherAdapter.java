@@ -33,6 +33,8 @@ public class VariantKafkaPublisherAdapter
         this.publish(event);
     }
 
+    // Result is handled globally by VariantKafkaProducerListener
+    @SuppressWarnings("FutureReturnValueIgnored")
     private void publish(
             final VariantIntegrationEvent event) {
         final var producerRecord = new ProducerRecord<String, VariantIntegrationEvent>(
