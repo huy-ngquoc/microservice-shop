@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.event;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -39,7 +41,7 @@ public class VariantKafkaPublisherAdapter
                 event);
         producerRecord.headers().add(
                 "event-type",
-                event.getClass().getSimpleName().getBytes());
+                event.getClass().getSimpleName().getBytes(StandardCharsets.UTF_8));
 
         this.kafkaTemplate.send(producerRecord);
     }
