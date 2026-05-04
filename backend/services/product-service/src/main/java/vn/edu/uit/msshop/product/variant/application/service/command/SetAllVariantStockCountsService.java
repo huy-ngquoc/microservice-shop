@@ -131,7 +131,7 @@ public class SetAllVariantStockCountsService
     private record DeltasByProductId(
             Map<VariantProductId, Integer> increments,
             Map<VariantProductId, Integer> decrements) {
-        public DeltasByProductId {
+        DeltasByProductId {
             increments = Map.copyOf(increments);
             decrements = Map.copyOf(decrements);
         }
