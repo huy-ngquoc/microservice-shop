@@ -32,6 +32,17 @@
             "args": "",
             "envFile": "${workspaceFolder}/.env",
             "vmArgs": " -Duser.timezone=UTC"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ProductServiceApplication<product-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "vn.edu.uit.msshop.product.ProductServiceApplication",
+            "projectName": "product-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Duser.timezone=UTC"
         }
     ]
 }
