@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public record StockCountResponse(
         UUID variantId,
-        int value) {
+        int quantity) {
 }
