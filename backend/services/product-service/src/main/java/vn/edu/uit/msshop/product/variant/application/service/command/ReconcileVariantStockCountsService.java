@@ -3,6 +3,7 @@ package vn.edu.uit.msshop.product.variant.application.service.command;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.variant.application.dto.command.ReconcileVariantStockCountsCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SetAllVariantStockCountsCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVariantStockCountsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantStockCountsUseCase;
@@ -16,14 +17,17 @@ public class ReconcileVariantStockCountsService
     private final SetAllVariantStockCountsUseCase setAllUseCase;
 
     @Override
-    public void execute() {
-        final var fetched = fetchPort.fetchAll();
+    public void execute(
+            final ReconcileVariantStockCountsCommand command) {
+        final var fetched = fetchPort.fetchAll(
+                command.rangeStartTime(),
+                command.rangeEndTime());
         if (fetched.isEmpty()) {
             return;
         }
 
-        final var command = new SetAllVariantStockCountsCommand(fetched);
-        this.setAllUseCase.execute(command);
+        final var setCommand = new SetAllVariantStockCountsCommand(fetched);
+        this.setAllUseCase.execute(setCommand);
     }
 
 }
