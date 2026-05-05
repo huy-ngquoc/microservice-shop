@@ -1,6 +1,5 @@
 package vn.uit.edu.msshop.account.application.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -8,42 +7,51 @@ import java.util.Map;
 
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.account.adapter.out.persistence.AccountOutboxEntity;
 import vn.uit.edu.msshop.account.adapter.out.persistence.AccountOutboxEntityRepository;
 import vn.uit.edu.msshop.account.adapter.out.persistence.mapper.AccountEntityMapper;
-import vn.uit.edu.msshop.account.application.port.in.SyncKeycloakUseCase;
 import vn.uit.edu.msshop.account.application.port.out.CreateKeyCloakAccountPort;
 import vn.uit.edu.msshop.account.application.port.out.SaveAccountPort;
 import vn.uit.edu.msshop.account.domain.model.Account;
 
 @Service
 @RequiredArgsConstructor
-public class SyncKeycloakService implements SyncKeycloakUseCase {
+public class SyncAccountService {
     private final AccountOutboxEntityRepository accountOutboxRepo;
-    private final CreateKeyCloakAccountPort createKeyCloakPort;
     private final SaveAccountPort saveAccountPort;
     private final AccountEntityMapper mapper;
-    private final SyncAccountService syncService;
-
-    @Override
-    //@Transactional
-    @Scheduled(fixedRate=5000)
-    public void syncKeyCloak() {
-        List<AccountOutboxEntity> pendingAccountOutboxEntities = accountOutboxRepo.findTop50ByIsCheckOrderByCreatedAtAsc(false);
-        List<AccountOutboxEntity> toDelete= new ArrayList<>();
-        List<Account> toSaves = new ArrayList<>();
-        for(AccountOutboxEntity accountOutboxEntity: pendingAccountOutboxEntities) {
-            syncService.sync(accountOutboxEntity, toSaves, toDelete);
-        }
-        saveAccountPort.saveAll(toSaves);
-        accountOutboxRepo.deleteAll(toDelete);
+    private final CreateKeyCloakAccountPort createKeyCloakPort;
+    @Transactional
+    public void sync(AccountOutboxEntity accountOutboxEntity, List<Account> toSaves, List<AccountOutboxEntity> toDelete) {
+        if(accountOutboxEntity.getRetryCount()>=5) {
+                System.out.println(accountOutboxEntity.getLastError());
+                accountOutboxEntity.setCheck(true);
+                accountOutboxRepo.save(accountOutboxEntity);
+                accountOutboxEntity.getAccount().setStatus("CREATE_FAILED");
+                saveAccountPort.save(mapper.toDomain(accountOutboxEntity.getAccount()));
+                return;
+            }
+           // System.out.println("Call create accountttttt");
+            try {
+               Response respone= createKeyCloakPort.createAccount(toUserRepresentation(accountOutboxEntity), accountOutboxEntity.getUserRole());
+            }
+            catch(RuntimeException e) {
+                e.printStackTrace();
+                accountOutboxEntity.handleFailure(e.getMessage());
+                return;
+            }
+            accountOutboxEntity.handleSuccess();
+            final var accountEntity = accountOutboxEntity.getAccount();
+            accountEntity.setStatus("ACTIVE");
+            toSaves.add(mapper.toDomain(accountEntity));
+            toDelete.add(accountOutboxEntity);
     }
-     private UserRepresentation toUserRepresentation(AccountOutboxEntity outboxEntity) {
+    private UserRepresentation toUserRepresentation(AccountOutboxEntity outboxEntity) {
         UserRepresentation user = new UserRepresentation();
         user.setUsername(outboxEntity.getUserName());
         user.setEmail(outboxEntity.getUserEmail());
@@ -64,5 +72,4 @@ public class SyncKeycloakService implements SyncKeycloakUseCase {
         user.setClientRoles(clientRolesMap);
         return user;
     }
-
 }

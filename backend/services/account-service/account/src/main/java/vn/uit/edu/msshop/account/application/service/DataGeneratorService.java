@@ -14,7 +14,7 @@ import vn.uit.edu.msshop.account.application.port.in.CreateAccountUseCase;
 
 
 
-@Component
+//@Component
 
 public class DataGeneratorService {
     private final Random random;

@@ -28,6 +28,7 @@ import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderOutbox;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.UpdateInventoryRequest;
 import vn.uit.edu.msshop.inventory.adapter.in.web.response.InventoryResponse;
+import vn.uit.edu.msshop.inventory.adapter.in.web.response.PageResponseDto;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.InventoryJpaEntity;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.SpringDataInventoryJpaRepository;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
@@ -165,10 +166,12 @@ public class InventoryController {
         return ResponseEntity.ok().build();
     }
     @PostMapping("/public/updated_inventory")
-    public ResponseEntity<Page<InventoryResponse>> getUpdatedInventory(@RequestBody GetUpdatedInventoryRequest request, @RequestParam(defaultValue="0") int pageNumber, @RequestParam(defaultValue="7") int pageSize) {
+    public ResponseEntity<PageResponseDto<InventoryResponse>> getUpdatedInventory(@RequestBody GetUpdatedInventoryRequest request, @RequestParam(defaultValue="0") int pageNumber, @RequestParam(defaultValue="7") int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         final var result = findUseCase.findAllUpdatedInventory(request.getStartFirst(), request.getEndFirst(), request.getStartSecond(), request.getEndSecond(), pageable);
-        return ResponseEntity.ok(result.map(mapper::toResponse));
+        final var responseResult=result.map(mapper::toResponse);
+        final var response = new PageResponseDto(responseResult.getContent(),responseResult.getNumber(), responseResult.getSize(), responseResult.getNumberOfElements());
+        return ResponseEntity.ok(response);
     }
     @PostMapping("/public/process_order_outbox")
     public ResponseEntity<String> process(@RequestBody OrderOutbox request) {
