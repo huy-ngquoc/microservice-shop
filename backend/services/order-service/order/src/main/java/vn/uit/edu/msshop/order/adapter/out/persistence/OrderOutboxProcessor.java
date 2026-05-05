@@ -42,7 +42,9 @@ public class OrderOutboxProcessor {
         outbox.setOutboxStatus("COMPLETED");
             savePort.save(toSave);
             orderOutboxRepo.save(outbox);
+            
             orderCreatedDocumentRepo.save(createOrderCreatedEvent(order));
+            
              orderCreatedSuccessDocumentRepo.save(createOrderCreatedSuccessDocument(order));
     }
     

@@ -58,7 +58,7 @@ public class CreatePaymentService {
     @Transactional
     public void handleFailure(OrderCreatedDocument event, String error,Order order) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
-        if (retries >= 5) {
+        if (retries >= 20) {
             
             updateStatus(event, "FAILED", "Max retries reached: " + error);
         if(order==null) return;

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.apache.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,8 @@ import vn.uit.edu.msshop.account.adapter.in.web.request.LoginRequest;
 import vn.uit.edu.msshop.account.adapter.in.web.request.UpdateAccountRequest;
 import vn.uit.edu.msshop.account.adapter.in.web.request.UpdateAvatarRequest;
 import vn.uit.edu.msshop.account.adapter.in.web.response.AccountResponse;
+import vn.uit.edu.msshop.account.adapter.out.persistence.AccountOutboxEntityRepository;
+import vn.uit.edu.msshop.account.adapter.out.persistence.SpringDataAccountJpaRepository;
 import vn.uit.edu.msshop.account.application.port.in.CreateAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.in.FindAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.in.LoginUseCase;
@@ -41,6 +44,8 @@ public class AccountController {
     private final LoginUseCase loginUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final LogoutUseCase logoutUseCase;
+    private final AccountOutboxEntityRepository accountOutboxRepo;
+    private final SpringDataAccountJpaRepository springDataAccountRepo;
     
     @GetMapping("/{id}")
     public ResponseEntity<AccountResponse> findById(@PathVariable UUID id) {
@@ -103,6 +108,12 @@ public class AccountController {
 
     @PutMapping("/update_avatar") 
     public ResponseEntity<Void> updateAvatar(@RequestBody UpdateAvatarRequest request) {
+        return ResponseEntity.noContent().build();
+    }
+    @DeleteMapping("/clear")
+    public ResponseEntity<Void> clearDB() {
+        accountOutboxRepo.deleteAll();
+        springDataAccountRepo.deleteAll();
         return ResponseEntity.noContent().build();
     }
 
