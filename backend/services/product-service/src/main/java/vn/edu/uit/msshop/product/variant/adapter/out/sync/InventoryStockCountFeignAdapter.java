@@ -29,7 +29,7 @@ public class InventoryStockCountFeignAdapter implements FetchInventoryStockCount
     int pageNumber = 0;
     boolean hasNextPage = false;
 
-    final var request = new FindAllUpdatedStockCountsRequest(rangeEndTime, rangeEndTime,
+    final var request = new FindAllUpdatedStockCountsRequest(rangeStartTime, rangeEndTime,
         rangeStartTime, rangeEndTime);
 
     do {

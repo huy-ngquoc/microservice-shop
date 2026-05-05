@@ -1,7 +1,10 @@
 package vn.uit.edu.msshop.order.application.service;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -14,6 +17,8 @@ import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderUpdatedEventDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderUpdatedRepository;
+import vn.uit.edu.msshop.order.adapter.out.persistence.VariantSoldCountDocument;
+import vn.uit.edu.msshop.order.adapter.out.persistence.VariantSoldCountRepository;
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.dto.command.UpdateOrderCommand;
 import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
@@ -25,6 +30,7 @@ import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
 import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 import vn.uit.edu.msshop.order.domain.model.Order;
+import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentStatus;
@@ -43,6 +49,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
    
     private final OrderUpdatedRepository orderUpdatedRepo;
     private final InventoryChecker inventoryChecker;
+    private final VariantSoldCountRepository variantSoldCountRepo;
     /*
     private UUID eventId;
     private UUID orderId;
@@ -95,6 +102,9 @@ public class UpdateOrderService implements UpdateOrderUseCase {
         //inventoryChecker.updateFromOrderService(request);
         final var saved = saveOrderPort.save(next);
         boolean isSendEvent = !oldStatus.equals(saved.getStatus().value());
+        if(isSendEvent&&next.getStatus().value().equals("RECEIVED")){
+            updateVariantSoldCount(next);
+        }
         if(isSendEvent) {
             System.out.println("Send eventtttttttttttttttttttttttttttttttt");
             List<OrderDetailEvent> detailEvents = saved.getDetails().stream().map(item->new OrderDetailEvent(item.variantId(), item.productId(), item.amount())).toList();
@@ -156,6 +166,24 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             if(!oldStatusValue.equals("SHIPPING")) return false;
         }
         return true;
+    }
+    private void updateVariantSoldCount(Order order) {
+        List<VariantSoldCountDocument> toSavesVariantSoldCount = new ArrayList<>();
+        List<VariantSoldCountDocument> variantSoldCountFromRepo = variantSoldCountRepo.findByIdIn(order.getDetails().stream().map(item->item.variantId()).toList());
+        Map<UUID,VariantSoldCountDocument> soldCountMap= new HashMap<>();
+        for(VariantSoldCountDocument vSD: variantSoldCountFromRepo) {
+            soldCountMap.put(vSD.getId(), vSD);
+        }
+        for(OrderDetail oD: order.getDetails()) {
+            VariantSoldCountDocument vsD = soldCountMap.get(oD.variantId());
+            if(vsD==null) {
+                toSavesVariantSoldCount.add(new VariantSoldCountDocument(oD.variantId(),oD.amount(),null));
+                continue;
+            }
+            vsD.setSoldCount(vsD.getSoldCount()+oD.amount());
+            toSavesVariantSoldCount.add(vsD);
+        }
+        variantSoldCountRepo.saveAll(toSavesVariantSoldCount);
     }
 
 }

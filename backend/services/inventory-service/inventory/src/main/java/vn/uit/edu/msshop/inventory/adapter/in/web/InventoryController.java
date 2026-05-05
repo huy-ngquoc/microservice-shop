@@ -167,10 +167,12 @@ public class InventoryController {
     }
     @PostMapping("/public/updated_inventory")
     public ResponseEntity<PageResponseDto<InventoryResponse>> getUpdatedInventory(@RequestBody GetUpdatedInventoryRequest request, @RequestParam(defaultValue="0") int pageNumber, @RequestParam(defaultValue="7") int pageSize) {
+        System.out.println("Product service goi");
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         final var result = findUseCase.findAllUpdatedInventory(request.getStartFirst(), request.getEndFirst(), request.getStartSecond(), request.getEndSecond(), pageable);
         final var responseResult=result.map(mapper::toResponse);
-        final var response = new PageResponseDto(responseResult.getContent(),responseResult.getNumber(), responseResult.getSize(), responseResult.getNumberOfElements());
+        System.out.println("Kich thuoc "+responseResult.getTotalElements());
+        final var response = new PageResponseDto(responseResult.getContent(),responseResult.getNumber(), responseResult.getSize(), responseResult.getTotalElements());
         return ResponseEntity.ok(response);
     }
     @PostMapping("/public/process_order_outbox")

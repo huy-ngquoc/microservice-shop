@@ -149,7 +149,9 @@ public class OrderController {
 
     @GetMapping("/public/sold_counts") 
     public ResponseEntity<List<VariantSoldCountResponse>> getAllVariantSoldCount() {
+        System.out.println("Product service goi");
         final var result = findVariantSoldCountUseCase.findAll();
+        System.out.println("Kich thuoc "+result.size());
         return ResponseEntity.ok(result.stream().map(variantSoldCountWebMapper::toResponse).toList());
     }
 

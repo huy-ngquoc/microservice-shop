@@ -20,7 +20,7 @@ public class ReconcileVariantStockCountsJob {
 
   private final ReconcileVariantStockCountsUseCase reconcileUseCase;
 
-  @Scheduled(fixedRate = RATE_IN_HOURS, timeUnit = TimeUnit.HOURS)
+  @Scheduled(fixedRate = 2, timeUnit = TimeUnit.MINUTES)
   public void reconcile() {
     final var rangeEndTime = Instant.now();
     final var rangeStartTime = rangeEndTime.minus(Duration.ofHours(RATE_IN_HOURS));
@@ -28,6 +28,7 @@ public class ReconcileVariantStockCountsJob {
     final var command = new ReconcileVariantStockCountsCommand(rangeStartTime, rangeEndTime);
 
     try {
+      System.out.println("Goi api den inventory service");
       this.reconcileUseCase.execute(command);
     } catch (final RuntimeException e) {
       log.warn("Stock count reconciliation skipped: {}", e.getMessage());
