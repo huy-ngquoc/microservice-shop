@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.sync.RestoreVarian
 import vn.edu.uit.msshop.product.product.domain.event.ProductRestored;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor

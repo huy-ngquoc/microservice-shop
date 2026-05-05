@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBr
 import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -100,8 +100,7 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
     }
 
     private void deleteOldLogo(
-            @Nullable
-            final BrandLogoKey oldKey) {
+            @Nullable final BrandLogoKey oldKey) {
         if (oldKey == null) {
             return;
         }

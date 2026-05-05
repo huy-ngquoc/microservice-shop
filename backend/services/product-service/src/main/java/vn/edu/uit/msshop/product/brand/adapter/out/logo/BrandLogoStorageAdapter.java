@@ -12,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
-import vn.edu.uit.msshop.product.shared.adapter.exception.ImageDeletionFailedException;
-import vn.edu.uit.msshop.product.shared.adapter.exception.ImageRenameFailedException;
-import vn.edu.uit.msshop.product.shared.adapter.exception.ImageStorageQueryFailedException;
-import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryFolders;
+import vn.edu.uit.msshop.shared.adapter.exception.ImageDeletionFailedException;
+import vn.edu.uit.msshop.shared.adapter.exception.ImageRenameFailedException;
+import vn.edu.uit.msshop.shared.adapter.exception.ImageStorageQueryFailedException;
+import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryFolders;
 
 @Component
 @RequiredArgsConstructor

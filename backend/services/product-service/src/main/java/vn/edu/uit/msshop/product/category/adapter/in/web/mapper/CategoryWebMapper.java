@@ -25,9 +25,9 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
-import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
-import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryFolders;
-import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryImageUrlResolver;
+import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryFolders;
+import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryImageUrlResolver;
 
 @Component
 @RequiredArgsConstructor
@@ -147,8 +147,7 @@ public class CategoryWebMapper {
     }
 
     private @Nullable String toImageUrlString(
-            @Nullable
-            final String keyString) {
+            @Nullable final String keyString) {
         return this.urlResolver.resolve(
                 keyString,
                 CategoryImageStorageAdapter.CATEGORY_FOLDER);

@@ -5,12 +5,11 @@ import lombok.Getter;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingAmount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingAverage;
-import vn.edu.uit.msshop.product.shared.domain.Domains;
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class ProductRating {
     private final ProductId id;
 

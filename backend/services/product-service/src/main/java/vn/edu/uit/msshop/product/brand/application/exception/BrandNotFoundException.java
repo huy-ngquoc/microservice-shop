@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.brand.application.exception;
 
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
-import vn.edu.uit.msshop.product.shared.application.exception.NotFoundException;
+import vn.edu.uit.msshop.shared.application.exception.NotFoundException;
 
 public final class BrandNotFoundException extends NotFoundException {
     public BrandNotFoundException(

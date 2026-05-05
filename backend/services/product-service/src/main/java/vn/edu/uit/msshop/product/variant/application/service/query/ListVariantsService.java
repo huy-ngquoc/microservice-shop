@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.variant.application.dto.query.ListVariantsQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
@@ -27,10 +27,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 public class ListVariantsService
         implements ListVariantsUseCase {
 
-    private static final Collector<
-            VariantId,
-            ?,
-            Set<VariantId>> SET_COLLECTOR = Collectors.toSet();
+    private static final Collector<VariantId, ?, Set<VariantId>> SET_COLLECTOR = Collectors.toSet();
 
     private final ListVariantsPort listPort;
     private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
@@ -38,8 +35,7 @@ public class ListVariantsService
     private final VariantViewMapper mapper;
 
     @Override
-    @Transactional(
-            readOnly = true)
+    @Transactional(readOnly = true)
     public PageResponseDto<VariantView> list(
             final ListVariantsQuery query) {
         final var page = this.listPort.list(query);

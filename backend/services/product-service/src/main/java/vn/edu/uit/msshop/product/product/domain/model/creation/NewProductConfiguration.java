@@ -1,8 +1,8 @@
 package vn.edu.uit.msshop.product.product.domain.model.creation;
 
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
-import vn.edu.uit.msshop.product.shared.domain.Domains;
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record NewProductConfiguration(
         ProductOptions options,

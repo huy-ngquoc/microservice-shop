@@ -16,8 +16,8 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadS
 import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryPurged;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -57,8 +57,7 @@ public class HardDeleteCategoryService implements HardDeleteCategoryUseCase {
     }
 
     private void deleteLogo(
-            @Nullable
-            final CategoryImageKey key) {
+            @Nullable final CategoryImageKey key) {
         if (key == null) {
             return;
         }

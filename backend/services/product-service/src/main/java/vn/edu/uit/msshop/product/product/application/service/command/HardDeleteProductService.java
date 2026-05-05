@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.Delete
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.HardDeleteAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductPurged;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 // TODO: delete image as well.
 @Service

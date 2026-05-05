@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.variant.domain.model.creation;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import vn.edu.uit.msshop.product.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.Domains;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
@@ -11,8 +11,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class NewVariant {
     @EqualsAndHashCode.Include
     private final VariantId id;

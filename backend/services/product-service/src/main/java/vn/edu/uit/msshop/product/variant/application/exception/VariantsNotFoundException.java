@@ -3,7 +3,7 @@ package vn.edu.uit.msshop.product.variant.application.exception;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import vn.edu.uit.msshop.product.shared.application.exception.NotFoundException;
+import vn.edu.uit.msshop.shared.application.exception.NotFoundException;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 

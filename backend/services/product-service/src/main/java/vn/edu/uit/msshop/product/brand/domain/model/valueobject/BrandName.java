@@ -1,7 +1,7 @@
 package vn.edu.uit.msshop.product.brand.domain.model.valueobject;
 
-import vn.edu.uit.msshop.product.shared.domain.Domains;
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record BrandName(
         String value) {

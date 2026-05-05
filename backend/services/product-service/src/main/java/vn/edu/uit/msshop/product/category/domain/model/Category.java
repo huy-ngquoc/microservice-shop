@@ -9,11 +9,10 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
-import vn.edu.uit.msshop.product.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.Domains;
 
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class Category {
     @EqualsAndHashCode.Include
     private final CategoryId id;
@@ -35,13 +34,11 @@ public final class Category {
 
             final CategoryName name,
 
-            @Nullable
-            final CategoryImageKey imageKey,
+            @Nullable final CategoryImageKey imageKey,
 
             final CategoryVersion version,
 
-            @Nullable
-            final CategoryDeletionTime deletionTime) {
+            @Nullable final CategoryDeletionTime deletionTime) {
         this.id = Domains.requireNonNull(id, "Id must NOT be null");
         this.name = Domains.requireNonNull(name, "Name must NOT be null");
         this.imageKey = imageKey;

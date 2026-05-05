@@ -4,7 +4,7 @@ import java.time.Instant;
 
 import org.jspecify.annotations.Nullable;
 
-import vn.edu.uit.msshop.product.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.Domains;
 
 public record BrandDeletionTime(
         Instant value) {
@@ -17,8 +17,7 @@ public record BrandDeletionTime(
     }
 
     public static @Nullable BrandDeletionTime ofNullable(
-            @Nullable
-            final Instant value) {
+            @Nullable final Instant value) {
         if (value == null) {
             return null;
         }
@@ -27,8 +26,7 @@ public record BrandDeletionTime(
     }
 
     public static @Nullable Instant unwrap(
-            @Nullable
-            final BrandDeletionTime deletionTime) {
+            @Nullable final BrandDeletionTime deletionTime) {
         if (deletionTime == null) {
             return null;
         }

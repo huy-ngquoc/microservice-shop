@@ -10,11 +10,10 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
-import vn.edu.uit.msshop.product.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.Domains;
 
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public final class Brand {
     @EqualsAndHashCode.Include
@@ -37,13 +36,11 @@ public final class Brand {
 
             final BrandName name,
 
-            @Nullable
-            final BrandLogoKey logoKey,
+            @Nullable final BrandLogoKey logoKey,
 
             final BrandVersion version,
 
-            @Nullable
-            final BrandDeletionTime deletionTime) {
+            @Nullable final BrandDeletionTime deletionTime) {
         this.id = Domains.requireNonNull(id, "Id must NOT be null");
         this.name = Domains.requireNonNull(name, "Name must NOT be null");
         this.logoKey = logoKey;
