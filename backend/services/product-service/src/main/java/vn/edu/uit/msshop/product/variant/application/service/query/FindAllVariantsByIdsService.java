@@ -2,7 +2,6 @@ package vn.edu.uit.msshop.product.variant.application.service.query;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;

@@ -18,6 +18,21 @@ spring:
         multipart:
             max-file-size: 5MB
             max-request-size: 6MB
+    kafka:
+        bootstrap-servers: localhost:9092 
+        consumer:
+            group-id: product-service-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                "[spring.json.trusted.packages]": "*"
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                "[spring.json.type.mapping]": >
+                    VariantUpdatedIntegrationEvent:vn.edu.uit.msshop.product.variant.application.dto.integration.VariantUpdatedIntegrationEvent,
+                    VariantSoftDeletedIntegrationEvent:vn.edu.uit.msshop.product.variant.application.dto.integration.VariantSoftDeletedIntegrationEvent
     cloud:
         openfeign:
             client:

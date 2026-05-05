@@ -14,6 +14,7 @@ import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundEx
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantSoldCountsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantSoldCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantOrderSoldCount;
@@ -28,6 +29,7 @@ public class SetAllVariantSoldCountsService
     private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
     private final UpdateAllVariantSoldCountsPort updateAllSoldCountsPort;
     private final IncreaseProductSoldCountsPort increaseProductSoldCountsPort;
+    private final DecreaseProductSoldCountsPort decreaseProductSoldCountsPort;
 
     @Override
     @Transactional
@@ -39,7 +41,7 @@ public class SetAllVariantSoldCountsService
 
         final var resolved = this.resolve(orderSoldCounts);
         this.persistUpdates(resolved);
-        this.propagateIncrements(resolved);
+        this.propagateDeltas(resolved);
     }
 
     private List<ResolvedSoldCount> resolve(
@@ -72,28 +74,40 @@ public class SetAllVariantSoldCountsService
         this.updateAllSoldCountsPort.updateAll(updated);
     }
 
-    private void propagateIncrements(
+    private void propagateDeltas(
             final List<ResolvedSoldCount> resolved) {
-        final var incrementByProductId = SetAllVariantSoldCountsService.toIncrementByProductId(resolved);
-        if (incrementByProductId.isEmpty()) {
-            return;
+        final var deltas = SetAllVariantSoldCountsService.toDeltasByProductId(resolved);
+
+        if (!deltas.increments().isEmpty()) {
+            this.increaseProductSoldCountsPort.increaseAllSoldCounts(deltas.increments());
         }
-        this.increaseProductSoldCountsPort.increaseAllSoldCounts(incrementByProductId);
+        if (!deltas.decrements().isEmpty()) {
+            this.decreaseProductSoldCountsPort.decreaseAllSoldCounts(deltas.decrements());
+        }
     }
 
-    private static Map<VariantProductId, Integer> toIncrementByProductId(
+    private static DeltasByProductId toDeltasByProductId(
             final List<ResolvedSoldCount> resolved) {
-        final var byProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
+        final var incrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
+        final var decrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
+
         for (final var item : resolved) {
             final var delta = item.delta();
-            if (delta > 0) {
-                final var productId = item.current().getProductId();
-                final var current = byProductId.getOrDefault(productId, 0);
+            if (delta == 0) {
+                continue;
+            }
 
-                byProductId.put(productId, current + delta);
+            final var productId = item.current().getProductId();
+            if (delta > 0) {
+                incrementByProductId.merge(productId, delta, Integer::sum);
+            } else {
+                decrementByProductId.merge(productId, -delta, Integer::sum);
             }
         }
-        return byProductId;
+
+        return new DeltasByProductId(
+                incrementByProductId,
+                decrementByProductId);
     }
 
     private record ResolvedSoldCount(
@@ -109,6 +123,15 @@ public class SetAllVariantSoldCountsService
 
         int delta() {
             return this.newValue.value() - this.current.getValue().value();
+        }
+    }
+
+    private record DeltasByProductId(
+            Map<VariantProductId, Integer> increments,
+            Map<VariantProductId, Integer> decrements) {
+        DeltasByProductId {
+            increments = Map.copyOf(increments);
+            decrements = Map.copyOf(decrements);
         }
     }
 }

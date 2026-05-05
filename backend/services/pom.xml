@@ -43,6 +43,7 @@
     </scm>
 
     <properties>
+        <argLine></argLine>
         <java.version>25</java.version>
         <spring-cloud.version>2025.1.0</spring-cloud.version>
         <nullaway.version>0.13.1</nullaway.version>
