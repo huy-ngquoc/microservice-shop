@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.product.domain.model.valueobject;
 
 import org.jspecify.annotations.Nullable;
 
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductPrice(
         long value) {
@@ -15,8 +15,7 @@ public record ProductPrice(
     }
 
     public static @Nullable ProductPrice ofNullable(
-            @Nullable
-            final Long value) {
+            @Nullable final Long value) {
         if (value == null) {
             return null;
         }

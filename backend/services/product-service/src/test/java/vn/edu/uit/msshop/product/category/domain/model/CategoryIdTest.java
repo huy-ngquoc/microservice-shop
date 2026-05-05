@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 final class CategoryIdTest {
     @Test

@@ -16,8 +16,8 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.Updat
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
-import vn.edu.uit.msshop.product.shared.application.dto.Change;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.dto.Change;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor

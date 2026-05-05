@@ -4,11 +4,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductStockCountValue;
-import vn.edu.uit.msshop.product.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.Domains;
 
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class ProductStockCount {
     @EqualsAndHashCode.Include
     private final ProductId id;

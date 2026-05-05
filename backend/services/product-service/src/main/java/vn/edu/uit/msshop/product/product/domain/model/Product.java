@@ -12,11 +12,10 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKe
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
-import vn.edu.uit.msshop.product.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.Domains;
 
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 // TODO: add status
 public final class Product {
     @EqualsAndHashCode.Include
@@ -47,8 +46,7 @@ public final class Product {
             final ProductConfiguration configuration,
             final ProductImageKeys imageKeys,
             final ProductVersion version,
-            @Nullable
-            final ProductDeletionTime deletionTime) {
+            @Nullable final ProductDeletionTime deletionTime) {
         this.id = Domains.requireNonNull(id, "Product ID CANNOT be null");
         this.name = Domains.requireNonNull(name, "Product name CANNOT be null");
         this.categoryId = Domains.requireNonNull(categoryId, "Category ID CANNOT be null");

@@ -17,9 +17,9 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.Updat
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
-import vn.edu.uit.msshop.product.shared.adapter.out.persistence.PageRequests;
-import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Component
 @RequiredArgsConstructor

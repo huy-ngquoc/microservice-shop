@@ -2,14 +2,13 @@ package vn.edu.uit.msshop.product.variant.domain.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import vn.edu.uit.msshop.product.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.Domains;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCountValue;
 
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class VariantStockCount {
     @EqualsAndHashCode.Include
     private final VariantId variantId;

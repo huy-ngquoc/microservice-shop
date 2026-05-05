@@ -33,8 +33,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -95,8 +95,7 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
     private ProductConfiguration removeOptionFromConfiguration(
             final Product product,
             final int optionIndex,
-            @Nullable
-            final ProductPrice defaultPrice) {
+            @Nullable final ProductPrice defaultPrice) {
         final var optionsSize = product.getOptions().size();
 
         if (optionsSize <= 0) {

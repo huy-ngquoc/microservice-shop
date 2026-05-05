@@ -17,9 +17,9 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBr
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
-import vn.edu.uit.msshop.product.shared.adapter.out.persistence.PageRequests;
-import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Component
 @RequiredArgsConstructor

@@ -3,8 +3,8 @@ package vn.edu.uit.msshop.product.product.domain.model;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
-import vn.edu.uit.msshop.product.shared.domain.Domains;
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductConfiguration(
         ProductOptions options,

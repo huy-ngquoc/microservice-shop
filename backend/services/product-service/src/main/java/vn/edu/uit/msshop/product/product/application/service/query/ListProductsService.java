@@ -21,8 +21,8 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.ProductStockCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +36,7 @@ public class ListProductsService implements ListProductsUseCase {
     private final ProductViewMapper mapper;
 
     @Override
-    @Transactional(
-            readOnly = true)
+    @Transactional(readOnly = true)
     public PageResponseDto<ProductView> list(
             PageRequestDto pageRequest) {
         final var page = this.listPort.list(pageRequest);

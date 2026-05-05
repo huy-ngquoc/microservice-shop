@@ -42,7 +42,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
-import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
 @Component
 public class ProductWebMapper {

@@ -17,8 +17,8 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.shared.adapter.out.persistence.PageRequests;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantPersistenceMapper;
 import vn.edu.uit.msshop.product.variant.application.dto.query.ListVariantsQuery;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;

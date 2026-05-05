@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.brand.domain.model.valueobject;
 
 import org.jspecify.annotations.Nullable;
 
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record BrandLogoKey(
         String value) {
@@ -25,8 +25,7 @@ public record BrandLogoKey(
     }
 
     public static @Nullable BrandLogoKey ofNullable(
-            @Nullable
-            final String keyString) {
+            @Nullable final String keyString) {
         if (keyString == null) {
             return null;
         }
@@ -35,8 +34,7 @@ public record BrandLogoKey(
     }
 
     public static @Nullable String unwrap(
-            @Nullable
-            final BrandLogoKey key) {
+            @Nullable final BrandLogoKey key) {
         if (key == null) {
             return null;
         }

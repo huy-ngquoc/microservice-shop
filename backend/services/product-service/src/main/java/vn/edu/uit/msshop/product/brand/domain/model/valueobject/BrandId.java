@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.brand.domain.model.valueobject;
 
 import java.util.UUID;
 
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record BrandId(
         UUID value)

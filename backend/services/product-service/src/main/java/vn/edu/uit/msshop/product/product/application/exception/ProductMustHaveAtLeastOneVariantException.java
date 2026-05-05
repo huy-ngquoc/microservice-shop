@@ -1,7 +1,7 @@
 package vn.edu.uit.msshop.product.product.application.exception;
 
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 public final class ProductMustHaveAtLeastOneVariantException
         extends BusinessRuleException {

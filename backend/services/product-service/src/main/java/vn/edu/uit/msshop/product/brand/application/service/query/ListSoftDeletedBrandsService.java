@@ -8,8 +8,8 @@ import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.ListSoftDeletedBrandsUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListSoftDeletedBrandsPort;
-import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +18,7 @@ public class ListSoftDeletedBrandsService implements ListSoftDeletedBrandsUseCas
     private final BrandViewMapper viewMapper;
 
     @Override
-    @Transactional(
-            readOnly = true)
+    @Transactional(readOnly = true)
     public PageResponseDto<BrandView> listSoftDeleted(
             PageRequestDto pageRequest) {
         var page = listSoftDeletedPort.listSoftDeleted(pageRequest);

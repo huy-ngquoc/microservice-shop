@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record VariantTargets(
         List<VariantTarget> values) {

@@ -25,9 +25,9 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
-import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
-import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryFolders;
-import vn.edu.uit.msshop.product.shared.adapter.out.cloudinary.CloudinaryImageUrlResolver;
+import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryFolders;
+import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryImageUrlResolver;
 
 @Component
 @RequiredArgsConstructor
@@ -146,8 +146,7 @@ public class BrandWebMapper {
     }
 
     private @Nullable String toLogoUrlString(
-            @Nullable
-            final String keyString) {
+            @Nullable final String keyString) {
         return this.urlResolver.resolve(
                 keyString,
                 BrandLogoStorageAdapter.BRAND_FOLDER);

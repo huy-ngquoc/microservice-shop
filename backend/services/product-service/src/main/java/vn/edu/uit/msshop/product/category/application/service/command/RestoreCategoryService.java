@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadS
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryRestored;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor

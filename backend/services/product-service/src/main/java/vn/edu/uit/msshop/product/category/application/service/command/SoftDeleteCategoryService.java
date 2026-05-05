@@ -14,8 +14,8 @@ import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckC
 import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeleted;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryDeletionTime;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
