@@ -27,12 +27,21 @@ spring:
             properties:
                 "[spring.json.trusted.packages]": "*"
         producer:
+            bootstrap-servers: localhost:9092
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
             properties:
-                "[spring.json.type.mapping]": >
+                spring.json.type.mapping:
                     VariantUpdatedIntegrationEvent:vn.edu.uit.msshop.product.variant.application.dto.integration.VariantUpdatedIntegrationEvent,
-                    VariantSoftDeletedIntegrationEvent:vn.edu.uit.msshop.product.variant.application.dto.integration.VariantSoftDeletedIntegrationEvent
+                    VariantSoftDeletedIntegrationEvent:vn.edu.uit.msshop.product.variant.application.dto.integration.VariantSoftDeletedIntegrationEvent,
+                    ProductCreated:vn.edu.uit.msshop.product.shared.event.domain.ProductCreated,
+                    ProductUpdated:vn.edu.uit.msshop.product.shared.event.domain.ProductUpdate,
+                    VariantUpdate:vn.edu.uit.msshop.product.shared.event.domain.VariantUpdate,
+                    VariantDeleted:vn.edu.uit.msshop.product.shared.event.domain.VariantDeleted,
+                    ProductDeleted:vn.edu.uit.msshop.product.shared.event.domain.ProductDeleted,
+                    VariantRestore:vn.edu.uit.msshop.product.shared.event.domain.VariantRestore,
+                    VariantPurge:vn.edu.uit.msshop.product.shared.event.domain.VariantPurge
+
     cloud:
         openfeign:
             client:

@@ -102,6 +102,16 @@ services:
             - GF_SECURITY_ADMIN_PASSWORD=admin
         depends_on:
             - prometheus
+    tempo:
+        image: grafana/tempo:latest
+        container_name: ms_tempo
+        command: [ "-config.file=/etc/tempo.yml" ]
+        volumes:
+            - ./tempo-config.yml:/etc/tempo.yml
+        ports:
+            - "4317:4317"  # OTLP gRPC
+            - "4318:4318"  # OTLP HTTP (Spring Boot 3 thường dùng cái này)
+            - "3200:3200"  # Tempo UI/API
     mongodb:
         container_name: ms_mongo_db
         build:
