@@ -29,6 +29,7 @@
         <module>shared-kernel</module>
         <module>shared-webmvc</module>
         <module>shared-spring-data</module>
+        <module>shared-cloudinary</module>
         
         <module>config-server</module>
         <module>discovery-server</module>
@@ -53,11 +54,14 @@
         <shared-kernel.version>1.0.0-SNAPSHOT</shared-kernel.version>
         <shared-webmvc.version>1.0.0-SNAPSHOT</shared-webmvc.version>
         <shared-spring-data.version>1.0.0-SNAPSHOT</shared-spring-data.version>
+        <shared-cloudinary.version>1.0.0-SNAPSHOT</shared-cloudinary.version>
 
         <spring-cloud.version>2025.1.0</spring-cloud.version>
         <springdoc-openapi.version>3.0.3</springdoc-openapi.version>
         <nullaway.version>0.13.1</nullaway.version>
         <error-prone.version>2.48.0</error-prone.version>
+        <cloudinary.version>2.3.2</cloudinary.version>
+        <dotenv.version>3.2.0</dotenv.version>
     </properties>
 
     <dependencyManagement>
@@ -82,6 +86,12 @@
             </dependency>
 
             <dependency>
+                <groupId>vn.edu.uit.msshop</groupId>
+                <artifactId>shared-cloudinary</artifactId>
+                <version>${shared-cloudinary.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>
@@ -94,7 +104,25 @@
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 <version>${springdoc-openapi.version}</version>
             </dependency>
-            
+
+            <dependency>
+                <groupId>com.cloudinary</groupId>
+                <artifactId>cloudinary-http5</artifactId>
+                <version>${cloudinary.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cloudinary</groupId>
+                <artifactId>cloudinary-taglib</artifactId>
+                <version>${cloudinary.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.cdimascio</groupId>
+                <artifactId>dotenv-java</artifactId>
+                <version>${dotenv.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
