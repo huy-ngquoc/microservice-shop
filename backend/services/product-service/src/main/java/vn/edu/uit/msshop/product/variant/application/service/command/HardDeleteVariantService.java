@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantUseCase;
@@ -64,8 +64,7 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
     }
 
     private void deleteImage(
-            @Nullable
-            final VariantImageKey key) {
+            @Nullable final VariantImageKey key) {
         if (key == null) {
             return;
         }

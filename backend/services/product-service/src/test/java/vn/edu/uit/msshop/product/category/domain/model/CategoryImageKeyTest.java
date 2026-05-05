@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 final class CategoryImageKeyTest {
 
@@ -21,8 +21,7 @@ final class CategoryImageKeyTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-            strings = { "", "   ", "\t", "\n" })
+    @ValueSource(strings = { "", "   ", "\t", "\n" })
     @DisplayName("Throw DomainException when key is blank or contains only whitespaces")
     void constructor_BlankValue_ThrowsException(
             final String blankKey) {

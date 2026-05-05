@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.product.domain.model.valueobject;
 
 import org.jspecify.annotations.Nullable;
 
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductImageKey(
         String value) {
@@ -25,8 +25,7 @@ public record ProductImageKey(
     }
 
     public static @Nullable ProductImageKey ofNullable(
-            @Nullable
-            final String keyString) {
+            @Nullable final String keyString) {
         if (keyString == null) {
             return null;
         }
@@ -35,8 +34,7 @@ public record ProductImageKey(
     }
 
     public static @Nullable String unwrap(
-            @Nullable
-            final ProductImageKey key) {
+            @Nullable final ProductImageKey key) {
         if (key == null) {
             return null;
         }

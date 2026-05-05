@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoft
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandRestored;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor

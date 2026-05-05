@@ -16,8 +16,8 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoft
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandPurged;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -57,8 +57,7 @@ public class HardDeleteBrandService implements HardDeleteBrandUseCase {
     }
 
     private void deleteLogo(
-            @Nullable
-            final BrandLogoKey key) {
+            @Nullable final BrandLogoKey key) {
         if (key == null) {
             return;
         }

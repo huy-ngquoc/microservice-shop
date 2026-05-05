@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.Update
 import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdated;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -104,8 +104,7 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
     }
 
     private void deleteOldImage(
-            @Nullable
-            final VariantImageKey oldKey) {
+            @Nullable final VariantImageKey oldKey) {
         if (oldKey == null) {
             return;
         }

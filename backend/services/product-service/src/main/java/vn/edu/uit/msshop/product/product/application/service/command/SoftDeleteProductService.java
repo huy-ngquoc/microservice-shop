@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteVar
 import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeleted;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductDeletionTime;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor

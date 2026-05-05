@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
-import vn.edu.uit.msshop.product.shared.adapter.in.web.request.ChangeRequest;
-import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.FindVariantsByIdsRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
@@ -40,13 +40,11 @@ public class VariantWebMapper {
 
             int size,
 
-            @Nullable
-            String sortBy,
+            @Nullable String sortBy,
 
             PageRequestDto.Direction direction,
 
-            @Nullable
-            List<String> rawTargets) {
+            @Nullable List<String> rawTargets) {
         final var pageRequest = new PageRequestDto(page, size, sortBy, direction);
 
         final List<VariantTarget> targets;

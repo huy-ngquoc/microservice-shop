@@ -31,10 +31,10 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
-import vn.edu.uit.msshop.product.shared.adapter.out.persistence.PageRequests;
-import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Component
 @RequiredArgsConstructor

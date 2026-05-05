@@ -7,7 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 final class CategoryNameTest {
     @Test
@@ -20,8 +20,7 @@ final class CategoryNameTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-            strings = { "", "   ", "\t", "\n" })
+    @ValueSource(strings = { "", "   ", "\t", "\n" })
     @DisplayName("Throw DomainException when name is empty or blank")
     void constructor_BlankValue_ThrowsException(
             final String blankName) {
@@ -57,8 +56,7 @@ final class CategoryNameTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-            strings = { "Food", "Drink", "Electronics and Gadgets" })
+    @ValueSource(strings = { "Food", "Drink", "Electronics and Gadgets" })
     @DisplayName("Successfully instantiate when a valid name is provided")
     void constructor_ValidName_Success(
             final String validName) {

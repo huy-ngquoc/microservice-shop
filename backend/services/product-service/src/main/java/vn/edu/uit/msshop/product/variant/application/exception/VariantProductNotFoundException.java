@@ -1,6 +1,6 @@
 package vn.edu.uit.msshop.product.variant.application.exception;
 
-import vn.edu.uit.msshop.product.shared.application.exception.NotFoundException;
+import vn.edu.uit.msshop.shared.application.exception.NotFoundException;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 public class VariantProductNotFoundException extends NotFoundException {

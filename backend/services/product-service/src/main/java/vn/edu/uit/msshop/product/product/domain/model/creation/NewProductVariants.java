@@ -7,7 +7,7 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record NewProductVariants(
         List<NewProductVariant> values) {

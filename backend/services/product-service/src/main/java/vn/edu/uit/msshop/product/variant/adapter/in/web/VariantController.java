@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.mapper.VariantWebMapper;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.FindVariantsByIdsRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
@@ -57,28 +57,15 @@ public class VariantController {
 
     @GetMapping
     public ResponseEntity<PageResponseDto<VariantResponse>> list(
-            @RequestParam(
-                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
-            final int page,
+            @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
 
-            @RequestParam(
-                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
-            final int size,
+            @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
 
-            @RequestParam(
-                    required = false)
-            @Nullable
-            final String sortBy,
+            @RequestParam(required = false) @Nullable final String sortBy,
 
-            @RequestParam(
-                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
-            final PageRequestDto.Direction direction,
+            @RequestParam(defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction,
 
-            @RequestParam(
-                    name = "target",
-                    required = false)
-            @Nullable
-            final List<String> targets) {
+            @RequestParam(name = "target", required = false) @Nullable final List<String> targets) {
         final var query = this.mapper.toListQuery(
                 page,
                 size,
@@ -94,9 +81,7 @@ public class VariantController {
     // TODO: move it to another controller and mark it "internal" in path.
     @PostMapping("/order-search")
     public ResponseEntity<List<VariantResponse>> findAllByIds(
-            @RequestBody
-            @Valid
-            FindVariantsByIdsRequest request) {
+            @RequestBody @Valid FindVariantsByIdsRequest request) {
         final var variantIds = this.mapper.toVariantIds(request);
         final var variantById = this.findAllByIdsUseCase.findAllByIds(variantIds);
 
@@ -106,8 +91,7 @@ public class VariantController {
 
     @GetMapping("/{id}")
     public ResponseEntity<VariantResponse> findById(
-            @PathVariable
-            final UUID id) {
+            @PathVariable final UUID id) {
         final var view = this.findUseCase.findById(this.mapper.toVariantId(id));
         final var response = this.mapper.toResponse(view);
 
@@ -116,8 +100,7 @@ public class VariantController {
 
     @GetMapping("/{id}/image")
     public ResponseEntity<VariantImageResponse> findImageById(
-            @PathVariable
-            final UUID id) {
+            @PathVariable final UUID id) {
         final var view = this.findImageUseCase.findImageById(this.mapper.toVariantId(id));
 
         final var response = this.mapper.toImageResponse(view);
@@ -126,8 +109,7 @@ public class VariantController {
 
     @GetMapping("/deleted/{id}")
     public ResponseEntity<VariantResponse> findSoftDeletedById(
-            @PathVariable
-            final UUID id) {
+            @PathVariable final UUID id) {
         final var view = this.findSoftDeletedUseCase
                 .findSoftDeletedById(this.mapper.toVariantId(id));
 
@@ -137,11 +119,9 @@ public class VariantController {
 
     @PostMapping("/{id}/restore")
     public ResponseEntity<Void> restoreById(
-            @PathVariable
-            final UUID id,
+            @PathVariable final UUID id,
 
-            @RequestParam
-            final long version) {
+            @RequestParam final long version) {
         final var command = this.mapper.toRestoreCommand(id, version);
         this.restoreUseCase.restore(command);
 
@@ -150,12 +130,9 @@ public class VariantController {
 
     @PatchMapping("/{id}/info")
     public ResponseEntity<VariantResponse> updateInfo(
-            @PathVariable
-            final UUID id,
+            @PathVariable final UUID id,
 
-            @RequestBody
-            @Valid
-            final UpdateVariantInfoRequest request) {
+            @RequestBody @Valid final UpdateVariantInfoRequest request) {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
         final var view = this.updateInfoUseCase.updateInfo(command);
 
@@ -165,12 +142,9 @@ public class VariantController {
 
     @PatchMapping("/{id}/image")
     public ResponseEntity<VariantImageResponse> updateImage(
-            @PathVariable
-            final UUID id,
+            @PathVariable final UUID id,
 
-            @RequestBody
-            @Valid
-            final UpdateVariantImageRequest request) {
+            @RequestBody @Valid final UpdateVariantImageRequest request) {
         final var command = this.mapper.toUpdateImageCommand(id, request);
         final var view = this.updateImageUseCase.updateImage(command);
 
@@ -180,11 +154,9 @@ public class VariantController {
 
     @DeleteMapping("/{id}/image")
     public ResponseEntity<VariantImageResponse> deleteImageById(
-            @PathVariable
-            final UUID id,
+            @PathVariable final UUID id,
 
-            @RequestParam
-            final long version) {
+            @RequestParam final long version) {
         final var command = this.mapper.toDeleteImageCommand(id, version);
         final var view = this.deleteImageUseCase.deleteImage(command);
 
@@ -194,11 +166,9 @@ public class VariantController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> softDeleteById(
-            @PathVariable
-            final UUID id,
+            @PathVariable final UUID id,
 
-            @RequestParam
-            final long version) {
+            @RequestParam final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
         this.softDeleteUseCase.delete(command);
 
@@ -207,11 +177,9 @@ public class VariantController {
 
     @DeleteMapping("/{id}/purge")
     public ResponseEntity<Void> hardDeleteById(
-            @PathVariable
-            final UUID id,
+            @PathVariable final UUID id,
 
-            @RequestParam
-            final long version) {
+            @RequestParam final long version) {
         final var command = this.mapper.toHardDeleteCommand(id, version);
         this.hardDeleteUseCase.purge(command);
 
