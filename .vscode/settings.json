@@ -11,8 +11,10 @@
         "PGDATA",
         "projectlombok",
         "projectreactor",
+        "springdoc",
         "springframework",
         "webflux",
+        "webmvc",
         "Xplugin"
     ],
     "java.import.maven.enabled": true,
