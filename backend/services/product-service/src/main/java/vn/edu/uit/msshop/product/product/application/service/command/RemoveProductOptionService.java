@@ -95,7 +95,8 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
     private ProductConfiguration removeOptionFromConfiguration(
             final Product product,
             final int optionIndex,
-            @Nullable final ProductPrice defaultPrice) {
+            @Nullable
+            final ProductPrice defaultPrice) {
         final var optionsSize = product.getOptions().size();
 
         if (optionsSize <= 0) {

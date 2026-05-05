@@ -21,7 +21,8 @@ final class CategoryImageKeyTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "", "   ", "\t", "\n" })
+    @ValueSource(
+            strings = { "", "   ", "\t", "\n" })
     @DisplayName("Throw DomainException when key is blank or contains only whitespaces")
     void constructor_BlankValue_ThrowsException(
             final String blankKey) {

@@ -9,7 +9,8 @@ import vn.edu.uit.msshop.shared.domain.Domains;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class ProductRating {
     private final ProductId id;
 

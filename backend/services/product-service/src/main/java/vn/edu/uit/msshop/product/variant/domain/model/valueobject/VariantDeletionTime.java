@@ -17,7 +17,8 @@ public record VariantDeletionTime(
     }
 
     public static @Nullable VariantDeletionTime ofNullable(
-            @Nullable final Instant value) {
+            @Nullable
+            final Instant value) {
         if (value == null) {
             return null;
         }
@@ -26,7 +27,8 @@ public record VariantDeletionTime(
     }
 
     public static @Nullable Instant unwrap(
-            @Nullable final VariantDeletionTime deletionTime) {
+            @Nullable
+            final VariantDeletionTime deletionTime) {
         if (deletionTime == null) {
             return null;
         }

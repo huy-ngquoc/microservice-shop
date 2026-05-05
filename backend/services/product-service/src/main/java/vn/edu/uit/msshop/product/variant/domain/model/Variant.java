@@ -16,7 +16,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class Variant {
     @EqualsAndHashCode.Include
     private final VariantId id;
@@ -54,11 +55,13 @@ public final class Variant {
 
             final VariantTargets targets,
 
-            @Nullable final VariantImageKey imageKey,
+            @Nullable
+            final VariantImageKey imageKey,
 
             final VariantVersion version,
 
-            @Nullable final VariantDeletionTime deletionTime) {
+            @Nullable
+            final VariantDeletionTime deletionTime) {
         this.id = Domains.requireNonNull(id, "Variant ID must not be null");
         this.productId = Domains.requireNonNull(productId, "Variant Product ID must not be null");
         this.productName = Domains.requireNonNull(productName, "Variant Product name must not be null");

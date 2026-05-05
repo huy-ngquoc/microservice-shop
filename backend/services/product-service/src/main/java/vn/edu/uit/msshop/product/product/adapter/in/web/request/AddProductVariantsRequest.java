@@ -28,14 +28,16 @@ public record AddProductVariantsRequest(
             @NotEmpty
             @Size(
                     max = ProductVariantTraits.MAX_TRAITS_AMOUNT)
-            List<@NotBlank @Size(
-                    max = ProductVariantTrait.MAX_RAW_LENGTH) String> traits,
+            List<
+                    @NotBlank @Size(
+                            max = ProductVariantTrait.MAX_RAW_LENGTH) String> traits,
 
             @NotEmpty
             @Size(
                     max = ProductVariantTargets.MAX_AMOUNT)
-            List<@NotBlank @Size(
-                    max = ProductVariantTarget.MAX_RAW_LENGTH) String> targets) {
+            List<
+                    @NotBlank @Size(
+                            max = ProductVariantTarget.MAX_RAW_LENGTH) String> targets) {
     }
 
     public AddProductVariantsRequest {

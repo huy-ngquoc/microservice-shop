@@ -35,7 +35,8 @@ public class ListVariantsService
     private final VariantViewMapper mapper;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true)
     public PageResponseDto<VariantView> list(
             final ListVariantsQuery query) {
         final var page = this.listPort.list(query);

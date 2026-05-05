@@ -25,7 +25,8 @@ public record ProductImageKey(
     }
 
     public static @Nullable ProductImageKey ofNullable(
-            @Nullable final String keyString) {
+            @Nullable
+            final String keyString) {
         if (keyString == null) {
             return null;
         }
@@ -34,7 +35,8 @@ public record ProductImageKey(
     }
 
     public static @Nullable String unwrap(
-            @Nullable final ProductImageKey key) {
+            @Nullable
+            final ProductImageKey key) {
         if (key == null) {
             return null;
         }

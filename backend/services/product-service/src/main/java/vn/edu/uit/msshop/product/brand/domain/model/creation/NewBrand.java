@@ -7,7 +7,8 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 import vn.edu.uit.msshop.shared.domain.Domains;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public class NewBrand {
     @EqualsAndHashCode.Include
     private final BrandId id;

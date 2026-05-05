@@ -57,7 +57,8 @@ public class HardDeleteCategoryService implements HardDeleteCategoryUseCase {
     }
 
     private void deleteLogo(
-            @Nullable final CategoryImageKey key) {
+            @Nullable
+            final CategoryImageKey key) {
         if (key == null) {
             return;
         }

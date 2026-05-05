@@ -60,13 +60,22 @@ public class BrandController {
 
     @GetMapping
     public ResponseEntity<PageResponseDto<BrandResponse>> list(
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
 
-            @RequestParam(required = false) @Nullable final String sortBy,
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = listUseCase.list(request);
 
@@ -76,13 +85,22 @@ public class BrandController {
 
     @GetMapping("/deleted")
     public ResponseEntity<PageResponseDto<BrandResponse>> listSoftDeleted(
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
 
-            @RequestParam(required = false) @Nullable final String sortBy,
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = listSoftDeletedUseCase.listSoftDeleted(request);
 
@@ -92,7 +110,8 @@ public class BrandController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BrandResponse> findById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var view = this.findUseCase.findById(this.mapper.toBrandId(id));
 
         final var response = this.mapper.toResponse(view);
@@ -101,7 +120,8 @@ public class BrandController {
 
     @GetMapping("/deleted/{id}")
     public ResponseEntity<BrandResponse> findSoftDeletedById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var view = this.findSoftDeletedUseCase
                 .findSoftDeletedById(this.mapper.toBrandId(id));
 
@@ -111,7 +131,8 @@ public class BrandController {
 
     @GetMapping("/{id}/logo")
     public ResponseEntity<BrandLogoResponse> findLogoById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var view = this.findLogoUseCase.findLogoById(this.mapper.toBrandId(id));
 
         final var response = this.mapper.toLogoResponse(view);
@@ -120,7 +141,8 @@ public class BrandController {
 
     @GetMapping("/{id}/exists")
     public ResponseEntity<Void> existsById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var existed = this.checkExistsUseCase.existsById(this.mapper.toBrandId(id));
         if (!existed) {
             return ResponseEntity.notFound().build();
@@ -131,7 +153,9 @@ public class BrandController {
 
     @PostMapping
     public ResponseEntity<BrandResponse> create(
-            @RequestBody @Valid final CreateBrandRequest request) {
+            @RequestBody
+            @Valid
+            final CreateBrandRequest request) {
         final var command = this.mapper.toCreateCommand(request);
         final var view = this.createUseCase.create(command);
 
@@ -145,9 +169,11 @@ public class BrandController {
 
     @PostMapping("/{id}/restore")
     public ResponseEntity<Void> restore(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toRestoreCommand(id, version);
         this.restoreUseCase.restore(command);
 
@@ -156,9 +182,12 @@ public class BrandController {
 
     @PatchMapping("/{id}/info")
     public ResponseEntity<BrandResponse> updateInfo(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestBody @Valid final UpdateBrandInfoRequest request) {
+            @RequestBody
+            @Valid
+            final UpdateBrandInfoRequest request) {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
         final var view = this.updateInfoUseCase.updateInfo(command);
 
@@ -168,9 +197,12 @@ public class BrandController {
 
     @PatchMapping("/{id}/logo")
     public ResponseEntity<BrandLogoResponse> updateLogo(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestBody @Valid final UpdateBrandLogoRequest request) {
+            @RequestBody
+            @Valid
+            final UpdateBrandLogoRequest request) {
         final var command = this.mapper.toUpdateLogoCommand(id, request);
         final var view = this.updateLogoUseCase.updateLogo(command);
 
@@ -180,9 +212,11 @@ public class BrandController {
 
     @DeleteMapping("/{id}/logo")
     public ResponseEntity<BrandLogoResponse> deleteLogoById(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toDeleteLogoCommand(id, version);
         final var view = this.deleteLogoUseCase.deleteLogo(command);
 
@@ -192,9 +226,11 @@ public class BrandController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> softDeleteById(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
         this.softDeleteUseCase.delete(command);
 
@@ -203,9 +239,11 @@ public class BrandController {
 
     @DeleteMapping("/{id}/purge")
     public ResponseEntity<Void> hardDeleteById(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toHardDeleteCommand(id, version);
         this.hardDeleteUseCase.purge(command);
 

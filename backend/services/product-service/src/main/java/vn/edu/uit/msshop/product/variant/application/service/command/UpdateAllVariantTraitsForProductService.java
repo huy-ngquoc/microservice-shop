@@ -44,7 +44,8 @@ public class UpdateAllVariantTraitsForProductService
 
     private static Variant withNewTraits(
             final Variant variant,
-            @Nullable final VariantTraits newTraits) {
+            @Nullable
+            final VariantTraits newTraits) {
         if (newTraits == null) {
             throw new BusinessRuleException("Missing traits for variant: " + variant.getId().value());
         }

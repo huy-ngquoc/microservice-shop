@@ -8,7 +8,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCountValue;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class VariantStockCount {
     @EqualsAndHashCode.Include
     private final VariantId variantId;

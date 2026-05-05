@@ -146,7 +146,8 @@ public class BrandWebMapper {
     }
 
     private @Nullable String toLogoUrlString(
-            @Nullable final String keyString) {
+            @Nullable
+            final String keyString) {
         return this.urlResolver.resolve(
                 keyString,
                 BrandLogoStorageAdapter.BRAND_FOLDER);

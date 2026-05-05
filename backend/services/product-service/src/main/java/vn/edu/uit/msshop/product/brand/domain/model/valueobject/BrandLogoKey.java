@@ -25,7 +25,8 @@ public record BrandLogoKey(
     }
 
     public static @Nullable BrandLogoKey ofNullable(
-            @Nullable final String keyString) {
+            @Nullable
+            final String keyString) {
         if (keyString == null) {
             return null;
         }
@@ -34,7 +35,8 @@ public record BrandLogoKey(
     }
 
     public static @Nullable String unwrap(
-            @Nullable final BrandLogoKey key) {
+            @Nullable
+            final BrandLogoKey key) {
         if (key == null) {
             return null;
         }

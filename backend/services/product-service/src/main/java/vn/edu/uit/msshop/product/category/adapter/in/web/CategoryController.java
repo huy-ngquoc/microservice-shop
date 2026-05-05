@@ -60,13 +60,22 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<PageResponseDto<CategoryResponse>> list(
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
 
-            @RequestParam(required = false) @Nullable final String sortBy,
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = listUseCase.list(request);
 
@@ -76,13 +85,22 @@ public class CategoryController {
 
     @GetMapping("/deleted")
     public ResponseEntity<PageResponseDto<CategoryResponse>> listSoftDeleted(
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
 
-            @RequestParam(required = false) @Nullable final String sortBy,
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = listSoftDeletedUseCase.listSoftDeleted(request);
 
@@ -92,7 +110,8 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponse> findById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var view = this.findUseCase.findById(this.mapper.toCategoryId(id));
 
         final var response = this.mapper.toResponse(view);
@@ -101,7 +120,8 @@ public class CategoryController {
 
     @GetMapping("/{id}/image")
     public ResponseEntity<CategoryImageResponse> findImageById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var view = this.findImageUseCase.findImageById(this.mapper.toCategoryId(id));
 
         final var response = this.mapper.toImageResponse(view);
@@ -110,7 +130,8 @@ public class CategoryController {
 
     @GetMapping("/{id}/exists")
     public ResponseEntity<Void> existsById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var existed = this.checkExistsUseCase.existsById(this.mapper.toCategoryId(id));
         if (!existed) {
             return ResponseEntity.notFound().build();
@@ -121,7 +142,8 @@ public class CategoryController {
 
     @GetMapping("/deleted/{id}")
     public ResponseEntity<CategoryResponse> findSoftDeletedById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var view = this.findSoftDeletedUseCase
                 .findSoftDeletedById(this.mapper.toCategoryId(id));
 
@@ -131,7 +153,9 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<CategoryResponse> create(
-            @RequestBody @Valid final CreateCategoryRequest request) {
+            @RequestBody
+            @Valid
+            final CreateCategoryRequest request) {
         final var command = this.mapper.toCreateCommand(request);
         final var view = this.createUseCase.create(command);
 
@@ -145,9 +169,11 @@ public class CategoryController {
 
     @PostMapping("/{id}/restore")
     public ResponseEntity<Void> restore(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toRestoreCommand(id, version);
         this.restoreUseCase.restore(command);
 
@@ -156,9 +182,12 @@ public class CategoryController {
 
     @PatchMapping("/{id}/info")
     public ResponseEntity<CategoryResponse> updateInfo(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestBody @Valid final UpdateCategoryInfoRequest request) {
+            @RequestBody
+            @Valid
+            final UpdateCategoryInfoRequest request) {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
         final var view = this.updateInfoUseCase.updateInfo(command);
 
@@ -168,9 +197,12 @@ public class CategoryController {
 
     @PatchMapping("/{id}/image")
     public ResponseEntity<CategoryImageResponse> updateImage(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestBody @Valid final UpdateCategoryImageRequest request) {
+            @RequestBody
+            @Valid
+            final UpdateCategoryImageRequest request) {
         final var command = this.mapper.toUpdateImageCommand(id, request);
         final var view = this.updateImageUseCase.updateImage(command);
 
@@ -180,9 +212,11 @@ public class CategoryController {
 
     @DeleteMapping("/{id}/image")
     public ResponseEntity<CategoryImageResponse> deleteImageById(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toDeleteImageCommand(id, version);
         final var view = this.deleteImageUseCase.deleteImage(command);
 
@@ -192,9 +226,11 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> softDeleteById(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
         this.softDeleteUseCase.delete(command);
 
@@ -203,9 +239,11 @@ public class CategoryController {
 
     @DeleteMapping("/{id}/purge")
     public ResponseEntity<Void> hardDeleteById(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toHardDeleteCommand(id, version);
         this.hardDeleteUseCase.purge(command);
 

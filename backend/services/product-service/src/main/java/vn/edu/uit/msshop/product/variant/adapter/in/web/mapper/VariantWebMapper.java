@@ -40,11 +40,13 @@ public class VariantWebMapper {
 
             int size,
 
-            @Nullable String sortBy,
+            @Nullable
+            String sortBy,
 
             PageRequestDto.Direction direction,
 
-            @Nullable List<String> rawTargets) {
+            @Nullable
+            List<String> rawTargets) {
         final var pageRequest = new PageRequestDto(page, size, sortBy, direction);
 
         final List<VariantTarget> targets;

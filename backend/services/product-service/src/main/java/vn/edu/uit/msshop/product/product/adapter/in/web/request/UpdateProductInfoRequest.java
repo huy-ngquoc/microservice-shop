@@ -9,11 +9,14 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
 public record UpdateProductInfoRequest(
-        ChangeRequest<@NotBlank @Size(max = ProductName.MAX_LENGTH) String> name,
+        ChangeRequest<
+                @NotBlank @Size(
+                        max = ProductName.MAX_LENGTH) String> name,
 
         ChangeRequest<UUID> categoryId,
 
         ChangeRequest<UUID> brandId,
 
-        @NotNull Long expectedVersion) {
+        @NotNull
+        Long expectedVersion) {
 }

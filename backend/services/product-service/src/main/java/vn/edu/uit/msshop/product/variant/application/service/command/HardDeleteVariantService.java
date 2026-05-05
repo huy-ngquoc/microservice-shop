@@ -64,7 +64,8 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
     }
 
     private void deleteImage(
-            @Nullable final VariantImageKey key) {
+            @Nullable
+            final VariantImageKey key) {
         if (key == null) {
             return;
         }

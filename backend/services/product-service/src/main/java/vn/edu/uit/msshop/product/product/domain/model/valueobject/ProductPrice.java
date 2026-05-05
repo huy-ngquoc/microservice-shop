@@ -15,7 +15,8 @@ public record ProductPrice(
     }
 
     public static @Nullable ProductPrice ofNullable(
-            @Nullable final Long value) {
+            @Nullable
+            final Long value) {
         if (value == null) {
             return null;
         }

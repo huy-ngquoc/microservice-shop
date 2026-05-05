@@ -17,7 +17,8 @@ public record BrandDeletionTime(
     }
 
     public static @Nullable BrandDeletionTime ofNullable(
-            @Nullable final Instant value) {
+            @Nullable
+            final Instant value) {
         if (value == null) {
             return null;
         }
@@ -26,7 +27,8 @@ public record BrandDeletionTime(
     }
 
     public static @Nullable Instant unwrap(
-            @Nullable final BrandDeletionTime deletionTime) {
+            @Nullable
+            final BrandDeletionTime deletionTime) {
         if (deletionTime == null) {
             return null;
         }

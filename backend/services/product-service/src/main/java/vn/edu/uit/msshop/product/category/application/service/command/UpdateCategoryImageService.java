@@ -100,7 +100,8 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
     }
 
     private void deleteOldImage(
-            @Nullable final CategoryImageKey oldKey) {
+            @Nullable
+            final CategoryImageKey oldKey) {
         if (oldKey == null) {
             return;
         }
