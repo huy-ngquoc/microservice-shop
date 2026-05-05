@@ -26,6 +26,8 @@
     </developers>
 
     <modules>
+        <module>shared-kernel</module>
+        
         <module>config-server</module>
         <module>discovery-server</module>
         <module>api-gateway</module>
@@ -45,6 +47,9 @@
     <properties>
         <argLine></argLine>
         <java.version>25</java.version>
+
+        <shared-kernel.version>1.0.0-SNAPSHOT</shared-kernel.version>
+
         <spring-cloud.version>2025.1.0</spring-cloud.version>
         <nullaway.version>0.13.1</nullaway.version>
         <error-prone.version>2.48.0</error-prone.version>
@@ -52,6 +57,13 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>vn.edu.uit.msshop</groupId>
+                <artifactId>shared-kernel</artifactId>
+                <version>${shared-kernel.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
