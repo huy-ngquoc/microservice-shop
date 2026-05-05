@@ -28,6 +28,7 @@
     <modules>
         <module>shared-kernel</module>
         <module>shared-webmvc</module>
+        <module>shared-spring-data</module>
         
         <module>config-server</module>
         <module>discovery-server</module>
@@ -51,6 +52,7 @@
 
         <shared-kernel.version>1.0.0-SNAPSHOT</shared-kernel.version>
         <shared-webmvc.version>1.0.0-SNAPSHOT</shared-webmvc.version>
+        <shared-spring-data.version>1.0.0-SNAPSHOT</shared-spring-data.version>
 
         <spring-cloud.version>2025.1.0</spring-cloud.version>
         <springdoc-openapi.version>3.0.3</springdoc-openapi.version>
@@ -71,6 +73,12 @@
                 <groupId>vn.edu.uit.msshop</groupId>
                 <artifactId>shared-webmvc</artifactId>
                 <version>${shared-webmvc.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>vn.edu.uit.msshop</groupId>
+                <artifactId>shared-spring-data</artifactId>
+                <version>${shared-spring-data.version}</version>
             </dependency>
 
             <dependency>
