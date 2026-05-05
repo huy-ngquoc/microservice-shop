@@ -87,8 +87,16 @@ public class InventoryController {
         if(!checkPermission.isAdmin(role)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        try{
         InventoryView view = findUseCase.findByVariantId(new VariantId(id));
         return ResponseEntity.ok(mapper.toResponse(view));
+        }
+        catch(RuntimeException e) {
+            if(e instanceof InventoryNotFoundException ex) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.internalServerError().build();
+        }
     }
     @GetMapping("/public/variant/{id}")
     public ResponseEntity<InventoryResponse> getByVariantId(@PathVariable UUID id) {

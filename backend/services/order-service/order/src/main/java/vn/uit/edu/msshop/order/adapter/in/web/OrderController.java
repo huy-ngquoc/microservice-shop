@@ -97,13 +97,20 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getById(@PathVariable UUID id,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
-        
+        try {
         final var view = findService.findOrderById(new OrderId(id));
         if(!checkPermission.isAdmin(role)&&!checkPermission.isSameUser(userFromHeader,view.userId().value().toString() )) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
        
         return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
+    catch(RuntimeException e) {
+        if(e instanceof OrderNotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.internalServerError().build();
+    }
     }
     @GetMapping("/public/{id}")
     public ResponseEntity<OrderResponse> getById(@PathVariable UUID id) {
