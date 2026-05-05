@@ -25,6 +25,7 @@ public class KafkaVariantConfig {
         template.setProducerListener(listener);
         return template;
     }
+    
 
     @Bean
     NewTopic variantTopic() {
