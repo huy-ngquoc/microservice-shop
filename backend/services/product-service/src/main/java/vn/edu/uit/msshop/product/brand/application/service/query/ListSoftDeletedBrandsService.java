@@ -18,7 +18,8 @@ public class ListSoftDeletedBrandsService implements ListSoftDeletedBrandsUseCas
     private final BrandViewMapper viewMapper;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true)
     public PageResponseDto<BrandView> listSoftDeleted(
             PageRequestDto pageRequest) {
         var page = listSoftDeletedPort.listSoftDeleted(pageRequest);

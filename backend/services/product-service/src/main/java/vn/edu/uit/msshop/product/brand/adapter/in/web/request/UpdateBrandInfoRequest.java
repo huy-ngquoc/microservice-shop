@@ -7,7 +7,10 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
 public record UpdateBrandInfoRequest(
-        ChangeRequest<@NotBlank @Size(max = BrandName.MAX_RAW_LENGTH) String> name,
+        ChangeRequest<
+                @NotBlank @Size(
+                        max = BrandName.MAX_RAW_LENGTH) String> name,
 
-        @NotNull Long version) {
+        @NotNull
+        Long version) {
 }

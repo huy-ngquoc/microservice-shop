@@ -18,7 +18,8 @@ public class ListSoftDeletedCategoriesService implements ListSoftDeletedCategori
     private final CategoryViewMapper mapper;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true)
     public PageResponseDto<CategoryView> listSoftDeleted(
             final PageRequestDto pageRequest) {
         final var page = this.listSoftDeletedPort.listSoftDeleted(pageRequest);

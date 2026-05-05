@@ -25,8 +25,9 @@ public record CreateProductRequest(
         @NotEmpty
         @Size(
                 max = ProductOptions.MAX_AMOUNT)
-        List<@NotBlank @Size(
-                max = ProductOption.MAX_RAW_LENGTH_VALUE) String> options,
+        List<
+                @NotBlank @Size(
+                        max = ProductOption.MAX_RAW_LENGTH_VALUE) String> options,
 
         @NotEmpty
         List<@Valid CreateProductVariantRequest> variants) {

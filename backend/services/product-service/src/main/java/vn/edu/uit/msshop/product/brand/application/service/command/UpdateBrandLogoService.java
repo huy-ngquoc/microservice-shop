@@ -100,7 +100,8 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
     }
 
     private void deleteOldLogo(
-            @Nullable final BrandLogoKey oldKey) {
+            @Nullable
+            final BrandLogoKey oldKey) {
         if (oldKey == null) {
             return;
         }

@@ -7,7 +7,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductSoldCou
 import vn.edu.uit.msshop.shared.domain.Domains;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class ProductSoldCount {
     @EqualsAndHashCode.Include
     private final ProductId id;

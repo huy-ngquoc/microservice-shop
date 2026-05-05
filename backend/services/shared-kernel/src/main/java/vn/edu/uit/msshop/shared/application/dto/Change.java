@@ -4,8 +4,7 @@ import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
-public sealed interface Change<T>
-        permits Change.Unchanged, Change.Set {
+public sealed interface Change<T> permits Change.Unchanged, Change.Set {
 
     static <T> Change<T> unchanged() {
         return new Unchanged<>();

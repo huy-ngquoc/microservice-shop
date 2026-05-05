@@ -18,7 +18,8 @@ public class ListBrandsService implements ListBrandsUseCase {
     private final BrandViewMapper viewMapper;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true)
     public PageResponseDto<BrandView> list(
             PageRequestDto pageRequest) {
         final var page = listPort.list(pageRequest);

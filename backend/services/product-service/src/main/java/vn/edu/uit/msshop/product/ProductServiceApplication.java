@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class ProductServiceApplication {
 
     public static void main(
-            String[] args) {
+            final String[] args) {
         SpringApplication.run(ProductServiceApplication.class, args);
     }
 

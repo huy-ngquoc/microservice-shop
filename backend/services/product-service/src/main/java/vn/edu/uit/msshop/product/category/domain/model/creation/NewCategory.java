@@ -7,7 +7,8 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
 import vn.edu.uit.msshop.shared.domain.Domains;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class NewCategory {
     @EqualsAndHashCode.Include
     private final CategoryId id;

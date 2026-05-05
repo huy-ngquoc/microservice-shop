@@ -5,6 +5,7 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 public record ProductPriceRange(
         ProductPrice minPrice,
         ProductPrice maxPrice) {
+
     private static final ProductPriceRange ZERO = new ProductPriceRange(
             ProductPrice.zero(),
             ProductPrice.zero());

@@ -57,7 +57,8 @@ public class HardDeleteBrandService implements HardDeleteBrandUseCase {
     }
 
     private void deleteLogo(
-            @Nullable final BrandLogoKey key) {
+            @Nullable
+            final BrandLogoKey key) {
         if (key == null) {
             return;
         }

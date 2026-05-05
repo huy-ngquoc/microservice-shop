@@ -25,7 +25,8 @@ public record VariantImageKey(
     }
 
     public static @Nullable VariantImageKey ofNullable(
-            @Nullable final String keyString) {
+            @Nullable
+            final String keyString) {
         if (keyString == null) {
             return null;
         }
@@ -34,7 +35,8 @@ public record VariantImageKey(
     }
 
     public static @Nullable String unwrap(
-            @Nullable final VariantImageKey key) {
+            @Nullable
+            final VariantImageKey key) {
         if (key == null) {
             return null;
         }

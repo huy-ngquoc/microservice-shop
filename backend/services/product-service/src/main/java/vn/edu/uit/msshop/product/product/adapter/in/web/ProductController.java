@@ -67,13 +67,22 @@ public class ProductController {
     // TODO: product response has too much info.
     @GetMapping
     public ResponseEntity<PageResponseDto<ProductResponse>> list(
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
 
-            @RequestParam(required = false) @Nullable final String sortBy,
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = this.listUseCase.list(request);
 
@@ -83,13 +92,22 @@ public class ProductController {
 
     @GetMapping("/deleted")
     public ResponseEntity<PageResponseDto<ProductResponse>> listSoftDeleted(
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
 
-            @RequestParam(required = false) @Nullable final String sortBy,
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
 
-            @RequestParam(defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = this.listSoftDeletedUseCase.listSoftDeleted(request);
 
@@ -99,7 +117,8 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> findById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var view = this.findUseCase.findById(this.mapper.toProductId(id));
 
         final var response = this.mapper.toResponse(view);
@@ -108,7 +127,8 @@ public class ProductController {
 
     @GetMapping("/{id}/exists")
     public ResponseEntity<Void> existsById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var existed = this.checkExistsUseCase.existsById(this.mapper.toProductId(id));
         if (!existed) {
             return ResponseEntity.notFound().build();
@@ -119,7 +139,8 @@ public class ProductController {
 
     @GetMapping("/deleted/{id}")
     public ResponseEntity<ProductResponse> findSoftDeletedById(
-            @PathVariable final UUID id) {
+            @PathVariable
+            final UUID id) {
         final var view = this.findSoftDeletedUseCase
                 .findSoftDeletedById(this.mapper.toProductId(id));
 
@@ -129,7 +150,9 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ProductResponse> create(
-            @RequestBody @Valid final CreateProductRequest request) {
+            @RequestBody
+            @Valid
+            final CreateProductRequest request) {
         final var view = this.createUseCase.create(this.mapper.toCreateCommand(request));
 
         final var response = this.mapper.toResponse(view);
@@ -142,7 +165,9 @@ public class ProductController {
 
     @PostMapping("/simple")
     public ResponseEntity<ProductResponse> createSimple(
-            @RequestBody @Valid final CreateSimpleProductRequest request) {
+            @RequestBody
+            @Valid
+            final CreateSimpleProductRequest request) {
         final var view = this.createUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
 
         final var response = this.mapper.toResponse(view);
@@ -155,9 +180,11 @@ public class ProductController {
 
     @PostMapping("/{id}/restore")
     public ResponseEntity<Void> restoreById(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toRestoreCommand(id, version);
         this.restoreUseCase.restore(command);
 
@@ -166,9 +193,12 @@ public class ProductController {
 
     @PostMapping("/{id}/options")
     public ResponseEntity<ProductResponse> addOption(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestBody @Valid final AddProductOptionRequest request) {
+            @RequestBody
+            @Valid
+            final AddProductOptionRequest request) {
         final var command = this.mapper.toAddOptionCommand(id, request);
         final var view = this.addOptionUseCase.addOption(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -176,9 +206,12 @@ public class ProductController {
 
     @PostMapping("/{id}/variants")
     public ResponseEntity<ProductResponse> addVariant(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestBody @Valid final AddProductVariantRequest request) {
+            @RequestBody
+            @Valid
+            final AddProductVariantRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
         final var view = this.addVariantsUseCase.addVariants(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -186,8 +219,11 @@ public class ProductController {
 
     @PostMapping("/{id}/variants/batch")
     public ResponseEntity<ProductResponse> addAllVariants(
-            @PathVariable final UUID id,
-            @RequestBody @Valid final AddProductVariantsRequest request) {
+            @PathVariable
+            final UUID id,
+            @RequestBody
+            @Valid
+            final AddProductVariantsRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
         final var view = this.addVariantsUseCase.addVariants(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -195,9 +231,12 @@ public class ProductController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<ProductResponse> updateInfo(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestBody @Valid final UpdateProductInfoRequest request) {
+            @RequestBody
+            @Valid
+            final UpdateProductInfoRequest request) {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
         final var view = this.updateInfoUseCase.updateInfo(command);
 
@@ -207,9 +246,13 @@ public class ProductController {
 
     @PatchMapping("/{id}/options/{index}")
     public ResponseEntity<ProductResponse> updateOption(
-            @PathVariable final UUID id,
-            @PathVariable final int index,
-            @RequestBody @Valid final UpdateProductOptionRequest request) {
+            @PathVariable
+            final UUID id,
+            @PathVariable
+            final int index,
+            @RequestBody
+            @Valid
+            final UpdateProductOptionRequest request) {
         final var command = this.mapper.toUpdateOptionCommand(id, index, request);
         final var view = this.updateOptionUseCase.updateOption(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -217,11 +260,15 @@ public class ProductController {
 
     @DeleteMapping("/{id}/options/{index}")
     public ResponseEntity<ProductResponse> removeOption(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @PathVariable final int index,
+            @PathVariable
+            final int index,
 
-            @RequestBody @Valid final RemoveProductOptionRequest request) {
+            @RequestBody
+            @Valid
+            final RemoveProductOptionRequest request) {
         final var command = this.mapper.toRemoveOptionCommand(id, index, request);
         final var view = this.removeOptionUseCase.removeOption(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -229,9 +276,11 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> softDeleteById(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
         this.softDeleteUseCase.delete(command);
 
@@ -240,9 +289,11 @@ public class ProductController {
 
     @DeleteMapping("/{id}/purge")
     public ResponseEntity<Void> hardDeleteById(
-            @PathVariable final UUID id,
+            @PathVariable
+            final UUID id,
 
-            @RequestParam final long version) {
+            @RequestParam
+            final long version) {
         final var command = this.mapper.toHardDeleteCommand(id, version);
         this.hardDeleteUseCase.purge(command);
 

@@ -147,7 +147,8 @@ public class CategoryWebMapper {
     }
 
     private @Nullable String toImageUrlString(
-            @Nullable final String keyString) {
+            @Nullable
+            final String keyString) {
         return this.urlResolver.resolve(
                 keyString,
                 CategoryImageStorageAdapter.CATEGORY_FOLDER);

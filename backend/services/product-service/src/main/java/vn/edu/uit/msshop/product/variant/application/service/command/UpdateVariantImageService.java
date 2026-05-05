@@ -104,7 +104,8 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
     }
 
     private void deleteOldImage(
-            @Nullable final VariantImageKey oldKey) {
+            @Nullable
+            final VariantImageKey oldKey) {
         if (oldKey == null) {
             return;
         }

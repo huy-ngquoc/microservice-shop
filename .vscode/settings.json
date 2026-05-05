@@ -21,5 +21,6 @@
     "java.import.maven.enabled": true,
     "java.autobuild.enabled": true,
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.format.settings.url": "${workspaceFolder}/backend/services/java-formatter.xml"
 }

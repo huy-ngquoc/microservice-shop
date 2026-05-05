@@ -18,7 +18,8 @@ public class ListCategoriesService implements ListCategoriesUseCase {
     private final CategoryViewMapper mapper;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true)
     public PageResponseDto<CategoryView> list(
             final PageRequestDto pageRequest) {
         final var page = this.listPort.list(pageRequest);

@@ -25,7 +25,8 @@ public record CategoryImageKey(
     }
 
     public static @Nullable CategoryImageKey ofNullable(
-            @Nullable final String keyString) {
+            @Nullable
+            final String keyString) {
         if (keyString == null) {
             return null;
         }
@@ -34,7 +35,8 @@ public record CategoryImageKey(
     }
 
     public static @Nullable String unwrap(
-            @Nullable final CategoryImageKey key) {
+            @Nullable
+            final CategoryImageKey key) {
         if (key == null) {
             return null;
         }

@@ -11,7 +11,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class NewVariant {
     @EqualsAndHashCode.Include
     private final VariantId id;

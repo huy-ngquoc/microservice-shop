@@ -36,7 +36,8 @@ public class ListProductsService implements ListProductsUseCase {
     private final ProductViewMapper mapper;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true)
     public PageResponseDto<ProductView> list(
             PageRequestDto pageRequest) {
         final var page = this.listPort.list(pageRequest);

@@ -10,6 +10,7 @@ public record PageRequestDto(
         @Nullable
         String sortBy,
         Direction direction) {
+
     public static final int DEFAULT_PAGE = 0;
     public static final int DEFAULT_SIZE = 20;
     public static final int MAX_SIZE = 100;

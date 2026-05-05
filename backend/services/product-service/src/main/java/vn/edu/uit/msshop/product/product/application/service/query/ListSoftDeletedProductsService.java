@@ -37,7 +37,8 @@ public class ListSoftDeletedProductsService
     private final ProductViewMapper mapper;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(
+            readOnly = true)
     public PageResponseDto<ProductView> listSoftDeleted(
             final PageRequestDto pageRequest) {
         final var page = this.listSoftDeletedPort.listSoftDeleted(pageRequest);
