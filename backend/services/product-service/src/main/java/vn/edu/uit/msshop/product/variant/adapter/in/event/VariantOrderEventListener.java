@@ -13,8 +13,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCou
 
 @Component
 @KafkaListener(
-        topics = "order-variant",
-        groupId = "product-service")
+        topics = "order-variant")
 @RequiredArgsConstructor
 public class VariantOrderEventListener {
     private final SetAllVariantSoldCountsUseCase setAllUseCase;
