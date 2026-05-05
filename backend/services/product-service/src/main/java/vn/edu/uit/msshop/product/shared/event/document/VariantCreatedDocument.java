@@ -15,8 +15,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class VariantCreatedDocument {
-    private UUID variantId;
-    private long price;
-    private List<String> traits;
-    private String imageKey;
+  private UUID variantId;
+  private long price;
+  private List<String> traits;
+  private String imageKey;
 }

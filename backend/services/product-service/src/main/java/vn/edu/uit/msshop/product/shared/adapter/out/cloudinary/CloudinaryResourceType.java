@@ -1,19 +1,15 @@
 package vn.edu.uit.msshop.product.shared.adapter.out.cloudinary;
 
 public enum CloudinaryResourceType {
-    IMAGE("image"),
-    VIDEO("video"),
-    RAW("raw"),
-    AUTO("auto");
+  IMAGE("image"), VIDEO("video"), RAW("raw"), AUTO("auto");
 
-    private final String value;
+  private final String value;
 
-    CloudinaryResourceType(
-            String value) {
-        this.value = value;
-    }
+  CloudinaryResourceType(String value) {
+    this.value = value;
+  }
 
-    public String value() {
-        return value;
-    }
+  public String value() {
+    return value;
+  }
 }

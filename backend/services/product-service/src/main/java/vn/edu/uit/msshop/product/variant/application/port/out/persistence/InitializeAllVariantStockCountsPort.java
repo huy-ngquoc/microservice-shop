@@ -8,6 +8,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantStockCo
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 public interface InitializeAllVariantStockCountsPort {
-    Map<VariantId, VariantStockCount> initializeAll(
-            final Collection<NewVariantStockCount> newStockCounts);
+  Map<VariantId, VariantStockCount> initializeAll(
+      final Collection<NewVariantStockCount> newStockCounts);
 }

@@ -13,16 +13,14 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVa
 @RequiredArgsConstructor
 @Slf4j
 public class ReconcileVariantSoldCountsJob {
-    private final ReconcileVariantSoldCountsUseCase reconcileVariantSoldCountsUseCase;
+  private final ReconcileVariantSoldCountsUseCase reconcileVariantSoldCountsUseCase;
 
-    @Scheduled(
-            fixedRate = 24,
-            timeUnit = TimeUnit.HOURS)
-    public void reconcile() {
-        try {
-            this.reconcileVariantSoldCountsUseCase.execute();
-        } catch (final RuntimeException e) {
-            log.warn("Sold count reconciliation skipped: {}", e.getMessage());
-        }
+  @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
+  public void reconcile() {
+    try {
+      this.reconcileVariantSoldCountsUseCase.execute();
+    } catch (final RuntimeException e) {
+      log.warn("Sold count reconciliation skipped: {}", e.getMessage());
     }
+  }
 }

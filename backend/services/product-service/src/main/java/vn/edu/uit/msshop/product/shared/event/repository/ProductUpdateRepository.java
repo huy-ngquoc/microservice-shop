@@ -11,9 +11,9 @@ import vn.edu.uit.msshop.product.shared.event.document.ProductUpdateDocument;
 
 @Repository
 public interface ProductUpdateRepository extends MongoRepository<ProductUpdateDocument, UUID> {
-    public List<ProductUpdateDocument> findByEventStatus(String eventStatus);
+  public List<ProductUpdateDocument> findByEventStatus(String eventStatus);
 
-    public List<ProductUpdateDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+  public List<ProductUpdateDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+  public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

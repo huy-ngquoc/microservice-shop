@@ -3,32 +3,30 @@ package vn.edu.uit.msshop.product.product.application.dto.view;
 import java.util.List;
 import java.util.UUID;
 
-public record ProductView(
-        UUID id,
+public record ProductView(UUID id,
 
-        String name,
+String name,
 
-        UUID categoryId,
+UUID categoryId,
 
-        UUID brandId,
+UUID brandId,
 
-        long minPrice,
+long minPrice,
 
-        long maxPrice,
+long maxPrice,
 
-        int soldCount,
+int soldCount,
 
-        int stockCount,
+int stockCount,
 
-        float ratingAverage,
+float ratingAverage,
 
-        int ratingCount,
+int ratingCount,
 
-        List<String> options,
+List<String>options,
 
-        List<ProductVariantView> variants,
+List<ProductVariantView>variants,
 
-        List<String> imageKeys,
+List<String>imageKeys,
 
-        long version) {
-}
+long version){}

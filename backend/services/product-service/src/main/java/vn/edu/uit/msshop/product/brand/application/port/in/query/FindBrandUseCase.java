@@ -4,6 +4,5 @@ import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 public interface FindBrandUseCase {
-    BrandView findById(
-            final BrandId id);
+  BrandView findById(final BrandId id);
 }

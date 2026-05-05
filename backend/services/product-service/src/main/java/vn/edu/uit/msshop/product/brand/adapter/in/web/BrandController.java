@@ -36,217 +36,169 @@ import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandUseCas
 import vn.edu.uit.msshop.product.brand.application.port.in.query.FindSoftDeletedBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.ListBrandsUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.ListSoftDeletedBrandsUseCase;
-import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @RestController
 @RequestMapping("/brands")
 @RequiredArgsConstructor
 public class BrandController {
-    private final ListBrandsUseCase listUseCase;
-    private final ListSoftDeletedBrandsUseCase listSoftDeletedUseCase;
-    private final FindBrandUseCase findUseCase;
-    private final FindSoftDeletedBrandUseCase findSoftDeletedUseCase;
-    private final FindBrandLogoUseCase findLogoUseCase;
-    private final CheckBrandExistsUseCase checkExistsUseCase;
-    private final CreateBrandUseCase createUseCase;
-    private final RestoreBrandUseCase restoreUseCase;
-    private final UpdateBrandInfoUseCase updateInfoUseCase;
-    private final UpdateBrandLogoUseCase updateLogoUseCase;
-    private final DeleteBrandLogoUseCase deleteLogoUseCase;
-    private final SoftDeleteBrandUseCase softDeleteUseCase;
-    private final HardDeleteBrandUseCase hardDeleteUseCase;
-    private final BrandWebMapper mapper;
+  private final ListBrandsUseCase listUseCase;
+  private final ListSoftDeletedBrandsUseCase listSoftDeletedUseCase;
+  private final FindBrandUseCase findUseCase;
+  private final FindSoftDeletedBrandUseCase findSoftDeletedUseCase;
+  private final FindBrandLogoUseCase findLogoUseCase;
+  private final CheckBrandExistsUseCase checkExistsUseCase;
+  private final CreateBrandUseCase createUseCase;
+  private final RestoreBrandUseCase restoreUseCase;
+  private final UpdateBrandInfoUseCase updateInfoUseCase;
+  private final UpdateBrandLogoUseCase updateLogoUseCase;
+  private final DeleteBrandLogoUseCase deleteLogoUseCase;
+  private final SoftDeleteBrandUseCase softDeleteUseCase;
+  private final HardDeleteBrandUseCase hardDeleteUseCase;
+  private final BrandWebMapper mapper;
 
-    @GetMapping
-    public ResponseEntity<PageResponseDto<BrandResponse>> list(
-            @RequestParam(
-                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
-            final int page,
+  @GetMapping
+  public ResponseEntity<PageResponseDto<BrandResponse>> list(
+      @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
 
-            @RequestParam(
-                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
-            final int size,
+      @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
 
-            @RequestParam(
-                    required = false)
-            @Nullable
-            final String sortBy,
+      @RequestParam(required = false) @Nullable final String sortBy,
 
-            @RequestParam(
-                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
-            final PageRequestDto.Direction direction) {
-        final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = listUseCase.list(request);
+      @RequestParam(
+          defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
+    final var request = new PageRequestDto(page, size, sortBy, direction);
+    final var views = listUseCase.list(request);
 
-        final var response = views.map(this.mapper::toResponse);
-        return ResponseEntity.ok(response);
+    final var response = views.map(this.mapper::toResponse);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/deleted")
+  public ResponseEntity<PageResponseDto<BrandResponse>> listSoftDeleted(
+      @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
+
+      @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
+
+      @RequestParam(required = false) @Nullable final String sortBy,
+
+      @RequestParam(
+          defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
+    final var request = new PageRequestDto(page, size, sortBy, direction);
+    final var views = listSoftDeletedUseCase.listSoftDeleted(request);
+
+    final var response = views.map(this.mapper::toResponse);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<BrandResponse> findById(@PathVariable final UUID id) {
+    final var view = this.findUseCase.findById(this.mapper.toBrandId(id));
+
+    final var response = this.mapper.toResponse(view);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/deleted/{id}")
+  public ResponseEntity<BrandResponse> findSoftDeletedById(@PathVariable final UUID id) {
+    final var view = this.findSoftDeletedUseCase.findSoftDeletedById(this.mapper.toBrandId(id));
+
+    final var response = this.mapper.toResponse(view);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/{id}/logo")
+  public ResponseEntity<BrandLogoResponse> findLogoById(@PathVariable final UUID id) {
+    final var view = this.findLogoUseCase.findLogoById(this.mapper.toBrandId(id));
+
+    final var response = this.mapper.toLogoResponse(view);
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/{id}/exists")
+  public ResponseEntity<Void> existsById(@PathVariable final UUID id) {
+    final var existed = this.checkExistsUseCase.existsById(this.mapper.toBrandId(id));
+    if (!existed) {
+      return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/deleted")
-    public ResponseEntity<PageResponseDto<BrandResponse>> listSoftDeleted(
-            @RequestParam(
-                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
-            final int page,
+    return ResponseEntity.noContent().build();
+  }
 
-            @RequestParam(
-                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
-            final int size,
+  @PostMapping
+  public ResponseEntity<BrandResponse> create(
+      @RequestBody @Valid final CreateBrandRequest request) {
+    final var command = this.mapper.toCreateCommand(request);
+    final var view = this.createUseCase.create(command);
 
-            @RequestParam(
-                    required = false)
-            @Nullable
-            final String sortBy,
+    final var response = this.mapper.toResponse(view);
+    final var location = WebMvcLinkBuilder
+        .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
 
-            @RequestParam(
-                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
-            final PageRequestDto.Direction direction) {
-        final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = listSoftDeletedUseCase.listSoftDeleted(request);
+    return ResponseEntity.created(location).body(response);
+  }
 
-        final var response = views.map(this.mapper::toResponse);
-        return ResponseEntity.ok(response);
-    }
+  @PostMapping("/{id}/restore")
+  public ResponseEntity<Void> restore(@PathVariable final UUID id,
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BrandResponse> findById(
-            @PathVariable
-            final UUID id) {
-        final var view = this.findUseCase.findById(this.mapper.toBrandId(id));
+      @RequestParam final long version) {
+    final var command = this.mapper.toRestoreCommand(id, version);
+    this.restoreUseCase.restore(command);
 
-        final var response = this.mapper.toResponse(view);
-        return ResponseEntity.ok(response);
-    }
+    return ResponseEntity.noContent().build();
+  }
 
-    @GetMapping("/deleted/{id}")
-    public ResponseEntity<BrandResponse> findSoftDeletedById(
-            @PathVariable
-            final UUID id) {
-        final var view = this.findSoftDeletedUseCase
-                .findSoftDeletedById(this.mapper.toBrandId(id));
+  @PatchMapping("/{id}/info")
+  public ResponseEntity<BrandResponse> updateInfo(@PathVariable final UUID id,
 
-        final var response = this.mapper.toResponse(view);
-        return ResponseEntity.ok(response);
-    }
+      @RequestBody @Valid final UpdateBrandInfoRequest request) {
+    final var command = this.mapper.toUpdateInfoCommand(id, request);
+    final var view = this.updateInfoUseCase.updateInfo(command);
 
-    @GetMapping("/{id}/logo")
-    public ResponseEntity<BrandLogoResponse> findLogoById(
-            @PathVariable
-            final UUID id) {
-        final var view = this.findLogoUseCase.findLogoById(this.mapper.toBrandId(id));
+    final var response = this.mapper.toResponse(view);
+    return ResponseEntity.ok(response);
+  }
 
-        final var response = this.mapper.toLogoResponse(view);
-        return ResponseEntity.ok(response);
-    }
+  @PatchMapping("/{id}/logo")
+  public ResponseEntity<BrandLogoResponse> updateLogo(@PathVariable final UUID id,
 
-    @GetMapping("/{id}/exists")
-    public ResponseEntity<Void> existsById(
-            @PathVariable
-            final UUID id) {
-        final var existed = this.checkExistsUseCase.existsById(this.mapper.toBrandId(id));
-        if (!existed) {
-            return ResponseEntity.notFound().build();
-        }
+      @RequestBody @Valid final UpdateBrandLogoRequest request) {
+    final var command = this.mapper.toUpdateLogoCommand(id, request);
+    final var view = this.updateLogoUseCase.updateLogo(command);
 
-        return ResponseEntity.noContent().build();
-    }
+    final var response = this.mapper.toLogoResponse(view);
+    return ResponseEntity.ok(response);
+  }
 
-    @PostMapping
-    public ResponseEntity<BrandResponse> create(
-            @RequestBody
-            @Valid
-            final CreateBrandRequest request) {
-        final var command = this.mapper.toCreateCommand(request);
-        final var view = this.createUseCase.create(command);
+  @DeleteMapping("/{id}/logo")
+  public ResponseEntity<BrandLogoResponse> deleteLogoById(@PathVariable final UUID id,
 
-        final var response = this.mapper.toResponse(view);
-        final var location = WebMvcLinkBuilder
-                .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id()))
-                .toUri();
+      @RequestParam final long version) {
+    final var command = this.mapper.toDeleteLogoCommand(id, version);
+    final var view = this.deleteLogoUseCase.deleteLogo(command);
 
-        return ResponseEntity.created(location).body(response);
-    }
+    final var response = this.mapper.toLogoResponse(view);
+    return ResponseEntity.ok(response);
+  }
 
-    @PostMapping("/{id}/restore")
-    public ResponseEntity<Void> restore(
-            @PathVariable
-            final UUID id,
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> softDeleteById(@PathVariable final UUID id,
 
-            @RequestParam
-            final long version) {
-        final var command = this.mapper.toRestoreCommand(id, version);
-        this.restoreUseCase.restore(command);
+      @RequestParam final long version) {
+    final var command = this.mapper.toSoftDeleteCommand(id, version);
+    this.softDeleteUseCase.delete(command);
 
-        return ResponseEntity.noContent().build();
-    }
+    return ResponseEntity.noContent().build();
+  }
 
-    @PatchMapping("/{id}/info")
-    public ResponseEntity<BrandResponse> updateInfo(
-            @PathVariable
-            final UUID id,
+  @DeleteMapping("/{id}/purge")
+  public ResponseEntity<Void> hardDeleteById(@PathVariable final UUID id,
 
-            @RequestBody
-            @Valid
-            final UpdateBrandInfoRequest request) {
-        final var command = this.mapper.toUpdateInfoCommand(id, request);
-        final var view = this.updateInfoUseCase.updateInfo(command);
+      @RequestParam final long version) {
+    final var command = this.mapper.toHardDeleteCommand(id, version);
+    this.hardDeleteUseCase.purge(command);
 
-        final var response = this.mapper.toResponse(view);
-        return ResponseEntity.ok(response);
-    }
-
-    @PatchMapping("/{id}/logo")
-    public ResponseEntity<BrandLogoResponse> updateLogo(
-            @PathVariable
-            final UUID id,
-
-            @RequestBody
-            @Valid
-            final UpdateBrandLogoRequest request) {
-        final var command = this.mapper.toUpdateLogoCommand(id, request);
-        final var view = this.updateLogoUseCase.updateLogo(command);
-
-        final var response = this.mapper.toLogoResponse(view);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{id}/logo")
-    public ResponseEntity<BrandLogoResponse> deleteLogoById(
-            @PathVariable
-            final UUID id,
-
-            @RequestParam
-            final long version) {
-        final var command = this.mapper.toDeleteLogoCommand(id, version);
-        final var view = this.deleteLogoUseCase.deleteLogo(command);
-
-        final var response = this.mapper.toLogoResponse(view);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> softDeleteById(
-            @PathVariable
-            final UUID id,
-
-            @RequestParam
-            final long version) {
-        final var command = this.mapper.toSoftDeleteCommand(id, version);
-        this.softDeleteUseCase.delete(command);
-
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{id}/purge")
-    public ResponseEntity<Void> hardDeleteById(
-            @PathVariable
-            final UUID id,
-
-            @RequestParam
-            final long version) {
-        final var command = this.mapper.toHardDeleteCommand(id, version);
-        this.hardDeleteUseCase.purge(command);
-
-        return ResponseEntity.noContent().build();
-    }
+    return ResponseEntity.noContent().build();
+  }
 }

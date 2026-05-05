@@ -18,17 +18,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection="product_deleted_document")
+@Document(collection = "product_deleted_document")
 public class ProductDeletedDocument {
-    @Id
-    private UUID eventId;
-    private UUID productId;
-    private String eventStatus;
-    private Integer retryCount; 
-    private Instant createdAt;
-    @Nullable
-    private Instant updatedAt; 
-    @Nullable
-    private String lastError;
-    
+  @Id
+  private UUID eventId;
+  private UUID productId;
+  private String eventStatus;
+  private Integer retryCount;
+  private Instant createdAt;
+  @Nullable
+  private Instant updatedAt;
+  @Nullable
+  private String lastError;
+
 }

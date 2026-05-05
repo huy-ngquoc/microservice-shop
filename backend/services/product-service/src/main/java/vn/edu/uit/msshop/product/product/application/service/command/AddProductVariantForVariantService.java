@@ -12,41 +12,28 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadPr
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
-import vn.edu.uit.msshop.product.shared.event.repository.VariantUpdateRepository;
 
 @Service
 @RequiredArgsConstructor
-public class AddProductVariantForVariantService
-        implements AddProductVariantForVariantUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
-    private final PublishProductEventPort eventPort;
-    private final VariantUpdateRepository variantUpdateRepo;
-    private final vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEventPort publishProductEventPort;
+public class AddProductVariantForVariantService implements AddProductVariantForVariantUseCase {
+  private final LoadProductPort loadPort;
+  private final UpdateProductPort updatePort;
+  private final PublishProductEventPort eventPort;
 
-    @Override
-    @Transactional
-    public void addVariant(
-            final AddProductVariantForVariantCommand command) {
-        final var productId = command.id();
-        final var product = this.loadPort.loadById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
+  @Override
+  @Transactional
+  public void addVariant(final AddProductVariantForVariantCommand command) {
+    final var productId = command.id();
+    final var product = this.loadPort.loadById(productId)
+        .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var newConfiguration = product.getConfiguration()
-                .addVariant(command.variant());
+    final var newConfiguration = product.getConfiguration().addVariant(command.variant());
 
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                newConfiguration,
-                product.getImageKeys(),
-                product.getVersion(),
-                product.getDeletionTime());
+    final var next = new Product(product.getId(), product.getName(), product.getCategoryId(),
+        product.getBrandId(), newConfiguration, product.getImageKeys(), product.getVersion(),
+        product.getDeletionTime());
 
-        final var saved = this.updatePort.update(next);
-        
-        this.eventPort.publish(new ProductUpdated(saved.getId()));
-    }
+    final var saved = this.updatePort.update(next);
+    this.eventPort.publish(new ProductUpdated(saved.getId()));
+  }
 }

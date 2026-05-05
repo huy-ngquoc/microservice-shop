@@ -6,8 +6,4 @@ import java.util.UUID;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record FindVariantsByIdsRequest(
-        @Size(
-                max = 100)
-        Set<@NotNull UUID> ids) {
-}
+public record FindVariantsByIdsRequest(@Size(max=100)Set<@NotNull UUID>ids){}

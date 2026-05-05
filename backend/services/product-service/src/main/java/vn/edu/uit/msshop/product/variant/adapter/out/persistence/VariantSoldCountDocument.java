@@ -13,39 +13,32 @@ import lombok.experimental.FieldNameConstants;
 
 @Document("VariantSoldCounts")
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public final class VariantSoldCountDocument {
-    @Id
-    @EqualsAndHashCode.Include
-    private final UUID variantId;
+  @Id
+  @EqualsAndHashCode.Include
+  private final UUID variantId;
 
-    private final UUID productId;
+  private final UUID productId;
 
-    private final int value;
+  private final int value;
 
-    private final Instant lastUpdatedTime;
+  private final Instant lastUpdatedTime;
 
-    public VariantSoldCountDocument(
-            final UUID variantId,
-            final UUID productId,
-            final int value) {
-        this.variantId = variantId;
-        this.productId = productId;
-        this.value = value;
-        this.lastUpdatedTime = Instant.now();
-    }
+  public VariantSoldCountDocument(final UUID variantId, final UUID productId, final int value) {
+    this.variantId = variantId;
+    this.productId = productId;
+    this.value = value;
+    this.lastUpdatedTime = Instant.now();
+  }
 
-    @PersistenceCreator
-    VariantSoldCountDocument(
-            final UUID variantId,
-            final UUID productId,
-            final int value,
-            final Instant lastUpdatedTime) {
-        this.variantId = variantId;
-        this.productId = productId;
-        this.value = value;
-        this.lastUpdatedTime = lastUpdatedTime;
-    }
+  @PersistenceCreator
+  VariantSoldCountDocument(final UUID variantId, final UUID productId, final int value,
+      final Instant lastUpdatedTime) {
+    this.variantId = variantId;
+    this.productId = productId;
+    this.value = value;
+    this.lastUpdatedTime = lastUpdatedTime;
+  }
 }

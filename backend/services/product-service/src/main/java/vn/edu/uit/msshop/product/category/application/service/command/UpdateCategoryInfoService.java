@@ -16,61 +16,53 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.Updat
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
-import vn.edu.uit.msshop.product.shared.application.dto.Change;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.dto.Change;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
-    private final LoadCategoryPort loadPort;
-    private final UpdateCategoryPort updatePort;
-    private final CategoryViewMapper mapper;
-    private final PublishCategoryEventPort eventPort;
+  private final LoadCategoryPort loadPort;
+  private final UpdateCategoryPort updatePort;
+  private final CategoryViewMapper mapper;
+  private final PublishCategoryEventPort eventPort;
 
-    @Override
-    @Transactional
-    public CategoryView updateInfo(
-            final UpdateCategoryInfoCommand command) {
-        final var categoryId = command.id();
-        final var category = this.loadPort.loadById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+  @Override
+  @Transactional
+  public CategoryView updateInfo(final UpdateCategoryInfoCommand command) {
+    final var categoryId = command.id();
+    final var category = this.loadPort.loadById(categoryId)
+        .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var nameSet = command.name().getSet();
-        if (nameSet == null) {
-            return this.mapper.toView(category);
-        }
-
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = category.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
-
-        final var next = UpdateCategoryInfoService.applyChanges(category, nameSet);
-        if (next == null) {
-            return this.mapper.toView(category);
-        }
-
-        final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new CategoryUpdated(saved.getId()));
-
-        return this.mapper.toView(saved);
+    final var nameSet = command.name().getSet();
+    if (nameSet == null) {
+      return this.mapper.toView(category);
     }
 
-    private static @Nullable Category applyChanges(
-            final Category current,
-            final Change.Set<CategoryName> nameSet) {
-        if (nameSet.value().equals(current.getName())) {
-            return null;
-        }
-
-        return new Category(
-                current.getId(),
-                nameSet.value(),
-                current.getImageKey(),
-                current.getVersion(),
-                current.getDeletionTime());
+    final var expectedVersion = command.expectedVersion();
+    final var currentVersion = category.getVersion();
+    if (!expectedVersion.equals(currentVersion)) {
+      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
     }
+
+    final var next = UpdateCategoryInfoService.applyChanges(category, nameSet);
+    if (next == null) {
+      return this.mapper.toView(category);
+    }
+
+    final var saved = this.updatePort.update(next);
+    this.eventPort.publish(new CategoryUpdated(saved.getId()));
+
+    return this.mapper.toView(saved);
+  }
+
+  private static @Nullable Category applyChanges(final Category current,
+      final Change.Set<CategoryName> nameSet) {
+    if (nameSet.value().equals(current.getName())) {
+      return null;
+    }
+
+    return new Category(current.getId(), nameSet.value(), current.getImageKey(),
+        current.getVersion(), current.getDeletionTime());
+  }
 }

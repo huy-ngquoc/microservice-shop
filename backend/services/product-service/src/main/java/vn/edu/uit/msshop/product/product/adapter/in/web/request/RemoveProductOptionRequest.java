@@ -4,10 +4,6 @@ import org.jspecify.annotations.Nullable;
 
 import jakarta.validation.constraints.NotNull;
 
-public record RemoveProductOptionRequest(
-        @Nullable
-        Long defaultPrice,
+public record RemoveProductOptionRequest(@Nullable Long defaultPrice,
 
-        @NotNull
-        Long expectedVersion) {
-}
+@NotNull Long expectedVersion){}

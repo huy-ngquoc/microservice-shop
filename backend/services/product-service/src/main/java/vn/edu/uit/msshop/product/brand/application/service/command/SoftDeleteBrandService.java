@@ -14,46 +14,38 @@ import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBran
 import vn.edu.uit.msshop.product.brand.domain.event.BrandSoftDeleted;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandDeletionTime;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class SoftDeleteBrandService implements SoftDeleteBrandUseCase {
-    private final LoadBrandPort loadPort;
-    private final UpdateBrandPort updatePort;
-    private final CheckBrandHasProductsPort checkHasProductsPort;
-    private final PublishBrandEventPort eventPort;
+  private final LoadBrandPort loadPort;
+  private final UpdateBrandPort updatePort;
+  private final CheckBrandHasProductsPort checkHasProductsPort;
+  private final PublishBrandEventPort eventPort;
 
-    @Override
-    @Transactional
-    public void delete(
-            SoftDeleteBrandCommand command) {
-        final var brandId = command.id();
-        final var brand = this.loadPort.loadById(brandId)
-                .orElseThrow(() -> new BrandNotFoundException(brandId));
+  @Override
+  @Transactional
+  public void delete(SoftDeleteBrandCommand command) {
+    final var brandId = command.id();
+    final var brand =
+        this.loadPort.loadById(brandId).orElseThrow(() -> new BrandNotFoundException(brandId));
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = brand.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
-
-        if (this.checkHasProductsPort.hasProducts(brandId)) {
-            throw new BusinessRuleException(
-                    "Cannot delete brand with existing products");
-        }
-
-        final var next = new Brand(
-                brand.getId(),
-                brand.getName(),
-                brand.getLogoKey(),
-                brand.getVersion(),
-                BrandDeletionTime.now());
-
-        final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new BrandSoftDeleted(saved.getId()));
+    final var expectedVersion = command.expectedVersion();
+    final var currentVersion = brand.getVersion();
+    if (!expectedVersion.equals(currentVersion)) {
+      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
     }
+
+    if (this.checkHasProductsPort.hasProducts(brandId)) {
+      throw new BusinessRuleException("Cannot delete brand with existing products");
+    }
+
+    final var next = new Brand(brand.getId(), brand.getName(), brand.getLogoKey(),
+        brand.getVersion(), BrandDeletionTime.now());
+
+    final var saved = this.updatePort.update(next);
+    this.eventPort.publish(new BrandSoftDeleted(saved.getId()));
+  }
 }

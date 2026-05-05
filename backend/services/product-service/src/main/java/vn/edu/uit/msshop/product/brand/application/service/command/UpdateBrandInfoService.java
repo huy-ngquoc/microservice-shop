@@ -16,60 +16,51 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBr
 import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
-import vn.edu.uit.msshop.product.shared.application.dto.Change;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.dto.Change;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
-    private final LoadBrandPort loadPort;
-    private final UpdateBrandPort updatePort;
-    private final BrandViewMapper mapper;
-    private final PublishBrandEventPort eventPort;
+  private final LoadBrandPort loadPort;
+  private final UpdateBrandPort updatePort;
+  private final BrandViewMapper mapper;
+  private final PublishBrandEventPort eventPort;
 
-    @Override
-    @Transactional
-    public BrandView updateInfo(
-            final UpdateBrandInfoCommand command) {
-        final var brand = this.loadPort.loadById(command.id())
-                .orElseThrow(() -> new BrandNotFoundException(command.id()));
+  @Override
+  @Transactional
+  public BrandView updateInfo(final UpdateBrandInfoCommand command) {
+    final var brand = this.loadPort.loadById(command.id())
+        .orElseThrow(() -> new BrandNotFoundException(command.id()));
 
-        final var nameSet = command.name().getSet();
-        if (nameSet == null) {
-            return this.mapper.toView(brand);
-        }
-
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = brand.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
-
-        final var next = this.applyChanges(brand, nameSet);
-        if (next == null) {
-            return this.mapper.toView(brand);
-        }
-
-        final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new BrandUpdated(saved.getId()));
-
-        return this.mapper.toView(saved);
+    final var nameSet = command.name().getSet();
+    if (nameSet == null) {
+      return this.mapper.toView(brand);
     }
 
-    private @Nullable Brand applyChanges(
-            final Brand current,
-            final Change.Set<BrandName> nameSet) {
-        if (nameSet.value().equals(current.getName())) {
-            return null;
-        }
-
-        return new Brand(
-                current.getId(),
-                nameSet.value(),
-                current.getLogoKey(),
-                current.getVersion(),
-                current.getDeletionTime());
+    final var expectedVersion = command.expectedVersion();
+    final var currentVersion = brand.getVersion();
+    if (!expectedVersion.equals(currentVersion)) {
+      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
     }
+
+    final var next = this.applyChanges(brand, nameSet);
+    if (next == null) {
+      return this.mapper.toView(brand);
+    }
+
+    final var saved = this.updatePort.update(next);
+    this.eventPort.publish(new BrandUpdated(saved.getId()));
+
+    return this.mapper.toView(saved);
+  }
+
+  private @Nullable Brand applyChanges(final Brand current, final Change.Set<BrandName> nameSet) {
+    if (nameSet.value().equals(current.getName())) {
+      return null;
+    }
+
+    return new Brand(current.getId(), nameSet.value(), current.getLogoKey(), current.getVersion(),
+        current.getDeletionTime());
+  }
 }

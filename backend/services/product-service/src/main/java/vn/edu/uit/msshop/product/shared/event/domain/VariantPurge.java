@@ -12,6 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class VariantPurge {
-    private UUID eventId;
-    private UUID variantId;
+  private UUID eventId;
+  private UUID variantId;
 }

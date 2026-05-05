@@ -8,21 +8,15 @@ import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
 
 public interface PublishVariantEventPort {
-    void publish(
-            final VariantCreated event);
+  void publish(final VariantCreated event);
 
-    void publish(
-            final VariantUpdated event);
+  void publish(final VariantUpdated event);
 
-    void publish(
-            final VariantImageUpdated event);
+  void publish(final VariantImageUpdated event);
 
-    void publish(
-            final VariantSoftDeleted event);
+  void publish(final VariantSoftDeleted event);
 
-    void publish(
-            final VariantRestored event);
+  void publish(final VariantRestored event);
 
-    void publish(
-            final VariantPurged event);
+  void publish(final VariantPurged event);
 }

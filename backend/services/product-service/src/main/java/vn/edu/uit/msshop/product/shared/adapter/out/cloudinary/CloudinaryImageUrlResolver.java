@@ -10,15 +10,12 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class CloudinaryImageUrlResolver {
-    private final Cloudinary cloudinary;
+  private final Cloudinary cloudinary;
 
-    public @Nullable String resolve(
-            @Nullable
-            String key,
-            String folder) {
-        if (key == null) {
-            return null;
-        }
-        return this.cloudinary.url().generate(folder + "/" + key);
+  public @Nullable String resolve(@Nullable String key, String folder) {
+    if (key == null) {
+      return null;
     }
+    return this.cloudinary.url().generate(folder + "/" + key);
+  }
 }

@@ -12,26 +12,23 @@ import vn.edu.uit.msshop.product.variant.application.dto.integration.VariantInte
 
 @Configuration
 public class KafkaVariantConfig {
-    public static final String TOPIC_NAME = "variant-topic";
+  public static final String TOPIC_NAME = "variant-topic";
 
-    private static final int VARIANT_TOPIC_PARTITION_COUNT = 3;
-    private static final int VARIANT_TOPIC_REPLICATION_FACTOR = 1;
+  private static final int VARIANT_TOPIC_PARTITION_COUNT = 3;
+  private static final int VARIANT_TOPIC_REPLICATION_FACTOR = 1;
 
-    @Bean
-    KafkaTemplate<String, VariantIntegrationEvent> kafkaTemplate(
-            ProducerFactory<String, VariantIntegrationEvent> producerFactory,
-            VariantKafkaProducerListener listener) {
-        final var template = new KafkaTemplate<String, VariantIntegrationEvent>(producerFactory);
-        template.setProducerListener(listener);
-        return template;
-    }
-    
+  @Bean
+  KafkaTemplate<String, VariantIntegrationEvent> kafkaTemplate(
+      ProducerFactory<String, VariantIntegrationEvent> producerFactory,
+      VariantKafkaProducerListener listener) {
+    final var template = new KafkaTemplate<String, VariantIntegrationEvent>(producerFactory);
+    template.setProducerListener(listener);
+    return template;
+  }
 
-    @Bean
-    NewTopic variantTopic() {
-        return TopicBuilder.name(TOPIC_NAME)
-                .partitions(VARIANT_TOPIC_PARTITION_COUNT)
-                .replicas(VARIANT_TOPIC_REPLICATION_FACTOR)
-                .build();
-    }
+  @Bean
+  NewTopic variantTopic() {
+    return TopicBuilder.name(TOPIC_NAME).partitions(VARIANT_TOPIC_PARTITION_COUNT)
+        .replicas(VARIANT_TOPIC_REPLICATION_FACTOR).build();
+  }
 }

@@ -26,100 +26,64 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 
 @Component
 public class ProductPersistenceMapper {
-    public Product toDomain(
-            final ProductDocument entity) {
-        final var id = new ProductId(entity.getId());
+  public Product toDomain(final ProductDocument entity) {
+    final var id = new ProductId(entity.getId());
 
-        final var name = new ProductName(entity.getName());
-        final var categoryId = new ProductCategoryId(entity.getCategoryId());
-        final var brandId = new ProductBrandId(entity.getBrandId());
+    final var name = new ProductName(entity.getName());
+    final var categoryId = new ProductCategoryId(entity.getCategoryId());
+    final var brandId = new ProductBrandId(entity.getBrandId());
 
-        final var options = ProductOptions.of(entity.getOptions());
+    final var options = ProductOptions.of(entity.getOptions());
 
-        final var variantsList = entity.getVariants().stream().map(this::toDomain).toList();
-        final var variants = new ProductVariants(variantsList);
+    final var variantsList = entity.getVariants().stream().map(this::toDomain).toList();
+    final var variants = new ProductVariants(variantsList);
 
-        final var configuration = new ProductConfiguration(
-                options,
-                variants);
+    final var configuration = new ProductConfiguration(options, variants);
 
-        final var imageKeys = ProductImageKeys.of(entity.getImageKeys());
+    final var imageKeys = ProductImageKeys.of(entity.getImageKeys());
 
-        final var versionValue = Objects.requireNonNull(
-                entity.getVersion(),
-                "Persisted product must have a version");
-        final var version = new ProductVersion(versionValue);
-        final var deletionTime = ProductDeletionTime.ofNullable(entity.getDeletionTime());
+    final var versionValue =
+        Objects.requireNonNull(entity.getVersion(), "Persisted product must have a version");
+    final var version = new ProductVersion(versionValue);
+    final var deletionTime = ProductDeletionTime.ofNullable(entity.getDeletionTime());
 
-        return new Product(
-                id,
-                name,
-                categoryId,
-                brandId,
-                configuration,
-                imageKeys,
-                version,
-                deletionTime);
-    }
+    return new Product(id, name, categoryId, brandId, configuration, imageKeys, version,
+        deletionTime);
+  }
 
-    public ProductVariant toDomain(
-            final ProductVariantDocument entity) {
-        final var id = new ProductVariantId(entity.getId());
-        final var price = new ProductVariantPrice(entity.getPrice());
-        final var traits = ProductVariantTraits.of(entity.getTraits());
+  public ProductVariant toDomain(final ProductVariantDocument entity) {
+    final var id = new ProductVariantId(entity.getId());
+    final var price = new ProductVariantPrice(entity.getPrice());
+    final var traits = ProductVariantTraits.of(entity.getTraits());
 
-        return new ProductVariant(
-                id,
-                price,
-                traits);
-    }
+    return new ProductVariant(id, price, traits);
+  }
 
-    public ProductDocument toPersistence(
-            final Product product) {
-        final var priceRange = product.getPriceRange();
-        final var variantDocs = product.getVariants().values().stream()
-                .map(ProductPersistenceMapper::toPersistence)
-                .toList();
+  public ProductDocument toPersistence(final Product product) {
+    final var priceRange = product.getPriceRange();
+    final var variantDocs = product.getVariants().values().stream()
+        .map(ProductPersistenceMapper::toPersistence).toList();
 
-        return new ProductDocument(
-                product.getId().value(),
-                product.getName().value(),
-                product.getCategoryId().value(),
-                product.getBrandId().value(),
-                priceRange.minPrice().value(),
-                priceRange.maxPrice().value(),
-                product.getOptions().unwrap(),
-                variantDocs,
-                product.getImageKeys().unwrap(),
-                product.getVersion().value(),
-                ProductDeletionTime.unwrap(product.getDeletionTime()));
-    }
+    return new ProductDocument(product.getId().value(), product.getName().value(),
+        product.getCategoryId().value(), product.getBrandId().value(),
+        priceRange.minPrice().value(), priceRange.maxPrice().value(), product.getOptions().unwrap(),
+        variantDocs, product.getImageKeys().unwrap(), product.getVersion().value(),
+        ProductDeletionTime.unwrap(product.getDeletionTime()));
+  }
 
-    public ProductDocument toPersistence(
-            final NewProduct newProduct) {
-        final var priceRange = newProduct.getVariants().getPriceRange();
-        final var variantDocs = newProduct.getVariants().values()
-                .stream().map(ProductPersistenceMapper::toPersistence).toList();
+  public ProductDocument toPersistence(final NewProduct newProduct) {
+    final var priceRange = newProduct.getVariants().getPriceRange();
+    final var variantDocs = newProduct.getVariants().values().stream()
+        .map(ProductPersistenceMapper::toPersistence).toList();
 
-        return new ProductDocument(
-                newProduct.getId().value(),
-                newProduct.getName().value(),
-                newProduct.getCategoryId().value(),
-                newProduct.getBrandId().value(),
-                priceRange.minPrice().value(),
-                priceRange.maxPrice().value(),
-                newProduct.getOptions().unwrap(),
-                variantDocs,
-                List.of(),
-                null,
-                null);
-    }
+    return new ProductDocument(newProduct.getId().value(), newProduct.getName().value(),
+        newProduct.getCategoryId().value(), newProduct.getBrandId().value(),
+        priceRange.minPrice().value(), priceRange.maxPrice().value(),
+        newProduct.getOptions().unwrap(), variantDocs, List.of(), null, null);
+  }
 
-    private static ProductVariantDocument toPersistence(
-            final ProductVariant variant) {
-        return new ProductVariantDocument(
-                variant.id().value(),
-                variant.price().value(),
-                variant.traits().unwrap());
-    }
+  private static ProductVariantDocument toPersistence(final ProductVariant variant) {
+    return new ProductVariantDocument(variant.id().value(), variant.price().value(),
+        variant.traits().unwrap());
+  }
 }

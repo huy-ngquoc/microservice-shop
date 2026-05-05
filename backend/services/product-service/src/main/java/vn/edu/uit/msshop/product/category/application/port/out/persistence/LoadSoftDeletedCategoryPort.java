@@ -6,6 +6,5 @@ import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 public interface LoadSoftDeletedCategoryPort {
-    Optional<Category> loadSoftDeletedById(
-            final CategoryId id);
+  Optional<Category> loadSoftDeletedById(final CategoryId id);
 }

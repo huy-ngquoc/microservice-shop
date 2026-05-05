@@ -24,93 +24,81 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCou
 
 @Service
 @RequiredArgsConstructor
-public class SetAllVariantSoldCountsService
-        implements SetAllVariantSoldCountsUseCase {
-    private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
-    private final UpdateAllVariantSoldCountsPort updateAllSoldCountsPort;
-    private final IncreaseProductSoldCountsPort increaseProductSoldCountsPort;
-    private final DecreaseProductSoldCountsPort decreaseProductSoldCountsPort;
+public class SetAllVariantSoldCountsService implements SetAllVariantSoldCountsUseCase {
+  private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
+  private final UpdateAllVariantSoldCountsPort updateAllSoldCountsPort;
+  private final IncreaseProductSoldCountsPort increaseProductSoldCountsPort;
+  private final DecreaseProductSoldCountsPort decreaseProductSoldCountsPort;
 
-    @Override
-    @Transactional
-    public void execute(
-            final Collection<VariantOrderSoldCount> orderSoldCounts) {
-        if (orderSoldCounts.isEmpty()) {
-            return;
-        }
-
-        final var resolved = this.resolve(orderSoldCounts);
-        this.persistUpdates(resolved);
-        this.propagateDeltas(resolved);
+  @Override
+  @Transactional
+  public void execute(final Collection<VariantOrderSoldCount> orderSoldCounts) {
+    if (orderSoldCounts.isEmpty()) {
+      return;
     }
 
-    private List<ResolvedSoldCount> resolve(
-            final Collection<VariantOrderSoldCount> orderSoldCounts) {
-        final var variantIds = orderSoldCounts.stream()
-                .map(VariantOrderSoldCount::variantId)
-                .collect(Collectors.toUnmodifiableSet());
-        final var currentByVariantId = this.loadAllSoldCountsPort.loadAllByIds(variantIds);
+    final var resolved = this.resolve(orderSoldCounts);
+    this.persistUpdates(resolved);
+    this.propagateDeltas(resolved);
+  }
 
-        return orderSoldCounts.stream()
-                .map(order -> SetAllVariantSoldCountsService.resolveOne(order, currentByVariantId))
-                .toList();
+  private List<ResolvedSoldCount> resolve(final Collection<VariantOrderSoldCount> orderSoldCounts) {
+    final var variantIds = orderSoldCounts.stream().map(VariantOrderSoldCount::variantId)
+        .collect(Collectors.toUnmodifiableSet());
+    final var currentByVariantId = this.loadAllSoldCountsPort.loadAllByIds(variantIds);
+
+    return orderSoldCounts.stream()
+        .map(order -> SetAllVariantSoldCountsService.resolveOne(order, currentByVariantId))
+        .toList();
+  }
+
+  private static ResolvedSoldCount resolveOne(final VariantOrderSoldCount order,
+      final Map<VariantId, VariantSoldCount> currentByVariantId) {
+    final var current = currentByVariantId.get(order.variantId());
+    if (current == null) {
+      throw new VariantNotFoundException(order.variantId());
+    }
+    return new ResolvedSoldCount(current, order.value());
+  }
+
+  private void persistUpdates(final List<ResolvedSoldCount> resolved) {
+    final var updated = resolved.stream().map(ResolvedSoldCount::toUpdated).toList();
+    this.updateAllSoldCountsPort.updateAll(updated);
+  }
+
+  private void propagateDeltas(final List<ResolvedSoldCount> resolved) {
+    final var deltas = SetAllVariantSoldCountsService.toDeltasByProductId(resolved);
+
+    if (!deltas.increments().isEmpty()) {
+      this.increaseProductSoldCountsPort.increaseAllSoldCounts(deltas.increments());
+    }
+    if (!deltas.decrements().isEmpty()) {
+      this.decreaseProductSoldCountsPort.decreaseAllSoldCounts(deltas.decrements());
+    }
+  }
+
+  private static DeltasByProductId toDeltasByProductId(final List<ResolvedSoldCount> resolved) {
+    final var incrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
+    final var decrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
+
+    for (final var item : resolved) {
+      final var delta = item.delta();
+      if (delta == 0) {
+        continue;
+      }
+
+      final var productId = item.current().getProductId();
+      if (delta > 0) {
+        incrementByProductId.merge(productId, delta, Integer::sum);
+      } else {
+        decrementByProductId.merge(productId, -delta, Integer::sum);
+      }
     }
 
-    private static ResolvedSoldCount resolveOne(
-            final VariantOrderSoldCount order,
-            final Map<VariantId, VariantSoldCount> currentByVariantId) {
-        final var current = currentByVariantId.get(order.variantId());
-        if (current == null) {
-            throw new VariantNotFoundException(order.variantId());
-        }
-        return new ResolvedSoldCount(current, order.value());
-    }
+    return new DeltasByProductId(incrementByProductId, decrementByProductId);
+  }
 
-    private void persistUpdates(
-            final List<ResolvedSoldCount> resolved) {
-        final var updated = resolved.stream()
-                .map(ResolvedSoldCount::toUpdated)
-                .toList();
-        this.updateAllSoldCountsPort.updateAll(updated);
-    }
-
-    private void propagateDeltas(
-            final List<ResolvedSoldCount> resolved) {
-        final var deltas = SetAllVariantSoldCountsService.toDeltasByProductId(resolved);
-
-        if (!deltas.increments().isEmpty()) {
-            this.increaseProductSoldCountsPort.increaseAllSoldCounts(deltas.increments());
-        }
-        if (!deltas.decrements().isEmpty()) {
-            this.decreaseProductSoldCountsPort.decreaseAllSoldCounts(deltas.decrements());
-        }
-    }
-
-    private static DeltasByProductId toDeltasByProductId(
-            final List<ResolvedSoldCount> resolved) {
-        final var incrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
-        final var decrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
-
-        for (final var item : resolved) {
-            final var delta = item.delta();
-            if (delta == 0) {
-                continue;
-            }
-
-            final var productId = item.current().getProductId();
-            if (delta > 0) {
-                incrementByProductId.merge(productId, delta, Integer::sum);
-            } else {
-                decrementByProductId.merge(productId, -delta, Integer::sum);
-            }
-        }
-
-        return new DeltasByProductId(
-                incrementByProductId,
-                decrementByProductId);
-    }
-
-    private record ResolvedSoldCount(
+  private record ResolvedSoldCount(
             VariantSoldCount current,
             VariantSoldCountValue newValue) {
 
@@ -126,7 +114,7 @@ public class SetAllVariantSoldCountsService
         }
     }
 
-    private record DeltasByProductId(
+  private record DeltasByProductId(
             Map<VariantProductId, Integer> increments,
             Map<VariantProductId, Integer> decrements) {
         DeltasByProductId {

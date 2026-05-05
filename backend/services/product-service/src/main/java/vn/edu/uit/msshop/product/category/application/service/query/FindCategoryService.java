@@ -14,16 +14,13 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 @Service
 @RequiredArgsConstructor
 public class FindCategoryService implements FindCategoryUseCase {
-    private final LoadCategoryPort loadPort;
-    private final CategoryViewMapper mapper;
+  private final LoadCategoryPort loadPort;
+  private final CategoryViewMapper mapper;
 
-    @Override
-    @Transactional(
-            readOnly = true)
-    public CategoryView findById(
-            final CategoryId id) {
-        return this.loadPort.loadById(id)
-                .map(this.mapper::toView)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
-    }
+  @Override
+  @Transactional(readOnly = true)
+  public CategoryView findById(final CategoryId id) {
+    return this.loadPort.loadById(id).map(this.mapper::toView)
+        .orElseThrow(() -> new CategoryNotFoundException(id));
+  }
 }

@@ -10,13 +10,12 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class BrandRestored {
-    @EqualsAndHashCode.Include
-    private final UUID eventId = UUID.randomUUID();
+  @EqualsAndHashCode.Include
+  private final UUID eventId = UUID.randomUUID();
 
-    private final Instant occurrenceTime = Instant.now();
+  private final Instant occurrenceTime = Instant.now();
 
-    private final BrandId brandId;
+  private final BrandId brandId;
 }

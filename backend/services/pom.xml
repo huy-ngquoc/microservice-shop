@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.5</version> 
+        <version>4.0.6</version> 
         <relativePath/> 
     </parent>
     <groupId>vn.edu.uit.msshop</groupId>
@@ -26,6 +26,11 @@
     </developers>
 
     <modules>
+        <module>shared-kernel</module>
+        <module>shared-webmvc</module>
+        <module>shared-spring-data</module>
+        <module>shared-cloudinary</module>
+        
         <module>config-server</module>
         <module>discovery-server</module>
         <module>api-gateway</module>
@@ -45,13 +50,47 @@
     <properties>
         <argLine></argLine>
         <java.version>25</java.version>
+
+        <shared-kernel.version>1.0.0-SNAPSHOT</shared-kernel.version>
+        <shared-webmvc.version>1.0.0-SNAPSHOT</shared-webmvc.version>
+        <shared-spring-data.version>1.0.0-SNAPSHOT</shared-spring-data.version>
+        <shared-cloudinary.version>1.0.0-SNAPSHOT</shared-cloudinary.version>
+
         <spring-cloud.version>2025.1.0</spring-cloud.version>
+        <springdoc-openapi.version>3.0.3</springdoc-openapi.version>
         <nullaway.version>0.13.1</nullaway.version>
         <error-prone.version>2.48.0</error-prone.version>
+        <cloudinary.version>2.3.2</cloudinary.version>
+        <dotenv.version>3.2.0</dotenv.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>vn.edu.uit.msshop</groupId>
+                <artifactId>shared-kernel</artifactId>
+                <version>${shared-kernel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>vn.edu.uit.msshop</groupId>
+                <artifactId>shared-webmvc</artifactId>
+                <version>${shared-webmvc.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>vn.edu.uit.msshop</groupId>
+                <artifactId>shared-spring-data</artifactId>
+                <version>${shared-spring-data.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>vn.edu.uit.msshop</groupId>
+                <artifactId>shared-cloudinary</artifactId>
+                <version>${shared-cloudinary.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -59,6 +98,31 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc-openapi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cloudinary</groupId>
+                <artifactId>cloudinary-http5</artifactId>
+                <version>${cloudinary.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cloudinary</groupId>
+                <artifactId>cloudinary-taglib</artifactId>
+                <version>${cloudinary.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.cdimascio</groupId>
+                <artifactId>dotenv-java</artifactId>
+                <version>${dotenv.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -166,6 +230,23 @@
                         -Duser.timezone=UTC
                     </argLine>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>2.29.0</version>
+                <configuration>
+                    <!-- Đường dẫn đến file java-formatter.xml của ông -->
+                    <configFile>${maven.multiModuleProjectDirectory}/java-formatter.xml</configFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>

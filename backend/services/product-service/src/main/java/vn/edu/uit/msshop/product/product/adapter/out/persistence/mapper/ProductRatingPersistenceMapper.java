@@ -10,16 +10,12 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingA
 
 @Component
 public class ProductRatingPersistenceMapper {
-    public ProductRating toDomain(
-            final ProductRatingDocument entity) {
-        final var id = new ProductId(entity.getId());
+  public ProductRating toDomain(final ProductRatingDocument entity) {
+    final var id = new ProductId(entity.getId());
 
-        final var average = new ProductRatingAverage(entity.getAverage());
-        final var amount = new ProductRatingAmount(entity.getAmount());
+    final var average = new ProductRatingAverage(entity.getAverage());
+    final var amount = new ProductRatingAmount(entity.getAmount());
 
-        return new ProductRating(
-                id,
-                average,
-                amount);
-    }
+    return new ProductRating(id, average, amount);
+  }
 }

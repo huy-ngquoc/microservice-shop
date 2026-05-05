@@ -16,29 +16,21 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 @Service
 @RequiredArgsConstructor
 public class FindSoftDeletedVariantService implements FindSoftDeletedVariantUseCase {
-    private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
-    private final LoadVariantSoldCountPort loadSoldCountPort;
-    private final LoadVariantStockCountPort loadStockCountPort;
-    private final VariantViewMapper mapper;
+  private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
+  private final LoadVariantSoldCountPort loadSoldCountPort;
+  private final LoadVariantStockCountPort loadStockCountPort;
+  private final VariantViewMapper mapper;
 
-    @Override
-    @Transactional(
-            readOnly = true)
-    public VariantView findSoftDeletedById(
-            final VariantId id) {
-        final var variant = this.loadSoftDeletedPort
-                .loadSoftDeletedById(id)
-                .orElseThrow(() -> new VariantNotFoundException(id));
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
-                variant.getId(),
-                variant.getProductId());
-        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
-                variant.getId(),
-                variant.getProductId());
+  @Override
+  @Transactional(readOnly = true)
+  public VariantView findSoftDeletedById(final VariantId id) {
+    final var variant = this.loadSoftDeletedPort.loadSoftDeletedById(id)
+        .orElseThrow(() -> new VariantNotFoundException(id));
+    final var soldCount =
+        this.loadSoldCountPort.loadByIdOrZero(variant.getId(), variant.getProductId());
+    final var stockCount =
+        this.loadStockCountPort.loadByIdOrZero(variant.getId(), variant.getProductId());
 
-        return this.mapper.toView(
-                variant,
-                soldCount,
-                stockCount);
-    }
+    return this.mapper.toView(variant, soldCount, stockCount);
+  }
 }

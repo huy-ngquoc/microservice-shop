@@ -4,7 +4,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
 
 public interface UpdateAllVariantsProductNameForProductPort {
-    void updateProductNameByProductId(
-            final VariantProductId productId,
-            final VariantProductName productName);
+  void updateProductNameByProductId(final VariantProductId productId,
+      final VariantProductName productName);
 }

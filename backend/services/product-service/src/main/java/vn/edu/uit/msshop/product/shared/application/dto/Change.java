@@ -5,38 +5,41 @@ import java.util.Objects;
 import org.jspecify.annotations.Nullable;
 
 // TODO: move this to common package of all services
-public sealed interface Change<T>
-        permits Change.Unchanged, Change.Set {
+public sealed
 
-    static <T> Change<T> unchanged() {
-        return new Unchanged<>();
-    }
+interface Change<T>
+permits Change.Unchanged,Change.Set
+{
 
-    static <T> Change<T> set(
-            final T value) {
-        return new Set<>(Objects.requireNonNull(value));
-    }
+  static <T> Change<T> unchanged() {
+    return new Unchanged<>();
+  }
 
-    default @Nullable Unchanged<T> getUnchanged() {
-        return null;
-    }
+  static <T> Change<T> set(final T value) {
+    return new Set<>(Objects.requireNonNull(value));
+  }
 
-    default @Nullable Set<T> getSet() {
-        return null;
-    }
+  default @Nullable Unchanged<T> getUnchanged() {
+    return null;
+  }
 
-    record Unchanged<T>() implements Change<T> {
-        @Override
+  default @Nullable Set<T> getSet() {
+    return null;
+  }
+
+  record Unchanged<T>()implements Change<T>
+  {
+
+  @Override
         public @Nullable Unchanged<T> getUnchanged() {
             return this;
-        }
-    }
+        }}
 
-    record Set<T>(
-            T value) implements Change<T> {
-        @Override
+  record Set<T>(
+  T value)implements Change<T>{
+
+  @Override
         public @Nullable Set<T> getSet() {
             return this;
         }
-    }
-}
+}}

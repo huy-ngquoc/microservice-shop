@@ -8,21 +8,19 @@ import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.ListBrandsUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListBrandsPort;
-import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
 public class ListBrandsService implements ListBrandsUseCase {
-    private final ListBrandsPort listPort;
-    private final BrandViewMapper viewMapper;
+  private final ListBrandsPort listPort;
+  private final BrandViewMapper viewMapper;
 
-    @Override
-    @Transactional(
-            readOnly = true)
-    public PageResponseDto<BrandView> list(
-            PageRequestDto pageRequest) {
-        final var page = listPort.list(pageRequest);
-        return page.map(this.viewMapper::toView);
-    }
+  @Override
+  @Transactional(readOnly = true)
+  public PageResponseDto<BrandView> list(PageRequestDto pageRequest) {
+    final var page = listPort.list(pageRequest);
+    return page.map(this.viewMapper::toView);
+  }
 }

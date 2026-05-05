@@ -17,39 +17,29 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @Service
 @RequiredArgsConstructor
 public class SoftDeleteVariantsForProductService implements SoftDeleteVariantsForProductUseCase {
-    private final LoadVariantsForProductPort loadForProductPort;
-    private final UpdateAllVariantsPort updateAllPort;
-    private final PublishVariantEventPort eventPort;
+  private final LoadVariantsForProductPort loadForProductPort;
+  private final UpdateAllVariantsPort updateAllPort;
+  private final PublishVariantEventPort eventPort;
 
-    @Override
-    @Transactional
-    public void deleteByProductId(
-            final VariantProductId productId) {
-        final var variants = this.loadForProductPort.loadAllByProductId(productId);
-        if (variants.isEmpty()) {
-            return;
-        }
-
-        final var next = variants.stream()
-                .map(SoftDeleteVariantsForProductService::toSoftDeleted)
-                .toList();
-
-        final var saved = this.updateAllPort.updateAll(next);
-
-        saved.forEach(s -> this.eventPort.publish(new VariantSoftDeleted(s.getId())));
+  @Override
+  @Transactional
+  public void deleteByProductId(final VariantProductId productId) {
+    final var variants = this.loadForProductPort.loadAllByProductId(productId);
+    if (variants.isEmpty()) {
+      return;
     }
 
-    private static Variant toSoftDeleted(
-            final Variant variant) {
-        return new Variant(
-                variant.getId(),
-                variant.getProductId(),
-                variant.getProductName(),
-                variant.getPrice(),
-                variant.getTraits(),
-                variant.getTargets(),
-                variant.getImageKey(),
-                variant.getVersion(),
-                VariantDeletionTime.now());
-    }
+    final var next =
+        variants.stream().map(SoftDeleteVariantsForProductService::toSoftDeleted).toList();
+
+    final var saved = this.updateAllPort.updateAll(next);
+
+    saved.forEach(s -> this.eventPort.publish(new VariantSoftDeleted(s.getId())));
+  }
+
+  private static Variant toSoftDeleted(final Variant variant) {
+    return new Variant(variant.getId(), variant.getProductId(), variant.getProductName(),
+        variant.getPrice(), variant.getTraits(), variant.getTargets(), variant.getImageKey(),
+        variant.getVersion(), VariantDeletionTime.now());
+  }
 }

@@ -13,39 +13,32 @@ import lombok.experimental.FieldNameConstants;
 
 @Document("ProductRatings")
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public final class ProductRatingDocument {
-    @Id
-    @EqualsAndHashCode.Include
-    private final UUID id;
+  @Id
+  @EqualsAndHashCode.Include
+  private final UUID id;
 
-    private final float average;
+  private final float average;
 
-    private final int amount;
+  private final int amount;
 
-    private final Instant lastUpdatedTime;
+  private final Instant lastUpdatedTime;
 
-    public ProductRatingDocument(
-            final UUID id,
-            final float average,
-            final int amount) {
-        this.id = id;
-        this.average = average;
-        this.amount = amount;
-        this.lastUpdatedTime = Instant.now();
-    }
+  public ProductRatingDocument(final UUID id, final float average, final int amount) {
+    this.id = id;
+    this.average = average;
+    this.amount = amount;
+    this.lastUpdatedTime = Instant.now();
+  }
 
-    @PersistenceCreator
-    ProductRatingDocument(
-            final UUID id,
-            final float average,
-            final int amount,
-            final Instant lastUpdatedTime) {
-        this.id = id;
-        this.average = average;
-        this.amount = amount;
-        this.lastUpdatedTime = lastUpdatedTime;
-    }
+  @PersistenceCreator
+  ProductRatingDocument(final UUID id, final float average, final int amount,
+      final Instant lastUpdatedTime) {
+    this.id = id;
+    this.average = average;
+    this.amount = amount;
+    this.lastUpdatedTime = lastUpdatedTime;
+  }
 }

@@ -16,57 +16,51 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadS
 import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryPurged;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class HardDeleteCategoryService implements HardDeleteCategoryUseCase {
-    private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
-    private final CheckCategoryHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
-    private final DeleteCategoryPort deletePort;
-    private final CategoryImageStoragePort imageStoragePort;
-    private final PublishCategoryEventPort eventPort;
+  private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
+  private final CheckCategoryHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
+  private final DeleteCategoryPort deletePort;
+  private final CategoryImageStoragePort imageStoragePort;
+  private final PublishCategoryEventPort eventPort;
 
-    @Override
-    @Transactional
-    public void purge(
-            final HardDeleteCategoryCommand command) {
-        final var categoryId = command.id();
-        final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+  @Override
+  @Transactional
+  public void purge(final HardDeleteCategoryCommand command) {
+    final var categoryId = command.id();
+    final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
+        .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = category.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
-
-        if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(categoryId)) {
-            throw new BusinessRuleException(
-                    "Cannot delete category with existing products");
-        }
-
-        this.deletePort.deleteById(categoryId);
-        this.eventPort.publish(new CategoryPurged(categoryId));
-
-        this.deleteLogo(category.getImageKey());
+    final var expectedVersion = command.expectedVersion();
+    final var currentVersion = category.getVersion();
+    if (!expectedVersion.equals(currentVersion)) {
+      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
     }
 
-    private void deleteLogo(
-            @Nullable
-            final CategoryImageKey key) {
-        if (key == null) {
-            return;
-        }
-
-        try {
-            this.imageStoragePort.deleteImage(key);
-        } catch (final RuntimeException e) {
-            log.warn("Hard delete: failed to delete image '{}', manual cleanup required", key.value(), e);
-        }
+    if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(categoryId)) {
+      throw new BusinessRuleException("Cannot delete category with existing products");
     }
+
+    this.deletePort.deleteById(categoryId);
+    this.eventPort.publish(new CategoryPurged(categoryId));
+
+    this.deleteLogo(category.getImageKey());
+  }
+
+  private void deleteLogo(@Nullable final CategoryImageKey key) {
+    if (key == null) {
+      return;
+    }
+
+    try {
+      this.imageStoragePort.deleteImage(key);
+    } catch (final RuntimeException e) {
+      log.warn("Hard delete: failed to delete image '{}', manual cleanup required", key.value(), e);
+    }
+  }
 }

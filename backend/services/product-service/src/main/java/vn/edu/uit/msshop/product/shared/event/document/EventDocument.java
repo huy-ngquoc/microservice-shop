@@ -13,9 +13,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@Document(collection="event_document")
+@Document(collection = "event_document")
 public class EventDocument {
-    @Id
-    private UUID eventId;
-    private Instant receiveAt;
+  @Id
+  private UUID eventId;
+  private Instant receiveAt;
 }

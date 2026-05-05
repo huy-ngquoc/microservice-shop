@@ -4,8 +4,4 @@ import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantsForNew
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
 
-public record CreateVariantsForNewProductCommand(
-        VariantProductId productId,
-        VariantProductName productName,
-        NewVariantsForNewProduct newVariantsForNewProduct) {
-}
+public record CreateVariantsForNewProductCommand(VariantProductId productId,VariantProductName productName,NewVariantsForNewProduct newVariantsForNewProduct){}

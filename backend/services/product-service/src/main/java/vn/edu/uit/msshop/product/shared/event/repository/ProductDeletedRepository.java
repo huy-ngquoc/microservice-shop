@@ -11,9 +11,9 @@ import vn.edu.uit.msshop.product.shared.event.document.ProductDeletedDocument;
 
 @Repository
 public interface ProductDeletedRepository extends MongoRepository<ProductDeletedDocument, UUID> {
-    public List<ProductDeletedDocument> findByEventStatus(String eventStatus);
+  public List<ProductDeletedDocument> findByEventStatus(String eventStatus);
 
-    public List<ProductDeletedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+  public List<ProductDeletedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+  public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

@@ -18,17 +18,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collection="product_update_document")
+@Document(collection = "product_update_document")
 public class ProductUpdateDocument {
-    @Id
-    private UUID eventId;
-    private UUID productId;
-    private String name;
-    private String eventStatus;
-    private Integer retryCount; 
-    private Instant createdAt;
-    @Nullable
-    private Instant updatedAt; 
-    @Nullable
-    private String lastError;
+  @Id
+  private UUID eventId;
+  private UUID productId;
+  private String name;
+  private String eventStatus;
+  private Integer retryCount;
+  private Instant createdAt;
+  @Nullable
+  private Instant updatedAt;
+  @Nullable
+  private String lastError;
 }

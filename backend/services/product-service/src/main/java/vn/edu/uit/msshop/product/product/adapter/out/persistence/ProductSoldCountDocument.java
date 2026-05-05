@@ -13,34 +13,28 @@ import lombok.experimental.FieldNameConstants;
 
 @Document("ProductSoldCounts")
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public final class ProductSoldCountDocument {
-    @Id
-    @EqualsAndHashCode.Include
-    private final UUID id;
+  @Id
+  @EqualsAndHashCode.Include
+  private final UUID id;
 
-    private final int soldCount;
+  private final int soldCount;
 
-    private final Instant lastUpdatedTime;
+  private final Instant lastUpdatedTime;
 
-    public ProductSoldCountDocument(
-            final UUID id,
-            final int soldCount) {
-        this.id = id;
-        this.soldCount = soldCount;
-        this.lastUpdatedTime = Instant.now();
-    }
+  public ProductSoldCountDocument(final UUID id, final int soldCount) {
+    this.id = id;
+    this.soldCount = soldCount;
+    this.lastUpdatedTime = Instant.now();
+  }
 
-    // TODO: should be package or public?
-    @PersistenceCreator
-    ProductSoldCountDocument(
-            final UUID id,
-            final int soldCount,
-            final Instant lastUpdatedTime) {
-        this.id = id;
-        this.soldCount = soldCount;
-        this.lastUpdatedTime = lastUpdatedTime;
-    }
+  // TODO: should be package or public?
+  @PersistenceCreator
+  ProductSoldCountDocument(final UUID id, final int soldCount, final Instant lastUpdatedTime) {
+    this.id = id;
+    this.soldCount = soldCount;
+    this.lastUpdatedTime = lastUpdatedTime;
+  }
 }

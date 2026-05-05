@@ -8,21 +8,19 @@ import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.query.ListCategoriesUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListCategoriesPort;
-import vn.edu.uit.msshop.product.shared.application.dto.request.PageRequestDto;
-import vn.edu.uit.msshop.product.shared.application.dto.response.PageResponseDto;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
 public class ListCategoriesService implements ListCategoriesUseCase {
-    private final ListCategoriesPort listPort;
-    private final CategoryViewMapper mapper;
+  private final ListCategoriesPort listPort;
+  private final CategoryViewMapper mapper;
 
-    @Override
-    @Transactional(
-            readOnly = true)
-    public PageResponseDto<CategoryView> list(
-            final PageRequestDto pageRequest) {
-        final var page = this.listPort.list(pageRequest);
-        return page.map(this.mapper::toView);
-    }
+  @Override
+  @Transactional(readOnly = true)
+  public PageResponseDto<CategoryView> list(final PageRequestDto pageRequest) {
+    final var page = this.listPort.list(pageRequest);
+    return page.map(this.mapper::toView);
+  }
 }

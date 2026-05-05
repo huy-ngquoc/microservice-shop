@@ -14,16 +14,13 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 @Service
 @RequiredArgsConstructor
 public class FindBrandService implements FindBrandUseCase {
-    private final LoadBrandPort loadPort;
-    private final BrandViewMapper mapper;
+  private final LoadBrandPort loadPort;
+  private final BrandViewMapper mapper;
 
-    @Override
-    @Transactional(
-            readOnly = true)
-    public BrandView findById(
-            final BrandId id) {
-        return this.loadPort.loadById(id)
-                .map(this.mapper::toView)
-                .orElseThrow(() -> new BrandNotFoundException(id));
-    }
+  @Override
+  @Transactional(readOnly = true)
+  public BrandView findById(final BrandId id) {
+    return this.loadPort.loadById(id).map(this.mapper::toView)
+        .orElseThrow(() -> new BrandNotFoundException(id));
+  }
 }

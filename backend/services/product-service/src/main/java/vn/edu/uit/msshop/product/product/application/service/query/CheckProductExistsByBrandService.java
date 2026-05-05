@@ -11,13 +11,11 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId
 @Service
 @RequiredArgsConstructor
 public class CheckProductExistsByBrandService implements CheckProductExistsByBrandUseCase {
-    private final CheckProductExistsByBrandPort checkExistsByBrandPort;
+  private final CheckProductExistsByBrandPort checkExistsByBrandPort;
 
-    @Override
-    @Transactional(
-            readOnly = true)
-    public boolean existsByBrandId(
-            final ProductBrandId brandId) {
-        return this.checkExistsByBrandPort.existsByBrandId(brandId);
-    }
+  @Override
+  @Transactional(readOnly = true)
+  public boolean existsByBrandId(final ProductBrandId brandId) {
+    return this.checkExistsByBrandPort.existsByBrandId(brandId);
+  }
 }

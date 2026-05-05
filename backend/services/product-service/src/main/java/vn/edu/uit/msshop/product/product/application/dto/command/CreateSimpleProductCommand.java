@@ -6,10 +6,4 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
 
-public record CreateSimpleProductCommand(
-        ProductName name,
-        ProductCategoryId categoryId,
-        ProductBrandId brandId,
-        ProductVariantPrice price,
-        ProductVariantTargets targets) {
-}
+public record CreateSimpleProductCommand(ProductName name,ProductCategoryId categoryId,ProductBrandId brandId,ProductVariantPrice price,ProductVariantTargets targets){}

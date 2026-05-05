@@ -7,38 +7,33 @@ import org.jspecify.annotations.Nullable;
 import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
 
 public final class Domains {
-    public static final double RAW_LENGTH_TOLERANCE_FACTOR = 1.25;
+  public static final double RAW_LENGTH_TOLERANCE_FACTOR = 1.25;
 
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\p{IsWhite_Space}+");
+  private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\p{IsWhite_Space}+");
 
-    private Domains() {
+  private Domains() {}
+
+  public static Pattern getWhitespacePattern() {
+    return Domains.WHITESPACE_PATTERN;
+  }
+
+  public static <T> T requireNonNull(@Nullable final T obj,
+
+      final String msg) {
+    if (obj == null) {
+      throw new DomainException(msg);
     }
 
-    public static Pattern getWhitespacePattern() {
-        return Domains.WHITESPACE_PATTERN;
+    return obj;
+  }
+
+  public static String requireNonBlank(@Nullable final String str,
+
+      final String msg) {
+    if ((str == null) || str.isBlank()) {
+      throw new DomainException(msg);
     }
 
-    public static <T> T requireNonNull(
-            @Nullable
-            final T obj,
-
-            final String msg) {
-        if (obj == null) {
-            throw new DomainException(msg);
-        }
-
-        return obj;
-    }
-
-    public static String requireNonBlank(
-            @Nullable
-            final String str,
-
-            final String msg) {
-        if ((str == null) || str.isBlank()) {
-            throw new DomainException(msg);
-        }
-
-        return str;
-    }
+    return str;
+  }
 }

@@ -7,18 +7,13 @@ import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeleted;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 
 public interface PublishProductEventPort {
-    void publish(
-            final ProductCreated event);
+  void publish(final ProductCreated event);
 
-    void publish(
-            final ProductUpdated event);
+  void publish(final ProductUpdated event);
 
-    void publish(
-            final ProductSoftDeleted event);
+  void publish(final ProductSoftDeleted event);
 
-    void publish(
-            final ProductRestored event);
+  void publish(final ProductRestored event);
 
-    void publish(
-            final ProductPurged event);
+  void publish(final ProductPurged event);
 }

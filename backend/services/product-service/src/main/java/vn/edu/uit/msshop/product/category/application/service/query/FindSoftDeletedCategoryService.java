@@ -14,17 +14,13 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 @Service
 @RequiredArgsConstructor
 public class FindSoftDeletedCategoryService implements FindSoftDeletedCategoryUseCase {
-    private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
-    private final CategoryViewMapper mapper;
+  private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
+  private final CategoryViewMapper mapper;
 
-    @Override
-    @Transactional(
-            readOnly = true)
-    public CategoryView findSoftDeletedById(
-            final CategoryId id) {
-        return this.loadSoftDeletedPort
-                .loadSoftDeletedById(id)
-                .map(this.mapper::toView)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
-    }
+  @Override
+  @Transactional(readOnly = true)
+  public CategoryView findSoftDeletedById(final CategoryId id) {
+    return this.loadSoftDeletedPort.loadSoftDeletedById(id).map(this.mapper::toView)
+        .orElseThrow(() -> new CategoryNotFoundException(id));
+  }
 }

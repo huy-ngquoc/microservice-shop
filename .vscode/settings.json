@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "Dcompile",
+        "dotenv",
         "Duser",
         "errorprone",
         "javac",
@@ -11,13 +12,15 @@
         "PGDATA",
         "projectlombok",
         "projectreactor",
+        "springdoc",
         "springframework",
         "webflux",
+        "webmvc",
         "Xplugin"
     ],
     "java.import.maven.enabled": true,
     "java.autobuild.enabled": true,
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "automatic",
-    "java.format.settings.url": ".vscode/java-formatter.xml"
+    "java.format.settings.url": "${workspaceFolder}/backend/services/java-formatter.xml"
 }

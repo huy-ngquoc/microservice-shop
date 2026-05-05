@@ -6,18 +6,14 @@ import org.jspecify.annotations.NonNull;
 
 import vn.edu.uit.msshop.product.shared.application.dto.Patch;
 
-public record PatchRequest<T>(
-        @NonNull
-        Op op,
+public record PatchRequest<T>(@NonNull Op op,
 
-        T value) {
-    public enum Op {
-        KEEP,
-        SET,
-        CLEAR
-    }
+T value){public enum Op {
+  KEEP, SET, CLEAR
 
-    public PatchRequest(
+  }
+
+  public PatchRequest(
             final Op op,
             final T value) {
         if ((op == Op.SET) && (value == null)) {
@@ -33,17 +29,15 @@ public record PatchRequest<T>(
         this.value = value;
     }
 
-    public static <T, V> Patch<V> toPatch(
-            PatchRequest<T> p,
-            Function<T, V> map) {
-        if ((p == null) || (p.op() == Op.KEEP)) {
-            return Patch.unchanged();
-        }
-
-        if (p.op() == Op.CLEAR) {
-            return Patch.clear();
-        }
-
-        return Patch.set(map.apply(p.value()));
+  public static <T, V> Patch<V> toPatch(PatchRequest<T> p, Function<T, V> map) {
+    if ((p == null) || (p.op() == Op.KEEP)) {
+      return Patch.unchanged();
     }
+
+    if (p.op() == Op.CLEAR) {
+      return Patch.clear();
+    }
+
+    return Patch.set(map.apply(p.value()));
+  }
 }

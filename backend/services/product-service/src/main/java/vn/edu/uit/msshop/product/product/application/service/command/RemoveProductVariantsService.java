@@ -19,70 +19,56 @@ import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteAll
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class RemoveProductVariantsService implements RemoveProductVariantsUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
-    private final SoftDeleteAllProductVariantsPort softDeleteAllVariantsPort;
-    private final LoadProductSoldCountPort loadSoldCountPort;
-    private final LoadProductStockCountPort loadStockCountPort;
-    private final LoadProductRatingPort loadRatingPort;
-    private final PublishProductEventPort eventPort;
+  private final LoadProductPort loadPort;
+  private final UpdateProductPort updatePort;
+  private final SoftDeleteAllProductVariantsPort softDeleteAllVariantsPort;
+  private final LoadProductSoldCountPort loadSoldCountPort;
+  private final LoadProductStockCountPort loadStockCountPort;
+  private final LoadProductRatingPort loadRatingPort;
+  private final PublishProductEventPort eventPort;
 
-    private final ProductViewMapper mapper;
+  private final ProductViewMapper mapper;
 
-    @Override
-    @Transactional
-    public ProductView removeVariants(
-            final RemoveProductVariantsCommand command) {
-        final var productId = command.id();
-        final var product = this.loadPort.loadById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
+  @Override
+  @Transactional
+  public ProductView removeVariants(final RemoveProductVariantsCommand command) {
+    final var productId = command.id();
+    final var product = this.loadPort.loadById(productId)
+        .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var expectedVersion = command.expectedVersion();
-        if (!expectedVersion.equals(product.getVersion())) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(), product.getVersion().value());
-        }
-
-        var productVariants = product.getVariants();
-        final var variantIds = command.variantIds();
-
-        for (final var variantId : variantIds) {
-            productVariants = productVariants.removeById(variantId);
-        }
-
-        final var newConfiguration = new ProductConfiguration(
-                product.getOptions(),
-                productVariants);
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                newConfiguration,
-                product.getImageKeys(),
-                product.getVersion(),
-                product.getDeletionTime());
-
-        final var savedProduct = this.updatePort.update(next);
-        final var savedProductId = savedProduct.getId();
-
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
-        final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
-        final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
-
-        this.eventPort.publish(new ProductUpdated(savedProductId));
-
-        this.softDeleteAllVariantsPort.deleteByIds(variantIds);
-
-        return this.mapper.toView(
-                savedProduct,
-                soldCount,
-                stockCount,
-                rating);
+    final var expectedVersion = command.expectedVersion();
+    if (!expectedVersion.equals(product.getVersion())) {
+      throw new OptimisticLockException(expectedVersion.value(), product.getVersion().value());
     }
+
+    var productVariants = product.getVariants();
+    final var variantIds = command.variantIds();
+
+    for (final var variantId : variantIds) {
+      productVariants = productVariants.removeById(variantId);
+    }
+
+    final var newConfiguration = new ProductConfiguration(product.getOptions(), productVariants);
+    final var next = new Product(product.getId(), product.getName(), product.getCategoryId(),
+        product.getBrandId(), newConfiguration, product.getImageKeys(), product.getVersion(),
+        product.getDeletionTime());
+
+    final var savedProduct = this.updatePort.update(next);
+    final var savedProductId = savedProduct.getId();
+
+    final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
+    final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
+    final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
+
+    this.eventPort.publish(new ProductUpdated(savedProductId));
+
+    this.softDeleteAllVariantsPort.deleteByIds(variantIds);
+
+    return this.mapper.toView(savedProduct, soldCount, stockCount, rating);
+  }
 }

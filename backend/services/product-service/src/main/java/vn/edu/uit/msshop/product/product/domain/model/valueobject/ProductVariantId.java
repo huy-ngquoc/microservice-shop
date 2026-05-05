@@ -2,24 +2,10 @@ package vn.edu.uit.msshop.product.product.domain.model.valueobject;
 
 import java.util.UUID;
 
-import vn.edu.uit.msshop.product.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
-public record ProductVariantId(
-        UUID value)
-        implements Comparable<ProductVariantId> {
-    public ProductVariantId {
-        if (value == null) {
-            throw new DomainException("Product variant ID is null");
-        }
-    }
+public record ProductVariantId(UUID value)implements Comparable<ProductVariantId>{public ProductVariantId{if(value==null){throw new DomainException("Product variant ID is null");}}
 
-    public static ProductVariantId newId() {
-        return new ProductVariantId(UUID.randomUUID());
-    }
+public static ProductVariantId newId(){return new ProductVariantId(UUID.randomUUID());}
 
-    @Override
-    public int compareTo(
-            final ProductVariantId other) {
-        return this.value.compareTo(other.value);
-    }
-}
+@Override public int compareTo(final ProductVariantId other){return this.value.compareTo(other.value);}}

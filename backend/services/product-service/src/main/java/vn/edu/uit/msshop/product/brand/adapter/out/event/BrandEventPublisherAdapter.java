@@ -14,43 +14,36 @@ import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
 
 @Component
 @RequiredArgsConstructor
-public class BrandEventPublisherAdapter
-        implements PublishBrandEventPort {
-    private final ApplicationEventPublisher publisher;
+public class BrandEventPublisherAdapter implements PublishBrandEventPort {
+  private final ApplicationEventPublisher publisher;
 
-    @Override
-    public void publish(
-            final BrandCreated event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final BrandCreated event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final BrandUpdated event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final BrandUpdated event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final BrandLogoUpdated event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final BrandLogoUpdated event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final BrandSoftDeleted event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final BrandSoftDeleted event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final BrandRestored event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final BrandRestored event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final BrandPurged event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final BrandPurged event) {
+    this.publisher.publishEvent(event);
+  }
 }
