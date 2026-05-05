@@ -4,6 +4,5 @@ import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
 
 public interface CreateCategoryPort {
-    Category create(
-            final NewCategory newCategory);
+  Category create(final NewCategory newCategory);
 }

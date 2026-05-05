@@ -9,12 +9,11 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.Increa
 @Service
 @RequiredArgsConstructor
 public class IncreaseProductSoldCountsForVariantsService
-        implements IncreaseProductSoldCountsForVariantsUseCase {
-    private final IncreaseAllProductSoldCountsPort increaseAllSoldCountsPort;
+    implements IncreaseProductSoldCountsForVariantsUseCase {
+  private final IncreaseAllProductSoldCountsPort increaseAllSoldCountsPort;
 
-    @Override
-    public void execute(
-            final IncreaseProductSoldCountsForVariantsCommand command) {
-        this.increaseAllSoldCountsPort.increaseAll(command.incrementById());
-    }
+  @Override
+  public void execute(final IncreaseProductSoldCountsForVariantsCommand command) {
+    this.increaseAllSoldCountsPort.increaseAll(command.incrementById());
+  }
 }

@@ -6,20 +6,17 @@ import lombok.Getter;
 
 @Getter
 public final class OptimisticLockException extends RuntimeException {
-    @Nullable
-    private final Long expectedVersion;
+  @Nullable
+  private final Long expectedVersion;
 
-    @Nullable
-    private final Long currentVersion;
+  @Nullable
+  private final Long currentVersion;
 
-    public OptimisticLockException(
-            @Nullable
-            Long expected,
+  public OptimisticLockException(@Nullable Long expected,
 
-            @Nullable
-            Long current) {
-        super("Version mismatch (expected: " + expected + ", current: " + current + ")");
-        this.expectedVersion = expected;
-        this.currentVersion = current;
-    }
+      @Nullable Long current) {
+    super("Version mismatch (expected: " + expected + ", current: " + current + ")");
+    this.expectedVersion = expected;
+    this.currentVersion = current;
+  }
 }

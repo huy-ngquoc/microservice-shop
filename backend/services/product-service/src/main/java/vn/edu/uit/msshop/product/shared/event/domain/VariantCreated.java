@@ -11,17 +11,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @AllArgsConstructor
 
 @Builder
 public class VariantCreated {
-        private UUID variantId;
-        private UUID productId;
-        private String productName;
-        private long price;
-        private List<String> traits;
-        @Nullable
-        private String imageKey;
+  private UUID variantId;
+  private UUID productId;
+  private String productName;
+  private long price;
+  private List<String> traits;
+  @Nullable
+  private String imageKey;
 }

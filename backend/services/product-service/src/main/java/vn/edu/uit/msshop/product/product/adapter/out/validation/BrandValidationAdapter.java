@@ -10,14 +10,12 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId
 
 @Component
 @RequiredArgsConstructor
-public class BrandValidationAdapter
-        implements CheckProductBrandExistsPort {
-    private final CheckBrandExistsUseCase checkExistsUseCase;
+public class BrandValidationAdapter implements CheckProductBrandExistsPort {
+  private final CheckBrandExistsUseCase checkExistsUseCase;
 
-    @Override
-    public boolean existsById(
-            final ProductBrandId brandId) {
-        final var id = new BrandId(brandId.value());
-        return this.checkExistsUseCase.existsById(id);
-    }
+  @Override
+  public boolean existsById(final ProductBrandId brandId) {
+    final var id = new BrandId(brandId.value());
+    return this.checkExistsUseCase.existsById(id);
+  }
 }

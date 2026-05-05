@@ -4,6 +4,5 @@ import vn.edu.uit.msshop.product.category.application.dto.command.DeleteCategory
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView;
 
 public interface DeleteCategoryImageUseCase {
-    CategoryImageView deleteImage(
-            final DeleteCategoryImageCommand command);
+  CategoryImageView deleteImage(final DeleteCategoryImageCommand command);
 }

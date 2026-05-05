@@ -7,13 +7,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @AllArgsConstructor
 
 @Builder
 public class VariantDeleted {
-    private UUID eventId;
-    private UUID variantId;
+  private UUID eventId;
+  private UUID variantId;
 }
-

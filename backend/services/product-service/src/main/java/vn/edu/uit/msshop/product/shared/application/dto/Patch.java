@@ -8,46 +8,48 @@ import org.jspecify.annotations.NullUnmarked;
 
 // TODO: move this to common package of all services
 @NullUnmarked
-public sealed interface Patch<T> permits Patch.Unchanged, Patch.Set, Patch.Clear {
-    T apply(
-            final T current);
+public sealed interface Patch<T>
+permits Patch.Unchanged,Patch.Set,Patch.Clear
+{
 
-    static <T> @NonNull Patch<T> unchanged() {
+  T apply(final T current);
+
+  static <T> @NonNull Patch<T> unchanged() {
         return new Unchanged<>();
     }
 
-    static <T> @NonNull Patch<T> clear() {
+  static <T> @NonNull Patch<T> clear() {
         return new Clear<>();
     }
 
-    @NullMarked
-    static <T> Patch<T> set(
-            final T value) {
-        return new Set<>(Objects.requireNonNull(value));
-    }
+  @NullMarked
+  static <T> Patch<T> set(final T value) {
+    return new Set<>(Objects.requireNonNull(value));
+  }
 
-    record Unchanged<T>() implements Patch<T> {
-        @Override
+  record Unchanged<T>()implements Patch<T>
+  {
+
+  @Override
         public T apply(
                 final T current) {
             return current;
-        }
-    }
+        }}
 
-    record Clear<T>() implements Patch<T> {
-        @Override
+  record Clear<T>()implements Patch<T>{
+
+  @Override
         public T apply(
                 final T current) {
             return null;
-        }
-    }
+        }}
 
-    record Set<T>(
-            T value) implements Patch<T> {
-        @Override
+  record Set<T>(
+  T value)implements Patch<T>{
+
+  @Override
         public T apply(
                 final T current) {
             return value;
         }
-    }
-}
+}}

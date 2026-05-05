@@ -14,46 +14,38 @@ import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckC
 import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeleted;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryDeletionTime;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class SoftDeleteCategoryService implements SoftDeleteCategoryUseCase {
-    private final LoadCategoryPort loadPort;
-    private final UpdateCategoryPort updatePort;
-    private final CheckCategoryHasProductsPort checkHasProductsPort;
-    private final PublishCategoryEventPort eventPort;
+  private final LoadCategoryPort loadPort;
+  private final UpdateCategoryPort updatePort;
+  private final CheckCategoryHasProductsPort checkHasProductsPort;
+  private final PublishCategoryEventPort eventPort;
 
-    @Override
-    @Transactional
-    public void delete(
-            final SoftDeleteCategoryCommand command) {
-        final var categoryId = command.id();
-        final var category = this.loadPort.loadById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+  @Override
+  @Transactional
+  public void delete(final SoftDeleteCategoryCommand command) {
+    final var categoryId = command.id();
+    final var category = this.loadPort.loadById(categoryId)
+        .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = category.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
-
-        if (this.checkHasProductsPort.hasProduct(categoryId)) {
-            throw new BusinessRuleException(
-                    "Cannot delete category with existing products");
-        }
-
-        final var next = new Category(
-                category.getId(),
-                category.getName(),
-                category.getImageKey(),
-                category.getVersion(),
-                CategoryDeletionTime.now());
-
-        final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new CategorySoftDeleted(saved.getId()));
+    final var expectedVersion = command.expectedVersion();
+    final var currentVersion = category.getVersion();
+    if (!expectedVersion.equals(currentVersion)) {
+      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
     }
+
+    if (this.checkHasProductsPort.hasProduct(categoryId)) {
+      throw new BusinessRuleException("Cannot delete category with existing products");
+    }
+
+    final var next = new Category(category.getId(), category.getName(), category.getImageKey(),
+        category.getVersion(), CategoryDeletionTime.now());
+
+    final var saved = this.updatePort.update(next);
+    this.eventPort.publish(new CategorySoftDeleted(saved.getId()));
+  }
 }

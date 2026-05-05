@@ -5,12 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 
-public record UpdateCategoryImageRequest(
-        @NotBlank
-        @Size(
-                max = CategoryImageKey.MAX_LENGTH)
-        String newImageKey,
+public record UpdateCategoryImageRequest(@NotBlank @Size(max=CategoryImageKey.MAX_LENGTH)String newImageKey,
 
-        @NotNull
-        Long version) {
-}
+@NotNull Long version){}

@@ -1,10 +1,5 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,93 +21,69 @@ import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckPr
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.shared.event.document.ProductCreatedDocument;
-import vn.edu.uit.msshop.product.shared.event.document.VariantCreatedDocument;
-import vn.edu.uit.msshop.product.shared.event.repository.ProductCreatedRepository;
 
 @Service
 @RequiredArgsConstructor
 public class CreateProductService implements CreateProductUseCase {
-    private final CreateProductPort createPort;
-    private final CheckProductCategoryExistsPort checkCategoryExistsPort;
-    private final CheckProductBrandExistsPort checkBrandExistsPort;
-    private final CreateAllProductVariantsPort createVariantsForNewProductPort;
-    private final InitializeProductSoldCountPort initializeSoldCountPort;
-    private final InitializeProductStockCountPort initializeStockCountPort;
-    private final InitializeProductRatingPort initializeRatingPort;
-    private final PublishProductEventPort eventPort;
+  private final CreateProductPort createPort;
+  private final CheckProductCategoryExistsPort checkCategoryExistsPort;
+  private final CheckProductBrandExistsPort checkBrandExistsPort;
+  private final CreateAllProductVariantsPort createVariantsForNewProductPort;
+  private final InitializeProductSoldCountPort initializeSoldCountPort;
+  private final InitializeProductStockCountPort initializeStockCountPort;
+  private final InitializeProductRatingPort initializeRatingPort;
+  private final PublishProductEventPort eventPort;
 
-    private final ProductViewMapper mapper;
+  private final ProductViewMapper mapper;
 
-    private final ProductCreatedRepository productCreatedRepository;
-    private final vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEventPort publishProductEventPort;
+  @Override
+  @Transactional
+  public ProductView createSimple(final CreateSimpleProductCommand command) {
+    return CreateProductUseCase.super.createSimple(command);
+  }
 
-    @Override
-    @Transactional
-    public ProductView createSimple(
-            final CreateSimpleProductCommand command) {
-        return CreateProductUseCase.super.createSimple(command);
+  @Override
+  @Transactional
+  public ProductView create(final CreateProductCommand command) {
+    this.validateCategoryExists(command.categoryId());
+    this.validateBrandExists(command.brandId());
+
+    final var productId = ProductId.newId();
+
+    final var savedVariants = this.createVariantsForNewProductPort.create(productId, command.name(),
+        command.newConfiguration().newVariants());
+
+    final var configuration =
+        new ProductConfiguration(command.newConfiguration().options(), savedVariants);
+
+    final var newProduct = new NewProduct(productId, command.name(), command.categoryId(),
+        command.brandId(), configuration);
+
+    final var savedProduct = this.createPort.create(newProduct);
+    final var savedProductId = savedProduct.getId();
+
+    final var savedSoldCount = this.initializeSoldCountPort.initialize(savedProductId);
+    final var savedStockCount = this.initializeStockCountPort.initialize(savedProductId);
+    final var savedRating = this.initializeRatingPort.initialize(savedProductId);
+
+    this.eventPort.publish(new ProductCreated(savedProductId));
+    return this.mapper.toView(savedProduct, savedSoldCount, savedStockCount, savedRating);
+  }
+
+  private void validateCategoryExists(final ProductCategoryId newCategoryId) {
+    if (!this.checkCategoryExistsPort.existsById(newCategoryId)) {
+      throw new ProductCategoryNotFoundException(newCategoryId);
     }
+  }
 
-    @Override
-    @Transactional
-    
-    public ProductView create(
-            final CreateProductCommand command) {
-        this.validateCategoryExists(command.categoryId());
-        this.validateBrandExists(command.brandId());
-        
-
-        final var productId = ProductId.newId();
-
-        final var savedVariants = this.createVariantsForNewProductPort.create(
-                productId,
-                command.name(),
-                command.newConfiguration().newVariants());
-
-        final var configuration = new ProductConfiguration(
-                command.newConfiguration().options(),
-                savedVariants);
-
-        final var newProduct = new NewProduct(
-                productId,
-                command.name(),
-                command.categoryId(),
-                command.brandId(),
-                configuration);
-
-        final var savedProduct = this.createPort.create(newProduct);
-        final var savedProductId = savedProduct.getId();
-
-        final var savedSoldCount = this.initializeSoldCountPort.initialize(savedProductId);
-        final var savedStockCount = this.initializeStockCountPort.initialize(savedProductId);
-        final var savedRating = this.initializeRatingPort.initialize(savedProductId);
-
-        this.eventPort.publish(new ProductCreated(savedProductId));
-        return this.mapper.toView(
-                savedProduct,
-                savedSoldCount,
-                savedStockCount,
-                savedRating);
+  private void validateBrandExists(final ProductBrandId newBrandId) {
+    if (!this.checkBrandExistsPort.existsById(newBrandId)) {
+      throw new ProductBrandNotFoundException(newBrandId);
     }
-
-    private void validateCategoryExists(
-            final ProductCategoryId newCategoryId) {
-        if (!this.checkCategoryExistsPort.existsById(newCategoryId)) {
-            throw new ProductCategoryNotFoundException(newCategoryId);
-        }
-    }
-
-    private void validateBrandExists(
-            final ProductBrandId newBrandId) {
-        if (!this.checkBrandExistsPort.existsById(newBrandId)) {
-            throw new ProductBrandNotFoundException(newBrandId);
-        }
-    }
+  }
 
 }

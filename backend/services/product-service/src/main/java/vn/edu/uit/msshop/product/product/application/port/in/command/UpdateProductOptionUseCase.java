@@ -4,6 +4,5 @@ import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductOp
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 
 public interface UpdateProductOptionUseCase {
-    ProductView updateOption(
-            final UpdateProductOptionCommand command);
+  ProductView updateOption(final UpdateProductOptionCommand command);
 }

@@ -14,7 +14,7 @@ import lombok.Setter;
 
 @Builder
 public class ProductUpdate {
-    private UUID eventId;
-    private UUID productId;
-    private String name;
+  private UUID eventId;
+  private UUID productId;
+  private String name;
 }

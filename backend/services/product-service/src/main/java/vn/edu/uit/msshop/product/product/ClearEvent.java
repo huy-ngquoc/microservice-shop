@@ -14,19 +14,19 @@ import vn.edu.uit.msshop.product.shared.event.repository.VariantUpdateRepository
 @RestController
 @RequiredArgsConstructor
 public class ClearEvent {
-    private final ProductCreatedRepository productCreatedRepo;
-    private final ProductUpdateRepository productUpdateRepo;
-    private final ProductDeletedRepository productDeletedRepo;
-    private final VariantUpdateRepository variantUpdateRepo;
-    private final VariantDeletedRepository variantDeletedRepo;
+  private final ProductCreatedRepository productCreatedRepo;
+  private final ProductUpdateRepository productUpdateRepo;
+  private final ProductDeletedRepository productDeletedRepo;
+  private final VariantUpdateRepository variantUpdateRepo;
+  private final VariantDeletedRepository variantDeletedRepo;
 
-    @DeleteMapping("/clear")
-    public ResponseEntity<Void> clear() {
-        productCreatedRepo.deleteAll();
-        productUpdateRepo.deleteAll();
-        productDeletedRepo.deleteAll();
-        variantUpdateRepo.deleteAll();
-        variantDeletedRepo.deleteAll();
-        return ResponseEntity.noContent().build();
-    }
+  @DeleteMapping("/clear")
+  public ResponseEntity<Void> clear() {
+    productCreatedRepo.deleteAll();
+    productUpdateRepo.deleteAll();
+    productDeletedRepo.deleteAll();
+    variantUpdateRepo.deleteAll();
+    variantDeletedRepo.deleteAll();
+    return ResponseEntity.noContent().build();
+  }
 }

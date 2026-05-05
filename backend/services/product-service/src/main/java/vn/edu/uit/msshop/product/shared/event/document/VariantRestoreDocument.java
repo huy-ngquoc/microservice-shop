@@ -18,17 +18,17 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collection="variant_restore_document")
+@Document(collection = "variant_restore_document")
 public class VariantRestoreDocument {
-    @Id
-    private UUID eventId;
-    private UUID variantId;
-    private String eventStatus;
-    private Integer retryCount; 
-    private Instant createdAt;
-    @Nullable
-    private Instant updatedAt;
-    @Nullable 
-    private String lastError;
+  @Id
+  private UUID eventId;
+  private UUID variantId;
+  private String eventStatus;
+  private Integer retryCount;
+  private Instant createdAt;
+  @Nullable
+  private Instant updatedAt;
+  @Nullable
+  private String lastError;
 
 }

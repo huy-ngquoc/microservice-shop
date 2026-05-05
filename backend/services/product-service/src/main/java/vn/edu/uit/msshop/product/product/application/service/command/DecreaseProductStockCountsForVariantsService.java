@@ -10,12 +10,11 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.Decrea
 @Service
 @RequiredArgsConstructor
 public class DecreaseProductStockCountsForVariantsService
-        implements DecreaseProductStockCountsForVariantsUseCase {
-    private final DecreaseAllProductStockCountsPort decreaseAllPort;
+    implements DecreaseProductStockCountsForVariantsUseCase {
+  private final DecreaseAllProductStockCountsPort decreaseAllPort;
 
-    @Override
-    public void execute(
-            DecreaseProductStockCountsForVariantsCommand command) {
-        this.decreaseAllPort.decreaseAll(command.decrementById());
-    }
+  @Override
+  public void execute(DecreaseProductStockCountsForVariantsCommand command) {
+    this.decreaseAllPort.decreaseAll(command.decrementById());
+  }
 }

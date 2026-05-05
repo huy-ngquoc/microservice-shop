@@ -33,106 +33,86 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class RemoveProductOptionService implements RemoveProductOptionUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
-    private final SoftDeleteVariantsForProductPort softDeleteVariantsForProductPort;
-    private final CreateAllProductVariantsPort createVariantsPort;
-    private final UpdateAllProductVariantTraitsPort updateAllVariantTraitsPort;
-    private final LoadProductSoldCountPort loadSoldCountPort;
-    private final LoadProductStockCountPort loadStockCountPort;
-    private final LoadProductRatingPort loadRatingPort;
-    private final PublishProductEventPort eventPort;
-    private final ProductViewMapper mapper;
+  private final LoadProductPort loadPort;
+  private final UpdateProductPort updatePort;
+  private final SoftDeleteVariantsForProductPort softDeleteVariantsForProductPort;
+  private final CreateAllProductVariantsPort createVariantsPort;
+  private final UpdateAllProductVariantTraitsPort updateAllVariantTraitsPort;
+  private final LoadProductSoldCountPort loadSoldCountPort;
+  private final LoadProductStockCountPort loadStockCountPort;
+  private final LoadProductRatingPort loadRatingPort;
+  private final PublishProductEventPort eventPort;
+  private final ProductViewMapper mapper;
 
-    @Override
-    @Transactional
-    public ProductView removeOption(
-            final RemoveProductOptionCommand command) {
-        final var productId = command.id();
-        final var product = this.loadPort.loadById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
+  @Override
+  @Transactional
+  public ProductView removeOption(final RemoveProductOptionCommand command) {
+    final var productId = command.id();
+    final var product = this.loadPort.loadById(productId)
+        .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var expectedVersion = command.expectedVersion();
-        if (!expectedVersion.equals(product.getVersion())) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(), product.getVersion().value());
-        }
-
-        final var newConfiguration = this.removeOptionFromConfiguration(
-                product, command.optionIndex(), command.defaultPrice());
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                newConfiguration,
-                product.getImageKeys(),
-                product.getVersion(),
-                product.getDeletionTime());
-
-        final var savedProduct = this.updatePort.update(next);
-        final var savedProductId = savedProduct.getId();
-
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
-        final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
-        final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
-
-        this.eventPort.publish(new ProductUpdated(savedProductId));
-
-        return this.mapper.toView(
-                savedProduct,
-                soldCount,
-                stockCount,
-                rating);
+    final var expectedVersion = command.expectedVersion();
+    if (!expectedVersion.equals(product.getVersion())) {
+      throw new OptimisticLockException(expectedVersion.value(), product.getVersion().value());
     }
 
-    private ProductConfiguration removeOptionFromConfiguration(
-            final Product product,
-            final int optionIndex,
-            @Nullable
-            final ProductPrice defaultPrice) {
-        final var optionsSize = product.getOptions().size();
+    final var newConfiguration =
+        this.removeOptionFromConfiguration(product, command.optionIndex(), command.defaultPrice());
+    final var next = new Product(product.getId(), product.getName(), product.getCategoryId(),
+        product.getBrandId(), newConfiguration, product.getImageKeys(), product.getVersion(),
+        product.getDeletionTime());
 
-        if (optionsSize <= 0) {
-            throw new BusinessRuleException("Product has no options to remove");
-        }
+    final var savedProduct = this.updatePort.update(next);
+    final var savedProductId = savedProduct.getId();
 
-        if (optionsSize > 1) {
-            final var newConfig = product.getConfiguration().removeOptionAt(optionIndex);
+    final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
+    final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
+    final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
 
-            final var newTraitsMap = new HashMap<ProductVariantId, ProductVariantTraits>(
-                    newConfig.variants().size(), 1);
-            for (final var variant : newConfig.variants().values()) {
-                newTraitsMap.put(variant.id(), variant.traits());
-            }
-            this.updateAllVariantTraitsPort.updateTraitsByIds(newTraitsMap);
+    this.eventPort.publish(new ProductUpdated(savedProductId));
 
-            return newConfig;
-        }
+    return this.mapper.toView(savedProduct, soldCount, stockCount, rating);
+  }
 
-        if (defaultPrice == null) {
-            throw new BusinessRuleException(
-                    "Default price is required when removing the last option");
-        }
+  private ProductConfiguration removeOptionFromConfiguration(final Product product,
+      final int optionIndex, @Nullable final ProductPrice defaultPrice) {
+    final var optionsSize = product.getOptions().size();
 
-        final var productId = product.getId();
-        this.softDeleteVariantsForProductPort.deleteByProductId(productId);
-
-        final var newVariant = new NewProductVariant(
-                new ProductVariantPrice(defaultPrice.value()),
-                ProductVariantTraits.empty(),
-                ProductVariantTargets.empty());
-        final var newVariants = this.createVariantsPort.create(
-                productId,
-                product.getName(),
-                new NewProductVariants(List.of(newVariant)));
-
-        return new ProductConfiguration(ProductOptions.empty(), newVariants);
+    if (optionsSize <= 0) {
+      throw new BusinessRuleException("Product has no options to remove");
     }
+
+    if (optionsSize > 1) {
+      final var newConfig = product.getConfiguration().removeOptionAt(optionIndex);
+
+      final var newTraitsMap =
+          new HashMap<ProductVariantId, ProductVariantTraits>(newConfig.variants().size(), 1);
+      for (final var variant : newConfig.variants().values()) {
+        newTraitsMap.put(variant.id(), variant.traits());
+      }
+      this.updateAllVariantTraitsPort.updateTraitsByIds(newTraitsMap);
+
+      return newConfig;
+    }
+
+    if (defaultPrice == null) {
+      throw new BusinessRuleException("Default price is required when removing the last option");
+    }
+
+    final var productId = product.getId();
+    this.softDeleteVariantsForProductPort.deleteByProductId(productId);
+
+    final var newVariant = new NewProductVariant(new ProductVariantPrice(defaultPrice.value()),
+        ProductVariantTraits.empty(), ProductVariantTargets.empty());
+    final var newVariants = this.createVariantsPort.create(productId, product.getName(),
+        new NewProductVariants(List.of(newVariant)));
+
+    return new ProductConfiguration(ProductOptions.empty(), newVariants);
+  }
 }

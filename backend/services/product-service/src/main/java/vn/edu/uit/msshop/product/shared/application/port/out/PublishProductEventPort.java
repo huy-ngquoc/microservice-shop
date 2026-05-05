@@ -9,11 +9,17 @@ import vn.edu.uit.msshop.product.shared.event.document.VariantRestoreDocument;
 import vn.edu.uit.msshop.product.shared.event.document.VariantUpdateDocument;
 
 public interface PublishProductEventPort {
-    public void publishProductCreated(ProductCreatedDocument eventDocument);
-    public void publishProductUpdated(ProductUpdateDocument eventDocument);
-    public void publishVariantUpdated(VariantUpdateDocument eventDocument);
-    public void publishVariantDeleted(VariantDeletedDocument eventDocument);
-    public void publishProductDeleted(ProductDeletedDocument eventDocument);
-    public void publishVariantRestore(VariantRestoreDocument eventDocument);
-    public void publishVariantPurge(VariantPurgeDocument eventDocument);
+  public void publishProductCreated(ProductCreatedDocument eventDocument);
+
+  public void publishProductUpdated(ProductUpdateDocument eventDocument);
+
+  public void publishVariantUpdated(VariantUpdateDocument eventDocument);
+
+  public void publishVariantDeleted(VariantDeletedDocument eventDocument);
+
+  public void publishProductDeleted(ProductDeletedDocument eventDocument);
+
+  public void publishVariantRestore(VariantRestoreDocument eventDocument);
+
+  public void publishVariantPurge(VariantPurgeDocument eventDocument);
 }

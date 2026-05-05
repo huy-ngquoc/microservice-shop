@@ -10,21 +10,12 @@ import jakarta.validation.constraints.Size;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTarget;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
 
-public record CreateSimpleProductRequest(
-        @NotBlank
-        String name,
+public record CreateSimpleProductRequest(@NotBlank String name,
 
-        @NotNull
-        UUID categoryId,
+@NotNull UUID categoryId,
 
-        @NotNull
-        UUID brandId,
+@NotNull UUID brandId,
 
-        Long price,
+Long price,
 
-        @NotEmpty
-        @Size(
-                max = ProductVariantTargets.MAX_AMOUNT)
-        List<@NotBlank @Size(
-                max = ProductVariantTarget.MAX_RAW_LENGTH) String> targets) {
-}
+@NotEmpty @Size(max=ProductVariantTargets.MAX_AMOUNT)List<@NotBlank @Size(max=ProductVariantTarget.MAX_RAW_LENGTH)String>targets){}

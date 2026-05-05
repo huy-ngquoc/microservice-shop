@@ -13,37 +13,31 @@ import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 
 @Component
 @RequiredArgsConstructor
-public class ProductEventPublisherAdapter
-        implements PublishProductEventPort {
-    private final ApplicationEventPublisher publisher;
+public class ProductEventPublisherAdapter implements PublishProductEventPort {
+  private final ApplicationEventPublisher publisher;
 
-    @Override
-    public void publish(
-            final ProductCreated event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final ProductCreated event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final ProductUpdated event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final ProductUpdated event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final ProductSoftDeleted event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final ProductSoftDeleted event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final ProductRestored event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final ProductRestored event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final ProductPurged event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final ProductPurged event) {
+    this.publisher.publishEvent(event);
+  }
 }

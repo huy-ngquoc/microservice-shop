@@ -12,24 +12,20 @@ import lombok.experimental.FieldNameConstants;
 
 @Document("ProductStockCounts")
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public class ProductStockCountDocument {
-    @Id
-    @EqualsAndHashCode.Include
-    private final UUID id;
+  @Id
+  @EqualsAndHashCode.Include
+  private final UUID id;
 
-    private final int value;
+  private final int value;
 
-    private final Instant lastUpdatedTime;
+  private final Instant lastUpdatedTime;
 
-    public ProductStockCountDocument(
-            final UUID id,
-            final int value,
-            final Instant lastUpdatedTime) {
-        this.id = id;
-        this.value = value;
-        this.lastUpdatedTime = lastUpdatedTime;
-    }
+  public ProductStockCountDocument(final UUID id, final int value, final Instant lastUpdatedTime) {
+    this.id = id;
+    this.value = value;
+    this.lastUpdatedTime = lastUpdatedTime;
+  }
 }

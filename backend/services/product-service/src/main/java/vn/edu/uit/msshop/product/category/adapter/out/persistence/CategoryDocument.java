@@ -15,44 +15,39 @@ import lombok.experimental.FieldNameConstants;
 
 @Document("Categories")
 @Getter
-@EqualsAndHashCode(
-        onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public class CategoryDocument {
-    @Id
-    @EqualsAndHashCode.Include
-    private final UUID id;
+  @Id
+  @EqualsAndHashCode.Include
+  private final UUID id;
 
-    private final String name;
+  private final String name;
 
-    @Nullable
-    private final String imageKey;
+  @Nullable
+  private final String imageKey;
 
-    @Version
-    @Nullable
-    private final Long version;
+  @Version
+  @Nullable
+  private final Long version;
 
-    @Nullable
-    private final Instant deletionTime;
+  @Nullable
+  private final Instant deletionTime;
 
-    @PersistenceCreator
-    public CategoryDocument(
-            final UUID id,
+  @PersistenceCreator
+  public CategoryDocument(final UUID id,
 
-            final String name,
+      final String name,
 
-            @Nullable
-            final String imageKey,
+      @Nullable final String imageKey,
 
-            @Nullable
-            final Long version,
+      @Nullable final Long version,
 
-            @Nullable
-            final Instant deletionTime) {
-        this.id = id;
-        this.name = name;
-        this.imageKey = imageKey;
-        this.version = version;
-        this.deletionTime = deletionTime;
-    }
+      @Nullable final Instant deletionTime) {
+    this.id = id;
+    this.name = name;
+    this.imageKey = imageKey;
+    this.version = version;
+    this.deletionTime = deletionTime;
+  }
 }

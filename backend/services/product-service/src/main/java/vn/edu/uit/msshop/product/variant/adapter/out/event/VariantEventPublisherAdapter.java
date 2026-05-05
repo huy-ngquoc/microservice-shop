@@ -14,43 +14,36 @@ import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
 
 @Component
 @RequiredArgsConstructor
-public class VariantEventPublisherAdapter
-        implements PublishVariantEventPort {
-    private final ApplicationEventPublisher publisher;
+public class VariantEventPublisherAdapter implements PublishVariantEventPort {
+  private final ApplicationEventPublisher publisher;
 
-    @Override
-    public void publish(
-            final VariantCreated event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final VariantCreated event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final VariantUpdated event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final VariantUpdated event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final VariantImageUpdated event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final VariantImageUpdated event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final VariantSoftDeleted event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final VariantSoftDeleted event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final VariantRestored event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final VariantRestored event) {
+    this.publisher.publishEvent(event);
+  }
 
-    @Override
-    public void publish(
-            final VariantPurged event) {
-        this.publisher.publishEvent(event);
-    }
+  @Override
+  public void publish(final VariantPurged event) {
+    this.publisher.publishEvent(event);
+  }
 }

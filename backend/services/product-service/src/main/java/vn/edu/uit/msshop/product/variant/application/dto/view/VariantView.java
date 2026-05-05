@@ -5,29 +5,22 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
-public record VariantView(
-        UUID id,
+public record VariantView(UUID id,
 
-        UUID productId,
+UUID productId,
 
-        String productName,
+String productName,
 
-        long price,
+long price,
 
-        int soldCount,
+int soldCount,
 
-        int stockCount,
+int stockCount,
 
-        List<String> traits,
+List<String>traits,
 
-        List<String> targets,
+List<String>targets,
 
-        @Nullable
-        String imageKey,
+@Nullable String imageKey,
 
-        long version) {
-    public VariantView {
-        traits = List.copyOf(traits);
-        targets = List.copyOf(targets);
-    }
-}
+long version){public VariantView{traits=List.copyOf(traits);targets=List.copyOf(targets);}}

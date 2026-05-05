@@ -6,15 +6,14 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "vn.edu.uit.msshop")
 @ConfigurationPropertiesScan
 @EnableScheduling
 @EnableFeignClients
 public class ProductServiceApplication {
 
-    public static void main(
-            String[] args) {
-        SpringApplication.run(ProductServiceApplication.class, args);
-    }
+  public static void main(final String[] args) {
+    SpringApplication.run(ProductServiceApplication.class, args);
+  }
 
 }

@@ -4,6 +4,5 @@ import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
 
 public interface CreateBrandPort {
-    Brand create(
-            final NewBrand newBrand);
+  Brand create(final NewBrand newBrand);
 }

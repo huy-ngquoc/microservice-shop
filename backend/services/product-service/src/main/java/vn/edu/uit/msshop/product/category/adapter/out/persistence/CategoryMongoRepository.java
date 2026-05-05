@@ -9,20 +9,14 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CategoryMongoRepository
-        extends MongoRepository<CategoryDocument, UUID> {
-    Page<CategoryDocument> findAllByDeletionTimeIsNull(
-            final Pageable pageable);
+public interface CategoryMongoRepository extends MongoRepository<CategoryDocument, UUID> {
+  Page<CategoryDocument> findAllByDeletionTimeIsNull(final Pageable pageable);
 
-    Page<CategoryDocument> findAllByDeletionTimeIsNotNull(
-            final Pageable pageable);
+  Page<CategoryDocument> findAllByDeletionTimeIsNotNull(final Pageable pageable);
 
-    Optional<CategoryDocument> findByIdAndDeletionTimeIsNull(
-            final UUID id);
+  Optional<CategoryDocument> findByIdAndDeletionTimeIsNull(final UUID id);
 
-    Optional<CategoryDocument> findByIdAndDeletionTimeIsNotNull(
-            final UUID id);
+  Optional<CategoryDocument> findByIdAndDeletionTimeIsNotNull(final UUID id);
 
-    boolean existsByIdAndDeletionTimeIsNull(
-            final UUID id);
+  boolean existsByIdAndDeletionTimeIsNull(final UUID id);
 }

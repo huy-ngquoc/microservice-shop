@@ -1,4 +1,5 @@
 package vn.edu.uit.msshop.product.shared.event.domain;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -10,18 +11,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @AllArgsConstructor
 
 @Builder
 public class VariantUpdate {
-    private UUID eventId;
-    private UUID variantId;
-    private UUID productId;
-    private String productName;
-    private long price;
-    private List<String> traits;
-    @Nullable
-    private String imageKey;
+  private UUID eventId;
+  private UUID variantId;
+  private UUID productId;
+  private String productName;
+  private long price;
+  private List<String> traits;
+  @Nullable
+  private String imageKey;
 }

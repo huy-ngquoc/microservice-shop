@@ -5,12 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 
-public record UpdateBrandLogoRequest(
-        @NotBlank
-        @Size(
-                max = BrandLogoKey.MAX_LENGTH)
-        String newLogoKey,
+public record UpdateBrandLogoRequest(@NotBlank @Size(max=BrandLogoKey.MAX_LENGTH)String newLogoKey,
 
-        @NotNull
-        Long version) {
-}
+@NotNull Long version){}

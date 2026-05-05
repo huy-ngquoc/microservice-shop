@@ -1,19 +1,13 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
-import java.time.Instant;
-import java.util.UUID;
-
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.shared.application.exception.OptimisticLockException;
-import vn.edu.uit.msshop.product.shared.application.port.out.PublishProductEventPort;
-import vn.edu.uit.msshop.product.shared.event.document.VariantPurgeDocument;
-import vn.edu.uit.msshop.product.shared.event.repository.VariantPurgeRepository;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantUseCase;
@@ -30,62 +24,48 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 @RequiredArgsConstructor
 @Slf4j
 public class HardDeleteVariantService implements HardDeleteVariantUseCase {
-    private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
-    private final DeleteVariantPort deletePort;
-    private final DeleteVariantSoldCountPort deleteSoldCountPort;
-    private final CheckVariantReferencedByProductPort checkReferencedPort;
-    private final VariantImageStoragePort imageStoragePort;
-    private final PublishVariantEventPort eventPort;
-    private final VariantPurgeRepository variantPurgeRepo;
-    private final PublishProductEventPort publishPort;
+  private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
+  private final DeleteVariantPort deletePort;
+  private final DeleteVariantSoldCountPort deleteSoldCountPort;
+  private final CheckVariantReferencedByProductPort checkReferencedPort;
+  private final VariantImageStoragePort imageStoragePort;
+  private final PublishVariantEventPort eventPort;
 
-    @Override
-    @Transactional
-    public void purge(
-            final HardDeleteVariantCommand command) {
-        final var variantId = command.id();
-        final var variant = this.loadSoftDeletedPort
-                .loadSoftDeletedById(variantId)
-                .orElseThrow(() -> new VariantNotFoundException(variantId));
+  @Override
+  @Transactional
+  public void purge(final HardDeleteVariantCommand command) {
+    final var variantId = command.id();
+    final var variant = this.loadSoftDeletedPort.loadSoftDeletedById(variantId)
+        .orElseThrow(() -> new VariantNotFoundException(variantId));
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = variant.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
-
-        final var referenced = this.checkReferencedPort
-                .isReferencedByProduct(variantId);
-        if (referenced) {
-            throw new BusinessRuleException(
-                    "Cannot purge variant: still referenced by a product");
-        }
-
-        this.deletePort.deleteById(variantId);
-        this.deleteSoldCountPort.deleteById(variantId);
-
-        this.eventPort.publish(new VariantPurged(variantId));
-
-
-        this.deleteImage(variant.getImageKey());
-        VariantPurgeDocument eventDocument = new VariantPurgeDocument(UUID.randomUUID(), variantId.value(), "PENDING", 0, Instant.now(), null, null);
-        this.publishPort.publishVariantPurge(variantPurgeRepo.save(eventDocument));
-
+    final var expectedVersion = command.expectedVersion();
+    final var currentVersion = variant.getVersion();
+    if (!expectedVersion.equals(currentVersion)) {
+      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
     }
 
-    private void deleteImage(
-            @Nullable
-            final VariantImageKey key) {
-        if (key == null) {
-            return;
-        }
-
-        try {
-            this.imageStoragePort.deleteImage(key);
-        } catch (final RuntimeException e) {
-            log.warn("Failed to delete image '{}', manual cleanup required", key.value(), e);
-        }
+    final var referenced = this.checkReferencedPort.isReferencedByProduct(variantId);
+    if (referenced) {
+      throw new BusinessRuleException("Cannot purge variant: still referenced by a product");
     }
+
+    this.deletePort.deleteById(variantId);
+    this.deleteSoldCountPort.deleteById(variantId);
+
+    this.eventPort.publish(new VariantPurged(variantId));
+
+    this.deleteImage(variant.getImageKey());
+  }
+
+  private void deleteImage(@Nullable final VariantImageKey key) {
+    if (key == null) {
+      return;
+    }
+
+    try {
+      this.imageStoragePort.deleteImage(key);
+    } catch (final RuntimeException e) {
+      log.warn("Failed to delete image '{}', manual cleanup required", key.value(), e);
+    }
+  }
 }

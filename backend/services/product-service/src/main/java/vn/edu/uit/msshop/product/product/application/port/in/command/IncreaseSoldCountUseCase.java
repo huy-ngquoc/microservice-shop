@@ -6,6 +6,6 @@ import vn.edu.uit.msshop.product.product.application.dto.command.IncreaseSoldCou
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 
 public interface IncreaseSoldCountUseCase {
-    @Nullable
-    public Product increaseSoldCountAmount(IncreaseSoldCountCommand command);
+  @Nullable
+  public Product increaseSoldCountAmount(IncreaseSoldCountCommand command);
 }

@@ -19,22 +19,19 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 @RequiredArgsConstructor
 @Slf4j
 public class CreateCategoryService implements CreateCategoryUseCase {
-    private final CreateCategoryPort createPort;
-    private final CategoryViewMapper mapper;
-    private final PublishCategoryEventPort eventPort;
+  private final CreateCategoryPort createPort;
+  private final CategoryViewMapper mapper;
+  private final PublishCategoryEventPort eventPort;
 
-    @Override
-    @Transactional
-    public CategoryView create(
-            final CreateCategoryCommand command) {
-        final var newCategory = new NewCategory(
-                CategoryId.newId(),
-                command.name());
+  @Override
+  @Transactional
+  public CategoryView create(final CreateCategoryCommand command) {
+    final var newCategory = new NewCategory(CategoryId.newId(), command.name());
 
-        final var saved = this.createPort.create(newCategory);
+    final var saved = this.createPort.create(newCategory);
 
-        this.eventPort.publish(new CategoryCreated(saved.getId()));
+    this.eventPort.publish(new CategoryCreated(saved.getId()));
 
-        return this.mapper.toView(saved);
-    }
+    return this.mapper.toView(saved);
+  }
 }

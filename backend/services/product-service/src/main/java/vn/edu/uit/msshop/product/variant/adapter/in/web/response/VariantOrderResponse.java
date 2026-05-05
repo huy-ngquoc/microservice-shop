@@ -5,20 +5,16 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
-public record VariantOrderResponse(
-    UUID id,
+public record VariantOrderResponse(UUID id,
 
-        UUID productId,
+UUID productId,
 
-        long price,
+long price,
 
-        int soldCount,
+int soldCount,
 
-        List<String> traits,
+List<String>traits,
 
-        @Nullable
-        String imageKey,
-        String productName
-) {
+@Nullable String imageKey,String productName){
 
 }

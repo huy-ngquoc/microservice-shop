@@ -19,20 +19,20 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collection="product_created_document")
+@Document(collection = "product_created_document")
 
 public class ProductCreatedDocument {
-    @Id
-    private UUID eventId;
-    private UUID productId;
-    private String productName;
-    private List<VariantCreatedDocument> variantCreateds;
-    private String eventStatus;
-    private Integer retryCount; 
-    private Instant createdAt;
-    @Nullable
-    private Instant updatedAt; 
-    @Nullable
-    private String lastError;
+  @Id
+  private UUID eventId;
+  private UUID productId;
+  private String productName;
+  private List<VariantCreatedDocument> variantCreateds;
+  private String eventStatus;
+  private Integer retryCount;
+  private Instant createdAt;
+  @Nullable
+  private Instant updatedAt;
+  @Nullable
+  private String lastError;
 
 }

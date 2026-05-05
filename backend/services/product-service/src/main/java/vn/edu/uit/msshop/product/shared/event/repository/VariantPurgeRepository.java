@@ -11,9 +11,9 @@ import vn.edu.uit.msshop.product.shared.event.document.VariantPurgeDocument;
 
 @Repository
 public interface VariantPurgeRepository extends MongoRepository<VariantPurgeDocument, UUID> {
-     public List<VariantPurgeDocument> findByEventStatus(String eventStatus);
+  public List<VariantPurgeDocument> findByEventStatus(String eventStatus);
 
-    public List<VariantPurgeDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+  public List<VariantPurgeDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+  public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }

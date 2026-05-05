@@ -10,14 +10,12 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategor
 
 @Component
 @RequiredArgsConstructor
-public class CategoryValidationAdapter
-        implements CheckProductCategoryExistsPort {
-    private final CheckCategoryExistsUseCase checkExistsUseCase;
+public class CategoryValidationAdapter implements CheckProductCategoryExistsPort {
+  private final CheckCategoryExistsUseCase checkExistsUseCase;
 
-    @Override
-    public boolean existsById(
-            final ProductCategoryId categoryId) {
-        final var id = new CategoryId(categoryId.value());
-        return this.checkExistsUseCase.existsById(id);
-    }
+  @Override
+  public boolean existsById(final ProductCategoryId categoryId) {
+    final var id = new CategoryId(categoryId.value());
+    return this.checkExistsUseCase.existsById(id);
+  }
 }

@@ -4,6 +4,5 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandInfoCo
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 
 public interface UpdateBrandInfoUseCase {
-    BrandView updateInfo(
-            final UpdateBrandInfoCommand command);
+  BrandView updateInfo(final UpdateBrandInfoCommand command);
 }

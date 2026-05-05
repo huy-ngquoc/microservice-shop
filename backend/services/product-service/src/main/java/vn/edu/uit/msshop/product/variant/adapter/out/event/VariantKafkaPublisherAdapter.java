@@ -17,34 +17,27 @@ import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVaria
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class VariantKafkaPublisherAdapter
-        implements PublishVariantIntegrationEventPort {
-    private final KafkaTemplate<String, VariantIntegrationEvent> kafkaTemplate;
+public class VariantKafkaPublisherAdapter implements PublishVariantIntegrationEventPort {
+  private final KafkaTemplate<String, VariantIntegrationEvent> kafkaTemplate;
 
-    @Override
-    public void publishUpdated(
-            final VariantUpdatedIntegrationEvent event) {
-        this.publish(event);
-    }
+  @Override
+  public void publishUpdated(final VariantUpdatedIntegrationEvent event) {
+    this.publish(event);
+  }
 
-    @Override
-    public void publishSoftDeleted(
-            final VariantSoftDeletedIntegrationEvent event) {
-        this.publish(event);
-    }
+  @Override
+  public void publishSoftDeleted(final VariantSoftDeletedIntegrationEvent event) {
+    this.publish(event);
+  }
 
-    // Result is handled globally by VariantKafkaProducerListener
-    @SuppressWarnings("FutureReturnValueIgnored")
-    private void publish(
-            final VariantIntegrationEvent event) {
-        final var producerRecord = new ProducerRecord<String, VariantIntegrationEvent>(
-                KafkaVariantConfig.TOPIC_NAME,
-                event.getAggregateId(),
-                event);
-        producerRecord.headers().add(
-                "event-type",
-                event.getClass().getSimpleName().getBytes(StandardCharsets.UTF_8));
+  // Result is handled globally by VariantKafkaProducerListener
+  @SuppressWarnings("FutureReturnValueIgnored")
+  private void publish(final VariantIntegrationEvent event) {
+    final var producerRecord = new ProducerRecord<String, VariantIntegrationEvent>(
+        KafkaVariantConfig.TOPIC_NAME, event.getAggregateId(), event);
+    producerRecord.headers().add("event-type",
+        event.getClass().getSimpleName().getBytes(StandardCharsets.UTF_8));
 
-        this.kafkaTemplate.send(producerRecord);
-    }
+    this.kafkaTemplate.send(producerRecord);
+  }
 }

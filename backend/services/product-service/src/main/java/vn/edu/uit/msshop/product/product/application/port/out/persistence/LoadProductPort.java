@@ -6,7 +6,5 @@ import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 public interface LoadProductPort {
-    Optional<Product> loadById(
-            final ProductId id);
-    
+  Optional<Product> loadById(final ProductId id);
 }

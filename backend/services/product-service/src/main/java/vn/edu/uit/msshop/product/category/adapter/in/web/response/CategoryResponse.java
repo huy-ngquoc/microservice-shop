@@ -4,12 +4,8 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
-public record CategoryResponse(
-        UUID id,
-        String name,
+public record CategoryResponse(UUID id,String name,
 
-        @Nullable
-        String imageUrl,
+@Nullable String imageUrl,
 
-        long version) {
-}
+long version){}

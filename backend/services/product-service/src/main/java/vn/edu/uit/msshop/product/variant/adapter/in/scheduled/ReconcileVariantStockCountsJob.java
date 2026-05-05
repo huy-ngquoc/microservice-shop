@@ -16,25 +16,21 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVa
 @RequiredArgsConstructor
 @Slf4j
 public class ReconcileVariantStockCountsJob {
-    private static final int RATE_IN_HOURS = 24;
+  private static final int RATE_IN_HOURS = 24;
 
-    private final ReconcileVariantStockCountsUseCase reconcileUseCase;
+  private final ReconcileVariantStockCountsUseCase reconcileUseCase;
 
-    @Scheduled(
-            fixedRate = RATE_IN_HOURS,
-            timeUnit = TimeUnit.HOURS)
-    public void reconcile() {
-        final var rangeEndTime = Instant.now();
-        final var rangeStartTime = rangeEndTime.minus(Duration.ofHours(RATE_IN_HOURS));
+  @Scheduled(fixedRate = RATE_IN_HOURS, timeUnit = TimeUnit.HOURS)
+  public void reconcile() {
+    final var rangeEndTime = Instant.now();
+    final var rangeStartTime = rangeEndTime.minus(Duration.ofHours(RATE_IN_HOURS));
 
-        final var command = new ReconcileVariantStockCountsCommand(
-                rangeStartTime,
-                rangeEndTime);
+    final var command = new ReconcileVariantStockCountsCommand(rangeStartTime, rangeEndTime);
 
-        try {
-            this.reconcileUseCase.execute(command);
-        } catch (final RuntimeException e) {
-            log.warn("Stock count reconciliation skipped: {}", e.getMessage());
-        }
+    try {
+      this.reconcileUseCase.execute(command);
+    } catch (final RuntimeException e) {
+      log.warn("Stock count reconciliation skipped: {}", e.getMessage());
     }
+  }
 }

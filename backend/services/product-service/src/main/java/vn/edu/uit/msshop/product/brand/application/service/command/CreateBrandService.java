@@ -19,21 +19,18 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 @RequiredArgsConstructor
 @Slf4j
 public class CreateBrandService implements CreateBrandUseCase {
-    private final CreateBrandPort createPort;
-    private final BrandViewMapper mapper;
-    private final PublishBrandEventPort eventPort;
+  private final CreateBrandPort createPort;
+  private final BrandViewMapper mapper;
+  private final PublishBrandEventPort eventPort;
 
-    @Override
-    @Transactional
-    public BrandView create(
-            final CreateBrandCommand command) {
-        final var brand = new NewBrand(
-                BrandId.newId(),
-                command.name());
+  @Override
+  @Transactional
+  public BrandView create(final CreateBrandCommand command) {
+    final var brand = new NewBrand(BrandId.newId(), command.name());
 
-        final var saved = this.createPort.create(brand);
-        this.eventPort.publish(new BrandCreated(saved.getId()));
+    final var saved = this.createPort.create(brand);
+    this.eventPort.publish(new BrandCreated(saved.getId()));
 
-        return this.mapper.toView(saved);
-    }
+    return this.mapper.toView(saved);
+  }
 }

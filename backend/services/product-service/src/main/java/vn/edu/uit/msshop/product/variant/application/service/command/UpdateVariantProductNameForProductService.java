@@ -11,15 +11,12 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.Update
 @Service
 @RequiredArgsConstructor
 public class UpdateVariantProductNameForProductService
-        implements UpdateVariantProductNameForProductUseCase {
-    private final UpdateAllVariantsProductNameForProductPort updatePort;
+    implements UpdateVariantProductNameForProductUseCase {
+  private final UpdateAllVariantsProductNameForProductPort updatePort;
 
-    @Override
-    @Transactional
-    public void execute(
-            final UpdateVariantProductNameForProductCommand command) {
-        this.updatePort.updateProductNameByProductId(
-                command.productId(),
-                command.productName());
-    }
+  @Override
+  @Transactional
+  public void execute(final UpdateVariantProductNameForProductCommand command) {
+    this.updatePort.updateProductNameByProductId(command.productId(), command.productName());
+  }
 }

@@ -86,33 +86,8 @@ services:
             - "9411:9411"
         networks:
             - microservices-net
-    prometheus:
-        image: prom/prometheus:latest
-        container_name: ms_prometheus
-        volumes:
-            - ./prometheus.yml:/etc/prometheus/prometheus.yml
-        ports:
-            - "9090:9090"
-    grafana:
-        image: grafana/grafana:latest
-        container_name: ms_grafana
-        ports:
-            - "3000:3000"
-        environment:
-            - GF_SECURITY_ADMIN_PASSWORD=admin
-        depends_on:
-            - prometheus
-    tempo:
-        image: grafana/tempo:latest
-        container_name: ms_tempo
-        command: [ "-config.file=/etc/tempo.yml" ]
-        volumes:
-            - ./tempo-config.yml:/etc/tempo.yml
-        ports:
-            - "4317:4317"  # OTLP gRPC
-            - "4318:4318"  # OTLP HTTP (Spring Boot 3 thường dùng cái này)
-            - "3200:3200"  # Tempo UI/API
-    mongodb:
+
+    mongo:
         container_name: ms_mongo_db
         build:
             context: ./mongo
@@ -126,102 +101,30 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=alibou
             - MONGO_INITDB_ROOT_PASSWORD=alibou
             - TZ=UTC
-    mongodb_payment:
-        container_name: ms_mongodb_payment
-        image: mongo:8
-        ports:
-            - 27023:27017
-        volumes:
-            - mongo_payment:/data
+        command:
+            - "--replSet"
+            - "rs0"
+            - "--bind_ip_all"
+            - "--keyFile"
+            - "/etc/mongo/keyfile"
         networks:
             - microservices-net
-        environment:
-            - MONGO_INITDB_ROOT_USERNAME=alibou
-            - MONGO_INITDB_ROOT_PASSWORD=alibou
-            - TZ=UTC
-    mongodb_rating:
-        container_name: ms_mongo_db_rating
-        image: mongo:8
-        ports:
-            - 27018:27017
-        volumes:
-            - mongo_rating:/data
-        environment:
-            - MONGO_INITDB_ROOT_USERNAME=alibou
-            - MONGO_INITDB_ROOT_PASSWORD=alibou
-            - TZ=UTC
-        networks:
-            - microservices-net
-    mongodb_auth:
-        container_name: ms_mongo_db_auth
-        image: mongo:8 
-        ports:
-            - 27020:27017
-        volumes:
-            - mongo_auth:/data
-        environment:
-            - MONGO_INITDB_ROOT_USERNAME=alibou
-            - MONGO_INITDB_ROOT_PASSWORD=alibou
-            - TZ=UTC
-        networks:
-            - microservices-net
-    mongodb_account:
-        container_name: ms_mongo_db_account
-        image: mongo:8 
-        ports:
-            - 27021:27017
-        volumes:
-            - mongo_account:/data
-        environment:
-            - MONGO_INITDB_ROOT_USERNAME=alibou
-            - MONGO_INITDB_ROOT_PASSWORD=alibou
-            - TZ=UTC
-        networks:
-            - microservices-net
-    mongodb_inventory:
-        container_name: ms_mongo_db_inventory
-        image: mongo:8
-        ports:
-            - 27022:27017
-        volumes:
-            - mongo_inventory:/data
-        environment:
-            - MONGO_INITDB_ROOT_USERNAME=alibou
-            - MONGO_INITDB_ROOT_PASSWORD=alibou
-            - TZ=UTC
-        networks:
-            - microservices-net
-    mongodb_order:
-        container_name: ms_mongo_db_order
-        image: mongo:8
-        ports:
-            - 27019:27017
-        volumes:
-            - mongo_order:/data
-            - ./mongodb.key:/data/configdb/mongodb.key
-        environment:
-            - MONGO_INITDB_ROOT_USERNAME=alibou
-            - MONGO_INITDB_ROOT_PASSWORD=alibou
-            - TZ=UTC
-        command: mongod --replSet rs0 
-             --keyFile /data/configdb/mongodb.key 
-             --bind_ip_all
-        entrypoint: [ "/bin/sh", "-c", "chown 999:999 /data/configdb/mongodb.key && chmod 400 /data/configdb/mongodb.key && exec docker-entrypoint.sh $$@" ]
-        networks:
-            - microservices-net
-    mongodb_notification:
-        container_name: ms_mongdb_notification
-        image: mongo:8
-        ports:
-           - 20720:27017
-        volumes:
-           - mongo_notification:/data
-        environment:
-            - MONGO_INITDB_ROOT_USERNAME=alibou
-            - MONGO_INITDB_ROOT_PASSWORD=alibou
-            - TZ=UTC
-        networks:
-            - microservices-net
+        healthcheck:
+            test: |
+                mongosh --quiet -u alibou -p alibou --authenticationDatabase admin --eval "
+                try {
+                    if (rs.status().ok) {
+                        quit(0);
+                    }
+                }
+                catch (e) {
+                    rs.initiate({_id:'rs0', members:[{_id:0, host:'mongo:27017'}]}).ok
+                }"
+            interval: 10s
+            timeout: 30s
+            start_period: 30s
+            retries: 30
+
     mongo-express:
         container_name: ms_mongo_express
         image: mongo-express:1
@@ -256,10 +159,10 @@ services:
             # --- KRaft Specific Settings ---
             KAFKA_NODE_ID: 1
             KAFKA_PROCESS_ROLES: 'broker,controller'
-            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:9093'
+            KAFKA_CONTROLLER_QUORUM_VOTERS: '1@ms_kafka:9093'
             KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
             # Cluster ID is required for KRaft (You can change this later)
-            CLUSTER_ID: 'MAL1fjh8RCCL1yaIwenKDA'
+            CLUSTER_ID: 'MkU3MTAzOTpDRjQxNTY5OTo='
 
             # --- Listeners Configuration ---
             KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:9092'

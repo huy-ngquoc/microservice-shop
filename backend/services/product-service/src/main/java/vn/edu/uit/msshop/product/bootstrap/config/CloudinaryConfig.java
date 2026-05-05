@@ -11,15 +11,11 @@ import vn.edu.uit.msshop.product.bootstrap.config.properties.CloudinaryPropertie
 @Configuration
 @EnableConfigurationProperties(CloudinaryProperties.class)
 public class CloudinaryConfig {
-    @Bean
-    Cloudinary cloudinary(
-            CloudinaryProperties properties) {
-        final var url = String.format(
-                "cloudinary://%s:%s@%s",
-                properties.apiKey(),
-                properties.apiSecret(),
-                properties.cloudName());
+  @Bean
+  Cloudinary cloudinary(CloudinaryProperties properties) {
+    final var url = String.format("cloudinary://%s:%s@%s", properties.apiKey(),
+        properties.apiSecret(), properties.cloudName());
 
-        return new Cloudinary(url);
-    }
+    return new Cloudinary(url);
+  }
 }

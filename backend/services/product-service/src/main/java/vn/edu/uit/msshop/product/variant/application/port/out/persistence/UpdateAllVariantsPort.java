@@ -6,6 +6,5 @@ import java.util.List;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 
 public interface UpdateAllVariantsPort {
-    List<Variant> updateAll(
-            final Collection<Variant> variants);
+  List<Variant> updateAll(final Collection<Variant> variants);
 }

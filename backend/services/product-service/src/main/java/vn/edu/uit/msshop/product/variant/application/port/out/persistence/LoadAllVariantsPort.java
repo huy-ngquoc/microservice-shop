@@ -7,6 +7,5 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 public interface LoadAllVariantsPort {
-    Map<VariantId, Variant> loadAllByIds(
-            final Set<VariantId> ids);
+  Map<VariantId, Variant> loadAllByIds(final Set<VariantId> ids);
 }

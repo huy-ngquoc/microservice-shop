@@ -8,21 +8,15 @@ import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeleted;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
 
 public interface PublishCategoryEventPort {
-    void publish(
-            final CategoryCreated event);
+  void publish(final CategoryCreated event);
 
-    void publish(
-            final CategoryUpdated event);
+  void publish(final CategoryUpdated event);
 
-    void publish(
-            final CategoryImageUpdated event);
+  void publish(final CategoryImageUpdated event);
 
-    void publish(
-            final CategorySoftDeleted event);
+  void publish(final CategorySoftDeleted event);
 
-    void publish(
-            final CategoryRestored event);
+  void publish(final CategoryRestored event);
 
-    void publish(
-            final CategoryPurged event);
+  void publish(final CategoryPurged event);
 }

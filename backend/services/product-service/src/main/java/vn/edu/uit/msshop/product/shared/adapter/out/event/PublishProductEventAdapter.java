@@ -38,166 +38,169 @@ import vn.edu.uit.msshop.product.shared.event.publisher.VariantUpdateOutboxPubli
 @RequiredArgsConstructor
 @Slf4j
 public class PublishProductEventAdapter implements PublishProductEventPort {
-    private static final String PUBLISH_TOPIC="product-topic";
-    private final KafkaTemplate<String,ProductCreated> productCreatedTemplate;
-    private final ProductCreatedOutboxPublisher productCreatedOutboxPublisher;
-    private final KafkaTemplate<String,ProductUpdate> productUpdateTemplate;
-    private final ProductUpdateOutboxPublisher productUpdateOutboxPublisher;
-    private final KafkaTemplate<String,VariantUpdate> variantUpdateTemplate;
-    private final VariantUpdateOutboxPublisher variantUpdateOutboxPublisher;
-    private final KafkaTemplate<String,VariantDeleted> variantDeletedTemplate;
-    private final VariantDeletedOutboxPublisher variantDeletedOutboxPublisher;
-    private final KafkaTemplate<String,ProductDeleted> productDeletedTemplate;
-    private final ProductDeletedOutboxPublisher productDeletedOutboxPublisher;
-    private final VariantRestoreOutboxPublisher variantRestoreOutboxPublisher;
-    private final KafkaTemplate<String,VariantRestore> variantRestoreTemplate;
-    private final VariantPurgeOutboxPublisher VariantPurgeOutboxPublisher;
-    private final KafkaTemplate<String,VariantPurge> variantPurgeTemplate;
-    @Override
-    public void publishProductCreated(
-            ProductCreatedDocument eventDocument) {
-                System.out.println("Send product created");
-        List<VariantCreated> variantCreateds = eventDocument.getVariantCreateds().stream().map(item->new VariantCreated(item.getVariantId(), eventDocument.getProductId(), eventDocument.getProductName(), item.getPrice(), item.getTraits(), item.getImageKey())).toList();
-            ProductCreated productCreated = new ProductCreated(eventDocument.getEventId(), eventDocument.getProductId(), eventDocument.getProductName(), variantCreateds);
-            Message<ProductCreated> message = MessageBuilder.withPayload(productCreated).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+  private static final String PUBLISH_TOPIC = "product-topic";
+  private final KafkaTemplate<String, ProductCreated> productCreatedTemplate;
+  private final ProductCreatedOutboxPublisher productCreatedOutboxPublisher;
+  private final KafkaTemplate<String, ProductUpdate> productUpdateTemplate;
+  private final ProductUpdateOutboxPublisher productUpdateOutboxPublisher;
+  private final KafkaTemplate<String, VariantUpdate> variantUpdateTemplate;
+  private final VariantUpdateOutboxPublisher variantUpdateOutboxPublisher;
+  private final KafkaTemplate<String, VariantDeleted> variantDeletedTemplate;
+  private final VariantDeletedOutboxPublisher variantDeletedOutboxPublisher;
+  private final KafkaTemplate<String, ProductDeleted> productDeletedTemplate;
+  private final ProductDeletedOutboxPublisher productDeletedOutboxPublisher;
+  private final VariantRestoreOutboxPublisher variantRestoreOutboxPublisher;
+  private final KafkaTemplate<String, VariantRestore> variantRestoreTemplate;
+  private final VariantPurgeOutboxPublisher VariantPurgeOutboxPublisher;
+  private final KafkaTemplate<String, VariantPurge> variantPurgeTemplate;
 
-        try {
-        productCreatedTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                productCreatedOutboxPublisher.markAsSent(eventDocument);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
-    }
-    catch(Exception e) {
-        log.error("Error sending event");
-        e.printStackTrace();
-    }
-    }
-    @Override
-    public void publishProductUpdated(
-            ProductUpdateDocument eventDocument) {
-        
-        ProductUpdate productUpdate = new ProductUpdate(eventDocument.getEventId(), eventDocument.getProductId(),eventDocument.getName());
-        Message<ProductUpdate> message = MessageBuilder.withPayload(productUpdate).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+  @Override
+  public void publishProductCreated(ProductCreatedDocument eventDocument) {
+    System.out.println("Send product created");
+    List<VariantCreated> variantCreateds = eventDocument.getVariantCreateds().stream()
+        .map(item -> new VariantCreated(item.getVariantId(), eventDocument.getProductId(),
+            eventDocument.getProductName(), item.getPrice(), item.getTraits(), item.getImageKey()))
+        .toList();
+    ProductCreated productCreated = new ProductCreated(eventDocument.getEventId(),
+        eventDocument.getProductId(), eventDocument.getProductName(), variantCreateds);
+    Message<ProductCreated> message = MessageBuilder.withPayload(productCreated)
+        .setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
 
-        try {
-        variantUpdateTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                productUpdateOutboxPublisher.markAsSent(eventDocument);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
+    try {
+      productCreatedTemplate.send(message).whenComplete((result, ex) -> {
+        if (ex == null) {
+          productCreatedOutboxPublisher.markAsSent(eventDocument);
+        } else {
+          System.out.println("Send fail");
+        }
+      });
+    } catch (Exception e) {
+      log.error("Error sending event");
+      e.printStackTrace();
     }
-    catch(Exception e) {
-        log.error("Error sending event");
-    }
-    }
-    @Override
-    public void publishVariantUpdated(
-            VariantUpdateDocument eventDocument) {
-    VariantUpdate variantUpdate = new VariantUpdate(eventDocument.getEventId(), eventDocument.getVariantId(), eventDocument.getProductId(), eventDocument.getProductName(), eventDocument.getPrice(), eventDocument.getTraits(), eventDocument.getImageKey()==null?"":eventDocument.getImageKey());
-    Message<VariantUpdate> message = MessageBuilder.withPayload(variantUpdate).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+  }
 
-        try {
-        productUpdateTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                variantUpdateOutboxPublisher.markAsSent(eventDocument);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
+  @Override
+  public void publishProductUpdated(ProductUpdateDocument eventDocument) {
+
+    ProductUpdate productUpdate = new ProductUpdate(eventDocument.getEventId(),
+        eventDocument.getProductId(), eventDocument.getName());
+    Message<ProductUpdate> message = MessageBuilder.withPayload(productUpdate)
+        .setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+
+    try {
+      variantUpdateTemplate.send(message).whenComplete((result, ex) -> {
+        if (ex == null) {
+          productUpdateOutboxPublisher.markAsSent(eventDocument);
+        } else {
+          System.out.println("Send fail");
+        }
+      });
+    } catch (Exception e) {
+      log.error("Error sending event");
     }
-    catch(Exception e) {
-        log.error("Error sending event");
+  }
+
+  @Override
+  public void publishVariantUpdated(VariantUpdateDocument eventDocument) {
+    VariantUpdate variantUpdate = new VariantUpdate(eventDocument.getEventId(),
+        eventDocument.getVariantId(), eventDocument.getProductId(), eventDocument.getProductName(),
+        eventDocument.getPrice(), eventDocument.getTraits(),
+        eventDocument.getImageKey() == null ? "" : eventDocument.getImageKey());
+    Message<VariantUpdate> message = MessageBuilder.withPayload(variantUpdate)
+        .setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+
+    try {
+      productUpdateTemplate.send(message).whenComplete((result, ex) -> {
+        if (ex == null) {
+          variantUpdateOutboxPublisher.markAsSent(eventDocument);
+        } else {
+          System.out.println("Send fail");
+        }
+      });
+    } catch (Exception e) {
+      log.error("Error sending event");
     }
-    }
-    @Override
-    public void publishVariantDeleted(
-            VariantDeletedDocument eventDocument) {
-    VariantDeleted variantDeleted = new VariantDeleted(eventDocument.getEventId(), eventDocument.getVariantId());
-    Message<VariantDeleted> message = MessageBuilder.withPayload(variantDeleted).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+  }
+
+  @Override
+  public void publishVariantDeleted(VariantDeletedDocument eventDocument) {
+    VariantDeleted variantDeleted =
+        new VariantDeleted(eventDocument.getEventId(), eventDocument.getVariantId());
+    Message<VariantDeleted> message = MessageBuilder.withPayload(variantDeleted)
+        .setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
     System.out.println("Send deleted message");
-        try {
-        variantDeletedTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                variantDeletedOutboxPublisher.markAsSent(eventDocument);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
+    try {
+      variantDeletedTemplate.send(message).whenComplete((result, ex) -> {
+        if (ex == null) {
+          variantDeletedOutboxPublisher.markAsSent(eventDocument);
+        } else {
+          System.out.println("Send fail");
+        }
+      });
+    } catch (Exception e) {
+      log.error("Error sending event");
     }
-    catch(Exception e) {
-        log.error("Error sending event");
-    }
-    }
-    @Override
-    public void publishProductDeleted(
-            ProductDeletedDocument eventDocument) {
-       ProductDeleted productDeleted = new ProductDeleted(eventDocument.getEventId(), eventDocument.getProductId());
-    Message<ProductDeleted> message = MessageBuilder.withPayload(productDeleted).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+  }
 
-        try {
-        productDeletedTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                productDeletedOutboxPublisher.markAsSent(eventDocument);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
-    }
-    catch(Exception e) {
-        log.error("Error sending event");
-    }
-    }
-    @Override
-    public void publishVariantRestore(
-            VariantRestoreDocument eventDocument) {
-      VariantRestore variantRestore = new VariantRestore(eventDocument.getEventId(), eventDocument.getVariantId());
-    Message<VariantRestore> message = MessageBuilder.withPayload(variantRestore).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+  @Override
+  public void publishProductDeleted(ProductDeletedDocument eventDocument) {
+    ProductDeleted productDeleted =
+        new ProductDeleted(eventDocument.getEventId(), eventDocument.getProductId());
+    Message<ProductDeleted> message = MessageBuilder.withPayload(productDeleted)
+        .setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
 
-        try {
-        productDeletedTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                variantRestoreOutboxPublisher.markAsSent(eventDocument);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
+    try {
+      productDeletedTemplate.send(message).whenComplete((result, ex) -> {
+        if (ex == null) {
+          productDeletedOutboxPublisher.markAsSent(eventDocument);
+        } else {
+          System.out.println("Send fail");
+        }
+      });
+    } catch (Exception e) {
+      log.error("Error sending event");
     }
-    catch(Exception e) {
-        log.error("Error sending event");
-    }
-    }
-    @Override
-    public void publishVariantPurge(
-            VariantPurgeDocument eventDocument) {
-       VariantPurge variantPurge = new VariantPurge(eventDocument.getEventId(), eventDocument.getVariantId());
-    Message<VariantPurge> message = MessageBuilder.withPayload(variantPurge).setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+  }
 
-        try {
-        productDeletedTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                VariantPurgeOutboxPublisher.markAsSent(eventDocument);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
+  @Override
+  public void publishVariantRestore(VariantRestoreDocument eventDocument) {
+    VariantRestore variantRestore =
+        new VariantRestore(eventDocument.getEventId(), eventDocument.getVariantId());
+    Message<VariantRestore> message = MessageBuilder.withPayload(variantRestore)
+        .setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+
+    try {
+      productDeletedTemplate.send(message).whenComplete((result, ex) -> {
+        if (ex == null) {
+          variantRestoreOutboxPublisher.markAsSent(eventDocument);
+        } else {
+          System.out.println("Send fail");
+        }
+      });
+    } catch (Exception e) {
+      log.error("Error sending event");
     }
-    catch(Exception e) {
-        log.error("Error sending event");
+  }
+
+  @Override
+  public void publishVariantPurge(VariantPurgeDocument eventDocument) {
+    VariantPurge variantPurge =
+        new VariantPurge(eventDocument.getEventId(), eventDocument.getVariantId());
+    Message<VariantPurge> message = MessageBuilder.withPayload(variantPurge)
+        .setHeader(KafkaHeaders.TOPIC, PUBLISH_TOPIC).build();
+
+    try {
+      productDeletedTemplate.send(message).whenComplete((result, ex) -> {
+        if (ex == null) {
+          VariantPurgeOutboxPublisher.markAsSent(eventDocument);
+        } else {
+          System.out.println("Send fail");
+        }
+      });
+    } catch (Exception e) {
+      log.error("Error sending event");
     }
-    }
-    
+  }
 
 }
-

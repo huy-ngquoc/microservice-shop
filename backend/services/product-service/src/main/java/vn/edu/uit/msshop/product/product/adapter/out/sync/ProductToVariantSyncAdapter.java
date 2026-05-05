@@ -48,141 +48,106 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Component
 @RequiredArgsConstructor
-public class ProductToVariantSyncAdapter
-        implements
-        CreateAllProductVariantsPort,
-        RestoreVariantsForProductPort,
-        UpdateAllProductVariantTraitsPort,
-        UpdateProductNameOnVariantsPort,
-        SoftDeleteAllProductVariantsPort,
-        SoftDeleteVariantsForProductPort,
-        HardDeleteAllProductVariantsPort {
-    private final CreateVariantsForNewProductUseCase createForNewProductUseCase;
-    private final RestoreVariantsForProductUseCase restoreVariantsForProductUseCase;
-    private final UpdateAllVariantTraitsForProductUseCase updateAllTraitsForProductUseCase;
-    private final UpdateVariantProductNameForProductUseCase updateVariantProductNameForProductUseCase;
-    private final SoftDeleteAllVariantsUseCase softDeleteAllUseCase;
-    private final SoftDeleteVariantsForProductUseCase softDeleteForProductUseCase;
-    private final HardDeleteVariantsForProductUseCase hardDeleteVariantsForProductUseCase;
+public class ProductToVariantSyncAdapter implements CreateAllProductVariantsPort,
+    RestoreVariantsForProductPort, UpdateAllProductVariantTraitsPort,
+    UpdateProductNameOnVariantsPort, SoftDeleteAllProductVariantsPort,
+    SoftDeleteVariantsForProductPort, HardDeleteAllProductVariantsPort {
+  private final CreateVariantsForNewProductUseCase createForNewProductUseCase;
+  private final RestoreVariantsForProductUseCase restoreVariantsForProductUseCase;
+  private final UpdateAllVariantTraitsForProductUseCase updateAllTraitsForProductUseCase;
+  private final UpdateVariantProductNameForProductUseCase updateVariantProductNameForProductUseCase;
+  private final SoftDeleteAllVariantsUseCase softDeleteAllUseCase;
+  private final SoftDeleteVariantsForProductUseCase softDeleteForProductUseCase;
+  private final HardDeleteVariantsForProductUseCase hardDeleteVariantsForProductUseCase;
 
-    @Override
-    public ProductVariants create(
-            final ProductId id,
-            final ProductName name,
-            final NewProductVariants newVariants) {
-        final var variantProductId = new VariantProductId(id.value());
-        final var variantProductName = new VariantProductName(name.value());
-        final var newVariantInputsList = newVariants.values().stream()
-                .map(this::toNewVariantInput).toList();
-        final var newVariantInputs = new NewVariantsForNewProduct(newVariantInputsList);
+  @Override
+  public ProductVariants create(final ProductId id, final ProductName name,
+      final NewProductVariants newVariants) {
+    final var variantProductId = new VariantProductId(id.value());
+    final var variantProductName = new VariantProductName(name.value());
+    final var newVariantInputsList =
+        newVariants.values().stream().map(this::toNewVariantInput).toList();
+    final var newVariantInputs = new NewVariantsForNewProduct(newVariantInputsList);
 
-        final var command = new CreateVariantsForNewProductCommand(
-                variantProductId,
-                variantProductName,
-                newVariantInputs);
+    final var command = new CreateVariantsForNewProductCommand(variantProductId, variantProductName,
+        newVariantInputs);
 
-        final var variantViewsList = this.createForNewProductUseCase.create(command);
+    final var variantViewsList = this.createForNewProductUseCase.create(command);
 
-        final var productVariantsList = variantViewsList.stream()
-                .map(this::toProductVariant).toList();
-        return new ProductVariants(productVariantsList);
+    final var productVariantsList = variantViewsList.stream().map(this::toProductVariant).toList();
+    return new ProductVariants(productVariantsList);
+  }
+
+  @Override
+  public void restoreByVariantIds(final Collection<ProductVariantId> variantIds) {
+    final var ids = variantIds.stream().map(ProductVariantId::value).map(VariantId::new).toList();
+
+    this.restoreVariantsForProductUseCase.restoreByIds(ids);
+  }
+
+  @Override
+  public void updateTraitsByIds(Map<ProductVariantId, ProductVariantTraits> newTraitsMap) {
+    final var map = new HashMap<VariantId, VariantTraits>(newTraitsMap.size(), 1);
+
+    for (final var entry : newTraitsMap.entrySet()) {
+      final var productVariantId = entry.getKey();
+      final var productVariantTraits = entry.getValue();
+
+      final var variantId = new VariantId(productVariantId.value());
+      final var variantTraits = VariantTraits.of(productVariantTraits.unwrap());
+
+      map.put(variantId, variantTraits);
     }
 
-    @Override
-    public void restoreByVariantIds(
-            final Collection<ProductVariantId> variantIds) {
-        final var ids = variantIds.stream()
-                .map(ProductVariantId::value)
-                .map(VariantId::new)
-                .toList();
+    this.updateAllTraitsForProductUseCase.updateTraitsByIds(map);
+  }
 
-        this.restoreVariantsForProductUseCase.restoreByIds(ids);
-    }
+  @Override
+  public void updateProductNameByProductId(final ProductId id, final ProductName name) {
+    final var variantProductId = new VariantProductId(id.value());
+    final var variantProductName = new VariantProductName(name.value());
 
-    @Override
-    public void updateTraitsByIds(
-            Map<ProductVariantId, ProductVariantTraits> newTraitsMap) {
-        final var map = new HashMap<VariantId, VariantTraits>(
-                newTraitsMap.size(), 1);
+    final var command =
+        new UpdateVariantProductNameForProductCommand(variantProductId, variantProductName);
+    this.updateVariantProductNameForProductUseCase.execute(command);
+  }
 
-        for (final var entry : newTraitsMap.entrySet()) {
-            final var productVariantId = entry.getKey();
-            final var productVariantTraits = entry.getValue();
+  @Override
+  public void deleteByProductId(final ProductId id) {
+    final var productId = new VariantProductId(id.value());
+    this.softDeleteForProductUseCase.deleteByProductId(productId);
+  }
 
-            final var variantId = new VariantId(productVariantId.value());
-            final var variantTraits = VariantTraits.of(productVariantTraits.unwrap());
+  @Override
+  public void deleteByIds(final Collection<ProductVariantId> variantIds) {
+    final var ids = variantIds.stream().map(ProductVariantId::value).map(VariantId::new)
+        .collect(Collectors.toUnmodifiableSet());
+    this.softDeleteAllUseCase.deleteByIds(ids);
+  }
 
-            map.put(variantId, variantTraits);
-        }
+  @Override
+  public void purgeByProductId(final ProductId productId) {
+    final var variantProductId = new VariantProductId(productId.value());
+    this.hardDeleteVariantsForProductUseCase.purgeByProductId(variantProductId);
+  }
 
-        this.updateAllTraitsForProductUseCase.updateTraitsByIds(map);
-    }
+  private NewVariantForNewProduct toNewVariantInput(final NewProductVariant variant) {
+    final var price = new VariantPrice(variant.price().value());
+    final var traits =
+        new VariantTraits(variant.traits().unwrap().stream().map(VariantTrait::new).toList());
+    final var targets =
+        new VariantTargets(variant.targets().unwrap().stream().map(VariantTarget::new).toList());
 
-    @Override
-    public void updateProductNameByProductId(
-            final ProductId id,
-            final ProductName name) {
-        final var variantProductId = new VariantProductId(id.value());
-        final var variantProductName = new VariantProductName(name.value());
+    return new NewVariantForNewProduct(price, traits, targets);
+  }
 
-        final var command = new UpdateVariantProductNameForProductCommand(
-                variantProductId,
-                variantProductName);
-        this.updateVariantProductNameForProductUseCase.execute(command);
-    }
+  private ProductVariant toProductVariant(final VariantView variantView) {
+    final var id = new ProductVariantId(variantView.id());
+    final var price = new ProductVariantPrice(variantView.price());
 
-    @Override
-    public void deleteByProductId(
-            final ProductId id) {
-        final var productId = new VariantProductId(id.value());
-        this.softDeleteForProductUseCase.deleteByProductId(productId);
-    }
+    final var traitsList = variantView.traits().stream().map(ProductVariantTrait::new).toList();
+    final var traits = new ProductVariantTraits(traitsList);
 
-    @Override
-    public void deleteByIds(
-            final Collection<ProductVariantId> variantIds) {
-        final var ids = variantIds.stream()
-                .map(ProductVariantId::value)
-                .map(VariantId::new)
-                .collect(Collectors.toUnmodifiableSet());
-        this.softDeleteAllUseCase.deleteByIds(ids);
-    }
-
-    @Override
-    public void purgeByProductId(
-            final ProductId productId) {
-        final var variantProductId = new VariantProductId(productId.value());
-        this.hardDeleteVariantsForProductUseCase.purgeByProductId(variantProductId);
-    }
-
-    private NewVariantForNewProduct toNewVariantInput(
-            final NewProductVariant variant) {
-        final var price = new VariantPrice(variant.price().value());
-        final var traits = new VariantTraits(
-                variant.traits().unwrap()
-                        .stream().map(VariantTrait::new).toList());
-        final var targets = new VariantTargets(
-                variant.targets().unwrap()
-                        .stream().map(VariantTarget::new).toList());
-
-        return new NewVariantForNewProduct(
-                price,
-                traits,
-                targets);
-    }
-
-    private ProductVariant toProductVariant(
-            final VariantView variantView) {
-        final var id = new ProductVariantId(variantView.id());
-        final var price = new ProductVariantPrice(variantView.price());
-
-        final var traitsList = variantView.traits()
-                .stream().map(ProductVariantTrait::new).toList();
-        final var traits = new ProductVariantTraits(traitsList);
-
-        return new ProductVariant(
-                id,
-                price,
-                traits);
-    }
+    return new ProductVariant(id, price, traits);
+  }
 }
