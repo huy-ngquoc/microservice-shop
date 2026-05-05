@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVa
 public class ReconcileVariantSoldCountsJob {
   private final ReconcileVariantSoldCountsUseCase reconcileVariantSoldCountsUseCase;
 
-  @Scheduled(fixedRate = 24, timeUnit = TimeUnit.HOURS)
+  @Scheduled(fixedRate = 2, timeUnit = TimeUnit.MINUTES)
   public void reconcile() {
     try {
       this.reconcileVariantSoldCountsUseCase.execute();
