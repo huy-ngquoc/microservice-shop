@@ -3,6 +3,8 @@ package vn.edu.uit.msshop.shared.adapter.in.web;
 import java.time.Instant;
 import java.util.Objects;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -24,6 +26,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 @RestControllerAdvice
+@Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
@@ -37,7 +40,7 @@ public class GlobalExceptionHandler {
         log.debug(message);
 
         final var status = HttpStatus.NOT_FOUND;
-        final var response = GlobalExceptionHandler.buildResponse(
+        final var response = GlobalExceptionHandler.error(
                 status,
                 message,
                 request);
@@ -56,7 +59,7 @@ public class GlobalExceptionHandler {
         log.debug(message);
 
         final var status = HttpStatus.UNPROCESSABLE_CONTENT;
-        final var response = GlobalExceptionHandler.buildResponse(
+        final var response = GlobalExceptionHandler.error(
                 status,
                 message,
                 request);
@@ -75,7 +78,7 @@ public class GlobalExceptionHandler {
         log.debug(message);
 
         final var status = HttpStatus.CONFLICT;
-        final var response = GlobalExceptionHandler.buildResponse(
+        final var response = GlobalExceptionHandler.error(
                 status,
                 message,
                 request);
@@ -103,7 +106,7 @@ public class GlobalExceptionHandler {
         log.debug(message);
 
         final var status = HttpStatus.BAD_REQUEST;
-        final var response = GlobalExceptionHandler.buildResponse(
+        final var response = GlobalExceptionHandler.error(
                 status,
                 message,
                 request);
@@ -180,7 +183,7 @@ public class GlobalExceptionHandler {
         log.debug(message);
 
         final var status = HttpStatus.BAD_REQUEST;
-        final var response = GlobalExceptionHandler.buildResponse(
+        final var response = GlobalExceptionHandler.error(
                 status,
                 message,
                 request);
@@ -199,7 +202,7 @@ public class GlobalExceptionHandler {
         log.debug(message);
 
         final var status = HttpStatus.BAD_REQUEST;
-        final var response = GlobalExceptionHandler.buildResponse(
+        final var response = GlobalExceptionHandler.error(
                 status,
                 message,
                 request);
@@ -214,7 +217,7 @@ public class GlobalExceptionHandler {
         log.warn("Domain invariant violation", ex);
 
         final var status = HttpStatus.INTERNAL_SERVER_ERROR;
-        final var response = GlobalExceptionHandler.buildResponse(
+        final var response = GlobalExceptionHandler.error(
                 status,
                 "Internal server error",
                 request);
@@ -233,7 +236,7 @@ public class GlobalExceptionHandler {
         log.debug(message);
 
         final var status = HttpStatus.NOT_FOUND;
-        final var response = GlobalExceptionHandler.buildResponse(
+        final var response = GlobalExceptionHandler.error(
                 status,
                 message,
                 request);
@@ -248,7 +251,7 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error", ex);
 
         final var status = HttpStatus.INTERNAL_SERVER_ERROR;
-        final var response = GlobalExceptionHandler.buildResponse(
+        final var response = GlobalExceptionHandler.error(
                 status,
                 "Internal server error",
                 request);
@@ -256,7 +259,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(response);
     }
 
-    private static ApiErrorResponse buildResponse(
+    private static ApiErrorResponse error(
             final HttpStatus status,
             final String message,
             final HttpServletRequest request) {
