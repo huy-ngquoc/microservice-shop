@@ -32,7 +32,7 @@ public class InventoryStockCountFeignAdapter
         boolean hasNextPage = false;
 
         final var request = new FindAllUpdatedStockCountsRequest(
-                rangeEndTime,
+                rangeStartTime,
                 rangeEndTime,
                 rangeStartTime,
                 rangeEndTime);
