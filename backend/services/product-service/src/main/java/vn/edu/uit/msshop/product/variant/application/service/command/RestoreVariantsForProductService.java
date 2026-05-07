@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;

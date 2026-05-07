@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryImageCommand;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryImageKeyNotFoundException;

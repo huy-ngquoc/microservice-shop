@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;

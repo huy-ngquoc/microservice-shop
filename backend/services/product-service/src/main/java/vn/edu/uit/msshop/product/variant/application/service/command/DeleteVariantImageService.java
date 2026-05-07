@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;

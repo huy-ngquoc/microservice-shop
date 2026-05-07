@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.bootstrap.config;
+package vn.edu.uit.msshop.product.bootstrap.config.cache;
 
 public final class CacheNames {
     public static final String BRAND = "brand";
