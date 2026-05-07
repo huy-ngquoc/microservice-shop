@@ -2,7 +2,7 @@
 FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /app
 
-# Chỉ copy đúng pom.xml và source code của account-service
+# Chỉ copy đúng pom.xml và source code của inventory-service
 COPY backend/services/inventory-service/inventory/pom.xml backend/services/inventory-service/inventory/
 RUN mvn -f backend/services/inventory-service/inventory/pom.xml dependency:go-offline -B
 
