@@ -1,10 +1,13 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFoundException;
@@ -45,6 +48,21 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT,
+                            key = "#command.id().value()",
+                            condition = "#command.name().getSet() != null || " +
+                                    "#command.categoryId().getSet() != null || " +
+                                    "#command.brandId().getSet() != null"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT_LIST,
+                            allEntries = true,
+                            condition = "#command.name().getSet() != null || " +
+                                    "#command.categoryId().getSet() != null || " +
+                                    "#command.brandId().getSet() != null")
+            })
     public ProductView updateInfo(
             final UpdateProductInfoCommand command) {
         final var productId = command.id();

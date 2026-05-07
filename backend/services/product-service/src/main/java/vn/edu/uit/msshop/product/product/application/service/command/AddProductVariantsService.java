@@ -1,9 +1,12 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
@@ -36,6 +39,15 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT_LIST,
+                            allEntries = true)
+            })
     public ProductView addVariants(
             final AddProductVariantsCommand command) {
         final var productId = command.id();

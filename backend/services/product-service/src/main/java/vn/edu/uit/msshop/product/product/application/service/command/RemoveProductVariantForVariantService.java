@@ -2,10 +2,13 @@ package vn.edu.uit.msshop.product.product.application.service.command;
 
 import java.util.Map;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductMustHaveAtLeastOneVariantException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
@@ -30,6 +33,15 @@ public class RemoveProductVariantForVariantService
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT_LIST,
+                            allEntries = true)
+            })
     public void removeVariant(
             RemoveProductVariantForVariantCommand command) {
         final var productId = command.id();
