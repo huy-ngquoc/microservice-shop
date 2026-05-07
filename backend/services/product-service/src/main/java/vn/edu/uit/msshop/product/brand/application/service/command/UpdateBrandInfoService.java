@@ -61,7 +61,7 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
                     currentVersion.value());
         }
 
-        final var next = this.applyChanges(brand, nameSet);
+        final var next = UpdateBrandInfoService.applyChanges(brand, nameSet);
         if (next == null) {
             return this.mapper.toView(brand);
         }
@@ -72,7 +72,7 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
         return this.mapper.toView(saved);
     }
 
-    private @Nullable Brand applyChanges(
+    private static @Nullable Brand applyChanges(
             final Brand current,
             final Change.Set<BrandName> nameSet) {
         if (nameSet.value().equals(current.getName())) {
