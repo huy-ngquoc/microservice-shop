@@ -13,7 +13,11 @@ import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializ
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import tools.jackson.databind.DefaultTyping;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import vn.edu.uit.msshop.product.bootstrap.config.properties.RedisCacheProperties;
 
 @Configuration
@@ -25,7 +29,19 @@ public class RedisCacheConfig {
             RedisConnectionFactory factory,
             RedisCacheProperties props,
             ObjectMapper objectMapper) {
-        final var jsonSerializer = new GenericJacksonJsonRedisSerializer(objectMapper);
+        final var redisMapper = objectMapper.rebuild()
+                .activateDefaultTyping(
+                        BasicPolymorphicTypeValidator.builder()
+                                .allowIfSubType("vn.edu.uit.msshop")
+                                .allowIfSubType("java.util")
+                                .allowIfSubType("java.time")
+                                .allowIfSubType("java.lang")
+                                .build(),
+                        DefaultTyping.NON_FINAL_AND_RECORDS,
+                        JsonTypeInfo.As.PROPERTY)
+                .build();
+
+        final var jsonSerializer = new GenericJacksonJsonRedisSerializer(redisMapper);
         final var valueSerializer = RedisSerializationContext.SerializationPair
                 .fromSerializer(jsonSerializer);
 
@@ -35,6 +51,7 @@ public class RedisCacheConfig {
 
         final var base = RedisCacheConfiguration.defaultCacheConfig()
                 .disableCachingNullValues()
+                .computePrefixWith(cacheName -> props.keyPrefix() + ":" + cacheName + ":")
                 .serializeValuesWith(valueSerializer)
                 .serializeKeysWith(keySerializer);
 

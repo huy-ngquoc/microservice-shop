@@ -57,6 +57,7 @@ spring:
 
 app:
     cache:
+        key-prefix: ${spring.application.name}
         brand-ttl: 1h
         brand-list-ttl: 30m
         category-ttl: 1h
