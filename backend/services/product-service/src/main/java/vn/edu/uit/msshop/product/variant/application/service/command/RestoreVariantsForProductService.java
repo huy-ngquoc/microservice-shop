@@ -2,10 +2,12 @@ package vn.edu.uit.msshop.product.variant.application.service.command;
 
 import java.util.Collection;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
@@ -24,6 +26,9 @@ public class RestoreVariantsForProductService
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.VARIANT_LIST,
+            allEntries = true)
     public void restoreByIds(
             final Collection<VariantId> ids) {
         final var variants = this.loadAllSoftDeletedPort

@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantsForNewProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
@@ -39,6 +41,9 @@ public class CreateVariantsForNewProductService implements CreateVariantsForNewP
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.VARIANT_LIST,
+            allEntries = true)
     public List<VariantView> create(
             final CreateVariantsForNewProductCommand command) {
         final var saved = this.createVariants(command);
