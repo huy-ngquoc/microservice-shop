@@ -85,7 +85,7 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
             final BrandLogoKey oldKey) {
         try {
             this.logoStoragePort.deleteLogo(oldKey);
-        } catch (Exception e) {
+        } catch (final RuntimeException e) {
             log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
         }
     }

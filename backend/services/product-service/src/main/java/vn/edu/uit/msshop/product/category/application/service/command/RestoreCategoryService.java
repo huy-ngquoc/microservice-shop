@@ -1,7 +1,6 @@
 package vn.edu.uit.msshop.product.category.application.service.command;
 
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
