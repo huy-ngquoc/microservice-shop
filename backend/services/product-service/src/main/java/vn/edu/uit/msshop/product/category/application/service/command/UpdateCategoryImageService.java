@@ -120,7 +120,7 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
 
         try {
             this.imageStoragePort.deleteImage(oldKey);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
         }
     }
