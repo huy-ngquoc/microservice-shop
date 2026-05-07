@@ -3,7 +3,10 @@ package vn.edu.uit.msshop.product.bootstrap.config;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.CacheErrorHandler;
+import org.springframework.cache.interceptor.LoggingCacheErrorHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -23,7 +26,13 @@ import vn.edu.uit.msshop.product.bootstrap.config.properties.RedisCachePropertie
 @Configuration
 @EnableCaching
 @EnableConfigurationProperties(RedisCacheProperties.class)
-public class RedisCacheConfig {
+public class RedisCacheConfig
+        implements CachingConfigurer {
+    @Override
+    public CacheErrorHandler errorHandler() {
+        return new LoggingCacheErrorHandler(true);
+    }
+
     @Bean
     public RedisCacheManager cacheManager(
             RedisConnectionFactory factory,
