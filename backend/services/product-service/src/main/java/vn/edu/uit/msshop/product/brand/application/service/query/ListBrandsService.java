@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.brand.application.service.query;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.ListBrandsUseCase;
@@ -20,6 +22,8 @@ public class ListBrandsService implements ListBrandsUseCase {
     @Override
     @Transactional(
             readOnly = true)
+    @Cacheable(
+            cacheNames = CacheNames.BRAND_LIST)
     public PageResponseDto<BrandView> list(
             PageRequestDto pageRequest) {
         final var page = listPort.list(pageRequest);

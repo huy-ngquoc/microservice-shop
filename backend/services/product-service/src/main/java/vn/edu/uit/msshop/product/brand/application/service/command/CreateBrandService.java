@@ -1,10 +1,12 @@
 package vn.edu.uit.msshop.product.brand.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.CreateBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
@@ -25,6 +27,9 @@ public class CreateBrandService implements CreateBrandUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.BRAND_LIST,
+            allEntries = true)
     public BrandView create(
             final CreateBrandCommand command) {
         final var brand = new NewBrand(
