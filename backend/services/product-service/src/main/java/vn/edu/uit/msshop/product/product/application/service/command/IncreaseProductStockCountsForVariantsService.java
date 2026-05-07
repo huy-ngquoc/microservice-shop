@@ -14,6 +14,7 @@ public class IncreaseProductStockCountsForVariantsService
     private final IncreaseAllProductStockCountsPort increaseAllPort;
 
     @Override
+    @Transactional
     public void execute(
             final IncreaseProductStockCountsForVariantsCommand command) {
         this.increaseAllPort.increaseAll(command.incrementById());

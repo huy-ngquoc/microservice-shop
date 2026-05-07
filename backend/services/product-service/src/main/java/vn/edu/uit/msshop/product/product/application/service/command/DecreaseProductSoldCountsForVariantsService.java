@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.DecreaseProductSoldCountsForVariantsCommand;
@@ -14,6 +15,7 @@ public class DecreaseProductSoldCountsForVariantsService
     private final DecreaseAllProductSoldCountsPort decreaseAllPort;
 
     @Override
+    @Transactional
     public void execute(
             DecreaseProductSoldCountsForVariantsCommand command) {
         this.decreaseAllPort.decreaseAll(command.decrementById());

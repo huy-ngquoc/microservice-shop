@@ -1,6 +1,8 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.IncreaseProductSoldCountsForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.IncreaseProductSoldCountsForVariantsUseCase;
@@ -13,6 +15,7 @@ public class IncreaseProductSoldCountsForVariantsService
     private final IncreaseAllProductSoldCountsPort increaseAllSoldCountsPort;
 
     @Override
+    @Transactional
     public void execute(
             final IncreaseProductSoldCountsForVariantsCommand command) {
         this.increaseAllSoldCountsPort.increaseAll(command.incrementById());
