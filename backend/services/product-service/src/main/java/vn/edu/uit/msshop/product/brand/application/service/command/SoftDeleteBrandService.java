@@ -1,9 +1,12 @@
 package vn.edu.uit.msshop.product.brand.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.SoftDeleteBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.SoftDeleteBrandUseCase;
@@ -27,6 +30,15 @@ public class SoftDeleteBrandService implements SoftDeleteBrandUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.BRAND,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.BRAND_LIST,
+                            allEntries = true)
+            })
     public void delete(
             SoftDeleteBrandCommand command) {
         final var brandId = command.id();

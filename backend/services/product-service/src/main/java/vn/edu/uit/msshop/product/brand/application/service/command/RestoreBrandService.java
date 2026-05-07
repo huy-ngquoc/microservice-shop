@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.brand.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.RestoreBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.RestoreBrandUseCase;
@@ -23,6 +25,9 @@ public class RestoreBrandService implements RestoreBrandUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.BRAND_LIST,
+            allEntries = true)
     public void restore(
             final RestoreBrandCommand command) {
         final var brandId = command.id();
