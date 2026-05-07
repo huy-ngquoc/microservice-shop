@@ -138,7 +138,7 @@ public class ProductPersistenceAdapter
     final ProductDocument saved;
     try {
       saved = this.repository.save(toSave);
-    } catch (final OptimisticLockingFailureException _) {
+    } catch (final OptimisticLockingFailureException e) {
       final var expected = product.getVersion().value();
       final var current =
           this.repository.findById(toSave.getId()).map(ProductDocument::getVersion).orElse(-1L);
@@ -160,7 +160,7 @@ public class ProductPersistenceAdapter
       final ProductDocument saved;
       try {
         saved = this.repository.save(toSave);
-      } catch (final OptimisticLockingFailureException _) {
+      } catch (final OptimisticLockingFailureException e) {
         final var expected = toSave.getVersion();
         final var current =
             this.repository.findById(toSave.getId()).map(ProductDocument::getVersion).orElse(null);

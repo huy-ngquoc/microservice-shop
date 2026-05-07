@@ -1,4 +1,166 @@
 services:
+    config-server:
+        build:
+            context: .  # Trỏ về thư mục gốc chứa pom.xml tổng và common-dto
+            dockerfile: backend/services/config-server/dockerfile # Đường dẫn tới file Dockerfile
+        container_name: config-server
+        healthcheck:
+            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/actuator/health"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        ports:
+            - "8888:8888"
+        networks:
+            - microservices-net
+        volumes:
+            - ./backend/services/config-server/src/main/resources/config:/app/config-repo
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - KEYCLOAK_URL=${KEYCLOAK_URL}
+            - KAFKA_URL=${KAFKA_URL}
+            - ACCOUNT_DB_URL=${ACCOUNT_DB_URL}
+    discovery-server:
+        build:
+            context: .
+            dockerfile: backend/services/discovery-server/dockerfile
+        container_name: discovery-server
+        ports:
+            - "8761:8761"
+        depends_on:
+            config-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+    account-service:
+        build:
+            context: .
+            dockerfile: backend/services/account-service/account/dockerfile
+        container_name: account-service
+        ports:
+            - "8071:8071"
+        depends_on:
+            config-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - KEYCLOAK_URL=${KEYCLOAK_URL}
+            - KAFKA_URL=${KAFKA_URL}
+            - ACCOUNT_DB_URL=${ACCOUNT_DB_URL}
+    auth-service:
+        build:
+            context: .
+            dockerfile: backend/services/auth-service/auth/dockerfile
+        container_name: auth-service
+        ports:
+            - "8082:8082"
+        depends_on:
+            config-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - KEYCLOAK_URL=${KEYCLOAK_URL}
+            - KAFKA_URL=${KAFKA_URL}
+    cart-service:
+        build:
+            context: .
+            dockerfile: backend/services/cart-service/cart/dockerfile
+        container_name: cart-service
+        ports:
+            - "8089:8089"
+        depends_on:
+            config-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - REDIS_HOST=${REDIS_HOST}
+            - CART_MONGODB_URL=${CART_MONGODB_URL}
+            - KAFKA_URL=${KAFKA_URL}
+    inventory-service:
+        build:
+            context: .
+            dockerfile: backend/services/inventory-service/inventory/dockerfile
+        container_name: inventory-service
+        ports:
+            - "8090:8090"
+        depends_on:
+            config-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - REDIS_INVENTORY_HOST=${REDIS_INVENTORY_HOST}
+            - INVENTORY_DB_URL=${INVENTORY_DB_URL}
+            - REDIS_PORT=${REDIS_PORT}
+            - KAFKA_URL=${KAFKA_URL}
+    order-service:
+        build:
+            context: .
+            dockerfile: backend/services/order-service/order/dockerfile
+        container_name: order-service
+        ports:
+            - "8000:8000"
+        depends_on:
+            config-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - REDIS_ORDER_HOST=${REDIS_ORDER_HOST}
+            - ORDER_DB_URL=${ORDER_DB_URL}
+            - REDIS_PORT=${REDIS_PORT}
+            - KAFKA_URL=${KAFKA_URL}
+    payment-service:
+        build:
+            context: .
+            dockerfile: backend/services/payment-service/payment/dockerfile
+        container_name: payment-service
+        ports:
+            - "8074:8074"
+        depends_on:
+            config-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - PAYMENT_DB_URL=${PAYMENT_DB_URL}
+            - KAFKA_URL=${KAFKA_URL}
+    product-service:
+        build:
+            context: .
+            dockerfile: backend/services/product-service/dockerfile
+        container_name: product-service
+        ports:
+            - "8070:8070"
+        depends_on:
+            config-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - PRODUCT_DB_HOST=${PRODUCT_DB_HOST}
+            - PRODUCT_DB_PORT=${PRODUCT_DB_PORT}
+            - KAFKA_URL=${KAFKA_URL}
     postgresql:
         container_name: ms_pg_sql
         image: postgres:18
@@ -90,7 +252,7 @@ services:
     mongo:
         container_name: ms_mongo_db
         build:
-            context: ./mongo
+            context: ./backend/mongo
             dockerfile: Dockerfile
         image: mongo:8-rs
         ports:
@@ -124,7 +286,56 @@ services:
             timeout: 30s
             start_period: 30s
             retries: 30
-
+    mongodb_cart:
+        container_name: ms_mongo_db_cart
+        image: mongo:8 
+        ports:
+            - 27021:27017
+        volumes:
+            - mongo_cart:/data
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+        networks:
+            - microservices-net
+    mongodb_order:
+        container_name: ms_mongo_db_order
+        image: mongo:8
+        ports:
+            - 27019:27017
+        healthcheck:
+            test: |
+                mongosh --quiet -u alibou -p alibou --authenticationDatabase admin --eval "
+                try {
+                    if (rs.status().ok) {
+                        quit(0); // Nếu đã ngon lành thì thoát 0 (Healthy)
+                    }
+                } catch (e) {
+                    // Nếu chưa khởi tạo (lỗi), thì chạy lệnh initiate
+                    rs.initiate({
+                        _id: 'rs0',
+                        members: [{ _id: 0, host: 'ms_mongo_db_order:27017' }]
+                    }).ok ? quit(0) : quit(1);
+                }"
+            interval: 10s
+            timeout: 10s
+            retries: 5
+            start_period: 20s
+        volumes:
+            - mongo_order:/data
+            - ./mongodb.key:/data/configdb/mongodb.key
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+        command: mongod --replSet rs0 
+             --keyFile /data/configdb/mongodb.key 
+             --bind_ip_all
+        entrypoint: [ "/bin/sh", "-c", "chown 999:999 /data/configdb/mongodb.key && chmod 400 /data/configdb/mongodb.key && exec docker-entrypoint.sh $$@" ]
+        networks:
+            - microservices-net
+    
     mongo-express:
         container_name: ms_mongo_express
         image: mongo-express:1
@@ -155,6 +366,7 @@ services:
         image: confluentinc/cp-kafka:8.1.2
         ports:
             - "9092:9092"
+            - "29092:29092"
         environment:
             # --- KRaft Specific Settings ---
             KAFKA_NODE_ID: 1
@@ -165,8 +377,8 @@ services:
             CLUSTER_ID: 'MkU3MTAzOTpDRjQxNTY5OTo='
 
             # --- Listeners Configuration ---
-            KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:9092'
-            KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ms_kafka:29092,PLAINTEXT_HOST://localhost:9092'
+            KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:29092'
+            KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ms_kafka:9092,PLAINTEXT_HOST://localhost:29092'
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
             KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
 
@@ -186,7 +398,6 @@ services:
             - 1025:1025
         networks:
             - microservices-net
-
     keycloak:
         container_name: ms_keycloak
         image: quay.io/keycloak/keycloak:26.5
@@ -284,3 +495,4 @@ volumes:
     mongo_notification:
     redis_order:
     redis_inventory:
+    mongo_cart:

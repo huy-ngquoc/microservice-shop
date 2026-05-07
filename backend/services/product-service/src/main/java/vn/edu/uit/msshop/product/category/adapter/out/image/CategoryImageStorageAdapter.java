@@ -32,7 +32,7 @@ public class CategoryImageStorageAdapter implements CategoryImageStoragePort {
           this.cloudinary.api().resource(CloudinaryFolders.TEMP + "/" + key.value(), Map.of());
 
       return (result != null) && result.containsKey("public_id");
-    } catch (final NotFound _) {
+    } catch (final NotFound e) {
       log.debug("Image key '{}' not found in temp storage", key.value());
       return false;
     } catch (final Exception e) {

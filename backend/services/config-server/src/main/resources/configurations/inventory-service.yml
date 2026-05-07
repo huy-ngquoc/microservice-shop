@@ -2,13 +2,13 @@ server:
     port: 8090
     address: 0.0.0.0
 redis:
-    host: localhost
-    port: 6381
+    host: ${REDIS_INVENTORY_HOST:localhost}
+    port: ${REDIS_PORT:6381}
 spring:
     data:
         redis:
-            host: localhost       
-            port: 6381
+            host: ${REDIS_INVENTORY_HOST:localhost}      
+            port: ${REDIS_PORT:6381}
             password: binh123
             timeout: 60000        
             lettuce:
@@ -16,11 +16,9 @@ spring:
                     max-active: 8
     datasource:
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:5440/inventory
+        url: jdbc:postgresql://${INVENTORY_DB_URL:localhost:5440}/inventory
         username: alibou
         password: alibou
-    mongodb:
-        uri: mongodb://alibou:alibou@localhost:27022/inventory_db?authSource=admin&uuidRepresentation=STANDARD
     jpa:
         hibernate:
             ddl-auto: update
@@ -36,7 +34,7 @@ spring:
                 "[globally_quoted_identifiers]": true
                 "[globally_quoted_identifiers_skip_column_definitions]": true
     kafka:
-        bootstrap-servers: localhost:9092 
+        bootstrap-servers: ${KAFKA_URL:localhost:9092}
         consumer:
             group-id: order-group
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -57,7 +55,7 @@ spring:
                     ProductUpdated:java.lang.Object,
                     ProductDeleted:java.lang.Object
         producer:
-            bootstrap-servers: localhost:9092
+            bootstrap-servers: ${KAFKA_URL:localhost:9092}
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
             properties:
@@ -96,3 +94,11 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
+    instance:
+        prefer-ip-address: true
+        lease-renewal-interval-in-seconds: 5 
+        lease-expiration-duration-in-seconds: 10

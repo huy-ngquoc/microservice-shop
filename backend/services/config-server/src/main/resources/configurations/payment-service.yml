@@ -2,14 +2,13 @@ server:
     port: 8074
 
 spring:
-    mongodb:
-        uri: mongodb://alibou:alibou@localhost:27023/order_db?authSource=admin&uuidRepresentation=STANDARD&maxPoolSize=200&minPoolSize=20
+    
     command-listener:
         observation:
             enabled: true
     datasource:
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:5435/payment
+        url: jdbc:postgresql://${PAYMENT_DB_URL:localhost:5435}/payment
         username: alibou
         password: alibou
     jpa:
@@ -26,7 +25,7 @@ spring:
             max-file-size: 5MB
             max-request-size: 6MB
     kafka:
-        bootstrap-servers: localhost:9092 
+        bootstrap-servers: ${KAFKA_URL:localhost:9092} 
         consumer:
             group-id: account-group
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -40,7 +39,7 @@ spring:
                     OnlinePaymentCancelled:vn.uit.edu.payment.domain.event.OnlinePaymentCancelled,
                     OrderUpdatedEvent:vn.uit.edu.payment.domain.event.OrderUpdatedEvent
         producer:
-            bootstrap-servers: localhost:9092
+            bootstrap-servers: ${KAFKA_URL:localhost:9092}
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
             properties:
@@ -60,3 +59,11 @@ payos:
     client-id: 
     api-key: 
     checksum-key:
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
+    instance:
+        prefer-ip-address: true
+        lease-renewal-interval-in-seconds: 5 
+        lease-expiration-duration-in-seconds: 10
