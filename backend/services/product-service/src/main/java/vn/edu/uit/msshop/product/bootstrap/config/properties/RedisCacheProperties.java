@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(
         prefix = "app.cache")
 public record RedisCacheProperties(
+        String keyPrefix,
         Duration brandTtl,
         Duration brandListTtl,
         Duration categoryTtl,
