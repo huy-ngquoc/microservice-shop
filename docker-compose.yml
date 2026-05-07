@@ -31,6 +31,12 @@ services:
         depends_on:
             config-server:
                 condition: service_healthy
+        healthcheck:
+            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+            start_period: 30s
         networks:
             - microservices-net
         environment:
@@ -44,6 +50,8 @@ services:
             - "8071:8071"
         depends_on:
             config-server:
+                condition: service_healthy
+            discovery-server:
                 condition: service_healthy
         networks:
             - microservices-net
@@ -63,6 +71,8 @@ services:
         depends_on:
             config-server:
                 condition: service_healthy
+            discovery-server:
+                condition: service_healthy
         networks:
             - microservices-net
         environment:
@@ -79,6 +89,8 @@ services:
             - "8089:8089"
         depends_on:
             config-server:
+                condition: service_healthy
+            discovery-server:
                 condition: service_healthy
         networks:
             - microservices-net
@@ -97,6 +109,8 @@ services:
             - "8090:8090"
         depends_on:
             config-server:
+                condition: service_healthy
+            discovery-server:
                 condition: service_healthy
         networks:
             - microservices-net
@@ -117,6 +131,8 @@ services:
         depends_on:
             config-server:
                 condition: service_healthy
+            discovery-server:
+                condition: service_healthy
         networks:
             - microservices-net
         environment:
@@ -136,6 +152,8 @@ services:
         depends_on:
             config-server:
                 condition: service_healthy
+            discovery-server:
+                condition: service_healthy
         networks:
             - microservices-net
         environment:
@@ -152,6 +170,10 @@ services:
             - "8070:8070"
         depends_on:
             config-server:
+                condition: service_healthy
+            discovery-server:
+                condition: service_healthy
+            mongo:
                 condition: service_healthy
         networks:
             - microservices-net
