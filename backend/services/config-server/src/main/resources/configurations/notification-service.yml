@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: localhost:9092 
+    bootstrap-servers: ${KAFKA_URL:localhost:9092}
     consumer:
       group-id: notification-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -21,7 +21,7 @@ spring:
           CodPaymentCreated:java.lang.Object,
           PaymentSuccess:java.lang.Object
   mongodb:
-    uri: mongodb://alibou:alibou@localhost:27020/notification_db?authSource=admin&uuidRepresentation=STANDARD&maxPoolSize=200&minPoolSize=20
+    uri: mongodb://alibou:alibou@${NOTIFICATION_DB_URL:localhost:27020}/notification_db?authSource=admin&uuidRepresentation=STANDARD&maxPoolSize=200&minPoolSize=20
   mail:
     host: smtp.gmail.com
     port: 587
@@ -37,4 +37,12 @@ spring:
         debug: false
 server:
   port: 8092
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
+    instance:
+        prefer-ip-address: true
+        lease-renewal-interval-in-seconds: 5 
+        lease-expiration-duration-in-seconds: 10
 
