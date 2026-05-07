@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.CreateBrandCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
