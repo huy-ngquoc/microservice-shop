@@ -8,6 +8,7 @@ COPY backend/services/shared-cloudinary/pom.xml backend/services/shared-cloudina
 COPY backend/services/shared-kernel/pom.xml backend/services/shared-kernel/
 COPY backend/services/shared-spring-data/pom.xml backend/services/shared-spring-data/
 COPY backend/services/shared-webmvc/pom.xml backend/services/shared-webmvc/
+COPY backend/services/api-gateway/pom.xml backend/services/api-gateway/
 COPY backend/services/config-server/pom.xml backend/services/config-server/
 COPY backend/services/discovery-server/pom.xml backend/services/discovery-server/
 COPY backend/services/product-service/pom.xml backend/services/product-service/
