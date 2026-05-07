@@ -10,12 +10,12 @@ import com.cloudinary.api.exceptions.NotFound;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.shared.adapter.exception.ImageDeletionFailedException;
 import vn.edu.uit.msshop.shared.adapter.exception.ImageRenameFailedException;
 import vn.edu.uit.msshop.shared.adapter.exception.ImageStorageQueryFailedException;
 import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryFolders;
-import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
 @Component
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class VariantImageStorageAdapter implements VariantImageStoragePort {
           this.cloudinary.api().resource(CloudinaryFolders.TEMP + "/" + key.value(), Map.of());
 
       return (result != null) && result.containsKey("public_id");
-    } catch (final NotFound _) {
+    } catch (final NotFound e) {
       log.debug("Image key '{}' not found in temp storage", key.value());
       return false;
     } catch (final Exception e) {

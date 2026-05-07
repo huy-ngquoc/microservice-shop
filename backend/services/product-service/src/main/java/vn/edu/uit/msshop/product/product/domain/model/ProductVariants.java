@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
-public record ProductVariants(List<ProductVariant>values){public static final int MAX_AMOUNT=Math.powExact(ProductOptions.MAX_AMOUNT,ProductVariantTraits.MAX_TRAITS_AMOUNT);
+public record ProductVariants(List<ProductVariant>values){public static final int MAX_AMOUNT=Math.addExact(ProductOptions.MAX_AMOUNT,ProductVariantTraits.MAX_TRAITS_AMOUNT);
 
 public ProductVariants{if(values==null){throw new DomainException("Variants CANNOT be null");}
 

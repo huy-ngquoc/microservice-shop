@@ -4,13 +4,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import vn.uit.edu.msshop.account.adapter.out.event.documents.RollbackImageEventDocument;
 
 @Repository
-public interface RollbackImageEventDocumentRepository extends MongoRepository<RollbackImageEventDocument, UUID> {
+public interface RollbackImageEventDocumentRepository extends JpaRepository<RollbackImageEventDocument, UUID> {
     public List<RollbackImageEventDocument> findByEventStatus(String eventStatus);
 
     public List<RollbackImageEventDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);

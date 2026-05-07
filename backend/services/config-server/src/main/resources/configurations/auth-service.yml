@@ -3,22 +3,8 @@ spring:
         oauth2:
             resourceserver:
                 jwt:
-                    issuer-uri: http://localhost:9098/realms/ms_shop
+                    issuer-uri: http://${KEYCLOAK_URL:localhost:9098}/realms/ms_shop
                     jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
-    kafka:
-        producer:
-            bootstrap-servers: localhost:9092
-            key-serializer: org.apache.kafka.common.serialization.StringSerializer
-            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-            properties:
-                spring.json.type.mapping: AccountCreated:vn.uit.edu.msshop.auth.domain.event.AccountCreated
-        consumer:
-            group-id: account-group
-            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-            properties:
-                spring.json.trusted.packages: "*"
-                spring.json.type.mapping: AccountId:vn.uit.edu.msshop.auth.domain.event.AccountId
     cloud:
         gateway:
             discovery:
@@ -34,29 +20,25 @@ spring:
                             enabled: true
                     routes:
                       - id: account-service
-                        uri: lb:http://ACCOUNT-SERVICE
+                        uri: lb://ACCOUNT-SERVICE
                         predicates:
                         - Path=/account/**
                       - id: payment-service
-                        uri: lb:http://PAYMENT-SERVICE
+                        uri: lb://PAYMENT-SERVICE
                         predicates:
                         - Path=/payment/**
                       - id: cart-service
-                        uri: lb:http://CART-SERVICE
+                        uri: lb://CART-SERVICE
                         predicates:
                         - Path=/cart/**
                       - id: order-service
-                        uri: lb:http://ORDER-SERVICE
+                        uri: lb://ORDER-SERVICE
                         predicates:
                         - Path=/order/**
                       - id: inventory-service
-                        uri: lb:http://INVENTORY-SERVICE
+                        uri: lb://INVENTORY-SERVICE
                         predicates:
                         - Path=/inventory/**
-                      - id: account-service
-                        uri: lb:http://ACCOUNT-SERVICE
-                        predicates:
-                        - Path=/account/**
 
 management:
   endpoints:
@@ -76,11 +58,14 @@ jwt:
 app:
     keycloak:
         admin:
-            server-url: http://localhost:9098
+            server-url: http://${KEYCLOAK_URL:localhost:9098}
             realm: ms_shop
             client-id: ms_shop_rest_api
             client-secret: TwuErGtX4JylPHbrL930Qcfe7tjdZaId
-logging:
-  level:
-    org.apache.kafka: ERROR
-    org.springframework.kafka: ERROR
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
+    instance:
+        lease-renewal-interval-in-seconds: 5 
+        lease-expiration-duration-in-seconds: 10

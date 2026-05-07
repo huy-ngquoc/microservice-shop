@@ -34,7 +34,7 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.13.0</version> <!-- Cập nhật lên bản mới nhất của plugin -->
             <configuration>
-                <release>25</release>
+                <release>21</release>
                 <parameters>true</parameters> <!-- Giúp Spring Boot đọc được tên tham số -->
                 <compilerArgs>
                     <!-- Bỏ hết các tham số liên quan đến Error Prone -->

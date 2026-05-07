@@ -1,0 +1,38 @@
+# Stage 1: Build
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+WORKDIR /app
+
+# Bước 1: Copy TẤT CẢ các file pom.xml để Maven không báo lỗi thiếu module
+# Lưu ý: Cấu trúc backend/services/... phải khớp với máy thật
+COPY backend/services/pom.xml backend/services/
+COPY backend/services/pom.xml backend/services/
+COPY backend/services/shared-cloudinary/pom.xml backend/services/shared-cloudinary/
+COPY backend/services/shared-kernel/pom.xml backend/services/shared-kernel/
+COPY backend/services/shared-spring-data/pom.xml backend/services/shared-spring-data/
+COPY backend/services/shared-webmvc/pom.xml backend/services/shared-webmvc/
+COPY backend/services/config-server/pom.xml backend/services/config-server/
+COPY backend/services/discovery-server/pom.xml backend/services/discovery-server/
+
+COPY backend/services/product-service/pom.xml backend/services/product-service/
+
+# Bước 2: Tải dependencies (Lúc này Maven sẽ thấy đủ module nên sẽ không lỗi)
+RUN mvn -f backend/services/pom.xml dependency:go-offline -B
+
+# Bước 3: CHỈ COPY những source code thực sự cần thiết
+COPY backend/services/shared-cloudinary/src backend/services/shared-cloudinary/src
+COPY backend/services/shared-kernel/src backend/services/shared-kernel/src
+COPY backend/services/shared-spring-data/src backend/services/shared-spring-data/src
+COPY backend/services/shared-webmvc/src backend/services/shared-webmvc/src
+COPY backend/services/config-server/src backend/services/config-server/src
+COPY backend/services/discovery-server/src backend/services/discovery-server/src
+
+COPY backend/services/java-formatter.xml backend/services/java-formatter.xml
+
+# Bước 4: Build module cụ thể
+RUN mvn clean package -f backend/services/pom.xml -pl discovery-server -am -DskipTests
+
+# Stage 2: Run (giữ nguyên)
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/backend/services/discovery-server/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]

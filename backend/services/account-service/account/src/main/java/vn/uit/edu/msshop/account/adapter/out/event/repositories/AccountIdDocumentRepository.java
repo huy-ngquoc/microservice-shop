@@ -4,13 +4,14 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import vn.uit.edu.msshop.account.adapter.out.event.documents.AccountIdDocument;
 
 @Repository
-public interface AccountIdDocumentRepository extends MongoRepository<AccountIdDocument, UUID> {
+public interface AccountIdDocumentRepository extends JpaRepository<AccountIdDocument, UUID> {
     public List<AccountIdDocument> findByEventStatus(String eventStatus);
 
     public List<AccountIdDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
