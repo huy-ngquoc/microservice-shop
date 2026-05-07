@@ -1,10 +1,13 @@
 package vn.edu.uit.msshop.product.category.application.service.command;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
@@ -29,6 +32,17 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.CATEGORY,
+                            key = "#command.id().value()",
+                            condition = "#command.name().getSet() != null"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.CATEGORY_LIST,
+                            allEntries = true,
+                            condition = "#command.name().getSet() != null")
+            })
     public CategoryView updateInfo(
             final UpdateCategoryInfoCommand command) {
         final var categoryId = command.id();

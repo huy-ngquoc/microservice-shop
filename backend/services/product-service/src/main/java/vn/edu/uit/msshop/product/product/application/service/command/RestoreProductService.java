@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.RestoreProductCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RestoreProductUseCase;
@@ -26,6 +28,9 @@ public class RestoreProductService implements RestoreProductUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.PRODUCT_LIST,
+            allEntries = true)
     public void restore(
             final RestoreProductCommand command) {
         final var productId = command.id();

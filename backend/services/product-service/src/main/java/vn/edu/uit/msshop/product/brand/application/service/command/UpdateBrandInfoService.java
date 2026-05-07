@@ -1,10 +1,13 @@
 package vn.edu.uit.msshop.product.brand.application.service.command;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandInfoCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
@@ -29,6 +32,17 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.BRAND,
+                            key = "#command.id().value()",
+                            condition = "#command.name().getSet() != null"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.BRAND_LIST,
+                            allEntries = true,
+                            condition = "#command.name().getSet() != null")
+            })
     public BrandView updateInfo(
             final UpdateBrandInfoCommand command) {
         final var brand = this.loadPort.loadById(command.id())
@@ -47,7 +61,7 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
                     currentVersion.value());
         }
 
-        final var next = this.applyChanges(brand, nameSet);
+        final var next = UpdateBrandInfoService.applyChanges(brand, nameSet);
         if (next == null) {
             return this.mapper.toView(brand);
         }
@@ -58,7 +72,7 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
         return this.mapper.toView(saved);
     }
 
-    private @Nullable Brand applyChanges(
+    private static @Nullable Brand applyChanges(
             final Brand current,
             final Change.Set<BrandName> nameSet) {
         if (nameSet.value().equals(current.getName())) {

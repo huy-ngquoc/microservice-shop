@@ -92,6 +92,28 @@ services:
         networks:
             - microservices-net
 
+    redis:
+        container_name: ms_redis
+        image: redis:8.6
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
+        environment:
+            - TZ=UTC
+        command:
+            - "--maxmemory"
+            - "256mb"
+            - "--maxmemory-policy"
+            - "allkeys-lfu"
+        networks:
+            - microservices-net
+        healthcheck:
+            test: [ "CMD", "redis-cli", "ping" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 5s
+
     # zookeeper:
     #     container_name: ms_zookeeper
     #     image: confluentinc/cp-zookeeper:8.1.2
