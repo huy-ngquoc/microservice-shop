@@ -1,12 +1,15 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.dto.Change;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
@@ -37,6 +40,21 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT,
+                            key = "#command.id().value()",
+                            condition = "#command.price().getSet() != null || " +
+                                    "#command.traits().getSet() != null || " +
+                                    "#command.targets().getSet() != null"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT_LIST,
+                            allEntries = true,
+                            condition = "#command.price().getSet() != null || " +
+                                    "#command.traits().getSet() != null || " +
+                                    "#command.targets().getSet() != null")
+            })
     // TODO: traits size must be the same
     public VariantView updateInfo(
             final UpdateVariantInfoCommand command) {

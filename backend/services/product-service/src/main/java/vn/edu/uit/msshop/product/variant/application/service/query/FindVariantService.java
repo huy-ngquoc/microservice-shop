@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.variant.application.service.query;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
@@ -24,6 +26,9 @@ public class FindVariantService implements FindVariantUseCase {
     @Override
     @Transactional(
             readOnly = true)
+    @Cacheable(
+            cacheNames = CacheNames.VARIANT,
+            key = "#id.value()")
     public VariantView findById(
             final VariantId id) {
         final var variant = this.loadPort.loadById(id)
