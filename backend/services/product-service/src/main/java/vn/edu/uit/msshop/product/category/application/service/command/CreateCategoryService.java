@@ -1,10 +1,12 @@
 package vn.edu.uit.msshop.product.category.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategoryCommand;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
@@ -25,6 +27,9 @@ public class CreateCategoryService implements CreateCategoryUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.CATEGORY_LIST,
+            allEntries = true)
     public CategoryView create(
             final CreateCategoryCommand command) {
         final var newCategory = new NewCategory(
