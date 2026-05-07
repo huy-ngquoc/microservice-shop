@@ -38,7 +38,7 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
     @Transactional
     public ProductView addVariants(
             final AddProductVariantsCommand command) {
-        final var productId = command.productId();
+        final var productId = command.id();
         final var product = this.loadPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 

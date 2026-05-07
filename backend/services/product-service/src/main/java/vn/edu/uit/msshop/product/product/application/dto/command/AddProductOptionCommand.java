@@ -6,7 +6,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 public record AddProductOptionCommand(
-        ProductId productId,
+        ProductId id,
         ProductOption newOption,
         ProductVariantTrait defaultTrait,
         ProductVersion expectedVersion) {
