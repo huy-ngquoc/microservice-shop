@@ -39,7 +39,7 @@ public class AddProductOptionService implements AddProductOptionUseCase {
     @Transactional
     public ProductView addOption(
             AddProductOptionCommand command) {
-        final var productId = command.productId();
+        final var productId = command.id();
         final var product = this.loadPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
