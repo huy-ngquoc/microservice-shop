@@ -33,6 +33,7 @@
         
         <module>config-server</module>
         <module>discovery-server</module>
+        <module>api-gateway</module>
         <!-- <module>identity-service</module> -->
         <module>product-service</module>
         <!-- <module>order-service</module> -->
@@ -191,6 +192,7 @@
                             -XepOpt:NullAway:AnnotatedPackages=vn.edu.uit.msshop \
                             -XepOpt:NullAway:JSpecifyMode=true \
                         </arg>
+                        <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
