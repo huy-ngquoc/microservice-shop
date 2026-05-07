@@ -1,9 +1,12 @@
 package vn.edu.uit.msshop.product.category.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.SoftDeleteCategoryCommand;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.SoftDeleteCategoryUseCase;
@@ -27,6 +30,15 @@ public class SoftDeleteCategoryService implements SoftDeleteCategoryUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.CATEGORY,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.CATEGORY_LIST,
+                            allEntries = true)
+            })
     public void delete(
             final SoftDeleteCategoryCommand command) {
         final var categoryId = command.id();
