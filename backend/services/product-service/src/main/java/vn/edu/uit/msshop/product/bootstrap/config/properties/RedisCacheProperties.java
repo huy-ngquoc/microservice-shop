@@ -15,5 +15,14 @@ public record RedisCacheProperties(
         Duration productTtl,
         Duration productListTtl,
         Duration variantTtl,
-        Duration variantListTtl) {
+        Duration variantListTtl,
+        CircuitBreakerProperties circuitBreaker) {
+
+    public record CircuitBreakerProperties(
+            int slidingWindowSize,
+            int minimumNumberOfCalls,
+            int failureRateThreshold,
+            Duration waitDurationInOpenState,
+            int permittedNumberOfCallsInHalfOpenState) {
+    }
 }

@@ -62,6 +62,7 @@
         <error-prone.version>2.48.0</error-prone.version>
         <cloudinary.version>2.3.2</cloudinary.version>
         <dotenv.version>3.2.0</dotenv.version>
+        <resilience4j.version>2.4.0</resilience4j.version>
     </properties>
 
     <dependencyManagement>
@@ -121,6 +122,12 @@
                 <groupId>io.github.cdimascio</groupId>
                 <artifactId>dotenv-java</artifactId>
                 <version>${dotenv.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-circuitbreaker</artifactId>
+                <version>${resilience4j.version}</version>
             </dependency>
 
         </dependencies>
