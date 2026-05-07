@@ -1,10 +1,13 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantUseCase;
@@ -30,6 +33,15 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT_LIST,
+                            allEntries = true)
+            })
     public void delete(
             final SoftDeleteVariantCommand command) {
         final var variantId = command.id();

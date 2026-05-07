@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
@@ -42,6 +44,9 @@ public class CreateProductService implements CreateProductUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.PRODUCT_LIST,
+            allEntries = true)
     public ProductView createSimple(
             final CreateSimpleProductCommand command) {
         return CreateProductUseCase.super.createSimple(command);
@@ -49,6 +54,9 @@ public class CreateProductService implements CreateProductUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.PRODUCT_LIST,
+            allEntries = true)
     public ProductView create(
             final CreateProductCommand command) {
         this.validateCategoryExists(command.categoryId());

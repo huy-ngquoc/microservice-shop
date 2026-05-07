@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.category.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.RestoreCategoryCommand;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.RestoreCategoryUseCase;
@@ -23,6 +25,9 @@ public class RestoreCategoryService implements RestoreCategoryUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.CATEGORY_LIST,
+            allEntries = true)
     public void restore(
             final RestoreCategoryCommand command) {
         final var categoryId = command.id();

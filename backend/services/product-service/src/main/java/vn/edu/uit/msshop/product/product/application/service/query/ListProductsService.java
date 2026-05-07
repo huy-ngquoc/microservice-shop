@@ -5,10 +5,12 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.query.ListProductsUseCase;
@@ -38,6 +40,8 @@ public class ListProductsService implements ListProductsUseCase {
     @Override
     @Transactional(
             readOnly = true)
+    @Cacheable(
+            cacheNames = CacheNames.PRODUCT_LIST)
     public PageResponseDto<ProductView> list(
             PageRequestDto pageRequest) {
         final var page = this.listPort.list(pageRequest);

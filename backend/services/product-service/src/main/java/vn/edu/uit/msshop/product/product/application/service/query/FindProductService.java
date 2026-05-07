@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.product.application.service.query;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
@@ -26,6 +28,9 @@ public class FindProductService implements FindProductUseCase {
     @Override
     @Transactional(
             readOnly = true)
+    @Cacheable(
+            cacheNames = CacheNames.PRODUCT,
+            key = "#id.value()")
     public ProductView findById(
             final ProductId id) {
         final var product = this.loadPort.loadById(id)

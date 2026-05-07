@@ -1,10 +1,13 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductOptionCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
@@ -35,6 +38,15 @@ public class UpdateProductOptionService implements UpdateProductOptionUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT_LIST,
+                            allEntries = true)
+            })
     public ProductView updateOption(
             UpdateProductOptionCommand command) {
         final var productId = command.id();

@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SetAllVariantStockCountsCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantStockCountsUseCase;
@@ -33,6 +36,15 @@ public class SetAllVariantStockCountsService
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT_LIST,
+                            allEntries = true)
+            })
     public void execute(
             final SetAllVariantStockCountsCommand command) {
         final var stockCounts = command.stockCounts();

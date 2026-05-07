@@ -1,10 +1,13 @@
 package vn.edu.uit.msshop.product.brand.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.DeleteBrandLogoCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
@@ -31,6 +34,15 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.BRAND,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.BRAND_LIST,
+                            allEntries = true)
+            })
     public BrandLogoView deleteLogo(
             final DeleteBrandLogoCommand command) {
         final var brandId = command.id();
@@ -73,7 +85,7 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
             final BrandLogoKey oldKey) {
         try {
             this.logoStoragePort.deleteLogo(oldKey);
-        } catch (Exception e) {
+        } catch (final RuntimeException e) {
             log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
         }
     }
