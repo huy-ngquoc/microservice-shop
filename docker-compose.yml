@@ -2,7 +2,7 @@ services:
     config-server:
         build:
             context: .  # Trỏ về thư mục gốc chứa pom.xml tổng và common-dto
-            dockerfile: backend/services/config-server/dockerfile # Đường dẫn tới file Dockerfile
+            dockerfile: backend/services/config-server/Dockerfile # Đường dẫn tới file Dockerfile
         container_name: config-server
         healthcheck:
             test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/actuator/health"]
@@ -24,7 +24,7 @@ services:
     discovery-server:
         build:
             context: .
-            dockerfile: backend/services/discovery-server/dockerfile
+            dockerfile: backend/services/discovery-server/Dockerfile
         container_name: discovery-server
         ports:
             - "8761:8761"
@@ -44,7 +44,7 @@ services:
     account-service:
         build:
             context: .
-            dockerfile: backend/services/account-service/account/dockerfile
+            dockerfile: backend/services/account-service/account/Dockerfile
         container_name: account-service
         ports:
             - "8071:8071"
@@ -64,7 +64,7 @@ services:
     auth-service:
         build:
             context: .
-            dockerfile: backend/services/auth-service/auth/dockerfile
+            dockerfile: backend/services/auth-service/auth/Dockerfile
         container_name: auth-service
         ports:
             - "8082:8082"
@@ -83,7 +83,7 @@ services:
     cart-service:
         build:
             context: .
-            dockerfile: backend/services/cart-service/cart/dockerfile
+            dockerfile: backend/services/cart-service/cart/Dockerfile
         container_name: cart-service
         ports:
             - "8089:8089"
@@ -103,7 +103,7 @@ services:
     inventory-service:
         build:
             context: .
-            dockerfile: backend/services/inventory-service/inventory/dockerfile
+            dockerfile: backend/services/inventory-service/inventory/Dockerfile
         container_name: inventory-service
         ports:
             - "8090:8090"
@@ -121,10 +121,64 @@ services:
             - INVENTORY_DB_URL=${INVENTORY_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
+    notification-service:
+        build:
+            context: .
+            dockerfile: backend/services/notification-service/notification/Dockerfile
+        container_name: notification-service
+        ports:
+            - "8092:8092"
+        depends_on:
+            config-server:
+                condition: service_healthy
+            discovery-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - NOTIFICATION_DB_URL=${NOTIFICATION_DB_URL}
+            - KAFKA_URL=${KAFKA_URL}
+    rating-service:
+        build:
+            context: .
+            dockerfile: backend/services/rating-service/rating/Dockerfile
+        container_name: rating-service
+        ports:
+            - "8072:8072"
+        depends_on:
+            config-server:
+                condition: service_healthy
+            discovery-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - RATING_DB_URL=${RATING_DB_URL}
+    recommendation-service:
+        build:
+            context: .
+            dockerfile: backend/services/recommendation-service/recommendation/Dockerfile
+        container_name: recommendation-service
+        ports:
+            - "8080:8080"
+        depends_on:
+            config-server:
+                condition: service_healthy
+            discovery-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
     order-service:
         build:
             context: .
-            dockerfile: backend/services/order-service/order/dockerfile
+            dockerfile: backend/services/order-service/order/Dockerfile
         container_name: order-service
         ports:
             - "8000:8000"
@@ -145,7 +199,7 @@ services:
     payment-service:
         build:
             context: .
-            dockerfile: backend/services/payment-service/payment/dockerfile
+            dockerfile: backend/services/payment-service/payment/Dockerfile
         container_name: payment-service
         ports:
             - "8074:8074"
@@ -164,7 +218,7 @@ services:
     product-service:
         build:
             context: .
-            dockerfile: backend/services/product-service/dockerfile
+            dockerfile: backend/services/product-service/Dockerfile
         container_name: product-service
         ports:
             - "8070:8070"
@@ -315,6 +369,32 @@ services:
             - 27021:27017
         volumes:
             - mongo_cart:/data
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+        networks:
+            - microservices-net
+    mongodb_notification:
+        container_name: ms_mongo_db_notification
+        image: mongo:8 
+        ports:
+            - 27020:27017
+        volumes:
+            - mongo_notification:/data
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
+        networks:
+            - microservices-net
+    mongodb_rating:
+        container_name: ms_mongo_db_rating
+        image: mongo:8 
+        ports:
+            - 27018:27017
+        volumes:
+            - mongo_rating:/data
         environment:
             - MONGO_INITDB_ROOT_USERNAME=alibou
             - MONGO_INITDB_ROOT_PASSWORD=alibou
