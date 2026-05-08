@@ -10,8 +10,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 
 @Service
 @RequiredArgsConstructor
-public class CheckProductExistsByVariantService
-        implements CheckProductExistsByVariantUseCase {
+public class CheckProductExistsByVariantService implements CheckProductExistsByVariantUseCase {
     private final CheckProductExistsByVariantPort checkExistsByVariantPort;
 
     @Override

@@ -12,9 +12,7 @@ public record ProductName(
             throw new DomainException("Product name is null");
         }
 
-        value = Domains.getWhitespacePattern()
-                .matcher(value.trim())
-                .replaceAll(" ");
+        value = Domains.getWhitespacePattern().matcher(value.trim()).replaceAll(" ");
 
         if (value.isBlank()) {
             throw new DomainException("Product name is blank");

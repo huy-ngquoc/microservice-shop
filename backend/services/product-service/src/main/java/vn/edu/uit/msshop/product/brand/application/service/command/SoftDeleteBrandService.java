@@ -54,8 +54,7 @@ public class SoftDeleteBrandService implements SoftDeleteBrandUseCase {
         }
 
         if (this.checkHasProductsPort.hasProducts(brandId)) {
-            throw new BusinessRuleException(
-                    "Cannot delete brand with existing products");
+            throw new BusinessRuleException("Cannot delete brand with existing products");
         }
 
         final var next = new Brand(

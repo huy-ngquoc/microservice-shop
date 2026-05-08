@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.variant.adapter.in.event.payload;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public record SetVariantStockCountsEvent(
@@ -9,5 +10,9 @@ public record SetVariantStockCountsEvent(
     public record Detail(
             UUID variantId,
             int value) {
+    }
+
+    public SetVariantStockCountsEvent {
+        details = List.copyOf(details);
     }
 }

@@ -8,11 +8,16 @@ public final class ProductNotFoundException extends NotFoundException {
     public ProductNotFoundException(
             final ProductId id,
             final Throwable cause) {
-        super(Product.class.getSimpleName(), id.value().toString(), cause);
+        super(
+                Product.class.getSimpleName(),
+                id.value().toString(),
+                cause);
     }
 
     public ProductNotFoundException(
             final ProductId id) {
-        super(Product.class.getSimpleName(), id.value().toString());
+        super(
+                Product.class.getSimpleName(),
+                id.value().toString());
     }
 }

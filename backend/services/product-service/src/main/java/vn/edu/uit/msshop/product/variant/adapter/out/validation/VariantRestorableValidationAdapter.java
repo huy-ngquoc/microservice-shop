@@ -13,8 +13,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 
 @Component
 @RequiredArgsConstructor
-public class VariantRestorableValidationAdapter
-        implements CheckVariantRestorablePort {
+public class VariantRestorableValidationAdapter implements CheckVariantRestorablePort {
     private final FindProductUseCase findProductUseCase;
 
     // TODO: too long, split into smaller function
@@ -29,10 +28,9 @@ public class VariantRestorableValidationAdapter
 
         if (traitsCount != optionsCount) {
             final var message = String.format(
-                    "Cannot restore variant: " +
-                            "traits count (%d) does not match product options count (%d)",
-                    traitsCount,
-                    optionsCount);
+                    "Cannot restore variant: "
+                            + "traits count (%d) does not match product options count (%d)",
+                    traitsCount, optionsCount);
             throw new BusinessRuleException(message);
         }
 

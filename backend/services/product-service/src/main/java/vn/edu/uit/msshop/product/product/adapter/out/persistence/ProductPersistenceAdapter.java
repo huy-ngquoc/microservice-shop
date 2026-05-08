@@ -61,14 +61,10 @@ public class ProductPersistenceAdapter
     @Override
     public PageResponseDto<Product> list(
             final PageRequestDto pageRequest) {
-        final var pageable = PageRequests.toPageable(
-                pageRequest,
-                ProductDocument.Fields.id);
+        final var pageable = PageRequests.toPageable(pageRequest, ProductDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNull(pageable);
 
-        final var products = page.getContent().stream()
-                .map(this.mapper::toDomain)
-                .toList();
+        final var products = page.getContent().stream().map(this.mapper::toDomain).toList();
 
         return new PageResponseDto<>(
                 products,
@@ -80,9 +76,7 @@ public class ProductPersistenceAdapter
     @Override
     public PageResponseDto<Product> listSoftDeleted(
             final PageRequestDto pageRequest) {
-        final var pageable = PageRequests.toPageable(
-                pageRequest,
-                ProductDocument.Fields.id);
+        final var pageable = PageRequests.toPageable(pageRequest, ProductDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNotNull(pageable);
 
         final var products = page.getContent().stream()
@@ -107,9 +101,7 @@ public class ProductPersistenceAdapter
     @Override
     public List<Product> loadAllByIds(
             final Collection<ProductId> ids) {
-        final var jpaIds = ids.stream()
-                .map(ProductId::value)
-                .toList();
+        final var jpaIds = ids.stream().map(ProductId::value).toList();
         return this.repository.findAllByDeletionTimeIsNull(jpaIds).stream()
                 .map(this.mapper::toDomain)
                 .toList();

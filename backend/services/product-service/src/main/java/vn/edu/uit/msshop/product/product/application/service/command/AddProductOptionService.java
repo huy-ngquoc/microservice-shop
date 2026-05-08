@@ -59,11 +59,14 @@ public class AddProductOptionService implements AddProductOptionUseCase {
         final var expectedVersion = command.expectedVersion();
         if (!expectedVersion.equals(product.getVersion())) {
             throw new OptimisticLockException(
-                    expectedVersion.value(), product.getVersion().value());
+                    expectedVersion.value(),
+                    product.getVersion().value());
         }
 
-        final var newConfig = product.getConfiguration().addOption(
-                command.newOption(), command.defaultTrait());
+        final var newConfig = product.getConfiguration()
+                .addOption(
+                        command.newOption(),
+                        command.defaultTrait());
 
         final var newTraitsMap = new HashMap<ProductVariantId, ProductVariantTraits>(
                 newConfig.variants().size(), 1);

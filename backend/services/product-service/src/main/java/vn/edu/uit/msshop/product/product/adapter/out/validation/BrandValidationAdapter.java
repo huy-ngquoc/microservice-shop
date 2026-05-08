@@ -10,8 +10,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId
 
 @Component
 @RequiredArgsConstructor
-public class BrandValidationAdapter
-        implements CheckProductBrandExistsPort {
+public class BrandValidationAdapter implements CheckProductBrandExistsPort {
     private final CheckBrandExistsUseCase checkExistsUseCase;
 
     @Override

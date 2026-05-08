@@ -1,0 +1,141 @@
+package vn.uit.edu.payment.adapter.in.web;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+import vn.payos.model.webhooks.Webhook;
+import vn.uit.edu.payment.adapter.in.web.mapper.PaymentWebMapper;
+import vn.uit.edu.payment.adapter.in.web.request.CreatePaymentRequest;
+import vn.uit.edu.payment.adapter.in.web.request.UpdatePaymentRequest;
+import vn.uit.edu.payment.adapter.in.web.response.PaymentResponse;
+import vn.uit.edu.payment.adapter.out.event.documents.EventDocument;
+import vn.uit.edu.payment.adapter.out.event.repositories.EventDocumentRepository;
+import vn.uit.edu.payment.adapter.out.persistence.PaybackPaymentRepository;
+import vn.uit.edu.payment.adapter.out.persistence.PaybackPayments;
+import vn.uit.edu.payment.adapter.out.persistence.SpringDataOnlinePaymentInfoJpaRepository;
+import vn.uit.edu.payment.adapter.out.persistence.SpringDataPaymentJpaRepository;
+import vn.uit.edu.payment.application.dto.command.CreatePaymentCommand;
+import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
+import vn.uit.edu.payment.application.port.in.LoadOnlinePaymentUseCase;
+import vn.uit.edu.payment.application.port.in.LoadPaymentUseCase;
+import vn.uit.edu.payment.application.port.in.UpdatePaymentUseCase;
+import vn.uit.edu.payment.application.port.out.PayOsWebHookPort;
+import vn.uit.edu.payment.domain.event.OrderCreated;
+import vn.uit.edu.payment.domain.model.valueobject.OrderId;
+import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/payment")
+public class PaymentController {
+    private final CreatePaymentUseCase createUseCase;
+    private final UpdatePaymentUseCase updateUseCase;
+    private final LoadPaymentUseCase loadPaymentUseCase;
+    private final PaymentWebMapper mapper;
+    private final PayOsWebHookPort webHookPort;
+    private final LoadOnlinePaymentUseCase loadOnlinePaymentUseCase;
+    private final PaybackPaymentRepository refundRepo;
+    private final SpringDataOnlinePaymentInfoJpaRepository springDataOnlinePaymentInfoRepo;
+    private final SpringDataPaymentJpaRepository springDataPaymentJpaRepo;
+    private final EventDocumentRepository eventDocumentRepo;
+
+    @GetMapping("/{paymentId}")
+    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable UUID paymentId) {
+        final var result = mapper.toResponse(loadPaymentUseCase.findById(new PaymentId(paymentId)));
+        return ResponseEntity.ok(result);
+    }
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId, @RequestHeader("X-User-Id") String userIdFromHeader) {
+        System.out.println("X-User-Id "+userIdFromHeader+"newiwniweviwenvioernoviernv");
+        final var payment = loadPaymentUseCase.loadByOrderId(new OrderId(orderId));
+        if(payment==null) return ResponseEntity.notFound().build();
+        final var result = mapper.toResponse(payment);
+        return ResponseEntity.ok(result);
+    }
+    @DeleteMapping("/clear")
+    public ResponseEntity<Void> clearDatabase() {
+        springDataOnlinePaymentInfoRepo.deleteAll();
+        springDataPaymentJpaRepo.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/public/order/{orderId}")
+    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId) {
+        final var payment = loadPaymentUseCase.loadByOrderId(new OrderId(orderId));
+        if(payment==null) return ResponseEntity.notFound().build();
+        final var result = mapper.toResponse(payment);
+        return ResponseEntity.ok(result);
+    }
+    @GetMapping("/public/refunds")
+    public ResponseEntity<List<PaybackPayments>> getRefunds() {
+        return ResponseEntity.ok(refundRepo.findAll());
+    }
+    @DeleteMapping("/clear_refunds")
+    public ResponseEntity<Void> clearRefunds() {
+        refundRepo.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/create")
+    public ResponseEntity<PaymentResponse> createPayment(@RequestBody CreatePaymentRequest request) {
+        final var command = mapper.toCommand(request);
+        final var result =createUseCase.create(command);
+        return ResponseEntity.ok(mapper.toResponse(result));
+    } 
+    @PutMapping("/update")
+    public ResponseEntity<PaymentResponse> updatePayment(@RequestBody UpdatePaymentRequest request) {
+        final var command = mapper.toCommand(request);
+        final var result =updateUseCase.update(command);
+        return ResponseEntity.ok(mapper.toResponse(result));
+    }
+    @PutMapping("/update/online_cancelled") 
+    public ResponseEntity<Void> onlinePaymentCancelled(@RequestParam UUID orderId) {
+        this.updateUseCase.onlinePaymentCancelled(new OrderId(orderId));
+        return ResponseEntity.noContent().build();
+    } 
+    @PutMapping("/update/online_expired")
+    public ResponseEntity<Void> onlinePaymentExpired(@RequestParam UUID orderId) {
+        this.updateUseCase.onlinePaymentExpire(new OrderId(orderId));
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/pay_os/web_hook")
+    public ResponseEntity<String> handlePayOSWebHook(@RequestBody Webhook body) {
+        webHookPort.handlePayOSWebHook(body);
+        return ResponseEntity.ok("Confirmed");
+    }
+    @GetMapping("/online_payment_link/{orderId}")
+    public ResponseEntity<String> getOnlinePaymentLink(@PathVariable UUID orderId) {
+        String result = loadOnlinePaymentUseCase.getPaymentLink(new OrderId(orderId));
+        return ResponseEntity.ok(result);
+    }
+    @PostMapping("/fake_web_hook")
+    public ResponseEntity<Void> fakeWebHook(@RequestBody UUID orderId) {
+        webHookPort.fakeWebHook(orderId);
+        return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/public/create_payment")
+    public ResponseEntity<Void> createPayment(@RequestBody OrderCreated orderCreated) {
+        if(!eventDocumentRepo.existsById(orderCreated.eventId())) {
+        CreatePaymentCommand command = mapper.toCommand(orderCreated);
+        createUseCase.create(command);
+        eventDocumentRepo.save(new EventDocument(orderCreated.eventId(), Instant.now()));
+       
+        }
+         return ResponseEntity.noContent().build();
+    }
+
+}
+

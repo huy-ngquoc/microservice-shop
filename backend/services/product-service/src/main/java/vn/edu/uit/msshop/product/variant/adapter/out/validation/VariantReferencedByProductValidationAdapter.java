@@ -17,7 +17,7 @@ public class VariantReferencedByProductValidationAdapter
     @Override
     public boolean isReferencedByProduct(
             final VariantId variantId) {
-        return this.checkExistsByVariantUseCase.existsByVariantId(
-                new ProductVariantId(variantId.value()));
+        return this.checkExistsByVariantUseCase
+                .existsByVariantId(new ProductVariantId(variantId.value()));
     }
 }

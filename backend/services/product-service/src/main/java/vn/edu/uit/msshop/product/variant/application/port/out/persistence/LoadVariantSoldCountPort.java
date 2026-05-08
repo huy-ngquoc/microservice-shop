@@ -13,7 +13,6 @@ public interface LoadVariantSoldCountPort {
     default VariantSoldCount loadByIdOrZero(
             final VariantId id,
             final VariantProductId productId) {
-        return this.loadById(id)
-                .orElse(VariantSoldCount.zero(id, productId));
+        return this.loadById(id).orElse(VariantSoldCount.zero(id, productId));
     }
 }

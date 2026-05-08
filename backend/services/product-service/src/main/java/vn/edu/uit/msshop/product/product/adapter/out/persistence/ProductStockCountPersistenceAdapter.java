@@ -39,8 +39,10 @@ public class ProductStockCountPersistenceAdapter
         IncreaseAllProductStockCountsPort,
         DecreaseAllProductStockCountsPort,
         DeleteProductStockCountPort {
-    private static final Collector<ProductStockCount, ?, Map<ProductId, ProductStockCount>> COLLECTOR = Collectors
-            .toUnmodifiableMap(
+    private static final Collector<
+            ProductStockCount,
+            ?,
+            Map<ProductId, ProductStockCount>> COLLECTOR = Collectors.toUnmodifiableMap(
                     ProductStockCount::getId,
                     Function.identity(),
                     (
@@ -72,7 +74,8 @@ public class ProductStockCountPersistenceAdapter
                 .map(ProductId::value)
                 .collect(Collectors.toSet());
 
-        return this.repository.findAllById(jpaIds).stream()
+        return this.repository.findAllById(jpaIds)
+                .stream()
                 .map(this.mapper::toDomain)
                 .collect(ProductStockCountPersistenceAdapter.COLLECTOR);
     }
@@ -140,8 +143,9 @@ public class ProductStockCountPersistenceAdapter
             final var id = entry.getKey();
             final var jpaId = id.value();
 
-            final var query = new Query(Criteria.where("_id").is(jpaId)
-                    .and(ProductStockCountDocument.Fields.value).gte(dec));
+            final var query = new Query(
+                    Criteria.where("_id").is(jpaId)
+                            .and(ProductStockCountDocument.Fields.value).gte(dec));
             final var update = new Update()
                     .inc(ProductStockCountDocument.Fields.value, -dec)
                     .set(ProductStockCountDocument.Fields.lastUpdatedTime, instantNow);

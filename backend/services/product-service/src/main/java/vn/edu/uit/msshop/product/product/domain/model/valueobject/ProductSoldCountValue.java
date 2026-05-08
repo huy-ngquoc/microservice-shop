@@ -35,7 +35,9 @@ public record ProductSoldCountValue(
         final var newValue = this.value - decrement;
         if (newValue < 0) {
             throw new DomainException(
-                    "Product sold count cannot decrease below zero: current=" + this.value + ", decrement="
+                    "Product sold count cannot decrease below zero: current="
+                            + this.value
+                            + ", decrement="
                             + decrement);
         }
 

@@ -26,9 +26,11 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class ListSoftDeletedProductsService
-        implements ListSoftDeletedProductsUseCase {
-    private static final Collector<ProductId, ?, Set<ProductId>> SET_COLLECTOR = Collectors.toSet();
+public class ListSoftDeletedProductsService implements ListSoftDeletedProductsUseCase {
+    private static final Collector<
+            ProductId,
+            ?,
+            Set<ProductId>> SET_COLLECTOR = Collectors.toSet();
 
     private final ListSoftDeletedProductsPort listSoftDeletedPort;
     private final LoadAllProductSoldCountsPort loadAllSoldCountsPort;
@@ -70,8 +72,7 @@ public class ListSoftDeletedProductsService
         final var soldCount = soldCountById.getOrDefault(
                 productId,
                 ProductSoldCount.zero(productId));
-        final var stockCount = stockCountById.getOrDefault(
-                productId,
+        final var stockCount = stockCountById.getOrDefault(productId,
                 ProductStockCount.zero(productId));
         final var rating = ratingById.getOrDefault(
                 productId,

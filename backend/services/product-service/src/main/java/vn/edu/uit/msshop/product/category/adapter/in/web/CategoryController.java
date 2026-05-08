@@ -144,8 +144,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
-        final var view = this.findSoftDeletedUseCase
-                .findSoftDeletedById(this.mapper.toCategoryId(id));
+        final var view = this.findSoftDeletedUseCase.findSoftDeletedById(this.mapper.toCategoryId(id));
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -161,8 +160,7 @@ public class CategoryController {
 
         final var response = this.mapper.toResponse(view);
         final var location = WebMvcLinkBuilder
-                .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id()))
-                .toUri();
+                .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
 
         return ResponseEntity.created(location).body(response);
     }

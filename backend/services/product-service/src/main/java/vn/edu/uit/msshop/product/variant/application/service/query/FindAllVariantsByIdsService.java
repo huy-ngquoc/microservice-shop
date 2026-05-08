@@ -21,8 +21,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-public class FindAllVariantsByIdsService
-        implements FindAllVariantsByIdsUseCase {
+public class FindAllVariantsByIdsService implements FindAllVariantsByIdsUseCase {
     private final LoadAllVariantsPort loadAllPort;
     private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
     private final LoadAllVariantStockCountsPort loadAllStockCountsPort;
@@ -48,9 +47,11 @@ public class FindAllVariantsByIdsService
 
         final var variantViewCollector = Collectors.toUnmodifiableMap(
                 Variant::getId,
-                variant -> toView(variant, soldCountById, stockCountById));
-        return variantById.values().stream()
-                .collect(variantViewCollector);
+                variant -> toView(
+                        variant,
+                        soldCountById,
+                        stockCountById));
+        return variantById.values().stream().collect(variantViewCollector);
     }
 
     private VariantView toView(
@@ -67,6 +68,9 @@ public class FindAllVariantsByIdsService
                 variantId,
                 VariantStockCount.zero(variantId, productId));
 
-        return this.mapper.toView(variant, soldCount, stockCount);
+        return this.mapper.toView(
+                variant,
+                soldCount,
+                stockCount);
     }
 }

@@ -46,8 +46,7 @@ public class HardDeleteBrandService implements HardDeleteBrandUseCase {
         }
 
         if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(brandId)) {
-            throw new BusinessRuleException(
-                    "Cannot delete brand with existing products");
+            throw new BusinessRuleException("Cannot delete brand with existing products");
         }
 
         this.deletePort.deleteById(brandId);
@@ -66,7 +65,9 @@ public class HardDeleteBrandService implements HardDeleteBrandUseCase {
         try {
             this.logoStoragePort.deleteLogo(key);
         } catch (final RuntimeException e) {
-            log.warn("Hard delete: failed to delete logo '{}', manual cleanup required", key.value(), e);
+            log.warn("Hard delete: failed to delete logo '{}', manual cleanup required",
+                    key.value(),
+                    e);
         }
     }
 }

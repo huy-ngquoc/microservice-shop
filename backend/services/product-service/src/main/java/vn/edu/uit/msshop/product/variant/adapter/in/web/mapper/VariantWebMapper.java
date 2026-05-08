@@ -47,7 +47,11 @@ public class VariantWebMapper {
 
             @Nullable
             List<String> rawTargets) {
-        final var pageRequest = new PageRequestDto(page, size, sortBy, direction);
+        final var pageRequest = new PageRequestDto(
+                page,
+                size,
+                sortBy,
+                direction);
 
         final List<VariantTarget> targets;
         if (rawTargets == null) {
@@ -58,9 +62,7 @@ public class VariantWebMapper {
                     .toList();
         }
 
-        return new ListVariantsQuery(
-                pageRequest,
-                targets);
+        return new ListVariantsQuery(pageRequest, targets);
     }
 
     public Set<VariantId> toVariantIds(
@@ -76,9 +78,7 @@ public class VariantWebMapper {
         final var variantId = new VariantId(id);
         final var version = new VariantVersion(expectedVersion);
 
-        return new RestoreVariantCommand(
-                variantId,
-                version);
+        return new RestoreVariantCommand(variantId, version);
     }
 
     public UpdateVariantInfoCommand toUpdateInfoCommand(
@@ -118,9 +118,7 @@ public class VariantWebMapper {
         final var variantId = new VariantId(id);
         final var version = new VariantVersion(expectedVersion);
 
-        return new DeleteVariantImageCommand(
-                variantId,
-                version);
+        return new DeleteVariantImageCommand(variantId, version);
     }
 
     public SoftDeleteVariantCommand toSoftDeleteCommand(

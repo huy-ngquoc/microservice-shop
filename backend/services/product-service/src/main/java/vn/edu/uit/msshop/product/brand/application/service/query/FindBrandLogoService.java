@@ -22,8 +22,7 @@ public class FindBrandLogoService implements FindBrandLogoUseCase {
             readOnly = true)
     public BrandLogoView findLogoById(
             final BrandId id) {
-        return this.loadPort.loadById(id)
-                .map(this.mapper::toLogoView)
+        return this.loadPort.loadById(id).map(this.mapper::toLogoView)
                 .orElseThrow(() -> new BrandNotFoundException(id));
     }
 }

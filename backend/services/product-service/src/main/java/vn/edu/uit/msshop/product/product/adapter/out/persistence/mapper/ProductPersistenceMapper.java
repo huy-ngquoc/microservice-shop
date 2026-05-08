@@ -39,9 +39,7 @@ public class ProductPersistenceMapper {
         final var variantsList = entity.getVariants().stream().map(this::toDomain).toList();
         final var variants = new ProductVariants(variantsList);
 
-        final var configuration = new ProductConfiguration(
-                options,
-                variants);
+        final var configuration = new ProductConfiguration(options, variants);
 
         final var imageKeys = ProductImageKeys.of(entity.getImageKeys());
 
@@ -78,8 +76,7 @@ public class ProductPersistenceMapper {
             final Product product) {
         final var priceRange = product.getPriceRange();
         final var variantDocs = product.getVariants().values().stream()
-                .map(ProductPersistenceMapper::toPersistence)
-                .toList();
+                .map(ProductPersistenceMapper::toPersistence).toList();
 
         return new ProductDocument(
                 product.getId().value(),
@@ -98,8 +95,8 @@ public class ProductPersistenceMapper {
     public ProductDocument toPersistence(
             final NewProduct newProduct) {
         final var priceRange = newProduct.getVariants().getPriceRange();
-        final var variantDocs = newProduct.getVariants().values()
-                .stream().map(ProductPersistenceMapper::toPersistence).toList();
+        final var variantDocs = newProduct.getVariants().values().stream()
+                .map(ProductPersistenceMapper::toPersistence).toList();
 
         return new ProductDocument(
                 newProduct.getId().value(),

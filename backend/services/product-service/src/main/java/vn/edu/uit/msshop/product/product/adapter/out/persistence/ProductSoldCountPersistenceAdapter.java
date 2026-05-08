@@ -37,10 +37,12 @@ public class ProductSoldCountPersistenceAdapter
         LoadAllProductSoldCountsPort,
         InitializeProductSoldCountPort,
         IncreaseAllProductSoldCountsPort,
-        DecreaseAllProductSoldCountsPort,
-        DeleteProductSoldCountPort {
-    private static final Collector<ProductSoldCount, ?, Map<ProductId, ProductSoldCount>> COLLECTOR = Collectors
-            .toUnmodifiableMap(
+
+        DecreaseAllProductSoldCountsPort, DeleteProductSoldCountPort {
+    private static final Collector<
+            ProductSoldCount,
+            ?,
+            Map<ProductId, ProductSoldCount>> COLLECTOR = Collectors.toUnmodifiableMap(
                     ProductSoldCount::getId,
                     Function.identity(),
                     (
@@ -133,8 +135,9 @@ public class ProductSoldCountPersistenceAdapter
             final var id = entry.getKey();
             final var jpaId = id.value();
 
-            final var query = new Query(Criteria.where("_id").is(jpaId)
-                    .and(ProductSoldCountDocument.Fields.soldCount).gte(dec));
+            final var query = new Query(
+                    Criteria.where("_id").is(jpaId)
+                            .and(ProductSoldCountDocument.Fields.soldCount).gte(dec));
             final var update = new Update()
                     .inc(ProductSoldCountDocument.Fields.soldCount, -dec)
                     .set(ProductSoldCountDocument.Fields.lastUpdatedTime, instantNow);

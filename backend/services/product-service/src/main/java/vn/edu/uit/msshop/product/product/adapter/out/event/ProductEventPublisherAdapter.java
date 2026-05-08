@@ -13,8 +13,7 @@ import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 
 @Component
 @RequiredArgsConstructor
-public class ProductEventPublisherAdapter
-        implements PublishProductEventPort {
+public class ProductEventPublisherAdapter implements PublishProductEventPort {
     private final ApplicationEventPublisher publisher;
 
     @Override

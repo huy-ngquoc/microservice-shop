@@ -118,7 +118,8 @@ public class VariantController {
     public ResponseEntity<VariantImageResponse> findImageById(
             @PathVariable
             final UUID id) {
-        final var view = this.findImageUseCase.findImageById(this.mapper.toVariantId(id));
+        final var view = this.findImageUseCase
+                .findImageById(this.mapper.toVariantId(id));
 
         final var response = this.mapper.toImageResponse(view);
         return ResponseEntity.ok(response);

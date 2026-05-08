@@ -7,11 +7,16 @@ public final class VariantImageKeyNotFoundException extends NotFoundException {
     public VariantImageKeyNotFoundException(
             final VariantImageKey imageKey,
             final Throwable cause) {
-        super("Variant image key", imageKey.value(), cause);
+        super(
+                "Variant image key",
+                imageKey.value(),
+                cause);
     }
 
     public VariantImageKeyNotFoundException(
             final VariantImageKey imageKey) {
-        super("Variant image key", imageKey.value());
+        super(
+                "Variant image key",
+                imageKey.value());
     }
 }

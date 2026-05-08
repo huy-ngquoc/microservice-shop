@@ -46,8 +46,7 @@ public class HardDeleteCategoryService implements HardDeleteCategoryUseCase {
         }
 
         if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(categoryId)) {
-            throw new BusinessRuleException(
-                    "Cannot delete category with existing products");
+            throw new BusinessRuleException("Cannot delete category with existing products");
         }
 
         this.deletePort.deleteById(categoryId);
@@ -66,7 +65,9 @@ public class HardDeleteCategoryService implements HardDeleteCategoryUseCase {
         try {
             this.imageStoragePort.deleteImage(key);
         } catch (final RuntimeException e) {
-            log.warn("Hard delete: failed to delete image '{}', manual cleanup required", key.value(), e);
+            log.warn("Hard delete: failed to delete image '{}', manual cleanup required",
+                    key.value(),
+                    e);
         }
     }
 }

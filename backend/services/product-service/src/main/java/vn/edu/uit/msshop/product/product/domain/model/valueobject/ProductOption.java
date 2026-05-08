@@ -21,9 +21,7 @@ public record ProductOption(
             throw new DomainException("Option value CANNOT be blank");
         }
 
-        value = Domains.getWhitespacePattern()
-                .matcher(value.trim())
-                .replaceAll(" ");
+        value = Domains.getWhitespacePattern().matcher(value.trim()).replaceAll(" ");
 
         if (value.length() > MAX_LENGTH_VALUE) {
             throw new DomainException("Option value is too long");

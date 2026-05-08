@@ -9,8 +9,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BrandMongoRepository
-        extends MongoRepository<BrandDocument, UUID> {
+public interface BrandMongoRepository extends MongoRepository<BrandDocument, UUID> {
     Page<BrandDocument> findAllByDeletionTimeIsNull(
             final Pageable pageable);
 

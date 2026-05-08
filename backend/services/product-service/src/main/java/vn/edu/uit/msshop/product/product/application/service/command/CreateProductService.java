@@ -108,5 +108,4 @@ public class CreateProductService implements CreateProductUseCase {
             throw new ProductBrandNotFoundException(newBrandId);
         }
     }
-
 }

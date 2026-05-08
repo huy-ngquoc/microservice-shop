@@ -17,9 +17,6 @@ public class ProductRatingPersistenceMapper {
         final var average = new ProductRatingAverage(entity.getAverage());
         final var amount = new ProductRatingAmount(entity.getAmount());
 
-        return new ProductRating(
-                id,
-                average,
-                amount);
+        return new ProductRating(id, average, amount);
     }
 }

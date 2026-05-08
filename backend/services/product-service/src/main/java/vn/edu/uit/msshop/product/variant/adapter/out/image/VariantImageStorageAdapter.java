@@ -10,18 +10,17 @@ import com.cloudinary.api.exceptions.NotFound;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.shared.adapter.exception.ImageDeletionFailedException;
 import vn.edu.uit.msshop.shared.adapter.exception.ImageRenameFailedException;
 import vn.edu.uit.msshop.shared.adapter.exception.ImageStorageQueryFailedException;
 import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryFolders;
-import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class VariantImageStorageAdapter
-        implements VariantImageStoragePort {
+public class VariantImageStorageAdapter implements VariantImageStoragePort {
     private static final String VARIANTS_FOLDER = "variants";
 
     private final Cloudinary cloudinary;
@@ -30,7 +29,8 @@ public class VariantImageStorageAdapter
     public boolean existsAsTemp(
             final VariantImageKey key) {
         try {
-            final var result = this.cloudinary.api()
+            final var result = this.cloudinary
+                    .api()
                     .resource(CloudinaryFolders.TEMP + "/" + key.value(), Map.of());
 
             return (result != null) && result.containsKey("public_id");
@@ -64,7 +64,9 @@ public class VariantImageStorageAdapter
     public void deleteImage(
             final VariantImageKey key) {
         try {
-            this.cloudinary.uploader().destroy(VARIANTS_FOLDER + "/" + key.value(), Map.of());
+            this.cloudinary
+                    .uploader()
+                    .destroy(VARIANTS_FOLDER + "/" + key.value(), Map.of());
         } catch (final IOException e) {
             throw new ImageDeletionFailedException("Failed to delete image: " + key.value(), e);
         }
@@ -74,9 +76,15 @@ public class VariantImageStorageAdapter
             final String fromPublicId,
             final String toPublicId) {
         try {
-            this.cloudinary.uploader().rename(fromPublicId, toPublicId, Map.of());
+            this.cloudinary
+                    .uploader()
+                    .rename(fromPublicId, toPublicId, Map.of());
         } catch (final IOException e) {
-            throw new ImageRenameFailedException("Failed to rename image: " + fromPublicId + " → " + toPublicId, e);
+            final var msg = String.format(
+                    "Failed to rename image from `%s` to `%s`",
+                    fromPublicId,
+                    toPublicId);
+            throw new ImageRenameFailedException(msg, e);
         }
     }
 }

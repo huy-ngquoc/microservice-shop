@@ -21,37 +21,23 @@ public class BrandPersistenceMapper {
         final var name = new BrandName(entity.getName());
         final var logoKey = BrandLogoKey.ofNullable(entity.getLogoKey());
 
-        final var versionValue = Objects.requireNonNull(
-                entity.getVersion(),
-                "Persisted brand must have a version");
+        final var versionValue = Objects.requireNonNull(entity.getVersion(), "Persisted brand must have a version");
         final var version = new BrandVersion(versionValue);
         final var deletionTime = BrandDeletionTime.ofNullable(entity.getDeletionTime());
 
-        return new Brand(
-                id,
-                name,
-                logoKey,
-                version,
-                deletionTime);
+        return new Brand(id, name, logoKey, version, deletionTime);
     }
 
     public BrandDocument toPersistence(
             final Brand brand) {
-        return new BrandDocument(
-                brand.getId().value(),
-                brand.getName().value(),
-                BrandLogoKey.unwrap(brand.getLogoKey()),
-                brand.getVersion().value(),
+        return new BrandDocument(brand.getId().value(), brand.getName().value(),
+                BrandLogoKey.unwrap(brand.getLogoKey()), brand.getVersion().value(),
                 BrandDeletionTime.unwrap(brand.getDeletionTime()));
     }
 
     public BrandDocument toPersistence(
             final NewBrand newBrand) {
-        return new BrandDocument(
-                newBrand.getId().value(),
-                newBrand.getName().value(),
-                null,
-                null,
+        return new BrandDocument(newBrand.getId().value(), newBrand.getName().value(), null, null,
                 null);
     }
 }

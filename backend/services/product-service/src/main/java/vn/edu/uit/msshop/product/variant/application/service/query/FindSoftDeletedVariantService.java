@@ -26,8 +26,7 @@ public class FindSoftDeletedVariantService implements FindSoftDeletedVariantUseC
             readOnly = true)
     public VariantView findSoftDeletedById(
             final VariantId id) {
-        final var variant = this.loadSoftDeletedPort
-                .loadSoftDeletedById(id)
+        final var variant = this.loadSoftDeletedPort.loadSoftDeletedById(id)
                 .orElseThrow(() -> new VariantNotFoundException(id));
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
                 variant.getId(),

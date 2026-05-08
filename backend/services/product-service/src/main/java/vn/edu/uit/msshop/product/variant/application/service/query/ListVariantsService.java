@@ -26,10 +26,12 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-public class ListVariantsService
-        implements ListVariantsUseCase {
+public class ListVariantsService implements ListVariantsUseCase {
 
-    private static final Collector<VariantId, ?, Set<VariantId>> SET_COLLECTOR = Collectors.toSet();
+    private static final Collector<
+            VariantId,
+            ?,
+            Set<VariantId>> SET_COLLECTOR = Collectors.toSet();
 
     private final ListVariantsPort listPort;
     private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
@@ -67,14 +69,10 @@ public class ListVariantsService
 
         final var soldCount = soldCountById.getOrDefault(
                 variantId,
-                VariantSoldCount.zero(
-                        variantId,
-                        productId));
+                VariantSoldCount.zero(variantId, productId));
         final var stockCount = stockCountById.getOrDefault(
                 variantId,
-                VariantStockCount.zero(
-                        variantId,
-                        productId));
+                VariantStockCount.zero(variantId, productId));
 
         return this.mapper.toView(
                 variant,

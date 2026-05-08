@@ -41,7 +41,9 @@ public record ProductVariantTraits(
 
     public static ProductVariantTraits of(
             final Collection<String> rawTraitsList) {
-        final var traitsList = rawTraitsList.stream().map(ProductVariantTrait::new).toList();
+        final var traitsList = rawTraitsList.stream()
+                .map(ProductVariantTrait::new)
+                .toList();
         return new ProductVariantTraits(traitsList);
     }
 
@@ -50,7 +52,9 @@ public record ProductVariantTraits(
     }
 
     public List<String> unwrap() {
-        return this.values.stream().map(ProductVariantTrait::value).toList();
+        return this.values.stream()
+                .map(ProductVariantTrait::value)
+                .toList();
     }
 
     public boolean isEmpty() {

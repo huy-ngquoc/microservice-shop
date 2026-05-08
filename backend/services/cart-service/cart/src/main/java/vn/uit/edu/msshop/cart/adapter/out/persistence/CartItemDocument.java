@@ -1,0 +1,23 @@
+package vn.uit.edu.msshop.cart.adapter.out.persistence;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class CartItemDocument {
+    private String variantId;
+    private List<String> traits;
+    private String imageKey;
+    private String name;
+    private BigDecimal price; 
+    private int amount;
+
+}

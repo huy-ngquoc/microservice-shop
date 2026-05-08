@@ -23,7 +23,6 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantsForNewProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantProductNameForProductCommand;
@@ -41,9 +40,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTarget;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Component
@@ -73,7 +70,8 @@ public class ProductToVariantSyncAdapter
         final var variantProductId = new VariantProductId(id.value());
         final var variantProductName = new VariantProductName(name.value());
         final var newVariantInputsList = newVariants.values().stream()
-                .map(this::toNewVariantInput).toList();
+                .map(ProductToVariantSyncAdapter::toNewVariantInput)
+                .toList();
         final var newVariantInputs = new NewVariantsForNewProduct(newVariantInputsList);
 
         final var command = new CreateVariantsForNewProductCommand(
@@ -84,7 +82,8 @@ public class ProductToVariantSyncAdapter
         final var variantViewsList = this.createForNewProductUseCase.create(command);
 
         final var productVariantsList = variantViewsList.stream()
-                .map(this::toProductVariant).toList();
+                .map(ProductToVariantSyncAdapter::toProductVariant)
+                .toList();
         return new ProductVariants(productVariantsList);
     }
 
@@ -102,8 +101,7 @@ public class ProductToVariantSyncAdapter
     @Override
     public void updateTraitsByIds(
             Map<ProductVariantId, ProductVariantTraits> newTraitsMap) {
-        final var map = new HashMap<VariantId, VariantTraits>(
-                newTraitsMap.size(), 1);
+        final var map = new HashMap<VariantId, VariantTraits>(newTraitsMap.size(), 1);
 
         for (final var entry : newTraitsMap.entrySet()) {
             final var productVariantId = entry.getKey();
@@ -155,34 +153,21 @@ public class ProductToVariantSyncAdapter
         this.hardDeleteVariantsForProductUseCase.purgeByProductId(variantProductId);
     }
 
-    private NewVariantForNewProduct toNewVariantInput(
+    private static NewVariantForNewProduct toNewVariantInput(
             final NewProductVariant variant) {
         final var price = new VariantPrice(variant.price().value());
-        final var traits = new VariantTraits(
-                variant.traits().unwrap()
-                        .stream().map(VariantTrait::new).toList());
-        final var targets = new VariantTargets(
-                variant.targets().unwrap()
-                        .stream().map(VariantTarget::new).toList());
+        final var traits = VariantTraits.of(variant.traits().unwrap());
+        final var targets = VariantTargets.of(variant.targets().unwrap());
 
-        return new NewVariantForNewProduct(
-                price,
-                traits,
-                targets);
+        return new NewVariantForNewProduct(price, traits, targets);
     }
 
-    private ProductVariant toProductVariant(
+    private static ProductVariant toProductVariant(
             final VariantView variantView) {
         final var id = new ProductVariantId(variantView.id());
         final var price = new ProductVariantPrice(variantView.price());
+        final var traits = ProductVariantTraits.of(variantView.traits());
 
-        final var traitsList = variantView.traits()
-                .stream().map(ProductVariantTrait::new).toList();
-        final var traits = new ProductVariantTraits(traitsList);
-
-        return new ProductVariant(
-                id,
-                price,
-                traits);
+        return new ProductVariant(id, price, traits);
     }
 }

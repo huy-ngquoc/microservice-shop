@@ -14,8 +14,6 @@ public class ProductSoldCountPersistenceMapper {
         final var id = new ProductId(entity.getId());
         final var value = new ProductSoldCountValue(entity.getSoldCount());
 
-        return new ProductSoldCount(
-                id,
-                value);
+        return new ProductSoldCount(id, value);
     }
 }

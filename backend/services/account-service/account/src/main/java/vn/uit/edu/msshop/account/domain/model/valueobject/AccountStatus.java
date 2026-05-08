@@ -1,0 +1,15 @@
+package vn.uit.edu.msshop.account.domain.model.valueobject;
+
+import java.util.Set;
+
+public record AccountStatus(String value) {
+    private static Set<String> validStatus=Set.of("ACTIVE","BANNED","PENDING","CREATE_FAILED");
+    public AccountStatus {
+        if(value==null) {
+            throw new IllegalArgumentException("Invalid account status");
+        } 
+        if(!validStatus.contains(value)) {
+            throw new IllegalArgumentException("Invalid account status");
+        }
+    }
+}

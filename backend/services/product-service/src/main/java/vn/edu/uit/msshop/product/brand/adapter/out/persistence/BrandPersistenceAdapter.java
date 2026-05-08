@@ -39,65 +39,44 @@ public class BrandPersistenceAdapter
     @Override
     public PageResponseDto<Brand> list(
             final PageRequestDto pageRequest) {
-        final var pageable = PageRequests.toPageable(
-                pageRequest,
-                BrandDocument.Fields.id);
+        final var pageable = PageRequests.toPageable(pageRequest, BrandDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNull(pageable);
 
-        final var brands = page.getContent().stream()
-                .map(this.mapper::toDomain)
-                .toList();
+        final var brands = page.getContent().stream().map(this.mapper::toDomain).toList();
 
-        return new PageResponseDto<>(
-                brands,
-                page.getNumber(),
-                page.getSize(),
-                page.getTotalElements());
+        return new PageResponseDto<>(brands, page.getNumber(), page.getSize(), page.getTotalElements());
     }
 
     @Override
     public PageResponseDto<Brand> listSoftDeleted(
             final PageRequestDto pageRequest) {
-        final var pageable = PageRequests.toPageable(
-                pageRequest,
-                BrandDocument.Fields.id);
+        final var pageable = PageRequests.toPageable(pageRequest, BrandDocument.Fields.id);
         final var page = this.repository.findAllByDeletionTimeIsNotNull(pageable);
 
-        final var brands = page.getContent().stream()
-                .map(this.mapper::toDomain)
-                .toList();
+        final var brands = page.getContent().stream().map(this.mapper::toDomain).toList();
 
-        return new PageResponseDto<>(
-                brands,
-                page.getNumber(),
-                page.getSize(),
-                page.getTotalElements());
+        return new PageResponseDto<>(brands, page.getNumber(), page.getSize(), page.getTotalElements());
     }
 
     @Override
     public Optional<Brand> loadById(
             final BrandId id) {
         final var jpaId = id.value();
-        return this.repository
-                .findByIdAndDeletionTimeIsNull(jpaId)
-                .map(this.mapper::toDomain);
+        return this.repository.findByIdAndDeletionTimeIsNull(jpaId).map(this.mapper::toDomain);
     }
 
     @Override
     public Optional<Brand> loadSoftDeletedById(
             final BrandId id) {
         final var jpaId = id.value();
-        return this.repository
-                .findByIdAndDeletionTimeIsNotNull(jpaId)
-                .map(this.mapper::toDomain);
+        return this.repository.findByIdAndDeletionTimeIsNotNull(jpaId).map(this.mapper::toDomain);
     }
 
     @Override
     public boolean existsById(
             final BrandId id) {
         final var jpaId = id.value();
-        return this.repository
-                .existsByIdAndDeletionTimeIsNull(jpaId);
+        return this.repository.existsByIdAndDeletionTimeIsNull(jpaId);
     }
 
     @Override

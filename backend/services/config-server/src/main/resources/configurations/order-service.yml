@@ -1,0 +1,99 @@
+spring:
+  data:
+    redis:
+      host: ${REDIS_ORDER_HOST:localhost}       
+      port: ${REDIS_PORT:6380}
+      password: binh123
+      timeout: 60000   
+      client-type: lettuce     
+      lettuce:
+        pool:
+          max-active: 32 # Tăng lên để chịu tải tốt hơn
+          max-idle: 16
+          min-idle: 8
+    mongodb:
+      uri: mongodb://alibou:alibou@${ORDER_DB_URL:localhost:27019}/order_db?authSource=admin&replicaSet=rs0&directConnection=true&uuidRepresentation=STANDARD&maxPoolSize=200&minPoolSize=20
+      command-listener:
+        observation:
+          enabled: true
+  kafka:
+        bootstrap-servers: ${KAFKA_URL:localhost:9092}
+        consumer:
+            group-id: order-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+                spring.json.trusted.packages: "*"
+                spring.json.value.default.type: java.lang.Object
+                spring.json.type.mapping: 
+                    OnlinePaymentExpired:vn.uit.edu.msshop.order.domain.event.OnlinePaymentExpired,
+                    OnlinePaymentCancelled:vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled,
+                    ProductCreated:vn.uit.edu.msshop.order.domain.event.product.ProductCreated,
+                    ProductUpdated:vn.uit.edu.msshop.order.domain.event.product.ProductUpdate,
+                    VariantUpdated:vn.uit.edu.msshop.order.domain.event.product.VariantUpdate,
+                    VariantDeleted:vn.uit.edu.msshop.order.domain.event.product.VariantDeleted,
+                    ProductDeleted:vn.uit.edu.msshop.order.domain.event.product.ProductDeleted,
+                    PaymentSuccess:vn.uit.edu.msshop.order.domain.event.PaymentSuccess,
+                    PaymentLinkCreated:java.lang.Object,
+                    OnlinePaymentSuccess:java.lang.Object,
+                    PaymentCreatedFail:vn.uit.edu.msshop.order.domain.event.PaymentCreatedFail
+        producer:
+            bootstrap-servers: ${KAFKA_URL:localhost:9092}
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                acks: all
+                properties:
+                    enable.idempotence: true
+                max.block.ms: 10000        # Tăng lên 10s
+                delivery.timeout.ms: 30000  # Tăng lên 30s (Chuẩn của Kafka)
+                request.timeout.ms: 10000
+                spring.json.type.mapping: 
+                    OrderCreated:vn.uit.edu.msshop.order.domain.event.OrderCreated,
+                    OrderCreatedSuccess:vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess,
+                    OrderUpdatedEvent:vn.uit.edu.msshop.order.domain.event.OrderUpdatedEvent,
+                    PaymentLinkCreated:java.lang.Object,
+                    OnlinePaymentSuccess:java.lang.Object
+logging:
+  level:
+        org.springframework.data.mongodb.core.MongoTemplate: OFF
+        org.apache.kafka: ERROR
+        org.springframework.kafka: ERROR
+        io.micrometer.tracing: ERROR
+        io.zipkin.reporter2: ERROR
+        root: WARN
+        vn.uit.edu.msshop.order: INFO
+        io.lettuce.core: WARN
+  pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+management:
+        endpoints:
+            web:
+        exposure:
+            include: "*"
+        tracing:
+            sampling:
+                probability: 1.0 
+        zipkin:
+            tracing:
+                endpoint: http://127.0.0.1:9411/api/v2/spans
+        metrics:
+            tags:
+                application: ${spring.application.name}
+server:
+  port: 8000
+  address: 0.0.0.0
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
+    instance:
+        prefer-ip-address: true
+        lease-renewal-interval-in-seconds: 5 
+        lease-expiration-duration-in-seconds: 10
+
+    
+    
+
+    

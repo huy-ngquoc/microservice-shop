@@ -1,16 +1,19 @@
 server:
-    port: 8222
-
+  port: 8222
 spring:
-    cloud:
-        gateway:
-            server:
-                webflux:
-                    discovery:
-                        locator:
-                            enabled: true
-                    routes:
-                      - id: product-service
-                        uri: lb:http://PRODUCT-SERVICE
-                        predicates:
-                          - Path=/api/v1/products/**
+  cloud:
+    gateway:
+      routes:
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payment/**
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
+  
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.http.server.reactive: DEBUG

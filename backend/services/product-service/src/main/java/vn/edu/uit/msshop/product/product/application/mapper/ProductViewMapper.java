@@ -41,7 +41,9 @@ public class ProductViewMapper {
 
     public List<ProductVariantView> toView(
             final ProductVariants variants) {
-        return variants.values().stream().map(this::toView).toList();
+        return variants.values().stream()
+                .map(this::toView)
+                .toList();
     }
 
     public ProductVariantView toView(

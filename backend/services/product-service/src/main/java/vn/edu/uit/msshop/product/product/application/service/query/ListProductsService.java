@@ -29,7 +29,10 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @Service
 @RequiredArgsConstructor
 public class ListProductsService implements ListProductsUseCase {
-    private static final Collector<ProductId, ?, Set<ProductId>> SET_COLLECTOR = Collectors.toSet();
+    private static final Collector<
+            ProductId,
+            ?,
+            Set<ProductId>> SET_COLLECTOR = Collectors.toSet();
 
     private final ListProductsPort listPort;
     private final LoadAllProductSoldCountsPort loadAllSoldCountsPort;

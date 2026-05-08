@@ -57,7 +57,8 @@ public class RemoveProductVariantsService implements RemoveProductVariantsUseCas
         final var expectedVersion = command.expectedVersion();
         if (!expectedVersion.equals(product.getVersion())) {
             throw new OptimisticLockException(
-                    expectedVersion.value(), product.getVersion().value());
+                    expectedVersion.value(),
+                    product.getVersion().value());
         }
 
         var productVariants = product.getVariants();
@@ -91,10 +92,6 @@ public class RemoveProductVariantsService implements RemoveProductVariantsUseCas
 
         this.softDeleteAllVariantsPort.deleteByIds(variantIds);
 
-        return this.mapper.toView(
-                savedProduct,
-                soldCount,
-                stockCount,
-                rating);
+        return this.mapper.toView(savedProduct, soldCount, stockCount, rating);
     }
 }

@@ -40,18 +40,24 @@ public record ProductConfiguration(
 
     public ProductConfiguration addVariant(
             final ProductVariant variant) {
-        return new ProductConfiguration(options, variants.add(variant));
+        return new ProductConfiguration(
+                options,
+                variants.add(variant));
     }
 
     public ProductConfiguration removeVariant(
             final ProductVariantId id) {
-        return new ProductConfiguration(options, variants.removeById(id));
+        return new ProductConfiguration(
+                options,
+                variants.removeById(id));
     }
 
     public ProductConfiguration replaceVariantByVariantId(
             final ProductVariantId id,
             final ProductVariant newVariant) {
-        return new ProductConfiguration(options, variants.replaceById(id, newVariant));
+        return new ProductConfiguration(
+                options,
+                variants.replaceById(id, newVariant));
     }
 
     private static void validateConsistency(
@@ -63,8 +69,7 @@ public record ProductConfiguration(
 
         if (options.isEmpty()) {
             if (variants.size() != 1) {
-                throw new DomainException(
-                        "Simple product (no options) must have exactly 1 default variant");
+                throw new DomainException("Simple product (no options) must have exactly 1 default variant");
             }
 
             if (!variants.values().getFirst().traits().isEmpty()) {
@@ -77,9 +82,11 @@ public record ProductConfiguration(
         final var expectedCount = options.size();
         for (final var variant : variants.values()) {
             if (variant.traits().size() != expectedCount) {
-                throw new DomainException(String.format(
-                        "Variant '%s' provides %d traits, but Product defines %d options",
-                        variant.id().value(), variant.traits().size(), expectedCount));
+                throw new DomainException(
+                        String.format("Variant '%s' provides %d traits, but Product defines %d options",
+                                variant.id().value(),
+                                variant.traits().size(),
+                                expectedCount));
             }
         }
     }

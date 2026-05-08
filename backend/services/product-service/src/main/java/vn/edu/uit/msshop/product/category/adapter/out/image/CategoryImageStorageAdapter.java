@@ -29,9 +29,7 @@ public class CategoryImageStorageAdapter implements CategoryImageStoragePort {
     public boolean existsAsTemp(
             final CategoryImageKey key) {
         try {
-            final var result = this.cloudinary.api().resource(
-                    CloudinaryFolders.TEMP + "/" + key.value(),
-                    Map.of());
+            final var result = this.cloudinary.api().resource(CloudinaryFolders.TEMP + "/" + key.value(), Map.of());
 
             return (result != null) && result.containsKey("public_id");
         } catch (final NotFound _) {
@@ -66,9 +64,7 @@ public class CategoryImageStorageAdapter implements CategoryImageStoragePort {
         try {
             this.cloudinary.uploader().destroy(CATEGORY_FOLDER + "/" + key.value(), Map.of());
         } catch (final IOException e) {
-            throw new ImageDeletionFailedException(
-                    "Failed to delete image: " + key.value(),
-                    e);
+            throw new ImageDeletionFailedException("Failed to delete image: " + key.value(), e);
         }
     }
 
@@ -79,8 +75,7 @@ public class CategoryImageStorageAdapter implements CategoryImageStoragePort {
             this.cloudinary.uploader().rename(fromPublicId, toPublicId, Map.of());
         } catch (final IOException e) {
             throw new ImageRenameFailedException(
-                    "Failed to rename image: " + fromPublicId + " → " + toPublicId,
-                    e);
+                    "Failed to rename image: " + fromPublicId + " → " + toPublicId, e);
         }
     }
 }

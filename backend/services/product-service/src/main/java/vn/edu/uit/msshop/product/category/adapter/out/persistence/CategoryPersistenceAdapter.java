@@ -78,8 +78,7 @@ public class CategoryPersistenceAdapter
     public Optional<Category> loadById(
             final CategoryId id) {
         final var jpaId = id.value();
-        return this.repository
-                .findByIdAndDeletionTimeIsNull(jpaId)
+        return this.repository.findByIdAndDeletionTimeIsNull(jpaId)
                 .map(this.mapper::toDomain);
     }
 
@@ -87,8 +86,7 @@ public class CategoryPersistenceAdapter
     public Optional<Category> loadSoftDeletedById(
             final CategoryId id) {
         final var jpaId = id.value();
-        return this.repository
-                .findByIdAndDeletionTimeIsNotNull(jpaId)
+        return this.repository.findByIdAndDeletionTimeIsNotNull(jpaId)
                 .map(this.mapper::toDomain);
     }
 

@@ -40,10 +40,6 @@ public class FindProductService implements FindProductUseCase {
         final var stockCount = this.loadStockCountPort.loadByIdOrZero(id);
         final var rating = this.loadRatingPort.loadByIdOrZero(id);
 
-        return this.mapper.toView(
-                product,
-                soldCount,
-                stockCount,
-                rating);
+        return this.mapper.toView(product, soldCount, stockCount, rating);
     }
 }

@@ -22,8 +22,7 @@ public record NewProductConfiguration(
 
         if (options.isEmpty()) {
             if (newVariants.size() != 1) {
-                throw new DomainException(
-                        "Simple product (no options) must have exactly 1 default variant");
+                throw new DomainException("Simple product (no options) must have exactly 1 default variant");
             }
 
             if (!newVariants.values().getFirst().traits().isEmpty()) {
@@ -36,9 +35,11 @@ public record NewProductConfiguration(
         final var expectedCount = options.size();
         for (final var variant : newVariants.values()) {
             if (variant.traits().size() != expectedCount) {
-                throw new DomainException(String.format(
-                        "Variant '%s' provides %d traits, but Product defines %d options",
-                        variant.traits().values(), variant.traits().size(), expectedCount));
+                throw new DomainException(
+                        String.format("Variant '%s' provides %d traits, but Product defines %d options",
+                                variant.traits().values(),
+                                variant.traits().size(),
+                                expectedCount));
             }
         }
     }

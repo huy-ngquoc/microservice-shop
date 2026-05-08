@@ -8,11 +8,16 @@ public final class VariantNotFoundException extends NotFoundException {
     public VariantNotFoundException(
             final VariantId id,
             final Throwable cause) {
-        super(Variant.class.getSimpleName(), id.value().toString(), cause);
+        super(
+                Variant.class.getSimpleName(),
+                id.value().toString(),
+                cause);
     }
 
     public VariantNotFoundException(
             final VariantId id) {
-        super(Variant.class.getSimpleName(), id.value().toString());
+        super(
+                Variant.class.getSimpleName(),
+                id.value().toString());
     }
 }

@@ -1,0 +1,29 @@
+cloudinary:
+  cloud-name: ddouspryd
+  api-key: 183591468263317 
+  api-secret: CVkyDeKCXswJyFn_aAwcFN5W624
+server:
+    port: 8073
+logging:
+  level:
+    org.apache.kafka: ERROR
+    org.springframework.kafka: ERROR
+spring:
+  kafka:
+        producer:
+            bootstrap-servers: localhost:9092
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                spring.json.type.mapping: 
+                  ImageRemoveSuccess:vn.uit.edu.msshop.image.domain.event.ImageRemoveSuccess
+
+        consumer:
+            group-id: account-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.json.trusted.packages: "*"
+                spring.json.type.mapping: 
+                  DeleteOldImageEvent:vn.uit.edu.msshop.image.domain.event.DeleteOldImageEvent,
+                  RollbackImageEvent:vn.uit.edu.msshop.image.domain.event.RollbackImageEvent

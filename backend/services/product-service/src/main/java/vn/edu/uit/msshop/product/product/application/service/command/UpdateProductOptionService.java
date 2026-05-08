@@ -99,9 +99,7 @@ public class UpdateProductOptionService implements UpdateProductOptionUseCase {
 
         final var newOptions = currentOptions.replaceAt(optionIndex, newOption);
 
-        final var configuration = new ProductConfiguration(
-                newOptions,
-                current.getVariants());
+        final var configuration = new ProductConfiguration(newOptions, current.getVariants());
 
         return new Product(
                 current.getId(),

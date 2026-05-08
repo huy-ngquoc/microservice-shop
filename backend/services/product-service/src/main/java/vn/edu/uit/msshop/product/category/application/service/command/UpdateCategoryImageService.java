@@ -98,7 +98,9 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
                 this.imageStoragePort.unpublishImage(newImageKey);
             } catch (final RuntimeException compensateEx) {
                 e.addSuppressed(compensateEx);
-                log.error("Compensation failed for key '{}'", newImageKey.value(), compensateEx);
+                log.error("Compensation failed for key '{}'",
+                        newImageKey.value(),
+                        compensateEx);
             }
             throw e;
         }
@@ -121,7 +123,9 @@ public class UpdateCategoryImageService implements UpdateCategoryImageUseCase {
         try {
             this.imageStoragePort.deleteImage(oldKey);
         } catch (final RuntimeException e) {
-            log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
+            log.warn("Failed to delete old image key '{}', manual cleanup required",
+                    oldKey.value(),
+                    e);
         }
     }
 }

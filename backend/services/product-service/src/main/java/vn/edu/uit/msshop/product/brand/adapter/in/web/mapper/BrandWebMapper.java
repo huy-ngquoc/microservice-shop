@@ -38,8 +38,7 @@ public class BrandWebMapper {
             final CreateBrandRequest request) {
         final var name = new BrandName(request.name());
 
-        return new CreateBrandCommand(
-                name);
+        return new CreateBrandCommand(name);
     }
 
     public RestoreBrandCommand toRestoreCommand(
@@ -48,9 +47,7 @@ public class BrandWebMapper {
         final var brandId = new BrandId(id);
         final var version = new BrandVersion(expectedVersion);
 
-        return new RestoreBrandCommand(
-                brandId,
-                version);
+        return new RestoreBrandCommand(brandId, version);
     }
 
     public UpdateBrandInfoCommand toUpdateInfoCommand(
@@ -61,10 +58,7 @@ public class BrandWebMapper {
 
         final var name = ChangeRequest.toChange(request.name(), BrandName::new);
 
-        return new UpdateBrandInfoCommand(
-                brandId,
-                name,
-                version);
+        return new UpdateBrandInfoCommand(brandId, name, version);
     }
 
     public UpdateBrandLogoCommand toUpdateLogoCommand(
@@ -74,10 +68,7 @@ public class BrandWebMapper {
         final var logoKey = BrandWebMapper.extractKeyFromTempPublicId(request.newLogoKey());
         final var version = new BrandVersion(request.version());
 
-        return new UpdateBrandLogoCommand(
-                brandId,
-                logoKey,
-                version);
+        return new UpdateBrandLogoCommand(brandId, logoKey, version);
     }
 
     public DeleteBrandLogoCommand toDeleteLogoCommand(
@@ -86,9 +77,7 @@ public class BrandWebMapper {
         final var brandId = new BrandId(id);
         final var version = new BrandVersion(expectedVersion);
 
-        return new DeleteBrandLogoCommand(
-                brandId,
-                version);
+        return new DeleteBrandLogoCommand(brandId, version);
     }
 
     public SoftDeleteBrandCommand toSoftDeleteCommand(
@@ -97,9 +86,7 @@ public class BrandWebMapper {
         final var brandId = new BrandId(id);
         final var version = new BrandVersion(expectedVersion);
 
-        return new SoftDeleteBrandCommand(
-                brandId,
-                version);
+        return new SoftDeleteBrandCommand(brandId, version);
     }
 
     public HardDeleteBrandCommand toHardDeleteCommand(
@@ -108,9 +95,7 @@ public class BrandWebMapper {
         final var brandId = new BrandId(id);
         final var version = new BrandVersion(expectedVersion);
 
-        return new HardDeleteBrandCommand(
-                brandId,
-                version);
+        return new HardDeleteBrandCommand(brandId, version);
     }
 
     public BrandId toBrandId(
@@ -120,19 +105,13 @@ public class BrandWebMapper {
 
     public BrandResponse toResponse(
             final BrandView view) {
-        return new BrandResponse(
-                view.id(),
-                view.name(),
-                this.toLogoUrlString(view.logoKey()),
+        return new BrandResponse(view.id(), view.name(), this.toLogoUrlString(view.logoKey()),
                 view.version());
     }
 
     public BrandLogoResponse toLogoResponse(
             final BrandLogoView view) {
-        return new BrandLogoResponse(
-                view.id(),
-                this.toLogoUrlString(view.logoKey()),
-                view.version());
+        return new BrandLogoResponse(view.id(), this.toLogoUrlString(view.logoKey()), view.version());
     }
 
     private static BrandLogoKey extractKeyFromTempPublicId(
@@ -148,8 +127,6 @@ public class BrandWebMapper {
     private @Nullable String toLogoUrlString(
             @Nullable
             final String keyString) {
-        return this.urlResolver.resolve(
-                keyString,
-                BrandLogoStorageAdapter.BRAND_FOLDER);
+        return this.urlResolver.resolve(keyString, BrandLogoStorageAdapter.BRAND_FOLDER);
     }
 }

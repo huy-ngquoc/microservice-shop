@@ -14,8 +14,7 @@ import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
 
 @Component
 @RequiredArgsConstructor
-public class CategoryEventPublisherAdapter
-        implements PublishCategoryEventPort {
+public class CategoryEventPublisherAdapter implements PublishCategoryEventPort {
     private final ApplicationEventPublisher publisher;
 
     @Override
