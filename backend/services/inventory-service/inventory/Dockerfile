@@ -1,8 +1,7 @@
 # Stage 1: Build
-FROM maven:3.9-eclipse-temurin-25 AS build
+FROM microservice-shop-shared-base AS build
 WORKDIR /app
 
-# Chỉ copy đúng pom.xml và source code của inventory-service
 COPY backend/services/inventory-service/inventory/pom.xml backend/services/inventory-service/inventory/
 RUN mvn -f backend/services/inventory-service/inventory/pom.xml dependency:go-offline -B
 

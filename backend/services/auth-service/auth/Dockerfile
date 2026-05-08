@@ -1,8 +1,7 @@
 # Stage 1: Build
-FROM maven:3.9-eclipse-temurin-25 AS build
+FROM microservice-shop-shared-base AS build
 WORKDIR /app
 
-# Chỉ copy đúng pom.xml và source code của auth-service
 COPY backend/services/auth-service/auth/pom.xml backend/services/auth-service/auth/
 RUN mvn -f backend/services/auth-service/auth/pom.xml dependency:go-offline -B
 

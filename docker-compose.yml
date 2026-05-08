@@ -1,4 +1,14 @@
 services:
+    # Build-only image: pre-installs parent POM and all shared modules into ~/.m2
+    # so domain services can use `FROM microservice-shop-shared-base AS build`.
+    # Build order: `docker compose build shared-base` first, then `docker compose build`.
+    shared-base:
+        image: microservice-shop-shared-base
+        build:
+            context: .
+            dockerfile: backend/services/Dockerfile.shared-base
+        profiles: [ "build" ]
+
     config-server:
         build:
             context: . # Trỏ về thư mục gốc chứa pom.xml tổng và common-dto
