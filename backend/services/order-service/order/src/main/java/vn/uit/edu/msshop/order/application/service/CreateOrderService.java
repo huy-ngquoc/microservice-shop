@@ -117,9 +117,7 @@ public class CreateOrderService implements CreateOrderUseCase {
     @Override
     @Transactional
     public Order manualCreate(Order order) {
-        if(order.getShippingInfo().email().equals("email@gmail.com")) {
-        throw new RuntimeException("Simulate error");
-    }
+        
         /*OrderCreatedDocument outboxEventOrderCreated = OrderCreatedDocument.builder().currency(order.getCurrency().value())
         .orderId(order.getId().value())
         .paymentMethod(order.getPaymentMethod().value())
