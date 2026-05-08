@@ -8,8 +8,8 @@
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <groupId>vn.edu.uit.msshop</groupId>
-    <artifactId>account-service</artifactId>
+    <groupId>vn.uit.edu.msshop</groupId>
+    <artifactId>account</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>account</name>
     <description>Account service for MSShop application</description>
