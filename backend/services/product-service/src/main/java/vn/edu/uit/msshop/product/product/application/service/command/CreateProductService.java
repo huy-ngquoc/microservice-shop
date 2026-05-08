@@ -1,9 +1,11 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
@@ -29,61 +31,81 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @Service
 @RequiredArgsConstructor
 public class CreateProductService implements CreateProductUseCase {
-  private final CreateProductPort createPort;
-  private final CheckProductCategoryExistsPort checkCategoryExistsPort;
-  private final CheckProductBrandExistsPort checkBrandExistsPort;
-  private final CreateAllProductVariantsPort createVariantsForNewProductPort;
-  private final InitializeProductSoldCountPort initializeSoldCountPort;
-  private final InitializeProductStockCountPort initializeStockCountPort;
-  private final InitializeProductRatingPort initializeRatingPort;
-  private final PublishProductEventPort eventPort;
+    private final CreateProductPort createPort;
+    private final CheckProductCategoryExistsPort checkCategoryExistsPort;
+    private final CheckProductBrandExistsPort checkBrandExistsPort;
+    private final CreateAllProductVariantsPort createVariantsForNewProductPort;
+    private final InitializeProductSoldCountPort initializeSoldCountPort;
+    private final InitializeProductStockCountPort initializeStockCountPort;
+    private final InitializeProductRatingPort initializeRatingPort;
+    private final PublishProductEventPort eventPort;
 
-  private final ProductViewMapper mapper;
+    private final ProductViewMapper mapper;
 
-  @Override
-  @Transactional
-  public ProductView createSimple(final CreateSimpleProductCommand command) {
-    return CreateProductUseCase.super.createSimple(command);
-  }
-
-  @Override
-  @Transactional
-  public ProductView create(final CreateProductCommand command) {
-    this.validateCategoryExists(command.categoryId());
-    this.validateBrandExists(command.brandId());
-
-    final var productId = ProductId.newId();
-
-    final var savedVariants = this.createVariantsForNewProductPort.create(productId, command.name(),
-        command.newConfiguration().newVariants());
-
-    final var configuration =
-        new ProductConfiguration(command.newConfiguration().options(), savedVariants);
-
-    final var newProduct = new NewProduct(productId, command.name(), command.categoryId(),
-        command.brandId(), configuration);
-
-    final var savedProduct = this.createPort.create(newProduct);
-    final var savedProductId = savedProduct.getId();
-
-    final var savedSoldCount = this.initializeSoldCountPort.initialize(savedProductId);
-    final var savedStockCount = this.initializeStockCountPort.initialize(savedProductId);
-    final var savedRating = this.initializeRatingPort.initialize(savedProductId);
-
-    this.eventPort.publish(new ProductCreated(savedProductId));
-    return this.mapper.toView(savedProduct, savedSoldCount, savedStockCount, savedRating);
-  }
-
-  private void validateCategoryExists(final ProductCategoryId newCategoryId) {
-    if (!this.checkCategoryExistsPort.existsById(newCategoryId)) {
-      throw new ProductCategoryNotFoundException(newCategoryId);
+    @Override
+    @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.PRODUCT_LIST,
+            allEntries = true)
+    public ProductView createSimple(
+            final CreateSimpleProductCommand command) {
+        return CreateProductUseCase.super.createSimple(command);
     }
-  }
 
-  private void validateBrandExists(final ProductBrandId newBrandId) {
-    if (!this.checkBrandExistsPort.existsById(newBrandId)) {
-      throw new ProductBrandNotFoundException(newBrandId);
+    @Override
+    @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.PRODUCT_LIST,
+            allEntries = true)
+    public ProductView create(
+            final CreateProductCommand command) {
+        this.validateCategoryExists(command.categoryId());
+        this.validateBrandExists(command.brandId());
+
+        final var productId = ProductId.newId();
+
+        final var savedVariants = this.createVariantsForNewProductPort.create(
+                productId,
+                command.name(),
+                command.newConfiguration().newVariants());
+
+        final var configuration = new ProductConfiguration(
+                command.newConfiguration().options(),
+                savedVariants);
+
+        final var newProduct = new NewProduct(
+                productId,
+                command.name(),
+                command.categoryId(),
+                command.brandId(),
+                configuration);
+
+        final var savedProduct = this.createPort.create(newProduct);
+        final var savedProductId = savedProduct.getId();
+
+        final var savedSoldCount = this.initializeSoldCountPort.initialize(savedProductId);
+        final var savedStockCount = this.initializeStockCountPort.initialize(savedProductId);
+        final var savedRating = this.initializeRatingPort.initialize(savedProductId);
+
+        this.eventPort.publish(new ProductCreated(savedProductId));
+        return this.mapper.toView(
+                savedProduct,
+                savedSoldCount,
+                savedStockCount,
+                savedRating);
     }
-  }
 
+    private void validateCategoryExists(
+            final ProductCategoryId newCategoryId) {
+        if (!this.checkCategoryExistsPort.existsById(newCategoryId)) {
+            throw new ProductCategoryNotFoundException(newCategoryId);
+        }
+    }
+
+    private void validateBrandExists(
+            final ProductBrandId newBrandId) {
+        if (!this.checkBrandExistsPort.existsById(newBrandId)) {
+            throw new ProductBrandNotFoundException(newBrandId);
+        }
+    }
 }

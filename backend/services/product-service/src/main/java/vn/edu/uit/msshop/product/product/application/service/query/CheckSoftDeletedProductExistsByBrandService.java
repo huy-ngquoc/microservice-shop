@@ -13,12 +13,14 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId
 @RequiredArgsConstructor
 @Slf4j
 public class CheckSoftDeletedProductExistsByBrandService
-    implements CheckSoftDeletedProductExistsByBrandUseCase {
-  private final CheckSoftDeletedProductExistsByBrandPort checkPort;
+        implements CheckSoftDeletedProductExistsByBrandUseCase {
+    private final CheckSoftDeletedProductExistsByBrandPort checkPort;
 
-  @Override
-  @Transactional(readOnly = true)
-  public boolean existsSoftDeletedByBrandId(final ProductBrandId brandId) {
-    return this.checkPort.existsSoftDeletedByBrandId(brandId);
-  }
+    @Override
+    @Transactional(
+            readOnly = true)
+    public boolean existsSoftDeletedByBrandId(
+            final ProductBrandId brandId) {
+        return this.checkPort.existsSoftDeletedByBrandId(brandId);
+    }
 }

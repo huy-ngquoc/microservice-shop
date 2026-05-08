@@ -14,12 +14,35 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 
-public record AddProductVariantsRequest(@NotEmpty List<@Valid ProductVariantRequest>variants,
+public record AddProductVariantsRequest(
+        @NotEmpty
+        List<@Valid ProductVariantRequest> variants,
 
-@NotNull Long expectedVersion){public record ProductVariantRequest(@NotNull @PositiveOrZero Long price,
+        @NotNull
+        Long expectedVersion) {
+    public record ProductVariantRequest(
+            @NotNull
+            @PositiveOrZero
+            Long price,
 
-@NotEmpty @Size(max=ProductVariantTraits.MAX_TRAITS_AMOUNT)List<@NotBlank @Size(max=ProductVariantTrait.MAX_RAW_LENGTH)String>traits,
+            @NotEmpty
+            @Size(
+                    max = ProductVariantTraits.MAX_TRAITS_AMOUNT)
+            List<
+                    @NotBlank @Size(
+                            max = ProductVariantTrait.MAX_RAW_LENGTH) String> traits,
 
-@NotEmpty @Size(max=ProductVariantTargets.MAX_AMOUNT)List<@NotBlank @Size(max=ProductVariantTarget.MAX_RAW_LENGTH)String>targets){}
+            @NotEmpty
+            @Size(
+                    max = ProductVariantTargets.MAX_AMOUNT)
+            List<
+                    @NotBlank @Size(
+                            max = ProductVariantTarget.MAX_RAW_LENGTH) String> targets) {
+    }
 
-public AddProductVariantsRequest{if(variants.size()>ProductVariants.MAX_AMOUNT){throw new IllegalArgumentException("Too many variants");}}}
+    public AddProductVariantsRequest {
+        if (variants.size() > ProductVariants.MAX_AMOUNT) {
+            throw new IllegalArgumentException("Too many variants");
+        }
+    }
+}

@@ -11,12 +11,14 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategor
 @Service
 @RequiredArgsConstructor
 public class CheckProductExistsByCategoryService implements CheckProductExistsByCategoryUseCase {
-  private final CheckProductExistsByCategoryPort checkExistsByCategoryPort;
+    private final CheckProductExistsByCategoryPort checkExistsByCategoryPort;
 
-  @Override
-  @Transactional(readOnly = true)
-  public boolean existsByCategoryId(final ProductCategoryId categoryId) {
-    return this.checkExistsByCategoryPort.existsByCategoryId(categoryId);
-  }
+    @Override
+    @Transactional(
+            readOnly = true)
+    public boolean existsByCategoryId(
+            final ProductCategoryId categoryId) {
+        return this.checkExistsByCategoryPort.existsByCategoryId(categoryId);
+    }
 
 }

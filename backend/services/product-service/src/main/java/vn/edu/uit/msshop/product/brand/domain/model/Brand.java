@@ -13,38 +13,42 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.shared.domain.Domains;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public final class Brand {
-  @EqualsAndHashCode.Include
-  private final BrandId id;
+    @EqualsAndHashCode.Include
+    private final BrandId id;
 
-  private final BrandName name;
+    private final BrandName name;
 
-  @Nullable
-  private final BrandLogoKey logoKey;
+    @Nullable
+    private final BrandLogoKey logoKey;
 
-  // ===== Metadata =====
+    // ===== Metadata =====
 
-  private final BrandVersion version;
+    private final BrandVersion version;
 
-  @Nullable
-  private final BrandDeletionTime deletionTime;
+    @Nullable
+    private final BrandDeletionTime deletionTime;
 
-  public Brand(final BrandId id,
+    public Brand(
+            final BrandId id,
 
-      final BrandName name,
+            final BrandName name,
 
-      @Nullable final BrandLogoKey logoKey,
+            @Nullable
+            final BrandLogoKey logoKey,
 
-      final BrandVersion version,
+            final BrandVersion version,
 
-      @Nullable final BrandDeletionTime deletionTime) {
-    this.id = Domains.requireNonNull(id, "Id must NOT be null");
-    this.name = Domains.requireNonNull(name, "Name must NOT be null");
-    this.logoKey = logoKey;
+            @Nullable
+            final BrandDeletionTime deletionTime) {
+        this.id = Domains.requireNonNull(id, "Id must NOT be null");
+        this.name = Domains.requireNonNull(name, "Name must NOT be null");
+        this.logoKey = logoKey;
 
-    this.version = Domains.requireNonNull(version, "Version must NOT be null");
-    this.deletionTime = deletionTime;
-  }
+        this.version = Domains.requireNonNull(version, "Version must NOT be null");
+        this.deletionTime = deletionTime;
+    }
 }

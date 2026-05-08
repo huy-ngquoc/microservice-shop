@@ -35,95 +35,146 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion
 
 @Component
 public class VariantWebMapper {
-  public ListVariantsQuery toListQuery(int page,
+    public ListVariantsQuery toListQuery(
+            int page,
 
-      int size,
+            int size,
 
-      @Nullable String sortBy,
+            @Nullable
+            String sortBy,
 
-      PageRequestDto.Direction direction,
+            PageRequestDto.Direction direction,
 
-      @Nullable List<String> rawTargets) {
-    final var pageRequest = new PageRequestDto(page, size, sortBy, direction);
+            @Nullable
+            List<String> rawTargets) {
+        final var pageRequest = new PageRequestDto(
+                page,
+                size,
+                sortBy,
+                direction);
 
-    final List<VariantTarget> targets;
-    if (rawTargets == null) {
-      targets = List.of();
-    } else {
-      targets = rawTargets.stream().map(VariantTarget::new).toList();
+        final List<VariantTarget> targets;
+        if (rawTargets == null) {
+            targets = List.of();
+        } else {
+            targets = rawTargets.stream()
+                    .map(VariantTarget::new)
+                    .toList();
+        }
+
+        return new ListVariantsQuery(pageRequest, targets);
     }
 
-    return new ListVariantsQuery(pageRequest, targets);
-  }
+    public Set<VariantId> toVariantIds(
+            final FindVariantsByIdsRequest request) {
+        return request.ids().stream()
+                .map(VariantId::new)
+                .collect(Collectors.toUnmodifiableSet());
+    }
 
-  public Set<VariantId> toVariantIds(final FindVariantsByIdsRequest request) {
-    return request.ids().stream().map(VariantId::new).collect(Collectors.toUnmodifiableSet());
-  }
+    public RestoreVariantCommand toRestoreCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var variantId = new VariantId(id);
+        final var version = new VariantVersion(expectedVersion);
 
-  public RestoreVariantCommand toRestoreCommand(final UUID id, final long expectedVersion) {
-    final var variantId = new VariantId(id);
-    final var version = new VariantVersion(expectedVersion);
+        return new RestoreVariantCommand(variantId, version);
+    }
 
-    return new RestoreVariantCommand(variantId, version);
-  }
+    public UpdateVariantInfoCommand toUpdateInfoCommand(
+            final UUID id,
+            final UpdateVariantInfoRequest request) {
+        final var variantId = new VariantId(id);
+        final var version = new VariantVersion(request.version());
 
-  public UpdateVariantInfoCommand toUpdateInfoCommand(final UUID id,
-      final UpdateVariantInfoRequest request) {
-    final var variantId = new VariantId(id);
-    final var version = new VariantVersion(request.version());
+        final var price = ChangeRequest.toChange(request.price(), VariantPrice::new);
+        final var traits = ChangeRequest.toChange(request.traits(), VariantTraits::of);
+        final var targets = ChangeRequest.toChange(request.targets(), VariantTargets::of);
 
-    final var price = ChangeRequest.toChange(request.price(), VariantPrice::new);
-    final var traits = ChangeRequest.toChange(request.traits(), VariantTraits::of);
-    final var targets = ChangeRequest.toChange(request.targets(), VariantTargets::of);
+        return new UpdateVariantInfoCommand(
+                variantId,
+                price,
+                traits,
+                targets,
+                version);
+    }
 
-    return new UpdateVariantInfoCommand(variantId, price, traits, targets, version);
-  }
+    public UpdateVariantImageCommand toUpdateImageCommand(
+            final UUID id,
+            final UpdateVariantImageRequest request) {
+        final var variantId = new VariantId(id);
+        final var imageKey = new VariantImageKey(request.newImageKey());
+        final var version = new VariantVersion(request.version());
 
-  public UpdateVariantImageCommand toUpdateImageCommand(final UUID id,
-      final UpdateVariantImageRequest request) {
-    final var variantId = new VariantId(id);
-    final var imageKey = new VariantImageKey(request.newImageKey());
-    final var version = new VariantVersion(request.version());
+        return new UpdateVariantImageCommand(
+                variantId,
+                imageKey,
+                version);
+    }
 
-    return new UpdateVariantImageCommand(variantId, imageKey, version);
-  }
+    public DeleteVariantImageCommand toDeleteImageCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var variantId = new VariantId(id);
+        final var version = new VariantVersion(expectedVersion);
 
-  public DeleteVariantImageCommand toDeleteImageCommand(final UUID id, final long expectedVersion) {
-    final var variantId = new VariantId(id);
-    final var version = new VariantVersion(expectedVersion);
+        return new DeleteVariantImageCommand(variantId, version);
+    }
 
-    return new DeleteVariantImageCommand(variantId, version);
-  }
+    public SoftDeleteVariantCommand toSoftDeleteCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var variantId = new VariantId(id);
+        final var version = new VariantVersion(expectedVersion);
 
-  public SoftDeleteVariantCommand toSoftDeleteCommand(final UUID id, final long expectedVersion) {
-    final var variantId = new VariantId(id);
-    final var version = new VariantVersion(expectedVersion);
+        return new SoftDeleteVariantCommand(
+                variantId,
+                version);
+    }
 
-    return new SoftDeleteVariantCommand(variantId, version);
-  }
+    public HardDeleteVariantCommand toHardDeleteCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var variantId = new VariantId(id);
+        final var version = new VariantVersion(expectedVersion);
 
-  public HardDeleteVariantCommand toHardDeleteCommand(final UUID id, final long expectedVersion) {
-    final var variantId = new VariantId(id);
-    final var version = new VariantVersion(expectedVersion);
+        return new HardDeleteVariantCommand(
+                variantId,
+                version);
+    }
 
-    return new HardDeleteVariantCommand(variantId, version);
-  }
+    public VariantId toVariantId(
+            final UUID id) {
+        return new VariantId(id);
+    }
 
-  public VariantId toVariantId(final UUID id) {
-    return new VariantId(id);
-  }
+    public VariantResponse toResponse(
+            final VariantView view) {
+        return new VariantResponse(
+                view.id(),
+                view.productId(),
+                view.productName(),
+                view.price(),
+                view.soldCount(),
+                view.stockCount(),
+                view.traits(),
+                view.targets(),
+                view.imageKey(),
+                view.version());
+    }
 
-  public VariantResponse toResponse(final VariantView view) {
-    return new VariantResponse(view.id(), view.productId(), view.productName(), view.price(),
-        view.soldCount(), view.stockCount(), view.traits(), view.targets(), view.imageKey(),
-        view.version());
-  }
+    public List<VariantResponse> toListResponse(
+            final Collection<VariantView> views) {
+        return views.stream()
+                .map(this::toResponse)
+                .toList();
+    }
 
-  public List<VariantResponse> toListResponse(final Collection<VariantView> views) {
-    return views.stream().map(this::toResponse).toList();
-  }
-
-  public VariantImageResponse toImageResponse(final VariantImageView view) {
-    return new VariantImageResponse(view.id(), view.imageKey(), view.version());
-  }
+    public VariantImageResponse toImageResponse(
+            final VariantImageView view) {
+        return new VariantImageResponse(
+                view.id(),
+                view.imageKey(),
+                view.version());
+    }
 }

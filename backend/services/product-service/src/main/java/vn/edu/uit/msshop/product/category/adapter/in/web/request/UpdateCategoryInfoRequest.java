@@ -7,6 +7,12 @@ import jakarta.validation.constraints.Size;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
-public record UpdateCategoryInfoRequest(@Valid ChangeRequest<@NotBlank @Size(max=CategoryName.MAX_LENGTH)String>name,
+public record UpdateCategoryInfoRequest(
+        @Valid
+        ChangeRequest<
+                @NotBlank @Size(
+                        max = CategoryName.MAX_LENGTH) String> name,
 
-@NotNull Long version){}
+        @NotNull
+        Long version) {
+}

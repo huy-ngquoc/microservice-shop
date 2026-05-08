@@ -10,12 +10,13 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class CategorySoftDeleted {
-  @EqualsAndHashCode.Include
-  private final UUID eventId = UUID.randomUUID();
+    @EqualsAndHashCode.Include
+    private final UUID eventId = UUID.randomUUID();
 
-  private final Instant occurrenceTime = Instant.now();
+    private final Instant occurrenceTime = Instant.now();
 
-  private final CategoryId categoryId;
+    private final CategoryId categoryId;
 }

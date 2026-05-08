@@ -5,6 +5,10 @@ spring:
     output:
         ansi:
             enabled: ALWAYS
+    servlet:
+        multipart:
+            max-file-size: 5MB
+            max-request-size: 6MB
     mongodb:
         host: ${PRODUCT_DB_HOST:localhost}
         port: ${PRODUCT_DB_PORT:27017}
@@ -14,10 +18,18 @@ spring:
         authentication-database: admin
         representation:
             uuid: STANDARD 
-    servlet:
-        multipart:
-            max-file-size: 5MB
-            max-request-size: 6MB
+    data:
+        redis:
+            host: ${REDIS_HOST:localhost}
+            port: ${REDIS_PORT:6379}
+            timeout: 200ms
+            connect-timeout: 500ms
+            repositories:
+                enabled: false
+    cache:
+        type: redis
+        redis:
+            cache-null-values: false
     kafka:
         bootstrap-servers: ${KAFKA_URL:localhost:9092}
         consumer:
@@ -44,6 +56,18 @@ spring:
         scheduling:
             pool:
                 size: 1
+
+app:
+    cache:
+        key-prefix: ${spring.application.name}
+        brand-ttl: 1h
+        brand-list-ttl: 30m
+        category-ttl: 1h
+        category-list-ttl: 30m
+        product-ttl: 1h
+        product-list-ttl: 5m
+        variant-ttl: 1h
+        variant-list-ttl: 5m
 
 logging:
     level:

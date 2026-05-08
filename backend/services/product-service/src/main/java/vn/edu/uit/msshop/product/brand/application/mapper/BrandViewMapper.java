@@ -9,13 +9,20 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 
 @Component
 public class BrandViewMapper {
-  public BrandView toView(final Brand brand) {
-    return new BrandView(brand.getId().value(), brand.getName().value(),
-        BrandLogoKey.unwrap(brand.getLogoKey()), brand.getVersion().value());
-  }
+    public BrandView toView(
+            final Brand brand) {
+        return new BrandView(
+                brand.getId().value(),
+                brand.getName().value(),
+                BrandLogoKey.unwrap(brand.getLogoKey()),
+                brand.getVersion().value());
+    }
 
-  public BrandLogoView toLogoView(final Brand brand) {
-    return new BrandLogoView(brand.getId().value(), BrandLogoKey.unwrap(brand.getLogoKey()),
-        brand.getVersion().value());
-  }
+    public BrandLogoView toLogoView(
+            final Brand brand) {
+        return new BrandLogoView(
+                brand.getId().value(),
+                BrandLogoKey.unwrap(brand.getLogoKey()),
+                brand.getVersion().value());
+    }
 }

@@ -16,59 +16,64 @@ import lombok.experimental.FieldNameConstants;
 
 @Document("Variants")
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public final class VariantDocument {
-  @Id
-  @EqualsAndHashCode.Include
-  private final UUID id;
+    @Id
+    @EqualsAndHashCode.Include
+    private final UUID id;
 
-  private final UUID productId;
+    private final UUID productId;
 
-  private final String productName;
+    private final String productName;
 
-  private final long price;
+    private final long price;
 
-  private final List<String> traits;
+    private final List<String> traits;
 
-  private final List<String> targets;
+    private final List<String> targets;
 
-  @Nullable
-  private final String imageKey;
+    @Nullable
+    private final String imageKey;
 
-  @Version
-  @Nullable
-  private final Long version;
+    @Version
+    @Nullable
+    private final Long version;
 
-  @Nullable
-  private final Instant deletionTime;
+    @Nullable
+    private final Instant deletionTime;
 
-  @PersistenceCreator
-  public VariantDocument(final UUID id,
+    @PersistenceCreator
+    public VariantDocument(
+            final UUID id,
 
-      final UUID productId,
+            final UUID productId,
 
-      final String productName,
+            final String productName,
 
-      final long price,
+            final long price,
 
-      final List<String> traits,
+            final List<String> traits,
 
-      final List<String> targets,
+            final List<String> targets,
 
-      @Nullable final String imageKey,
+            @Nullable
+            final String imageKey,
 
-      @Nullable final Long version,
+            @Nullable
+            final Long version,
 
-      @Nullable final Instant deletionTime) {
-    this.id = id;
-    this.productId = productId;
-    this.productName = productName;
-    this.price = price;
-    this.traits = List.copyOf(traits);
-    this.targets = List.copyOf(targets);
-    this.imageKey = imageKey;
-    this.version = version;
-    this.deletionTime = deletionTime;
-  }
+            @Nullable
+            final Instant deletionTime) {
+        this.id = id;
+        this.productId = productId;
+        this.productName = productName;
+        this.price = price;
+        this.traits = List.copyOf(traits);
+        this.targets = List.copyOf(targets);
+        this.imageKey = imageKey;
+        this.version = version;
+        this.deletionTime = deletionTime;
+    }
 }

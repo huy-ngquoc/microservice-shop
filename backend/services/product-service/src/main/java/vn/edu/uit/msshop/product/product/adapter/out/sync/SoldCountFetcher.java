@@ -8,6 +8,6 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.response.VariantSoldCoun
 
 // @FeignClient(name = "order-service")
 public interface SoldCountFetcher {
-  @GetMapping("/order/public/sold_counts")
-  public List<VariantSoldCountResponse> getSoldCounts();
+    @GetMapping("/order/public/sold_counts")
+    List<VariantSoldCountResponse> getSoldCounts();
 }

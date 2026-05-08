@@ -4,5 +4,6 @@ import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategory
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 
 public interface CreateCategoryUseCase {
-  CategoryView create(final CreateCategoryCommand command);
+    CategoryView create(
+            final CreateCategoryCommand command);
 }

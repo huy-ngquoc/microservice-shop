@@ -12,37 +12,41 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersi
 import vn.edu.uit.msshop.shared.domain.Domains;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class Category {
-  @EqualsAndHashCode.Include
-  private final CategoryId id;
+    @EqualsAndHashCode.Include
+    private final CategoryId id;
 
-  private final CategoryName name;
+    private final CategoryName name;
 
-  @Nullable
-  private final CategoryImageKey imageKey;
+    @Nullable
+    private final CategoryImageKey imageKey;
 
-  // ===== Metadata =====
+    // ===== Metadata =====
 
-  private final CategoryVersion version;
+    private final CategoryVersion version;
 
-  @Nullable
-  private final CategoryDeletionTime deletionTime;
+    @Nullable
+    private final CategoryDeletionTime deletionTime;
 
-  public Category(final CategoryId id,
+    public Category(
+            final CategoryId id,
 
-      final CategoryName name,
+            final CategoryName name,
 
-      @Nullable final CategoryImageKey imageKey,
+            @Nullable
+            final CategoryImageKey imageKey,
 
-      final CategoryVersion version,
+            final CategoryVersion version,
 
-      @Nullable final CategoryDeletionTime deletionTime) {
-    this.id = Domains.requireNonNull(id, "Id must NOT be null");
-    this.name = Domains.requireNonNull(name, "Name must NOT be null");
-    this.imageKey = imageKey;
+            @Nullable
+            final CategoryDeletionTime deletionTime) {
+        this.id = Domains.requireNonNull(id, "Id must NOT be null");
+        this.name = Domains.requireNonNull(name, "Name must NOT be null");
+        this.imageKey = imageKey;
 
-    this.version = Domains.requireNonNull(version, "Version must NOT be null");
-    this.deletionTime = deletionTime;
-  }
+        this.version = Domains.requireNonNull(version, "Version must NOT be null");
+        this.deletionTime = deletionTime;
+    }
 }

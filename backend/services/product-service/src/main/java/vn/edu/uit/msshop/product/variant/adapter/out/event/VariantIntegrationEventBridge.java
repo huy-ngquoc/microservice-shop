@@ -19,26 +19,34 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 @Component
 @RequiredArgsConstructor
 public class VariantIntegrationEventBridge {
-  private final LoadVariantPort loadPort;
-  private final PublishVariantIntegrationEventPort integrationPort;
+    private final LoadVariantPort loadPort;
+    private final PublishVariantIntegrationEventPort integrationPort;
 
-  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-  public void on(final VariantUpdated event) {
-    final var variantId = event.getVariantId();
-    final var variant = this.loadPort.loadById(variantId)
-        .orElseThrow(() -> new VariantNotFoundException(variantId));
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT)
+    public void on(
+            final VariantUpdated event) {
+        final var variantId = event.getVariantId();
+        final var variant = this.loadPort.loadById(variantId)
+                .orElseThrow(() -> new VariantNotFoundException(variantId));
 
-    final var msg = new VariantUpdatedIntegrationEvent(UUID.randomUUID(), variant.getId().value(),
-        variant.getTraits().unwrap(), variant.getPrice().value(), variant.getProductName().value(),
-        VariantImageKey.unwrap(variant.getImageKey()));
+        final var msg = new VariantUpdatedIntegrationEvent(
+                UUID.randomUUID(),
+                variant.getId().value(),
+                variant.getTraits().unwrap(), variant.getPrice().value(),
+                variant.getProductName().value(),
+                VariantImageKey.unwrap(variant.getImageKey()));
 
-    this.integrationPort.publishUpdated(msg);
-  }
+        this.integrationPort.publishUpdated(msg);
+    }
 
-  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-  public void on(final VariantSoftDeleted event) {
-    final var msg =
-        new VariantSoftDeletedIntegrationEvent(UUID.randomUUID(), event.getVariantId().value());
-    this.integrationPort.publishSoftDeleted(msg);
-  }
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT)
+    public void on(
+            final VariantSoftDeleted event) {
+        final var msg = new VariantSoftDeletedIntegrationEvent(
+                UUID.randomUUID(),
+                event.getVariantId().value());
+        this.integrationPort.publishSoftDeleted(msg);
+    }
 }

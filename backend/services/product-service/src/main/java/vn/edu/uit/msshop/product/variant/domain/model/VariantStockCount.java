@@ -8,26 +8,33 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCountValue;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class VariantStockCount {
-  @EqualsAndHashCode.Include
-  private final VariantId variantId;
+    @EqualsAndHashCode.Include
+    private final VariantId variantId;
 
-  private final VariantProductId productId;
+    private final VariantProductId productId;
 
-  private final VariantStockCountValue value;
+    private final VariantStockCountValue value;
 
-  public VariantStockCount(final VariantId variantId, final VariantProductId productId,
-      final VariantStockCountValue value) {
-    this.variantId = Domains.requireNonNull(variantId, "Variant ID must NOT be null");
-    this.productId = Domains.requireNonNull(productId, "Variant product ID must NOT be null");
-    this.value = Domains.requireNonNull(value, "Variant stock count value must NOT be null");
-  }
+    public VariantStockCount(
+            final VariantId variantId,
+            final VariantProductId productId,
+            final VariantStockCountValue value) {
+        this.variantId = Domains.requireNonNull(variantId, "Variant ID must NOT be null");
+        this.productId = Domains.requireNonNull(productId, "Variant product ID must NOT be null");
+        this.value = Domains.requireNonNull(value, "Variant stock count value must NOT be null");
+    }
 
-  public static VariantStockCount zero(final VariantId variantId,
-      final VariantProductId productId) {
-    final var value = VariantStockCountValue.zero();
+    public static VariantStockCount zero(
+            final VariantId variantId,
+            final VariantProductId productId) {
+        final var value = VariantStockCountValue.zero();
 
-    return new VariantStockCount(variantId, productId, value);
-  }
+        return new VariantStockCount(
+                variantId,
+                productId,
+                value);
+    }
 }

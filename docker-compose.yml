@@ -1,11 +1,11 @@
 services:
     config-server:
         build:
-            context: .  # Trỏ về thư mục gốc chứa pom.xml tổng và common-dto
+            context: . # Trỏ về thư mục gốc chứa pom.xml tổng và common-dto
             dockerfile: backend/services/config-server/Dockerfile # Đường dẫn tới file Dockerfile
         container_name: config-server
         healthcheck:
-            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/actuator/health"]
+            test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/actuator/health" ]
             interval: 10s
             timeout: 5s
             retries: 5
@@ -32,7 +32,7 @@ services:
             config-server:
                 condition: service_healthy
         healthcheck:
-            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
+            test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/actuator/health" ]
             interval: 10s
             timeout: 5s
             retries: 10
@@ -364,7 +364,7 @@ services:
             retries: 30
     mongodb_cart:
         container_name: ms_mongo_db_cart
-        image: mongo:8 
+        image: mongo:8
         ports:
             - 27021:27017
         volumes:
@@ -377,7 +377,7 @@ services:
             - microservices-net
     mongodb_notification:
         container_name: ms_mongo_db_notification
-        image: mongo:8 
+        image: mongo:8
         ports:
             - 27020:27017
         volumes:
@@ -390,7 +390,7 @@ services:
             - microservices-net
     mongodb_rating:
         container_name: ms_mongo_db_rating
-        image: mongo:8 
+        image: mongo:8
         ports:
             - 27018:27017
         volumes:
@@ -431,13 +431,11 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=alibou
             - MONGO_INITDB_ROOT_PASSWORD=alibou
             - TZ=UTC
-        command: mongod --replSet rs0 
-             --keyFile /data/configdb/mongodb.key 
-             --bind_ip_all
+        command: mongod --replSet rs0 --keyFile /data/configdb/mongodb.key --bind_ip_all
         entrypoint: [ "/bin/sh", "-c", "chown 999:999 /data/configdb/mongodb.key && chmod 400 /data/configdb/mongodb.key && exec docker-entrypoint.sh $$@" ]
         networks:
             - microservices-net
-    
+
     mongo-express:
         container_name: ms_mongo_express
         image: mongo-express:1
@@ -450,6 +448,28 @@ services:
             - ME_CONFIG_MONGODB_SERVER=mongo
         networks:
             - microservices-net
+
+    redis:
+        container_name: ms_redis
+        image: redis:8.6
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
+        environment:
+            - TZ=UTC
+        command:
+            - "--maxmemory"
+            - "256mb"
+            - "--maxmemory-policy"
+            - "allkeys-lfu"
+        networks:
+            - microservices-net
+        healthcheck:
+            test: [ "CMD", "redis-cli", "ping" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 5s
 
     # zookeeper:
     #     container_name: ms_zookeeper
@@ -529,7 +549,7 @@ services:
                     cpus: '0.50'
                     memory: 512M
         healthcheck:
-            test: ["CMD", "redis-cli", "-a", "binh123", "ping"]
+            test: [ "CMD", "redis-cli", "-a", "binh123", "ping" ]
             interval: 10s
             timeout: 5s
             retries: 5
@@ -550,11 +570,12 @@ services:
                     cpus: '0.50'
                     memory: 512M
         healthcheck:
-            test: ["CMD", "redis-cli", "-a", "binh123", "ping"]
+            test: [ "CMD", "redis-cli", "-a", "binh123", "ping" ]
             interval: 10s
             timeout: 5s
             retries: 5
-    redis:
+
+    redis_cart:
         image: redis:7.2-alpine
         container_name: redis_cart
         restart: always
@@ -571,7 +592,7 @@ services:
                     cpus: '0.50'
                     memory: 512M
         healthcheck:
-            test: ["CMD", "redis-cli", "-a", "binh123", "ping"]
+            test: [ "CMD", "redis-cli", "-a", "binh123", "ping" ]
             interval: 10s
             timeout: 5s
             retries: 5
@@ -595,6 +616,7 @@ volumes:
     mongo_inventory:
     mongo_payment:
     mongo_notification:
+    redis_cart:
     redis_order:
     redis_inventory:
     mongo_cart:
