@@ -13,7 +13,8 @@ public record VariantUpdatedIntegrationEvent(
         String name,
         @Nullable
         String imageKey)
-        implements VariantIntegrationEvent {
+        implements
+            VariantIntegrationEvent {
     public VariantUpdatedIntegrationEvent {
         traits = List.copyOf(traits);
     }
