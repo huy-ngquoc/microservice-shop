@@ -14,13 +14,16 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 @Service
 @RequiredArgsConstructor
 public class FindVariantImageService implements FindVariantImageUseCase {
-  private final LoadVariantPort loadPort;
-  private final VariantViewMapper mapper;
+    private final LoadVariantPort loadPort;
+    private final VariantViewMapper mapper;
 
-  @Override
-  @Transactional(readOnly = true)
-  public VariantImageView findImageById(final VariantId id) {
-    return this.loadPort.loadById(id).map(this.mapper::toImageView)
-        .orElseThrow(() -> new VariantNotFoundException(id));
-  }
+    @Override
+    @Transactional(
+            readOnly = true)
+    public VariantImageView findImageById(
+            final VariantId id) {
+        return this.loadPort.loadById(id)
+                .map(this.mapper::toImageView)
+                .orElseThrow(() -> new VariantNotFoundException(id));
+    }
 }

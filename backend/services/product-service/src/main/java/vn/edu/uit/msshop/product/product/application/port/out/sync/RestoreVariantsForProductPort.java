@@ -5,5 +5,6 @@ import java.util.Collection;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 
 public interface RestoreVariantsForProductPort {
-  void restoreByVariantIds(Collection<ProductVariantId> variantIds);
+    void restoreByVariantIds(
+            Collection<ProductVariantId> variantIds);
 }

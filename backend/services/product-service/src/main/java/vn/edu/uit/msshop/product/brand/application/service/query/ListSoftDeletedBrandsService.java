@@ -14,13 +14,15 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @Service
 @RequiredArgsConstructor
 public class ListSoftDeletedBrandsService implements ListSoftDeletedBrandsUseCase {
-  private final ListSoftDeletedBrandsPort listSoftDeletedPort;
-  private final BrandViewMapper viewMapper;
+    private final ListSoftDeletedBrandsPort listSoftDeletedPort;
+    private final BrandViewMapper viewMapper;
 
-  @Override
-  @Transactional(readOnly = true)
-  public PageResponseDto<BrandView> listSoftDeleted(PageRequestDto pageRequest) {
-    var page = listSoftDeletedPort.listSoftDeleted(pageRequest);
-    return page.map(this.viewMapper::toView);
-  }
+    @Override
+    @Transactional(
+            readOnly = true)
+    public PageResponseDto<BrandView> listSoftDeleted(
+            PageRequestDto pageRequest) {
+        var page = listSoftDeletedPort.listSoftDeleted(pageRequest);
+        return page.map(this.viewMapper::toView);
+    }
 }

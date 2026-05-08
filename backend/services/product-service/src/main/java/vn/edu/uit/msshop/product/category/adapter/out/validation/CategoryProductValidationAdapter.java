@@ -13,20 +13,24 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategor
 @Component
 @RequiredArgsConstructor
 public class CategoryProductValidationAdapter
-    implements CheckCategoryHasProductsPort, CheckCategoryHasSoftDeletedProductsPort {
-  private final CheckProductExistsByCategoryUseCase checkProductExistsByCategoryUseCase;
-  private final CheckSoftDeletedProductExistsByCategoryUseCase checkSoftDeletedProductExistsByCategoryUseCase;
+        implements
+        CheckCategoryHasProductsPort,
+        CheckCategoryHasSoftDeletedProductsPort {
+    private final CheckProductExistsByCategoryUseCase checkProductExistsByCategoryUseCase;
+    private final CheckSoftDeletedProductExistsByCategoryUseCase checkSoftDeletedProductExistsByCategoryUseCase;
 
-  @Override
-  public boolean hasProduct(final CategoryId id) {
-    final var productCategoryId = new ProductCategoryId(id.value());
-    return this.checkProductExistsByCategoryUseCase.existsByCategoryId(productCategoryId);
-  }
+    @Override
+    public boolean hasProduct(
+            final CategoryId id) {
+        final var productCategoryId = new ProductCategoryId(id.value());
+        return this.checkProductExistsByCategoryUseCase.existsByCategoryId(productCategoryId);
+    }
 
-  @Override
-  public boolean hasSoftDeletedProduct(final CategoryId id) {
-    final var productCategoryId = new ProductCategoryId(id.value());
-    return this.checkSoftDeletedProductExistsByCategoryUseCase
-        .existsSoftDeletedByCategoryId(productCategoryId);
-  }
+    @Override
+    public boolean hasSoftDeletedProduct(
+            final CategoryId id) {
+        final var productCategoryId = new ProductCategoryId(id.value());
+        return this.checkSoftDeletedProductExistsByCategoryUseCase
+                .existsSoftDeletedByCategoryId(productCategoryId);
+    }
 }

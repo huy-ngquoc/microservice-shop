@@ -4,5 +4,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantIm
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 
 public interface DeleteVariantImageUseCase {
-  VariantImageView deleteImage(final DeleteVariantImageCommand command);
+    VariantImageView deleteImage(
+            final DeleteVariantImageCommand command);
 }

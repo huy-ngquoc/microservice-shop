@@ -6,5 +6,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantsF
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 
 public interface CreateVariantsForNewProductUseCase {
-  List<VariantView> create(final CreateVariantsForNewProductCommand command);
+    List<VariantView> create(
+            final CreateVariantsForNewProductCommand command);
 }

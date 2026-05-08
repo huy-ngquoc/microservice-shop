@@ -1,9 +1,12 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
@@ -17,29 +20,48 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @Service
 @RequiredArgsConstructor
 public class SoftDeleteVariantsForProductService implements SoftDeleteVariantsForProductUseCase {
-  private final LoadVariantsForProductPort loadForProductPort;
-  private final UpdateAllVariantsPort updateAllPort;
-  private final PublishVariantEventPort eventPort;
+    private final LoadVariantsForProductPort loadForProductPort;
+    private final UpdateAllVariantsPort updateAllPort;
+    private final PublishVariantEventPort eventPort;
 
-  @Override
-  @Transactional
-  public void deleteByProductId(final VariantProductId productId) {
-    final var variants = this.loadForProductPort.loadAllByProductId(productId);
-    if (variants.isEmpty()) {
-      return;
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT_LIST,
+                            allEntries = true)
+            })
+    public void deleteByProductId(
+            final VariantProductId productId) {
+        final var variants = this.loadForProductPort.loadAllByProductId(productId);
+        if (variants.isEmpty()) {
+            return;
+        }
+
+        final var next = variants.stream()
+                .map(SoftDeleteVariantsForProductService::toSoftDeleted)
+                .toList();
+
+        final var saved = this.updateAllPort.updateAll(next);
+
+        saved.forEach(s -> this.eventPort.publish(new VariantSoftDeleted(s.getId())));
     }
 
-    final var next =
-        variants.stream().map(SoftDeleteVariantsForProductService::toSoftDeleted).toList();
-
-    final var saved = this.updateAllPort.updateAll(next);
-
-    saved.forEach(s -> this.eventPort.publish(new VariantSoftDeleted(s.getId())));
-  }
-
-  private static Variant toSoftDeleted(final Variant variant) {
-    return new Variant(variant.getId(), variant.getProductId(), variant.getProductName(),
-        variant.getPrice(), variant.getTraits(), variant.getTargets(), variant.getImageKey(),
-        variant.getVersion(), VariantDeletionTime.now());
-  }
+    private static Variant toSoftDeleted(
+            final Variant variant) {
+        return new Variant(
+                variant.getId(),
+                variant.getProductId(),
+                variant.getProductName(),
+                variant.getPrice(),
+                variant.getTraits(),
+                variant.getTargets(),
+                variant.getImageKey(),
+                variant.getVersion(),
+                VariantDeletionTime.now());
+    }
 }

@@ -11,14 +11,26 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 
 @Configuration
 public class OpenApiConfig {
-  public static final String SECURITY_SCHEME_NAME = "bearerAuth";
+    public static final String SECURITY_SCHEME_NAME = "bearerAuth";
 
-  @Bean
-  OpenAPI customOpenAPI() {
-    return new OpenAPI().info(new Info().title("Microservice shop - Product service").version("v1"))
-        .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
-        .components(new Components().addSecuritySchemes(SECURITY_SCHEME_NAME,
-            new SecurityScheme().name(SECURITY_SCHEME_NAME).type(SecurityScheme.Type.HTTP)
-                .scheme("bearer").bearerFormat("JWT")));
-  }
+    @Bean
+    OpenAPI customOpenAPI() {
+        final var info = new Info()
+                .title("Microservice shop - Product service")
+                .version("v1");
+        final var securityRequirement = new SecurityRequirement()
+                .addList(SECURITY_SCHEME_NAME);
+        final var securityScheme = new SecurityScheme()
+                .name(SECURITY_SCHEME_NAME)
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT");
+        final var components = new Components()
+                .addSecuritySchemes(SECURITY_SCHEME_NAME, securityScheme);
+
+        return new OpenAPI()
+                .info(info)
+                .addSecurityItem(securityRequirement)
+                .components(components);
+    }
 }

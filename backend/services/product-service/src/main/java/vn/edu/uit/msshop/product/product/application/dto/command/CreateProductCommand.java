@@ -5,10 +5,12 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 
-public record CreateProductCommand(ProductName name,
+public record CreateProductCommand(
+        ProductName name,
 
-ProductCategoryId categoryId,
+        ProductCategoryId categoryId,
 
-ProductBrandId brandId,
+        ProductBrandId brandId,
 
-NewProductConfiguration newConfiguration){}
+        NewProductConfiguration newConfiguration) {
+}

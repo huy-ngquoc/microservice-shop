@@ -6,6 +6,16 @@ import java.util.Objects;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTarget;
 
-public record ListVariantsQuery(PageRequestDto pageRequest,List<VariantTarget>targets){public ListVariantsQuery{Objects.requireNonNull(pageRequest);
+public record ListVariantsQuery(
+        PageRequestDto pageRequest,
+        List<VariantTarget> targets) {
+    public ListVariantsQuery {
+        Objects.requireNonNull(pageRequest);
 
-if(targets==null){targets=List.of();}else{targets=List.copyOf(targets);}}}
+        if (targets == null) {
+            targets = List.of();
+        } else {
+            targets = List.copyOf(targets);
+        }
+    }
+}

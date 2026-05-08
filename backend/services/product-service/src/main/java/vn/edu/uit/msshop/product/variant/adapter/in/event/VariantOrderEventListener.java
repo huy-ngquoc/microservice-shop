@@ -12,22 +12,26 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCountValue;
 
 @Component
-@KafkaListener(topics = "order-variant")
+@KafkaListener(
+        topics = "order-variant")
 @RequiredArgsConstructor
 public class VariantOrderEventListener {
-  private final SetAllVariantSoldCountsUseCase setAllUseCase;
+    private final SetAllVariantSoldCountsUseCase setAllUseCase;
 
-  @KafkaHandler
-  public void onSetSoldCounts(final SetVariantSoldCountsEvent event) {
-    final var orderSoldCounts =
-        event.details().stream().map(VariantOrderEventListener::toOrderSoldCount).toList();
+    @KafkaHandler
+    public void onSetSoldCounts(
+            final SetVariantSoldCountsEvent event) {
+        final var orderSoldCounts = event.details().stream()
+                .map(VariantOrderEventListener::toOrderSoldCount)
+                .toList();
 
-    this.setAllUseCase.execute(orderSoldCounts);
-  }
+        this.setAllUseCase.execute(orderSoldCounts);
+    }
 
-  private static VariantOrderSoldCount toOrderSoldCount(
-      final SetVariantSoldCountsEvent.Detail detail) {
-    return new VariantOrderSoldCount(new VariantId(detail.variantId()),
-        new VariantSoldCountValue(detail.newTotal()));
-  }
+    private static VariantOrderSoldCount toOrderSoldCount(
+            final SetVariantSoldCountsEvent.Detail detail) {
+        return new VariantOrderSoldCount(
+                new VariantId(detail.variantId()),
+                new VariantSoldCountValue(detail.newTotal()));
+    }
 }

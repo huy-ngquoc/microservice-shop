@@ -4,5 +4,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantIn
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 
 public interface UpdateVariantInfoUseCase {
-  VariantView updateInfo(final UpdateVariantInfoCommand command);
+    VariantView updateInfo(
+            final UpdateVariantInfoCommand command);
 }

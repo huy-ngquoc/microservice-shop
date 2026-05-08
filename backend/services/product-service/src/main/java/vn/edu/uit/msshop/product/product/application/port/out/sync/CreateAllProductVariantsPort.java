@@ -6,6 +6,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 
 public interface CreateAllProductVariantsPort {
-  ProductVariants create(final ProductId id, final ProductName name,
-      final NewProductVariants newVariants);
+    ProductVariants create(
+            final ProductId id,
+            final ProductName name,
+            final NewProductVariants newVariants);
 }

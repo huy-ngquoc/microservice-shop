@@ -1,10 +1,12 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantUseCase;
@@ -21,42 +23,61 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 @Service
 @RequiredArgsConstructor
 public class RestoreVariantService implements RestoreVariantUseCase {
-  private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
-  private final LoadVariantSoldCountPort loadSoldCountPort;
-  private final LoadVariantStockCountPort loadStockCountPort;
-  private final CheckVariantRestorablePort checkRestorablePort;
-  private final AddVariantToProductPort addToProductPort;
-  private final UpdateVariantPort updatePort;
-  private final PublishVariantEventPort eventPort;
+    private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
+    private final LoadVariantSoldCountPort loadSoldCountPort;
+    private final LoadVariantStockCountPort loadStockCountPort;
+    private final CheckVariantRestorablePort checkRestorablePort;
+    private final AddVariantToProductPort addToProductPort;
+    private final UpdateVariantPort updatePort;
+    private final PublishVariantEventPort eventPort;
 
-  @Override
-  @Transactional
-  public void restore(final RestoreVariantCommand command) {
-    final var variantId = command.id();
-    final var variant = this.loadSoftDeletedPort.loadSoftDeletedById(variantId)
-        .orElseThrow(() -> new VariantNotFoundException(variantId));
+    @Override
+    @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.VARIANT_LIST,
+            allEntries = true)
+    public void restore(
+            final RestoreVariantCommand command) {
+        final var variantId = command.id();
+        final var variant = this.loadSoftDeletedPort
+                .loadSoftDeletedById(variantId)
+                .orElseThrow(() -> new VariantNotFoundException(variantId));
 
-    final var expectedVersion = command.expectedVersion();
-    final var currentVersion = variant.getVersion();
-    if (!expectedVersion.equals(currentVersion)) {
-      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = variant.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        this.checkRestorablePort.validateRestorable(variant);
+
+        final var productId = variant.getProductId();
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
+                variantId, productId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
+                variantId, productId);
+        final var soldIncrement = soldCount.getValue().value();
+        final var stockIncrement = stockCount.getValue().value();
+
+        final var next = new Variant(
+                variant.getId(),
+                variant.getProductId(),
+                variant.getProductName(),
+                variant.getPrice(),
+                variant.getTraits(),
+                variant.getTargets(),
+                variant.getImageKey(),
+                variant.getVersion(),
+                null);
+        final var saved = this.updatePort.update(next);
+
+        this.addToProductPort.addToProduct(
+                saved,
+                soldIncrement,
+                stockIncrement);
+
+        this.eventPort.publish(new VariantRestored(saved.getId()));
     }
-
-    this.checkRestorablePort.validateRestorable(variant);
-
-    final var productId = variant.getProductId();
-    final var soldCount = this.loadSoldCountPort.loadByIdOrZero(variantId, productId);
-    final var stockCount = this.loadStockCountPort.loadByIdOrZero(variantId, productId);
-    final var soldIncrement = soldCount.getValue().value();
-    final var stockIncrement = stockCount.getValue().value();
-
-    final var next = new Variant(variant.getId(), variant.getProductId(), variant.getProductName(),
-        variant.getPrice(), variant.getTraits(), variant.getTargets(), variant.getImageKey(),
-        variant.getVersion(), null);
-    final var saved = this.updatePort.update(next);
-
-    this.addToProductPort.addToProduct(saved, soldIncrement, stockIncrement);
-
-    this.eventPort.publish(new VariantRestored(saved.getId()));
-  }
 }
