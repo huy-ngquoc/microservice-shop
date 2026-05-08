@@ -33,7 +33,6 @@
         
         <module>config-server</module>
         <module>discovery-server</module>
-        <module>api-gateway</module>
         <!-- <module>identity-service</module> -->
         <module>product-service</module>
         <!-- <module>order-service</module> -->
