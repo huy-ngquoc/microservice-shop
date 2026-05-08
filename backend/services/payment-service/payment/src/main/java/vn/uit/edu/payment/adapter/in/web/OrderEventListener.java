@@ -1,7 +1,6 @@
 package vn.uit.edu.payment.adapter.in.web;
 
 import java.time.Instant;
-import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.kafka.annotation.DltHandler;
@@ -56,8 +55,8 @@ public class OrderEventListener {
     @KafkaHandler
     
     public void handleOrderCreated(OrderCreated event) {
-        Random rand = new Random();
-        if(rand.nextLong(200)<=20) throw new RuntimeException("Runtime exception");
+        //Random rand = new Random();
+        //if(rand.nextLong(200)<=20) throw new RuntimeException("Runtime exception");
         //System.out.println("Listen to event");
         if(!eventDocumentRepo.existsById(event.eventId())) {
         CreatePaymentCommand command = mapper.toCommand(event);
@@ -86,12 +85,13 @@ public class OrderEventListener {
         if(!eventDocumentRepo.existsById(event.getEventId())) {
 
             if(event.getPaymentMethod().equals("COD")) {
-                if(event.getStatus().equals("CANCELLED")) {
+                /*if(event.getStatus().equals("CANCELLED")) {
                     handleCodOrderCancelled(event.getOrderId());
                 }
                 if(event.getStatus().equals("RECEIVED")){
                     handleCodOrderReceived(event.getOrderId());
-                }
+                }*/
+               return;
             }
             else {
                 

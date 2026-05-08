@@ -8,10 +8,10 @@ import java.util.Map;
 
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.account.adapter.out.persistence.AccountOutboxEntity;
 import vn.uit.edu.msshop.account.adapter.out.persistence.AccountOutboxEntityRepository;
@@ -29,6 +29,8 @@ public class SyncKeycloakService implements SyncKeycloakUseCase {
     private final SaveAccountPort saveAccountPort;
     private final AccountEntityMapper mapper;
     private final SyncAccountService syncService;
+    @Value("${app.keycloak.admin.client-uuid}")
+    private String clientUuid;
 
     @Override
     //@Transactional
@@ -58,7 +60,7 @@ public class SyncKeycloakService implements SyncKeycloakUseCase {
         user.setFirstName(outboxEntity.getFirstName());
         user.setLastName(outboxEntity.getLastName());
         Map<String, List<String>> clientRolesMap = new HashMap<>();
-        String clientUuid = "fdaa89dd-7602-4f4b-8500-400870ee4b48"; 
+ 
     
         clientRolesMap.put(clientUuid, Collections.singletonList(outboxEntity.getUserRole()));
         user.setClientRoles(clientRolesMap);

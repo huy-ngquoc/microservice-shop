@@ -49,10 +49,9 @@ app:
             server-url: http://${KEYCLOAK_URL:localhost:9098}
             realm: ms_shop
             client-id: ms_shop_rest_api
-            client-secret: TwuErGtX4JylPHbrL930Qcfe7tjdZaId
+            client-secret: nUAtOw5MWbvzYoudgUO4WVjwQciBiSHa
             token-uri: http://${KEYCLOAK_URL:localhost:9098}/realms/ms_shop/protocol/openid-connect/token
-            
-
+            client-uuid: cac55e59-48ac-42ba-839a-fcbf458b6662
 eureka:
     client:
         serviceUrl:
