@@ -113,7 +113,7 @@ public void processPaymentUpdate(WebhookData webhookData) {
         boolean shouldPayback = false;
         try {
             ResponseEntity<OrderResponse> response = orderChecker.getById(payment.getOrderId().value());
-            if (response.getBody() == null || !"WAITING_PAYMENT".equals(response.getBody().status())) {
+            if (response.getBody() == null || (!"WAITING_PAYMENT".equals(response.getBody().status())&&!"CONFIRMED".equals(response.getBody().status()))) {
                 shouldPayback = true;
             }
         } catch (FeignException e) {

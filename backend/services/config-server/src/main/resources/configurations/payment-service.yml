@@ -58,7 +58,7 @@ logging:
 payos:
     client-id: 
     api-key: 
-    checksum-key:
+    checksum-key: 
 eureka:
     client:
         serviceUrl:

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,8 @@ public class SyncAccountService {
     private final SaveAccountPort saveAccountPort;
     private final AccountEntityMapper mapper;
     private final CreateKeyCloakAccountPort createKeyCloakPort;
+    @Value("${app.keycloak.admin.client-uuid}")
+    private String clientUuid;
     @Transactional
     public void sync(AccountOutboxEntity accountOutboxEntity, List<Account> toSaves, List<AccountOutboxEntity> toDelete) {
         if(accountOutboxEntity.getRetryCount()>=5) {
@@ -43,6 +46,7 @@ public class SyncAccountService {
             catch(RuntimeException e) {
                 e.printStackTrace();
                 accountOutboxEntity.handleFailure(e.getMessage());
+                accountOutboxRepo.save(accountOutboxEntity);
                 return;
             }
             accountOutboxEntity.handleSuccess();
@@ -66,7 +70,7 @@ public class SyncAccountService {
         user.setFirstName(outboxEntity.getFirstName());
         user.setLastName(outboxEntity.getLastName());
         Map<String, List<String>> clientRolesMap = new HashMap<>();
-        String clientUuid = "fdaa89dd-7602-4f4b-8500-400870ee4b48"; 
+        
     
         clientRolesMap.put(clientUuid, Collections.singletonList(outboxEntity.getUserRole()));
         user.setClientRoles(clientRolesMap);

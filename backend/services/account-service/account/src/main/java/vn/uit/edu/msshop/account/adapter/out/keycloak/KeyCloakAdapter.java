@@ -6,6 +6,7 @@ import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import jakarta.ws.rs.core.Response;
@@ -18,7 +19,8 @@ public class KeyCloakAdapter implements CreateKeyCloakAccountPort {
 
      private final Keycloak keycloak;
     private static final String REALM="ms_shop";
-    private static final String CLIENT_ID="fdaa89dd-7602-4f4b-8500-400870ee4b48";
+    @Value("${app.keycloak.admin.client-uuid}")
+    private String clientUuid;
     @Override
     public Response createAccount(UserRepresentation user, String role) {
         System.out.println("--- START: " + role + " ---");
@@ -37,12 +39,12 @@ public class KeyCloakAdapter implements CreateKeyCloakAccountPort {
         }
 
         // Dòng DEBUG bây giờ đã an toàn
-        System.out.println("DEBUG: Đang gán Role cho User ID: " + actualUserId + " tại Client: " + CLIENT_ID);
+        System.out.println("DEBUG: Đang gán Role cho User ID: " + actualUserId + " tại Client: " + clientUuid);
 
         // 3. Lấy Role và Gán
         RoleRepresentation roleToAssign = keycloak.realm(REALM)
                 .clients()
-                .get(CLIENT_ID)
+                .get(clientUuid)
                 .roles()
                 .get(role)
                 .toRepresentation();
@@ -51,7 +53,7 @@ public class KeyCloakAdapter implements CreateKeyCloakAccountPort {
                 .users()
                 .get(actualUserId)
                 .roles()
-                .clientLevel(CLIENT_ID)
+                .clientLevel(clientUuid)
                 .add(Collections.singletonList(roleToAssign));
 
         System.out.println("SUCCESS: Hoàn tất luồng Keycloak cho " + user.getUsername());

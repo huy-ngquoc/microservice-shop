@@ -61,7 +61,7 @@ app:
             server-url: http://${KEYCLOAK_URL:localhost:9098}
             realm: ms_shop
             client-id: ms_shop_rest_api
-            client-secret: TwuErGtX4JylPHbrL930Qcfe7tjdZaId
+            client-secret: nUAtOw5MWbvzYoudgUO4WVjwQciBiSHa
 eureka:
     client:
         serviceUrl:
