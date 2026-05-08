@@ -35,7 +35,9 @@ public record ProductStockCountValue(
         final var newValue = this.value - decrement;
         if (newValue < 0) {
             throw new DomainException(
-                    "Product stock count cannot decrease below zero: current=" + this.value + ", decrement="
+                    "Product stock count cannot decrease below zero: current="
+                            + this.value
+                            + ", decrement="
                             + decrement);
         }
 

@@ -46,8 +46,10 @@ public class VariantSoldCountPersistenceAdapter
         UpdateAllVariantSoldCountsPort,
         DeleteVariantSoldCountPort,
         DeleteAllVariantSoldCountsPort {
-    private static final Collector<VariantSoldCount, ?, Map<VariantId, VariantSoldCount>> COLLECTOR = Collectors
-            .toUnmodifiableMap(
+    private static final Collector<
+            VariantSoldCount,
+            ?,
+            Map<VariantId, VariantSoldCount>> COLLECTOR = Collectors.toUnmodifiableMap(
                     VariantSoldCount::getId,
                     Function.identity(),
                     (
@@ -109,15 +111,15 @@ public class VariantSoldCountPersistenceAdapter
         for (final var newSoldCount : newSoldCounts) {
             final var query = new Query(Criteria.where("_id").is(newSoldCount.getVariantId().value()));
             final var update = new Update()
-                    .setOnInsert(VariantSoldCountDocument.Fields.productId, newSoldCount.getProductId().value())
+                    .setOnInsert(VariantSoldCountDocument.Fields.productId,
+                            newSoldCount.getProductId().value())
                     .setOnInsert(VariantSoldCountDocument.Fields.value, 0)
                     .setOnInsert(VariantSoldCountDocument.Fields.lastUpdatedTime, now);
             bulk.upsert(query, update);
 
-            initialized.add(
-                    VariantSoldCount.zero(
-                            newSoldCount.getVariantId(),
-                            newSoldCount.getProductId()));
+            initialized.add(VariantSoldCount.zero(
+                    newSoldCount.getVariantId(),
+                    newSoldCount.getProductId()));
         }
         bulk.execute();
 

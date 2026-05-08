@@ -58,13 +58,15 @@ public class VariantPersistenceAdapter
         UpdateAllVariantsProductNameForProductPort,
         DeleteVariantPort,
         DeleteVariantsForProductPort {
-    private static final Collector<Variant, ?, Map<VariantId, Variant>> COLLECTOR = Collectors
-            .toUnmodifiableMap(
-                    Variant::getId,
-                    Function.identity(),
-                    (
-                            existing,
-                            replacement) -> existing);
+    private static final Collector<
+            Variant,
+            ?,
+            Map<VariantId, Variant>> COLLECTOR = Collectors
+                    .toUnmodifiableMap(
+                            Variant::getId,
+                            Function.identity(), (
+                                    existing,
+                                    replacement) -> existing);
 
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
@@ -102,8 +104,7 @@ public class VariantPersistenceAdapter
     public Optional<Variant> loadById(
             final VariantId id) {
         final var jpaId = id.value();
-        return this.repository
-                .findByIdAndDeletionTimeIsNull(jpaId)
+        return this.repository.findByIdAndDeletionTimeIsNull(jpaId)
                 .map(this.mapper::toDomain);
     }
 
@@ -111,8 +112,7 @@ public class VariantPersistenceAdapter
     public Optional<Variant> loadSoftDeletedById(
             final VariantId id) {
         final var jpaId = id.value();
-        return this.repository
-                .findByIdAndDeletionTimeIsNotNull(jpaId)
+        return this.repository.findByIdAndDeletionTimeIsNotNull(jpaId)
                 .map(this.mapper::toDomain);
     }
 
@@ -193,10 +193,7 @@ public class VariantPersistenceAdapter
             final VariantProductName productName) {
         final var query = Query.query(Criteria.where(VariantDocument.Fields.productId).is(productId.value()));
         final var update = Update.update(VariantDocument.Fields.productName, productName.value());
-        this.mongoTemplate.updateMulti(
-                query,
-                update,
-                VariantDocument.class);
+        this.mongoTemplate.updateMulti(query, update, VariantDocument.class);
     }
 
     @Override

@@ -1,0 +1,18 @@
+package vn.uit.edu.msshop.rating.adapter.in.web.request;
+
+
+import java.util.UUID;
+
+public record PostRatingRequest(
+   
+    
+    String content,
+    UUID productId,
+    UUID userId,
+    String userName,
+    String userAvatar,
+    float ratingPoint
+
+) {
+
+}

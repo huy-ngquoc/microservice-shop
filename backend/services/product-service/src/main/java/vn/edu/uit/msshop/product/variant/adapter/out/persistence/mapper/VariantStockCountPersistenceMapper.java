@@ -16,9 +16,6 @@ public class VariantStockCountPersistenceMapper {
         final var productId = new VariantProductId(doc.getProductId());
         final var value = new VariantStockCountValue(doc.getValue());
 
-        return new VariantStockCount(
-                variantId,
-                productId,
-                value);
+        return new VariantStockCount(variantId, productId, value);
     }
 }

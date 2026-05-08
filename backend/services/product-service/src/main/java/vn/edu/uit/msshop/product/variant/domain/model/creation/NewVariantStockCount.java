@@ -18,7 +18,11 @@ public final class NewVariantStockCount {
     public NewVariantStockCount(
             final VariantId variantId,
             final VariantProductId productId) {
-        this.variantId = Domains.requireNonNull(variantId, "Variant ID must NOT be null");
-        this.productId = Domains.requireNonNull(productId, "Variant product ID must NOT be null");
+        this.variantId = Domains.requireNonNull(
+                variantId,
+                "Variant ID must NOT be null");
+        this.productId = Domains.requireNonNull(
+                productId,
+                "Variant product ID must NOT be null");
     }
 }

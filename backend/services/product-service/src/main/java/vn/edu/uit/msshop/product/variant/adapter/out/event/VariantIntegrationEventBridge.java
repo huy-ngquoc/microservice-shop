@@ -33,8 +33,7 @@ public class VariantIntegrationEventBridge {
         final var msg = new VariantUpdatedIntegrationEvent(
                 UUID.randomUUID(),
                 variant.getId().value(),
-                variant.getTraits().unwrap(),
-                variant.getPrice().value(),
+                variant.getTraits().unwrap(), variant.getPrice().value(),
                 variant.getProductName().value(),
                 VariantImageKey.unwrap(variant.getImageKey()));
 

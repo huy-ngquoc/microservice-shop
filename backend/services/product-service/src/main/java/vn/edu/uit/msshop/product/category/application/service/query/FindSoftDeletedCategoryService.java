@@ -22,9 +22,7 @@ public class FindSoftDeletedCategoryService implements FindSoftDeletedCategoryUs
             readOnly = true)
     public CategoryView findSoftDeletedById(
             final CategoryId id) {
-        return this.loadSoftDeletedPort
-                .loadSoftDeletedById(id)
-                .map(this.mapper::toView)
+        return this.loadSoftDeletedPort.loadSoftDeletedById(id).map(this.mapper::toView)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
     }
 }

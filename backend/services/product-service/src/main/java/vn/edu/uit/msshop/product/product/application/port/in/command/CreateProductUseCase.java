@@ -17,23 +17,16 @@ public interface CreateProductUseCase {
 
     default ProductView createSimple(
             final CreateSimpleProductCommand command) {
-        final var defaultNewProductVariant = new NewProductVariant(
-                command.price(),
-                ProductVariantTraits.empty(),
+        final var defaultNewProductVariant = new NewProductVariant(command.price(), ProductVariantTraits.empty(),
                 command.targets());
 
-        final var defaultNewProductVariants = new NewProductVariants(
-                List.of(defaultNewProductVariant));
+        final var defaultNewProductVariants = new NewProductVariants(List.of(defaultNewProductVariant));
 
-        final var defaultNewProductConfiguration = new NewProductConfiguration(
-                ProductOptions.empty(),
+        final var defaultNewProductConfiguration = new NewProductConfiguration(ProductOptions.empty(),
                 defaultNewProductVariants);
 
-        final var newCommand = new CreateProductCommand(
-                command.name(),
-                command.categoryId(),
-                command.brandId(),
-                defaultNewProductConfiguration);
+        final var newCommand = new CreateProductCommand(command.name(), command.categoryId(),
+                command.brandId(), defaultNewProductConfiguration);
 
         return this.create(newCommand);
     }

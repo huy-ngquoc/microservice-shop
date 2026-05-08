@@ -10,8 +10,8 @@ spring:
             max-file-size: 5MB
             max-request-size: 6MB
     mongodb:
-        host: localhost
-        port: 27017
+        host: ${PRODUCT_DB_HOST:localhost}
+        port: ${PRODUCT_DB_PORT:27017}
         database: product
         username: alibou
         password: alibou
@@ -31,7 +31,7 @@ spring:
         redis:
             cache-null-values: false
     kafka:
-        bootstrap-servers: localhost:9092 
+        bootstrap-servers: ${KAFKA_URL:localhost:9092}
         consumer:
             group-id: product-service-group
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -78,3 +78,11 @@ logging:
                     mongodb:
                         core:
                             MongoTemplate: DEBUG
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
+    instance:
+        prefer-ip-address: true
+        lease-renewal-interval-in-seconds: 5 
+        lease-expiration-duration-in-seconds: 10

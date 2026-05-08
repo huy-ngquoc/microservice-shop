@@ -73,11 +73,14 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
         final var expectedVersion = command.expectedVersion();
         if (!expectedVersion.equals(product.getVersion())) {
             throw new OptimisticLockException(
-                    expectedVersion.value(), product.getVersion().value());
+                    expectedVersion.value(),
+                    product.getVersion().value());
         }
 
         final var newConfiguration = this.removeOptionFromConfiguration(
-                product, command.optionIndex(), command.defaultPrice());
+                product,
+                command.optionIndex(),
+                command.defaultPrice());
         final var next = new Product(
                 product.getId(),
                 product.getName(),
@@ -129,8 +132,7 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
         }
 
         if (defaultPrice == null) {
-            throw new BusinessRuleException(
-                    "Default price is required when removing the last option");
+            throw new BusinessRuleException("Default price is required when removing the last option");
         }
 
         final var productId = product.getId();
@@ -145,6 +147,8 @@ public class RemoveProductOptionService implements RemoveProductOptionUseCase {
                 product.getName(),
                 new NewProductVariants(List.of(newVariant)));
 
-        return new ProductConfiguration(ProductOptions.empty(), newVariants);
+        return new ProductConfiguration(
+                ProductOptions.empty(),
+                newVariants);
     }
 }

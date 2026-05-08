@@ -43,12 +43,9 @@ public class UpdateProductVariantForVariantService
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         final var newVariant = command.updatedVariant();
-        final var newVariants = product.getVariants().replaceById(
-                newVariant.id(),
-                newVariant);
-        final var newConfiguration = new ProductConfiguration(
-                product.getOptions(),
-                newVariants);
+        final var newVariants = product.getVariants()
+                .replaceById(newVariant.id(), newVariant);
+        final var newConfiguration = new ProductConfiguration(product.getOptions(), newVariants);
 
         final var next = new Product(
                 product.getId(),

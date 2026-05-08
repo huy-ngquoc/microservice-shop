@@ -20,8 +20,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 // TODO: delete image as well.
 @Service
 @RequiredArgsConstructor
-public class HardDeleteProductService
-        implements HardDeleteProductUseCase {
+public class HardDeleteProductService implements HardDeleteProductUseCase {
     private final LoadSoftDeletedProductPort loadSoftDeletedPort;
     private final DeleteProductPort deletePort;
     private final DeleteProductSoldCountPort deleteSoldCountPort;
@@ -35,8 +34,7 @@ public class HardDeleteProductService
     public void purge(
             HardDeleteProductCommand command) {
         final var productId = command.id();
-        final var product = this.loadSoftDeletedPort
-                .loadSoftDeletedById(productId)
+        final var product = this.loadSoftDeletedPort.loadSoftDeletedById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         final var expectedVersion = command.expectedVersion();

@@ -37,12 +37,16 @@ public record ProductOptions(
 
     public static ProductOptions of(
             final Collection<String> rawOptionsList) {
-        final var optionsList = rawOptionsList.stream().map(ProductOption::new).toList();
+        final var optionsList = rawOptionsList.stream()
+                .map(ProductOption::new)
+                .toList();
         return new ProductOptions(optionsList);
     }
 
     public List<String> unwrap() {
-        return this.values.stream().map(ProductOption::value).toList();
+        return this.values.stream()
+                .map(ProductOption::value)
+                .toList();
     }
 
     public static ProductOptions empty() {

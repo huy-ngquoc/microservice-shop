@@ -63,11 +63,9 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         final var variant = this.loadPort.loadById(command.id())
                 .orElseThrow(() -> new VariantNotFoundException(command.id()));
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
-                id,
-                variant.getProductId());
+                id, variant.getProductId());
         final var stockCount = this.loadStockCountPort.loadByIdOrZero(
-                id,
-                variant.getProductId());
+                id, variant.getProductId());
 
         final var priceSet = command.price().getSet();
         final var traitsSet = command.traits().getSet();

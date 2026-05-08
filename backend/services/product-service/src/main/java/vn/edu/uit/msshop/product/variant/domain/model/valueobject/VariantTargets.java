@@ -37,11 +37,15 @@ public record VariantTargets(
 
     public static VariantTargets of(
             final Collection<String> rawStrings) {
-        final var traitsList = rawStrings.stream().map(VariantTarget::new).toList();
+        final var traitsList = rawStrings.stream()
+                .map(VariantTarget::new)
+                .toList();
         return new VariantTargets(traitsList);
     }
 
     public List<String> unwrap() {
-        return this.values.stream().map(VariantTarget::value).toList();
+        return this.values.stream()
+                .map(VariantTarget::value)
+                .toList();
     }
 }

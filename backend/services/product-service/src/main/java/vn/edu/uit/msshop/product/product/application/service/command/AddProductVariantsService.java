@@ -57,7 +57,8 @@ public class AddProductVariantsService implements AddProductVariantsUseCase {
         final var expectedVersion = command.expectedVersion();
         if (!expectedVersion.equals(product.getVersion())) {
             throw new OptimisticLockException(
-                    expectedVersion.value(), product.getVersion().value());
+                    expectedVersion.value(),
+                    product.getVersion().value());
         }
 
         for (final var variant : command.newVariants().values()) {

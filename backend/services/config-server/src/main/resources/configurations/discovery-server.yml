@@ -3,7 +3,8 @@ server:
 
 eureka:
     instance:
-        hostname: localhost
+        eviction-interval-timer-in-ms: 2000
+        hostname: discovery-server
     client:
         register-with-eureka: false
         fetch-registry: false

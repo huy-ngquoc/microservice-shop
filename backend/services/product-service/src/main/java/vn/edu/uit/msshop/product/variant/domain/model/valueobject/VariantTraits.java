@@ -37,12 +37,16 @@ public record VariantTraits(
 
     public static VariantTraits of(
             final Collection<String> rawStrings) {
-        final var traitsList = rawStrings.stream().map(VariantTrait::new).toList();
+        final var traitsList = rawStrings.stream()
+                .map(VariantTrait::new)
+                .toList();
         return new VariantTraits(traitsList);
     }
 
     public List<String> unwrap() {
-        return this.values.stream().map(VariantTrait::value).toList();
+        return this.values.stream()
+                .map(VariantTrait::value)
+                .toList();
     }
 
 }

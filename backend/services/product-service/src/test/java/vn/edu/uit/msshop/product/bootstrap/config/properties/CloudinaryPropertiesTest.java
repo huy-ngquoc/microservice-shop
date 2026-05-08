@@ -12,11 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(
-        properties = {
-                "cloudinary.cloud-name=my-test-cloud",
-                "cloudinary.api-key=my-test-api-key",
-                "cloudinary.api-secret=my-test-api-secret"
-        })
+        properties = { "cloudinary.cloud-name=my-test-cloud",
+                "cloudinary.api-key=my-test-api-key", "cloudinary.api-secret=my-test-api-secret" })
 class CloudinaryPropertiesTest {
 
     @Configuration
@@ -38,15 +35,12 @@ class CloudinaryPropertiesTest {
         Assertions.assertThat(this.cloudinaryProperties).isNotNull();
 
         Assertions.assertThat(this.cloudinaryProperties.cloudName())
-                .as("Cloud name should be mapped correctly")
-                .isEqualTo("my-test-cloud");
+                .as("Cloud name should be mapped correctly").isEqualTo("my-test-cloud");
 
         Assertions.assertThat(this.cloudinaryProperties.apiKey())
-                .as("API key should be mapped correctly")
-                .isEqualTo("my-test-api-key");
+                .as("API key should be mapped correctly").isEqualTo("my-test-api-key");
 
         Assertions.assertThat(this.cloudinaryProperties.apiSecret())
-                .as("API secret should be mapped correctly")
-                .isEqualTo("my-test-api-secret");
+                .as("API secret should be mapped correctly").isEqualTo("my-test-api-secret");
     }
 }

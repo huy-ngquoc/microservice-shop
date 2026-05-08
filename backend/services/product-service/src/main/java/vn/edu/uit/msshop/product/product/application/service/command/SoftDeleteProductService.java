@@ -64,8 +64,7 @@ public class SoftDeleteProductService implements SoftDeleteProductUseCase {
                 ProductDeletionTime.now());
         final var saved = this.updatePort.update(next);
 
-        this.softDeleteVariantsForProductPort
-                .deleteByProductId(saved.getId());
+        this.softDeleteVariantsForProductPort.deleteByProductId(saved.getId());
 
         this.eventPort.publish(new ProductSoftDeleted(saved.getId()));
     }

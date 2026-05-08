@@ -27,8 +27,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCou
 
 @Service
 @RequiredArgsConstructor
-public class SetAllVariantSoldCountsService
-        implements SetAllVariantSoldCountsUseCase {
+public class SetAllVariantSoldCountsService implements SetAllVariantSoldCountsUseCase {
     private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
     private final UpdateAllVariantSoldCountsPort updateAllSoldCountsPort;
     private final IncreaseProductSoldCountsPort increaseProductSoldCountsPort;
@@ -64,7 +63,8 @@ public class SetAllVariantSoldCountsService
         final var currentByVariantId = this.loadAllSoldCountsPort.loadAllByIds(variantIds);
 
         return orderSoldCounts.stream()
-                .map(order -> SetAllVariantSoldCountsService.resolveOne(order, currentByVariantId))
+                .map(order -> SetAllVariantSoldCountsService
+                        .resolveOne(order, currentByVariantId))
                 .toList();
     }
 
@@ -81,8 +81,7 @@ public class SetAllVariantSoldCountsService
     private void persistUpdates(
             final List<ResolvedSoldCount> resolved) {
         final var updated = resolved.stream()
-                .map(ResolvedSoldCount::toUpdated)
-                .toList();
+                .map(ResolvedSoldCount::toUpdated).toList();
         this.updateAllSoldCountsPort.updateAll(updated);
     }
 

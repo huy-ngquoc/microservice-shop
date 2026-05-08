@@ -1,0 +1,17 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:                           # Cấu hình các giao thức nhận dữ liệu
+    otlp:
+      protocols:
+        http:                          # Spring Boot thường dùng cái này
+        grpc:
+
+storage:
+  trace:
+    backend: local                     # ĐÂY LÀ CHỖ BỊ THIẾU: Chọn lưu ở máy cục bộ
+    local:
+      path: /tmp/tempo/traces          # Đường dẫn bên trong container
+    wal:
+      path: /tmp/tempo/wal             # Write Ahead Log (bộ nhớ đệm)

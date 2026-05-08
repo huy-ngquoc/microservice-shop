@@ -1,0 +1,104 @@
+server:
+    port: 8090
+    address: 0.0.0.0
+redis:
+    host: ${REDIS_INVENTORY_HOST:localhost}
+    port: ${REDIS_PORT:6381}
+spring:
+    data:
+        redis:
+            host: ${REDIS_INVENTORY_HOST:localhost}      
+            port: ${REDIS_PORT:6381}
+            password: binh123
+            timeout: 60000        
+            lettuce:
+                pool:
+                    max-active: 8
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://${INVENTORY_DB_URL:localhost:5440}/inventory
+        username: alibou
+        password: alibou
+    jpa:
+        hibernate:
+            ddl-auto: update
+        database: postgresql
+        show-sql: false
+        properties:
+            hibernate:
+                format_sql: false
+                type:
+                    descriptor:
+                        sql:
+                            BasicBinder: OFF
+                "[globally_quoted_identifiers]": true
+                "[globally_quoted_identifiers_skip_column_definitions]": true
+    kafka:
+        bootstrap-servers: ${KAFKA_URL:localhost:9092}
+        consumer:
+            group-id: order-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+                spring.json.trusted.packages: "*"
+                spring.json.value.default.type: java.lang.Object
+                spring.json.type.mapping: 
+                    OrderCreated_Inventory:vn.uit.edu.msshop.inventory.domain.event.OrderCreated,
+                    OrderCreated:java.lang.Object,
+                    VariantUpdated:vn.uit.edu.msshop.inventory.domain.event.product.VariantUpdate,
+                    VariantDeleted:vn.uit.edu.msshop.inventory.domain.event.product.VariantDeleted,
+                    VariantRestore:vn.uit.edu.msshop.inventory.domain.event.product.VariantRestore,
+                    VariantPurge:vn.uit.edu.msshop.inventory.domain.event.product.VariantPurge,
+                    OrderUpdatedEvent:vn.uit.edu.msshop.inventory.domain.event.OrderUpdatedEvent,
+                    ProductCreated:java.lang.Object,
+                    ProductUpdated:java.lang.Object,
+                    ProductDeleted:java.lang.Object
+        producer:
+            bootstrap-servers: ${KAFKA_URL:localhost:9092}
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                spring.json.type.mapping: 
+                    ForceCancellOrder:vn.uit.edu.msshop.inventory.domain.event.ForceCancellOrder,
+                    InventoryUpdated:vn.uit.edu.msshop.inventory.domain.event.InventoryUpdated,
+                    UpdateManyInventoriesEvent:vn.uit.edu.msshop.inventory.domain.event.UpdateManyInventoriesEvent
+logging:
+  level:
+    org.hibernate.SQL: OFF 
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF
+    org.springframework.data.mongodb.core.MongoTemplate: OFF
+    org.apache.kafka: ERROR
+    org.springframework.kafka: ERROR
+    io.micrometer.tracing: DEBUG
+    io.zipkin.reporter2: DEBUG
+    root: WARN
+    vn.uit.edu.msshop.inventory: INFO
+    io.lettuce.core: WARN
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      tracing:
+        sampling:
+            probability: 1.0 
+      zipkin:
+        tracing:
+            endpoint: http://127.0.0.1:9411/api/v2/spans
+      metrics:
+        tags:
+            application: ${spring.application.name}
+  metrics:
+    tags:
+      application: ${spring.application.name}
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
+    instance:
+        prefer-ip-address: true
+        lease-renewal-interval-in-seconds: 5 
+        lease-expiration-duration-in-seconds: 10

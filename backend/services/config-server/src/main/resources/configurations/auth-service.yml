@@ -1,0 +1,71 @@
+spring:
+    security: 
+        oauth2:
+            resourceserver:
+                jwt:
+                    issuer-uri: http://${KEYCLOAK_URL:localhost:9098}/realms/ms_shop
+                    jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+    cloud:
+        gateway:
+            discovery:
+                locator:
+                    enabled: true
+            loadbalancer:
+                cache:
+                    ttl: 5s  
+            server:
+                webflux:
+                    discovery:
+                        locator:
+                            enabled: true
+                    routes:
+                      - id: account-service
+                        uri: lb://ACCOUNT-SERVICE
+                        predicates:
+                        - Path=/account/**
+                      - id: payment-service
+                        uri: lb://PAYMENT-SERVICE
+                        predicates:
+                        - Path=/payment/**
+                      - id: cart-service
+                        uri: lb://CART-SERVICE
+                        predicates:
+                        - Path=/cart/**
+                      - id: order-service
+                        uri: lb://ORDER-SERVICE
+                        predicates:
+                        - Path=/order/**
+                      - id: inventory-service
+                        uri: lb://INVENTORY-SERVICE
+                        predicates:
+                        - Path=/inventory/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway, health, info
+  endpoint:
+    gateway:
+      enabled: true
+server:
+    port: 8082
+jwt:
+    auth:
+        converter:
+            resource-id: ms_shop_rest_api
+            principle-attribute: preferred_username
+app:
+    keycloak:
+        admin:
+            server-url: http://${KEYCLOAK_URL:localhost:9098}
+            realm: ms_shop
+            client-id: ms_shop_rest_api
+            client-secret: nUAtOw5MWbvzYoudgUO4WVjwQciBiSHa
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
+    instance:
+        lease-renewal-interval-in-seconds: 5 
+        lease-expiration-duration-in-seconds: 10

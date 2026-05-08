@@ -10,8 +10,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategor
 
 @Component
 @RequiredArgsConstructor
-public class CategoryValidationAdapter
-        implements CheckProductCategoryExistsPort {
+public class CategoryValidationAdapter implements CheckProductCategoryExistsPort {
     private final CheckCategoryExistsUseCase checkExistsUseCase;
 
     @Override

@@ -14,8 +14,7 @@ import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
 
 @Component
 @RequiredArgsConstructor
-public class VariantEventPublisherAdapter
-        implements PublishVariantEventPort {
+public class VariantEventPublisherAdapter implements PublishVariantEventPort {
     private final ApplicationEventPublisher publisher;
 
     @Override

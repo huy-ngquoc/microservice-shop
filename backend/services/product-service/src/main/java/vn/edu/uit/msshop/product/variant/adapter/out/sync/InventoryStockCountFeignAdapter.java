@@ -16,8 +16,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCo
 
 @Component
 @RequiredArgsConstructor
-public class InventoryStockCountFeignAdapter
-        implements FetchInventoryStockCountsPort {
+public class InventoryStockCountFeignAdapter implements FetchInventoryStockCountsPort {
     private static final int PAGE_SIZE = 100;
 
     private final InventoryStockCountFeignClient feignClient;

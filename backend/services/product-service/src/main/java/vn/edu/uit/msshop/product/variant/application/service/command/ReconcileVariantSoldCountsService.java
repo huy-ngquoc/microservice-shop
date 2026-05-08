@@ -8,8 +8,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.sync.FetchAllOrder
 
 @Service
 @RequiredArgsConstructor
-public class ReconcileVariantSoldCountsService
-        implements ReconcileVariantSoldCountsUseCase {
+public class ReconcileVariantSoldCountsService implements ReconcileVariantSoldCountsUseCase {
     private final FetchAllOrderSoldCountsPort fetchAllPort;
     private final SetAllVariantSoldCountsUseCase setAllUseCase;
 

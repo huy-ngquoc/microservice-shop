@@ -44,8 +44,10 @@ public class VariantStockCountPersistenceAdapter
         UpdateAllVariantStockCountsPort,
         DeleteVariantStockCountPort,
         DeleteAllVariantStockCountsPort {
-    private static final Collector<VariantStockCount, ?, Map<VariantId, VariantStockCount>> COLLECTOR = Collectors
-            .toUnmodifiableMap(
+    private static final Collector<
+            VariantStockCount,
+            ?,
+            Map<VariantId, VariantStockCount>> COLLECTOR = Collectors.toUnmodifiableMap(
                     VariantStockCount::getVariantId,
                     Function.identity(),
                     (
@@ -74,12 +76,9 @@ public class VariantStockCountPersistenceAdapter
             return Map.of();
         }
 
-        final var jpaIds = ids.stream()
-                .map(VariantId::value)
-                .collect(Collectors.toUnmodifiableSet());
+        final var jpaIds = ids.stream().map(VariantId::value).collect(Collectors.toUnmodifiableSet());
 
-        return this.repository.findAllById(jpaIds).stream()
-                .map(this.mapper::toDomain)
+        return this.repository.findAllById(jpaIds).stream().map(this.mapper::toDomain)
                 .collect(VariantStockCountPersistenceAdapter.COLLECTOR);
     }
 
@@ -88,7 +87,8 @@ public class VariantStockCountPersistenceAdapter
             final NewVariantStockCount newStockCount) {
         final var query = new Query(Criteria.where("_id").is(newStockCount.getVariantId().value()));
         final var update = new Update()
-                .setOnInsert(VariantStockCountDocument.Fields.productId, newStockCount.getProductId().value())
+                .setOnInsert(VariantStockCountDocument.Fields.productId,
+                        newStockCount.getProductId().value())
                 .setOnInsert(VariantStockCountDocument.Fields.value, 0)
                 .setOnInsert(VariantStockCountDocument.Fields.lastUpdatedTime, Instant.now());
 
@@ -104,28 +104,24 @@ public class VariantStockCountPersistenceAdapter
 
         final var initialized = new ArrayList<VariantStockCount>(newStockCounts.size());
 
-        final var bulkOps = this.mongoTemplate.bulkOps(
-                BulkMode.UNORDERED,
-                VariantStockCountDocument.class);
+        final var bulkOps = this.mongoTemplate.bulkOps(BulkMode.UNORDERED, VariantStockCountDocument.class);
         final var instantNow = Instant.now();
 
         for (final var newStockCount : newStockCounts) {
             final var query = new Query(Criteria.where("_id").is(newStockCount.getVariantId().value()));
             final var update = new Update()
-                    .setOnInsert(VariantStockCountDocument.Fields.productId, newStockCount.getProductId().value())
+                    .setOnInsert(VariantStockCountDocument.Fields.productId,
+                            newStockCount.getProductId().value())
                     .setOnInsert(VariantStockCountDocument.Fields.value, 0)
                     .setOnInsert(VariantStockCountDocument.Fields.lastUpdatedTime, instantNow);
             bulkOps.upsert(query, update);
 
-            initialized.add(
-                    VariantStockCount.zero(
-                            newStockCount.getVariantId(),
-                            newStockCount.getProductId()));
+            initialized
+                    .add(VariantStockCount.zero(newStockCount.getVariantId(), newStockCount.getProductId()));
         }
         bulkOps.execute();
 
-        return initialized.stream()
-                .collect(VariantStockCountPersistenceAdapter.COLLECTOR);
+        return initialized.stream().collect(VariantStockCountPersistenceAdapter.COLLECTOR);
     }
 
     @Override
@@ -147,15 +143,14 @@ public class VariantStockCountPersistenceAdapter
             return;
         }
 
-        final var bulkOps = this.mongoTemplate.bulkOps(
-                BulkMode.UNORDERED,
-                VariantStockCountDocument.class);
+        final var bulkOps = this.mongoTemplate.bulkOps(BulkMode.UNORDERED, VariantStockCountDocument.class);
         final var instantNow = Instant.now();
 
         for (final var stockCount : stockCounts) {
             final var query = new Query(Criteria.where("_id").is(stockCount.getVariantId().value()));
             final var update = new Update()
-                    .setOnInsert(VariantStockCountDocument.Fields.productId, stockCount.getProductId().value())
+                    .setOnInsert(VariantStockCountDocument.Fields.productId,
+                            stockCount.getProductId().value())
                     .set(VariantStockCountDocument.Fields.value, stockCount.getValue().value())
                     .set(VariantStockCountDocument.Fields.lastUpdatedTime, instantNow);
             bulkOps.upsert(query, update);
@@ -178,24 +173,15 @@ public class VariantStockCountPersistenceAdapter
             return;
         }
 
-        final var jpaIds = ids.stream()
-                .map(VariantId::value)
-                .toList();
+        final var jpaIds = ids.stream().map(VariantId::value).toList();
         this.repository.deleteAllById(jpaIds);
     }
 
     private VariantStockCount upsertAndReturnDomain(
             final Query query,
             final Update update) {
-        final var options = FindAndModifyOptions
-                .options()
-                .returnNew(true)
-                .upsert(true);
-        final var doc = this.mongoTemplate.findAndModify(
-                query,
-                update,
-                options,
-                VariantStockCountDocument.class);
+        final var options = FindAndModifyOptions.options().returnNew(true).upsert(true);
+        final var doc = this.mongoTemplate.findAndModify(query, update, options, VariantStockCountDocument.class);
         Objects.requireNonNull(doc, "find-and-modify with upsert must return a non-null document");
 
         return this.mapper.toDomain(doc);

@@ -14,8 +14,6 @@ public class ProductStockCountPersistenceMapper {
         final var id = new ProductId(doc.getId());
         final var value = new ProductStockCountValue(doc.getValue());
 
-        return new ProductStockCount(
-                id,
-                value);
+        return new ProductStockCount(id, value);
     }
 }

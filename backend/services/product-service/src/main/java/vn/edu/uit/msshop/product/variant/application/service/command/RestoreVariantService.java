@@ -47,14 +47,17 @@ public class RestoreVariantService implements RestoreVariantUseCase {
         final var currentVersion = variant.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(
-                    expectedVersion.value(), currentVersion.value());
+                    expectedVersion.value(),
+                    currentVersion.value());
         }
 
         this.checkRestorablePort.validateRestorable(variant);
 
         final var productId = variant.getProductId();
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(variantId, productId);
-        final var stockCount = this.loadStockCountPort.loadByIdOrZero(variantId, productId);
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
+                variantId, productId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
+                variantId, productId);
         final var soldIncrement = soldCount.getValue().value();
         final var stockIncrement = stockCount.getValue().value();
 

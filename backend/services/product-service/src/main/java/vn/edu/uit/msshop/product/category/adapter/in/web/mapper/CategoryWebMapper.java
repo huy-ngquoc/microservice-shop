@@ -38,8 +38,7 @@ public class CategoryWebMapper {
             final CreateCategoryRequest request) {
         final var name = new CategoryName(request.name());
 
-        return new CreateCategoryCommand(
-                name);
+        return new CreateCategoryCommand(name);
     }
 
     public RestoreCategoryCommand toRestoreCommand(
@@ -48,9 +47,7 @@ public class CategoryWebMapper {
         final var categoryId = new CategoryId(id);
         final var version = new CategoryVersion(expectedVersion);
 
-        return new RestoreCategoryCommand(
-                categoryId,
-                version);
+        return new RestoreCategoryCommand(categoryId, version);
     }
 
     public UpdateCategoryInfoCommand toUpdateInfoCommand(
@@ -61,24 +58,17 @@ public class CategoryWebMapper {
 
         final var name = ChangeRequest.toChange(request.name(), CategoryName::new);
 
-        return new UpdateCategoryInfoCommand(
-                categoryId,
-                name,
-                version);
+        return new UpdateCategoryInfoCommand(categoryId, name, version);
     }
 
     public UpdateCategoryImageCommand toUpdateImageCommand(
             final UUID id,
             final UpdateCategoryImageRequest request) {
         final var categoryId = new CategoryId(id);
-        final var imageKey = CategoryWebMapper
-                .extractKeyFromTempPublicId(request.newImageKey());
+        final var imageKey = CategoryWebMapper.extractKeyFromTempPublicId(request.newImageKey());
         final var version = new CategoryVersion(request.version());
 
-        return new UpdateCategoryImageCommand(
-                categoryId,
-                imageKey,
-                version);
+        return new UpdateCategoryImageCommand(categoryId, imageKey, version);
     }
 
     public DeleteCategoryImageCommand toDeleteImageCommand(
@@ -87,9 +77,7 @@ public class CategoryWebMapper {
         final var categoryId = new CategoryId(id);
         final var version = new CategoryVersion(expectedVersion);
 
-        return new DeleteCategoryImageCommand(
-                categoryId,
-                version);
+        return new DeleteCategoryImageCommand(categoryId, version);
     }
 
     public SoftDeleteCategoryCommand toSoftDeleteCommand(
@@ -98,9 +86,7 @@ public class CategoryWebMapper {
         final var categoryId = new CategoryId(id);
         final var version = new CategoryVersion(expectedVersion);
 
-        return new SoftDeleteCategoryCommand(
-                categoryId,
-                version);
+        return new SoftDeleteCategoryCommand(categoryId, version);
     }
 
     public HardDeleteCategoryCommand toHardDeleteCommand(
@@ -109,9 +95,7 @@ public class CategoryWebMapper {
         final var categoryId = new CategoryId(id);
         final var version = new CategoryVersion(expectedVersion);
 
-        return new HardDeleteCategoryCommand(
-                categoryId,
-                version);
+        return new HardDeleteCategoryCommand(categoryId, version);
     }
 
     public CategoryId toCategoryId(
@@ -121,18 +105,13 @@ public class CategoryWebMapper {
 
     public CategoryResponse toResponse(
             final CategoryView view) {
-        return new CategoryResponse(
-                view.id(),
-                view.name(),
-                this.toImageUrlString(view.imageKey()),
+        return new CategoryResponse(view.id(), view.name(), this.toImageUrlString(view.imageKey()),
                 view.version());
     }
 
     public CategoryImageResponse toImageResponse(
             final CategoryImageView view) {
-        return new CategoryImageResponse(
-                view.id(),
-                this.toImageUrlString(view.imageKey()),
+        return new CategoryImageResponse(view.id(), this.toImageUrlString(view.imageKey()),
                 view.version());
     }
 
@@ -149,8 +128,6 @@ public class CategoryWebMapper {
     private @Nullable String toImageUrlString(
             @Nullable
             final String keyString) {
-        return this.urlResolver.resolve(
-                keyString,
-                CategoryImageStorageAdapter.CATEGORY_FOLDER);
+        return this.urlResolver.resolve(keyString, CategoryImageStorageAdapter.CATEGORY_FOLDER);
     }
 }

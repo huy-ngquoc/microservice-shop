@@ -20,8 +20,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class HardDeleteVariantsForProductService
-        implements HardDeleteVariantsForProductUseCase {
+public class HardDeleteVariantsForProductService implements HardDeleteVariantsForProductUseCase {
     private final LoadVariantsForProductPort loadForProductPort;
     private final DeleteVariantsForProductPort deleteForProductPort;
     private final DeleteAllVariantSoldCountsPort deleteAllSoldCountsPort;
@@ -58,7 +57,8 @@ public class HardDeleteVariantsForProductService
             this.imageStoragePort.deleteImage(key);
         } catch (final RuntimeException e) {
             log.warn("Hard delete: failed to delete image '{}', manual cleanup required",
-                    key.value(), e);
+                    key.value(),
+                    e);
         }
     }
 }

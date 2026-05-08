@@ -14,8 +14,7 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductVariants(
         List<ProductVariant> values) {
-    public static final int MAX_AMOUNT = Math.powExact(
-            ProductOptions.MAX_AMOUNT,
+    public static final int MAX_AMOUNT = Math.addExact(ProductOptions.MAX_AMOUNT,
             ProductVariantTraits.MAX_TRAITS_AMOUNT);
 
     public ProductVariants {
@@ -34,11 +33,8 @@ public record ProductVariants(
                 throw new DomainException("Variant in list CANNOT be null");
             }
 
-            final var normalizedTraitValues = variant.traits().values()
-                    .stream()
-                    .map(ProductVariantTrait::value)
-                    .map(String::toLowerCase)
-                    .toList();
+            final var normalizedTraitValues = variant.traits().values().stream().map(ProductVariantTrait::value)
+                    .map(String::toLowerCase).toList();
 
             if (!uniqueCombinationSet.add(normalizedTraitValues)) {
                 throw new DomainException("Duplicate variant traits combination found: " + variant.traits());
@@ -129,7 +125,9 @@ public record ProductVariants(
             final ProductVariantTrait trait) {
         final var newValues = this.values.stream()
                 .map(v -> new ProductVariant(
-                        v.id(), v.price(), v.traits().add(trait)))
+                        v.id(),
+                        v.price(),
+                        v.traits().add(trait)))
                 .toList();
         return new ProductVariants(newValues);
     }

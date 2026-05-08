@@ -15,8 +15,7 @@ final class CategoryIdTest {
     @SuppressWarnings("NullAway")
     void constructor_NullValue_ThrowsException() {
         // When & Then
-        Assertions.assertThatThrownBy(() -> new CategoryId(null))
-                .isInstanceOf(DomainException.class);
+        Assertions.assertThatThrownBy(() -> new CategoryId(null)).isInstanceOf(DomainException.class);
     }
 
     @Test
@@ -30,8 +29,7 @@ final class CategoryIdTest {
 
         // Then
         Assertions.assertThat(categoryId.value())
-                .as("The internal UUID value should match the provided UUID")
-                .isEqualTo(validUuid);
+                .as("The internal UUID value should match the provided UUID").isEqualTo(validUuid);
     }
 
     @Test
@@ -46,8 +44,7 @@ final class CategoryIdTest {
         Assertions.assertThat(categoryId1.value()).isNotNull();
 
         // (Optional) Ensure each call generates a unique UUID
-        Assertions.assertThat(categoryId1.value())
-                .as("Auto-generated IDs should be unique")
+        Assertions.assertThat(categoryId1.value()).as("Auto-generated IDs should be unique")
                 .isNotEqualTo(categoryId2.value());
     }
 }

@@ -15,8 +15,7 @@ final class CategoryNameTest {
     @SuppressWarnings("NullAway")
     void constructor_NullValue_ThrowsException() {
         // When & Then
-        Assertions.assertThatThrownBy(() -> new CategoryName(null))
-                .isInstanceOf(DomainException.class);
+        Assertions.assertThatThrownBy(() -> new CategoryName(null)).isInstanceOf(DomainException.class);
     }
 
     @ParameterizedTest
@@ -67,7 +66,6 @@ final class CategoryNameTest {
 
         // Then
         Assertions.assertThat(categoryName.value())
-                .as("The internal value should match the provided valid name")
-                .isEqualTo(validName);
+                .as("The internal value should match the provided valid name").isEqualTo(validName);
     }
 }

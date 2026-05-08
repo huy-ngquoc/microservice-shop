@@ -34,8 +34,10 @@ public class ProductRatingPersistenceAdapter
         InitializeProductRatingPort,
         UpdateProductRatingPort,
         DeleteProductRatingPort {
-    private static final Collector<ProductRating, ?, Map<ProductId, ProductRating>> COLLECTOR = Collectors
-            .toUnmodifiableMap(
+    private static final Collector<
+            ProductRating,
+            ?,
+            Map<ProductId, ProductRating>> COLLECTOR = Collectors.toUnmodifiableMap(
                     ProductRating::getId,
                     Function.identity(),
                     (

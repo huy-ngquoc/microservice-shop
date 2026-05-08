@@ -26,9 +26,7 @@ public final class ProductRating {
         this.average = Domains.requireNonNull(average, "Product rating average must NOT be null");
         this.amount = Domains.requireNonNull(amount, "Product rating amount must NOT be null");
 
-        ProductRating.validate(
-                this.average,
-                this.amount);
+        ProductRating.validate(this.average, this.amount);
     }
 
     public static ProductRating zero(
@@ -36,10 +34,7 @@ public final class ProductRating {
         final var average = new ProductRatingAverage(0);
         final var amount = new ProductRatingAmount(0);
 
-        return new ProductRating(
-                id,
-                average,
-                amount);
+        return new ProductRating(id, average, amount);
     }
 
     private static void validate(
@@ -50,7 +45,8 @@ public final class ProductRating {
 
         if (amountValue > 0) {
             if (avgValue < 1) {
-                throw new DomainException("Product rating average must NOT be less than 1 when there is a rating");
+                throw new DomainException(
+                        "Product rating average must NOT be less than 1 when there is a rating");
             }
         } else {
             if (Float.compare(avgValue, 0) != 0) {

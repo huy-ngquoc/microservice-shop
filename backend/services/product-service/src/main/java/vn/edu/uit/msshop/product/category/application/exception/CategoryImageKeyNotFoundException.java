@@ -7,7 +7,9 @@ public final class CategoryImageKeyNotFoundException extends NotFoundException {
     public CategoryImageKeyNotFoundException(
             final CategoryImageKey imageKey,
             final Throwable cause) {
-        super("Category image key", imageKey.value(), cause);
+        super("Category image key",
+                imageKey.value(),
+                cause);
     }
 
     public CategoryImageKeyNotFoundException(

@@ -51,10 +51,9 @@ public class VariantToProductSyncAdapter
     private static final Collector<
             Map.Entry<VariantProductId, Integer>,
             ?,
-            Map<ProductId, Integer>> BY_PRODUCT_ID_COLLECTOR = Collectors
-                    .toUnmodifiableMap(
-                            entry -> new ProductId(entry.getKey().value()),
-                            Map.Entry::getValue);
+            Map<ProductId, Integer>> BY_PRODUCT_ID_COLLECTOR = Collectors.toUnmodifiableMap(
+                    entry -> new ProductId(entry.getKey().value()),
+                    Map.Entry::getValue);
 
     private final AddProductVariantForVariantUseCase addProductVariantForVariantUseCase;
     private final UpdateProductVariantForVariantUseCase updateProductVariantForVariantUseCase;

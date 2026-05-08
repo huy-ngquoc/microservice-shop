@@ -98,7 +98,9 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
                 this.logoStoragePort.unpublishLogo(newLogoKey);
             } catch (final RuntimeException compensateEx) {
                 e.addSuppressed(compensateEx);
-                log.error("Compensation failed for key '{}'", newLogoKey.value(), compensateEx);
+                log.error("Compensation failed for key '{}'",
+                        newLogoKey.value(),
+                        compensateEx);
             }
             throw e;
         }
@@ -121,7 +123,9 @@ public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
         try {
             this.logoStoragePort.deleteLogo(oldKey);
         } catch (final RuntimeException e) {
-            log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
+            log.warn("Failed to delete old image key '{}', manual cleanup required",
+                    oldKey.value(),
+                    e);
         }
     }
 }

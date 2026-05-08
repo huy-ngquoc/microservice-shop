@@ -1,0 +1,62 @@
+spring:
+    datasource:
+        url: jdbc:postgresql://${ACCOUNT_DB_URL:localhost:5434}/account
+        username: alibou
+        password: alibou
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update 
+        show-sql: true
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+    kafka:
+        bootstrap-servers: ${KAFKA_URL:localhost:9092} 
+        consumer:
+            group-id: account-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.json.trusted.packages: "*"
+                spring.json.type.mapping: 
+                    AccountCreated:vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated,
+                    ImageRemoveSuccess:vn.uit.edu.msshop.account.domain.event.kafka.ImageRemoveSuccess
+        producer:
+            bootstrap-servers: ${KAFKA_URL:localhost:9092}
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                spring.json.type.mapping: 
+                    AccountId:vn.uit.edu.msshop.account.domain.event.kafka.AccountId,
+                    DeleteOldImageEvent:vn.uit.edu.msshop.account.domain.event.kafka.DeleteOldImageEvent,
+                    RollbackImageEvent:vn.uit.edu.msshop.account.domain.event.kafka.RollbackImageEvent
+                    AccountCreated:vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated
+server:
+    port: 8071
+logging:
+  level:
+    org.apache.kafka: ERROR
+    org.springframework.kafka: ERROR
+jwt:
+    auth:
+        converter:
+            resource-id: ms_shop_rest_api
+            principle-attribute: preferred_username
+app:
+    keycloak:
+        admin:
+            server-url: http://${KEYCLOAK_URL:localhost:9098}
+            realm: ms_shop
+            client-id: ms_shop_rest_api
+            client-secret: nUAtOw5MWbvzYoudgUO4WVjwQciBiSHa
+            token-uri: http://${KEYCLOAK_URL:localhost:9098}/realms/ms_shop/protocol/openid-connect/token
+            client-uuid: cac55e59-48ac-42ba-839a-fcbf458b6662
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
+    instance:
+        prefer-ip-address: true
+        lease-renewal-interval-in-seconds: 5 
+        lease-expiration-duration-in-seconds: 10

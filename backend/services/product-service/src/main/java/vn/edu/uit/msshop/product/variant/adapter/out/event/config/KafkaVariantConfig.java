@@ -28,7 +28,8 @@ public class KafkaVariantConfig {
 
     @Bean
     NewTopic variantTopic() {
-        return TopicBuilder.name(TOPIC_NAME)
+        return TopicBuilder
+                .name(TOPIC_NAME)
                 .partitions(VARIANT_TOPIC_PARTITION_COUNT)
                 .replicas(VARIANT_TOPIC_REPLICATION_FACTOR)
                 .build();

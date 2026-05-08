@@ -30,14 +30,21 @@
         <module>shared-webmvc</module>
         <module>shared-spring-data</module>
         <module>shared-cloudinary</module>
-        
+
         <module>config-server</module>
         <module>discovery-server</module>
-        <module>api-gateway</module>
-        <!-- <module>identity-service</module> -->
         <module>product-service</module>
-        <!-- <module>order-service</module> -->
-        <!-- <module>inventory-service</module> -->
+        <module>account-service/account</module>
+        <module>auth-service/auth</module>
+        <module>cart-service/cart</module>
+        <module>image-service/image</module>
+        <module>inventory-service/inventory</module>
+        <module>notification-service/notification</module>
+        <module>order-service/order</module>
+        <module>payment-service/payment</module>
+        <module>fake-payment/payment</module>
+        <module>rating-service/rating</module>
+        <module>recommendation-service/recommendation</module>
     </modules>
 
     <scm>
@@ -187,6 +194,11 @@
                             <artifactId>error_prone_core</artifactId>
                             <version>${error-prone.version}</version>
                         </path>
+                        <path>
+                            <groupId>com.google.code.findbugs</groupId>
+                            <artifactId>jsr305</artifactId>
+                            <version>3.0.2</version>
+                        </path>
                     </annotationProcessorPaths>
                     <compilerArgs>
                         <arg>--add-modules</arg>
@@ -197,8 +209,9 @@
                             -Xplugin:ErrorProne \
                             -Xep:NullAway:ERROR \
                             -XepOpt:NullAway:AnnotatedPackages=vn.edu.uit.msshop \
-                            -XepOpt:NullAway:JSpecifyMode=true \
+                            -XepExcludedPaths:.*vn.uit.edu.*
                         </arg>
+                        <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
@@ -235,7 +248,6 @@
                 <artifactId>formatter-maven-plugin</artifactId>
                 <version>2.29.0</version>
                 <configuration>
-                    <!-- Đường dẫn đến file java-formatter.xml của ông -->
                     <configFile>${maven.multiModuleProjectDirectory}/java-formatter.xml</configFile>
                 </configuration>
                 <executions>

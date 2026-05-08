@@ -32,5 +32,4 @@ public class DecreaseProductSoldCountsForVariantsService
             DecreaseProductSoldCountsForVariantsCommand command) {
         this.decreaseAllPort.decreaseAll(command.decrementById());
     }
-
 }

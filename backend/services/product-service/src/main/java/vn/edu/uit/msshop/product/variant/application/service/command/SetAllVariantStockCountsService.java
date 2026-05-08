@@ -27,8 +27,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCo
 
 @Service
 @RequiredArgsConstructor
-public class SetAllVariantStockCountsService
-        implements SetAllVariantStockCountsUseCase {
+public class SetAllVariantStockCountsService implements SetAllVariantStockCountsUseCase {
     private final LoadAllVariantStockCountsPort loadAllPort;
     private final UpdateAllVariantStockCountsPort updateAllPort;
     private final IncreaseProductStockCountsPort increaseProductStockCountsPort;
@@ -65,8 +64,7 @@ public class SetAllVariantStockCountsService
         final var currentByVariantId = this.loadAllPort.loadAllByIds(variantIds);
 
         return stockCounts.stream()
-                .map(inventory -> SetAllVariantStockCountsService
-                        .resolveOne(inventory, currentByVariantId))
+                .map(inventory -> SetAllVariantStockCountsService.resolveOne(inventory, currentByVariantId))
                 .toList();
     }
 
@@ -83,8 +81,7 @@ public class SetAllVariantStockCountsService
     private void persistUpdates(
             final List<ResolvedStockCount> resolved) {
         final var updated = resolved.stream()
-                .map(ResolvedStockCount::toUpdated)
-                .toList();
+                .map(ResolvedStockCount::toUpdated).toList();
         this.updateAllPort.updateAll(updated);
     }
 
@@ -119,9 +116,7 @@ public class SetAllVariantStockCountsService
             }
         }
 
-        return new DeltasByProductId(
-                incrementByProductId,
-                decrementByProductId);
+        return new DeltasByProductId(incrementByProductId, decrementByProductId);
     }
 
     private record ResolvedStockCount(

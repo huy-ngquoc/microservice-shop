@@ -57,8 +57,10 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
         }
 
         final var productId = variant.getProductId();
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(variantId, productId);
-        final var stockCount = this.loadStockCountPort.loadByIdOrZero(variantId, productId);
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
+                variantId, productId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
+                variantId, productId);
         final var soldDecrement = soldCount.getValue().value();
         final var stockDecrement = stockCount.getValue().value();
 

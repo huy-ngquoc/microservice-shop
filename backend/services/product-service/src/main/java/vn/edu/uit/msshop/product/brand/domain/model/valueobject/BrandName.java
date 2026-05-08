@@ -21,9 +21,7 @@ public record BrandName(
             throw new DomainException("Brand name is blank");
         }
 
-        value = Domains.getWhitespacePattern()
-                .matcher(value.trim())
-                .replaceAll(" ");
+        value = Domains.getWhitespacePattern().matcher(value.trim()).replaceAll(" ");
 
         if (value.length() > MAX_LENGTH) {
             throw new DomainException("Brand name is too long");

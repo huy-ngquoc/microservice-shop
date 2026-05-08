@@ -54,9 +54,7 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
         final var expectedVersion = command.expectedVersion();
         final var currentVersion = variant.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
+            throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
         }
 
         final var saved = this.commitImageChange(variant, command.newImageKey());
@@ -64,10 +62,7 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
             return this.mapper.toImageView(variant);
         }
 
-        final var event = new VariantImageUpdated(
-                saved.getId(),
-                saved.getImageKey(),
-                variant.getImageKey());
+        final var event = new VariantImageUpdated(saved.getId(), saved.getImageKey(), variant.getImageKey());
         this.eventPort.publish(event);
 
         this.deleteOldImage(variant.getImageKey());
@@ -102,7 +97,9 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
                 this.imageStoragePort.unpublishImage(newImageKey);
             } catch (final RuntimeException compensateEx) {
                 e.addSuppressed(compensateEx);
-                log.error("Compensation failed for key '{}'", newImageKey.value(), compensateEx);
+                log.error("Compensation failed for key '{}'",
+                        newImageKey.value(),
+                        compensateEx);
             }
             throw e;
         }
@@ -125,7 +122,9 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
         try {
             this.imageStoragePort.deleteImage(oldKey);
         } catch (final RuntimeException e) {
-            log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
+            log.warn("Failed to delete old image key '{}', manual cleanup required",
+                    oldKey.value(),
+                    e);
         }
     }
 }

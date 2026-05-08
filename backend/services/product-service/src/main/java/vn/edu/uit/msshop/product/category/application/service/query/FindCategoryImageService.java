@@ -22,8 +22,7 @@ public class FindCategoryImageService implements FindCategoryImageUseCase {
             readOnly = true)
     public CategoryImageView findImageById(
             final CategoryId id) {
-        return this.loadPort.loadById(id)
-                .map(this.mapper::toImageView)
+        return this.loadPort.loadById(id).map(this.mapper::toImageView)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
     }
 }

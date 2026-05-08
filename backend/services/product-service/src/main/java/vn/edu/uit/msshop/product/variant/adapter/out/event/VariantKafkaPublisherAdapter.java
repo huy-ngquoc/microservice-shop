@@ -17,8 +17,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVaria
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class VariantKafkaPublisherAdapter
-        implements PublishVariantIntegrationEventPort {
+public class VariantKafkaPublisherAdapter implements PublishVariantIntegrationEventPort {
     private final KafkaTemplate<String, VariantIntegrationEvent> kafkaTemplate;
 
     @Override

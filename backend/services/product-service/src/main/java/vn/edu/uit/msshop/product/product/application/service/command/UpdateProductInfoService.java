@@ -77,12 +77,13 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
         final var categoryIdSet = command.categoryId().getSet();
         final var brandIdSet = command.brandId().getSet();
 
-        if ((nameSet == null) && (categoryIdSet == null) && (brandIdSet == null)) {
+        if ((nameSet == null)
+                && (categoryIdSet == null)
+                && (brandIdSet == null)) {
             return this.mapper.toView(
                     product,
                     soldCount,
-                    stockCount,
-                    rating);
+                    stockCount, rating);
         }
 
         final var expectedVersion = command.expectedVersion();
@@ -124,7 +125,8 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
             final Change.@Nullable Set<ProductBrandId> brandIdSet) {
         final ProductName newName;
         final boolean nameUnchanged;
-        if ((nameSet != null) && !nameSet.value().equals(current.getName())) {
+        if ((nameSet != null)
+                && !nameSet.value().equals(current.getName())) {
             newName = nameSet.value();
             nameUnchanged = false;
         } else {
@@ -134,7 +136,8 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
 
         final ProductCategoryId newCategoryId;
         final boolean categoryIdUnchanged;
-        if ((categoryIdSet != null) && !categoryIdSet.value().equals(current.getCategoryId())) {
+        if ((categoryIdSet != null)
+                && !categoryIdSet.value().equals(current.getCategoryId())) {
             newCategoryId = categoryIdSet.value();
             categoryIdUnchanged = false;
 
@@ -146,7 +149,8 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
 
         final ProductBrandId newBrandId;
         final boolean brandIdUnchanged;
-        if ((brandIdSet != null) && !brandIdSet.value().equals(current.getBrandId())) {
+        if ((brandIdSet != null)
+                && !brandIdSet.value().equals(current.getBrandId())) {
             newBrandId = brandIdSet.value();
             brandIdUnchanged = false;
 
@@ -156,7 +160,9 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
             brandIdUnchanged = true;
         }
 
-        if (nameUnchanged && categoryIdUnchanged && brandIdUnchanged) {
+        if (nameUnchanged
+                && categoryIdUnchanged
+                && brandIdUnchanged) {
             return null;
         }
 

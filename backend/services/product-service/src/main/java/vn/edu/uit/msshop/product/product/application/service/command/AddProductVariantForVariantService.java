@@ -18,8 +18,7 @@ import vn.edu.uit.msshop.product.product.domain.model.Product;
 
 @Service
 @RequiredArgsConstructor
-public class AddProductVariantForVariantService
-        implements AddProductVariantForVariantUseCase {
+public class AddProductVariantForVariantService implements AddProductVariantForVariantUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final PublishProductEventPort eventPort;

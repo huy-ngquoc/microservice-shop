@@ -37,7 +37,6 @@ public class CreateCategoryService implements CreateCategoryUseCase {
                 command.name());
 
         final var saved = this.createPort.create(newCategory);
-
         this.eventPort.publish(new CategoryCreated(saved.getId()));
 
         return this.mapper.toView(saved);

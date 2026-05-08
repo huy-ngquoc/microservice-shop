@@ -7,11 +7,16 @@ public final class ProductBrandNotFoundException extends NotFoundException {
     public ProductBrandNotFoundException(
             final ProductBrandId brandId,
             final Throwable cause) {
-        super("Product brand", brandId.value().toString(), cause);
+        super(
+                "Product brand",
+                brandId.value().toString(),
+                cause);
     }
 
     public ProductBrandNotFoundException(
             final ProductBrandId brandId) {
-        super("Product brand", brandId.value().toString());
+        super(
+                "Product brand",
+                brandId.value().toString());
     }
 }

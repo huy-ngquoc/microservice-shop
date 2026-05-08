@@ -14,8 +14,7 @@ import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
 
 @Component
 @RequiredArgsConstructor
-public class BrandEventPublisherAdapter
-        implements PublishBrandEventPort {
+public class BrandEventPublisherAdapter implements PublishBrandEventPort {
     private final ApplicationEventPublisher publisher;
 
     @Override

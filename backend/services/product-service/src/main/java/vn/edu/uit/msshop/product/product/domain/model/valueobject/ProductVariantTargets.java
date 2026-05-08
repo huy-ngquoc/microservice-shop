@@ -39,7 +39,9 @@ public record ProductVariantTargets(
 
     public static ProductVariantTargets of(
             final Collection<String> rawStrings) {
-        final var traitsList = rawStrings.stream().map(ProductVariantTarget::new).toList();
+        final var traitsList = rawStrings.stream()
+                .map(ProductVariantTarget::new)
+                .toList();
         return new ProductVariantTargets(traitsList);
     }
 
@@ -48,6 +50,8 @@ public record ProductVariantTargets(
     }
 
     public List<String> unwrap() {
-        return this.values.stream().map(ProductVariantTarget::value).toList();
+        return this.values.stream()
+                .map(ProductVariantTarget::value)
+                .toList();
     }
 }

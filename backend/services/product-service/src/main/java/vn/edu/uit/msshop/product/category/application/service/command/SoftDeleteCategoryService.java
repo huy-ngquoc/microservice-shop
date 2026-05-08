@@ -48,8 +48,7 @@ public class SoftDeleteCategoryService implements SoftDeleteCategoryUseCase {
         final var expectedVersion = command.expectedVersion();
         final var currentVersion = category.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
+            throw new OptimisticLockException(expectedVersion.value(),
                     currentVersion.value());
         }
 

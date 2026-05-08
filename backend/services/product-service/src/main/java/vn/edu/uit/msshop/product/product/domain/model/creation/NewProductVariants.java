@@ -29,8 +29,7 @@ public record NewProductVariants(
                 throw new DomainException("Variant in list CANNOT be null");
             }
 
-            final var normalizedTraitValues = variant.traits().values()
-                    .stream()
+            final var normalizedTraitValues = variant.traits().values().stream()
                     .map(ProductVariantTrait::value)
                     .map(String::toLowerCase)
                     .toList();
@@ -55,7 +54,9 @@ public record NewProductVariants(
             min = Math.min(min, price);
             max = Math.max(max, price);
         }
-        return new ProductPriceRange(new ProductPrice(min), new ProductPrice(max));
+        return new ProductPriceRange(
+                new ProductPrice(min),
+                new ProductPrice(max));
     }
 
     public boolean isEmpty() {

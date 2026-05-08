@@ -14,11 +14,8 @@ public class CloudinaryConfig {
     @Bean
     Cloudinary cloudinary(
             CloudinaryProperties properties) {
-        final var url = String.format(
-                "cloudinary://%s:%s@%s",
-                properties.apiKey(),
-                properties.apiSecret(),
-                properties.cloudName());
+        final var url = String.format("cloudinary://%s:%s@%s", properties.apiKey(),
+                properties.apiSecret(), properties.cloudName());
 
         return new Cloudinary(url);
     }

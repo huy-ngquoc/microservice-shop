@@ -36,8 +36,7 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
     public void purge(
             final HardDeleteVariantCommand command) {
         final var variantId = command.id();
-        final var variant = this.loadSoftDeletedPort
-                .loadSoftDeletedById(variantId)
+        final var variant = this.loadSoftDeletedPort.loadSoftDeletedById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
 
         final var expectedVersion = command.expectedVersion();
@@ -48,11 +47,9 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
                     currentVersion.value());
         }
 
-        final var referenced = this.checkReferencedPort
-                .isReferencedByProduct(variantId);
+        final var referenced = this.checkReferencedPort.isReferencedByProduct(variantId);
         if (referenced) {
-            throw new BusinessRuleException(
-                    "Cannot purge variant: still referenced by a product");
+            throw new BusinessRuleException("Cannot purge variant: still referenced by a product");
         }
 
         this.deletePort.deleteById(variantId);
@@ -73,7 +70,9 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
         try {
             this.imageStoragePort.deleteImage(key);
         } catch (final RuntimeException e) {
-            log.warn("Failed to delete image '{}', manual cleanup required", key.value(), e);
+            log.warn("Failed to delete image '{}', manual cleanup required",
+                    key.value(),
+                    e);
         }
     }
 }

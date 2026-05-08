@@ -22,8 +22,7 @@ public class FindSoftDeletedBrandService implements FindSoftDeletedBrandUseCase 
             readOnly = true)
     public BrandView findSoftDeletedById(
             final BrandId id) {
-        return this.loadSoftDeletedPort.loadSoftDeletedById(id)
-                .map(this.mapper::toView)
+        return this.loadSoftDeletedPort.loadSoftDeletedById(id).map(this.mapper::toView)
                 .orElseThrow(() -> new BrandNotFoundException(id));
     }
 }

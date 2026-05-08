@@ -5,9 +5,7 @@ import java.util.UUID;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductCategoryId(
-        UUID value)
-        implements
-            Comparable<ProductCategoryId> {
+        UUID value) implements Comparable<ProductCategoryId> {
     public ProductCategoryId {
         if (value == null) {
             throw new DomainException("Product category ID is null");

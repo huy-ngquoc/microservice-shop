@@ -21,15 +21,13 @@ public class ReconcileVariantStockCountsJob {
     private final ReconcileVariantStockCountsUseCase reconcileUseCase;
 
     @Scheduled(
-            fixedRate = RATE_IN_HOURS,
-            timeUnit = TimeUnit.HOURS)
+            fixedRate = 2,
+            timeUnit = TimeUnit.MINUTES)
     public void reconcile() {
         final var rangeEndTime = Instant.now();
         final var rangeStartTime = rangeEndTime.minus(Duration.ofHours(RATE_IN_HOURS));
 
-        final var command = new ReconcileVariantStockCountsCommand(
-                rangeStartTime,
-                rangeEndTime);
+        final var command = new ReconcileVariantStockCountsCommand(rangeStartTime, rangeEndTime);
 
         try {
             this.reconcileUseCase.execute(command);

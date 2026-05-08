@@ -27,9 +27,7 @@ public record ProductVariantTarget(
             throw new DomainException("Target value CANNOT be blank");
         }
 
-        final var normalizedValue = Domains.getWhitespacePattern()
-                .matcher(value.trim())
-                .replaceAll(" ");
+        final var normalizedValue = Domains.getWhitespacePattern().matcher(value.trim()).replaceAll(" ");
 
         if (normalizedValue.length() > MAX_LENGTH) {
             throw new DomainException("Target value is too long");
