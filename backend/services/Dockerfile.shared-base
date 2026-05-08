@@ -1,0 +1,34 @@
+# Base image with all shared modules pre-built and installed into local Maven repo.
+# Domain services that depend on shared-* modules should use:
+#   FROM microservice-shop-shared-base AS build
+FROM maven:3.9-eclipse-temurin-25
+WORKDIR /app
+
+COPY backend/services/pom.xml backend/services/
+COPY backend/services/.mvn backend/services/.mvn
+COPY backend/services/java-formatter.xml backend/services/java-formatter.xml
+
+# Pom files first for layer caching
+COPY backend/services/shared-kernel/pom.xml backend/services/shared-kernel/
+COPY backend/services/shared-webmvc/pom.xml backend/services/shared-webmvc/
+COPY backend/services/shared-spring-data/pom.xml backend/services/shared-spring-data/
+COPY backend/services/shared-cloudinary/pom.xml backend/services/shared-cloudinary/
+
+# Install parent POM (-N: non-recursive, do not build child modules)
+RUN mvn install -f backend/services/pom.xml -N -B -DskipTests
+
+# shared-kernel: no local deps — install first so others can resolve it
+COPY backend/services/shared-kernel/src backend/services/shared-kernel/src
+RUN mvn install -f backend/services/shared-kernel/pom.xml -B -DskipTests
+
+# shared-cloudinary: no local deps
+COPY backend/services/shared-cloudinary/src backend/services/shared-cloudinary/src
+RUN mvn install -f backend/services/shared-cloudinary/pom.xml -B -DskipTests
+
+# shared-webmvc: depends on shared-kernel
+COPY backend/services/shared-webmvc/src backend/services/shared-webmvc/src
+RUN mvn install -f backend/services/shared-webmvc/pom.xml -B -DskipTests
+
+# shared-spring-data: depends on shared-kernel
+COPY backend/services/shared-spring-data/src backend/services/shared-spring-data/src
+RUN mvn install -f backend/services/shared-spring-data/pom.xml -B -DskipTests

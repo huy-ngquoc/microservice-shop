@@ -23,24 +23,30 @@ import vn.uit.edu.payment.domain.model.valueobject.UpdateAt;
 @Service
 @RequiredArgsConstructor
 public class CreatePaymentService implements CreatePaymentUseCase {
-    //private final CheckOrderPort checkOrderPort;
+    // private final CheckOrderPort checkOrderPort;
     private final SavePaymentPort savePort;
     private final PublishPaymentEventPort eventPort;
     private final PaymentViewMapper mapper;
     private final LoadPaymentPort loadPort;
     private final CreateOnlinePaymentInfoUseCase createOnlineUseCase;
+
     @Override
     @Transactional
-    public PaymentView create(CreatePaymentCommand command) {
-        //checkOrderPort.checkOrder(command.paymentId(), command.paymentValue(), command.orderId());
+    public PaymentView create(
+            CreatePaymentCommand command) {
+        // checkOrderPort.checkOrder(command.paymentId(), command.paymentValue(),
+        // command.orderId());
         Payment p = loadPort.loadPaymentByOrderId(command.orderId());
-        if(p!=null) throw new RuntimeException("Payment for this order already exist");
-        final var draft = Payment.Draft.builder().paymentId(command.paymentId()).createAt(new CreateAt(Instant.now())).currency(command.currency()).orderId(command.orderId()).paymentMethod(command.paymentMethod())
-        .paymentStatus(command.paymentStatus()).paymentValue(command.paymentValue()).updateAt(new UpdateAt(null)).userId(command.userId()).userEmail(command.userEmail()).build();
+        if (p != null)
+            throw new RuntimeException("Payment for this order already exist");
+        final var draft = Payment.Draft.builder().paymentId(command.paymentId()).createAt(new CreateAt(Instant.now()))
+                .currency(command.currency()).orderId(command.orderId()).paymentMethod(command.paymentMethod())
+                .paymentStatus(command.paymentStatus()).paymentValue(command.paymentValue())
+                .updateAt(new UpdateAt(null)).userId(command.userId()).userEmail(command.userEmail()).build();
         final var payment = Payment.create(draft);
 
-        final var saved=savePort.save(payment);
-        if(command.paymentMethod().value().equals("ONLINE")) {
+        final var saved = savePort.save(payment);
+        if (command.paymentMethod().value().equals("ONLINE")) {
             createOnlineUseCase.createPaymentLink(saved);
         }
         eventPort.publish(new PaymentCreated(saved.getPaymentId()));
