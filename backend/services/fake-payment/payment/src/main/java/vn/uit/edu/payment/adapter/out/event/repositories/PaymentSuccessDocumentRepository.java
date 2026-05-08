@@ -12,9 +12,13 @@ import vn.uit.edu.payment.adapter.out.event.documents.PaymentSuccessDocument;
 
 @Repository
 public interface PaymentSuccessDocumentRepository extends JpaRepository<PaymentSuccessDocument, UUID> {
-    public List<PaymentSuccessDocument> findByEventStatus(String eventStatus);
+    public List<PaymentSuccessDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<PaymentSuccessDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public List<PaymentSuccessDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 }

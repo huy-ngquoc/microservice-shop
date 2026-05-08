@@ -22,21 +22,25 @@ public class LoadPaymentService implements LoadPaymentUseCase {
     private final PaymentViewMapper mapper;
 
     @Override
-    public PaymentView findById(PaymentId paymentId) {
-        return mapper.toView(loadPort.loadPaymentById(paymentId).orElseThrow(()->new PaymentNotFoundException(paymentId)));
+    public PaymentView findById(
+            PaymentId paymentId) {
+        return mapper
+                .toView(loadPort.loadPaymentById(paymentId).orElseThrow(() -> new PaymentNotFoundException(paymentId)));
     }
 
     @Override
-    public PaymentView loadByOrderId(OrderId orderId) {
+    public PaymentView loadByOrderId(
+            OrderId orderId) {
         final var result = loadPort.loadPaymentByOrderId(orderId);
-        if(result==null) return null;
-       return mapper.toView(result);
+        if (result == null)
+            return null;
+        return mapper.toView(result);
     }
 
     @Override
-    public List<Payment> loadExpiredPayment(Instant timeout) {
+    public List<Payment> loadExpiredPayment(
+            Instant timeout) {
         return loadPort.loadExpiredPayment(timeout);
     }
 
-    
 }

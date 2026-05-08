@@ -18,7 +18,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name="payment_created_fail")
+@Table(
+        name = "payment_created_fail")
 public class PaymentCreatedFailDocument {
     @Id
     private UUID eventId;
@@ -26,8 +27,8 @@ public class PaymentCreatedFailDocument {
     private UUID userId;
     private String userEmail;
     private String eventStatus;
-    private Integer retryCount; 
+    private Integer retryCount;
     private Instant createdAt;
-    private Instant updatedAt; 
+    private Instant updatedAt;
     private String lastError;
 }

@@ -16,7 +16,8 @@ public class LoadOnlinePaymentInfoService implements LoadOnlinePaymentUseCase {
     private final LoadOnlinePaymentInfoPort loadPort;
 
     @Override
-    public String getPaymentLink(OrderId orderId) {
+    public String getPaymentLink(
+            OrderId orderId) {
         return loadPort.getPaymentLinkByOrderId(orderId);
     }
 

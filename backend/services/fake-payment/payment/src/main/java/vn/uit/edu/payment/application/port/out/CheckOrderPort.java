@@ -5,5 +5,8 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentValue;
 
 public interface CheckOrderPort {
-    public void checkOrder(PaymentId paymentId, PaymentValue paymentValue, OrderId orderId);
+    public void checkOrder(
+            PaymentId paymentId,
+            PaymentValue paymentValue,
+            OrderId orderId);
 }

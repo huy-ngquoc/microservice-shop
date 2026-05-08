@@ -15,24 +15,26 @@ public class CancelPaymentLinkAdapter implements CancellPaymentLinkPort {
     private final LoadOnlinePaymentInfoPort loadOnlinePaymentInfoPort;
     private final LoadPaymentPort loadPaymentPort;
     private final PayOS payOs;
-    //private static boolean isMockMode = true;
+    // private static boolean isMockMode = true;
 
     @Override
-    public void cancelPaymentLink(OrderId orderId) {
-        //if(isMockMode) return;
+    public void cancelPaymentLink(
+            OrderId orderId) {
+        // if(isMockMode) return;
         final var payment = loadPaymentPort.loadPaymentByOrderId(orderId);
-        if(payment==null) return;
+        if (payment == null)
+            return;
         final var onlinePaymentInfo = loadOnlinePaymentInfoPort.loadById(payment.getPaymentId());
-        if(onlinePaymentInfo==null) return;
+        if (onlinePaymentInfo == null)
+            return;
         try {
-    
-    payOs.paymentRequests().cancel(onlinePaymentInfo.getPaymentNumber().value());
-    
-    
-} catch (Exception e) {
-    
-    e.printStackTrace();
-}
+
+            payOs.paymentRequests().cancel(onlinePaymentInfo.getPaymentNumber().value());
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
 
     }
 
