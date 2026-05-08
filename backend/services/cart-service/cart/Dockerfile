@@ -1,8 +1,7 @@
 # Stage 1: Build
-FROM maven:3.9-eclipse-temurin-25 AS build
+FROM microservice-shop-shared-base AS build
 WORKDIR /app
 
-# Chỉ copy đúng pom.xml và source code của cart-service
 COPY backend/services/cart-service/cart/pom.xml backend/services/cart-service/cart/
 RUN mvn -f backend/services/cart-service/cart/pom.xml dependency:go-offline -B
 

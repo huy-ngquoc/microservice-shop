@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="payback_payments")
+@Table(
+        name = "payback_payments")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,10 +21,10 @@ import lombok.Setter;
 @Builder
 public class PaybackPayments {
     @Id
-    
+
     private UUID id;
 
     private UUID userId;
     private long value;
-    
+
 }

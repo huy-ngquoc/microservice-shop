@@ -1,4 +1,5 @@
 package vn.uit.edu.payment.adapter.out.event.documents;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -12,7 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="event_document")
+@Table(
+        name = "event_document")
 @Getter
 @Setter
 @AllArgsConstructor

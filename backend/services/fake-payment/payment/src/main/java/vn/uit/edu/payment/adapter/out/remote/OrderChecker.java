@@ -8,8 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import vn.uit.edu.payment.adapter.in.web.response.OrderResponse;
-@FeignClient(name="order-service")
+
+@FeignClient(
+        name = "order-service")
 public interface OrderChecker {
     @GetMapping("/order/public/{id}")
-    public ResponseEntity<OrderResponse> getById(@PathVariable UUID id);
+    public ResponseEntity<OrderResponse> getById(
+            @PathVariable
+            UUID id);
 }

@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="online_payment_info")
+@Table(
+        name = "online_payment_info")
 @Getter
 @Setter
 
@@ -26,19 +27,28 @@ public class OnlinePaymentInfoJpaEntity {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name="payment_id")
+    @JoinColumn(
+            name = "payment_id")
     private PaymentJpaEntity payment;
 
-    @Column(unique = true, nullable = false)
+    @Column(
+            unique = true,
+            nullable = false)
     private long paymentCode;
     private String paymentLink;
     private String transactionId;
     private Instant createAt;
-    public OnlinePaymentInfoJpaEntity(PaymentJpaEntity payment, long paymentCode, String paymentLink,String transactionId, Instant createAt) {
-        this.payment= payment;
+
+    public OnlinePaymentInfoJpaEntity(
+            PaymentJpaEntity payment,
+            long paymentCode,
+            String paymentLink,
+            String transactionId,
+            Instant createAt) {
+        this.payment = payment;
         this.paymentCode = paymentCode;
         this.paymentLink = paymentLink;
-        this.transactionId=transactionId;
-        this.createAt=createAt;
+        this.transactionId = transactionId;
+        this.createAt = createAt;
     }
 }

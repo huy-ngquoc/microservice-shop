@@ -9,7 +9,12 @@ import vn.uit.edu.payment.domain.model.valueobject.OrderId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 
 public interface LoadPaymentPort {
-    public Optional<Payment> loadPaymentById(PaymentId paymentId);
-    public Payment loadPaymentByOrderId(OrderId orderId);
-    public List<Payment> loadExpiredPayment(Instant timeout);
+    public Optional<Payment> loadPaymentById(
+            PaymentId paymentId);
+
+    public Payment loadPaymentByOrderId(
+            OrderId orderId);
+
+    public List<Payment> loadExpiredPayment(
+            Instant timeout);
 }

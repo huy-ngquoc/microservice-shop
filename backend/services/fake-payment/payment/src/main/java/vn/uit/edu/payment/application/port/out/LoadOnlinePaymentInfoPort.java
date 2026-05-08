@@ -9,9 +9,16 @@ import vn.uit.edu.payment.domain.model.valueobject.OrderId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 
 public interface LoadOnlinePaymentInfoPort {
-    public OnlinePaymentInfo loadById(PaymentId id);
-    public OnlinePaymentInfo loadByOrderCode(OnlinePaymentNumber paymentNumber);
-    public List<OnlinePaymentInfo> loadByPayments(List<Payment> payments);
-    public String getPaymentLinkByOrderId(OrderId orderId);
+    public OnlinePaymentInfo loadById(
+            PaymentId id);
+
+    public OnlinePaymentInfo loadByOrderCode(
+            OnlinePaymentNumber paymentNumber);
+
+    public List<OnlinePaymentInfo> loadByPayments(
+            List<Payment> payments);
+
+    public String getPaymentLinkByOrderId(
+            OrderId orderId);
 
 }
