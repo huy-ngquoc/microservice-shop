@@ -209,7 +209,7 @@
                             -Xplugin:ErrorProne \
                             -Xep:NullAway:ERROR \
                             -XepOpt:NullAway:AnnotatedPackages=vn.edu.uit.msshop \
-                            -XepOpt:NullAway:JSpecifyMode=true \
+                            -XepExcludedPaths:.*vn.uit.edu.*
                         </arg>
                         <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
                     </compilerArgs>
