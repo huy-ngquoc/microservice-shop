@@ -5,6 +5,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
-public record UpdateVariantImageRequest(@NotBlank @Size(max=VariantImageKey.MAX_LENGTH)String newImageKey,
+public record UpdateVariantImageRequest(
+        @NotBlank
+        @Size(
+                max = VariantImageKey.MAX_LENGTH)
+        String newImageKey,
 
-@NotNull Long version){}
+        @NotNull
+        Long version) {
+}

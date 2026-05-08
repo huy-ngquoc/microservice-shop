@@ -9,18 +9,22 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public class ProductVariantDocument {
-  private final UUID id;
+    private final UUID id;
 
-  private final long price;
+    private final long price;
 
-  private final List<String> traits;
+    private final List<String> traits;
 
-  @PersistenceCreator
-  public ProductVariantDocument(final UUID id, final long price, final List<String> traits) {
-    this.id = id;
-    this.price = price;
-    this.traits = List.copyOf(traits);
-  }
+    @PersistenceCreator
+    public ProductVariantDocument(
+            final UUID id,
+            final long price,
+            final List<String> traits) {
+        this.id = id;
+        this.price = price;
+        this.traits = List.copyOf(traits);
+    }
 }

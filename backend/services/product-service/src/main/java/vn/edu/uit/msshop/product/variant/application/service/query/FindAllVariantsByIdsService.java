@@ -22,43 +22,55 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 @Service
 @RequiredArgsConstructor
 public class FindAllVariantsByIdsService implements FindAllVariantsByIdsUseCase {
-  private final LoadAllVariantsPort loadAllPort;
-  private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
-  private final LoadAllVariantStockCountsPort loadAllStockCountsPort;
-  private final VariantViewMapper mapper;
+    private final LoadAllVariantsPort loadAllPort;
+    private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
+    private final LoadAllVariantStockCountsPort loadAllStockCountsPort;
+    private final VariantViewMapper mapper;
 
-  @Override
-  public Map<VariantId, VariantView> findAllByIds(final Set<VariantId> ids) {
-    if (ids.isEmpty()) {
-      return Map.of();
+    @Override
+    public Map<VariantId, VariantView> findAllByIds(
+            final Set<VariantId> ids) {
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
+
+        final var variantById = this.loadAllPort.loadAllByIds(ids);
+        final var missing = ids.stream()
+                .filter(id -> !variantById.containsKey(id))
+                .collect(Collectors.toUnmodifiableSet());
+        if (!missing.isEmpty()) {
+            throw new VariantsNotFoundException(missing);
+        }
+
+        final var soldCountById = this.loadAllSoldCountsPort.loadAllByIds(ids);
+        final var stockCountById = this.loadAllStockCountsPort.loadAllByIds(ids);
+
+        final var variantViewCollector = Collectors.toUnmodifiableMap(
+                Variant::getId,
+                variant -> toView(
+                        variant,
+                        soldCountById,
+                        stockCountById));
+        return variantById.values().stream().collect(variantViewCollector);
     }
 
-    final var variantById = this.loadAllPort.loadAllByIds(ids);
-    final var missing = ids.stream().filter(id -> !variantById.containsKey(id))
-        .collect(Collectors.toUnmodifiableSet());
-    if (!missing.isEmpty()) {
-      throw new VariantsNotFoundException(missing);
+    private VariantView toView(
+            final Variant variant,
+            final Map<VariantId, VariantSoldCount> soldCountById,
+            final Map<VariantId, VariantStockCount> stockCountById) {
+        final var variantId = variant.getId();
+        final var productId = variant.getProductId();
+
+        final var soldCount = soldCountById.getOrDefault(
+                variantId,
+                VariantSoldCount.zero(variantId, productId));
+        final var stockCount = stockCountById.getOrDefault(
+                variantId,
+                VariantStockCount.zero(variantId, productId));
+
+        return this.mapper.toView(
+                variant,
+                soldCount,
+                stockCount);
     }
-
-    final var soldCountById = this.loadAllSoldCountsPort.loadAllByIds(ids);
-    final var stockCountById = this.loadAllStockCountsPort.loadAllByIds(ids);
-
-    final var variantViewCollector = Collectors.toUnmodifiableMap(Variant::getId,
-        variant -> toView(variant, soldCountById, stockCountById));
-    return variantById.values().stream().collect(variantViewCollector);
-  }
-
-  private VariantView toView(final Variant variant,
-      final Map<VariantId, VariantSoldCount> soldCountById,
-      final Map<VariantId, VariantStockCount> stockCountById) {
-    final var variantId = variant.getId();
-    final var productId = variant.getProductId();
-
-    final var soldCount =
-        soldCountById.getOrDefault(variantId, VariantSoldCount.zero(variantId, productId));
-    final var stockCount =
-        stockCountById.getOrDefault(variantId, VariantStockCount.zero(variantId, productId));
-
-    return this.mapper.toView(variant, soldCount, stockCount);
-  }
 }

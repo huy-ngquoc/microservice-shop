@@ -6,5 +6,6 @@ import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 public interface LoadSoftDeletedBrandPort {
-  Optional<Brand> loadSoftDeletedById(final BrandId id);
+    Optional<Brand> loadSoftDeletedById(
+            final BrandId id);
 }

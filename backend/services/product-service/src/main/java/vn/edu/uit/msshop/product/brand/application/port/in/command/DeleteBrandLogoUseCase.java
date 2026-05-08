@@ -4,5 +4,6 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.DeleteBrandLogoCo
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 
 public interface DeleteBrandLogoUseCase {
-  BrandLogoView deleteLogo(final DeleteBrandLogoCommand command);
+    BrandLogoView deleteLogo(
+            final DeleteBrandLogoCommand command);
 }

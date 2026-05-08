@@ -10,6 +10,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class VariantSoldCountResponse {
-  private UUID variantId;
-  private int soldCount;
+    private UUID variantId;
+    private int soldCount;
 }

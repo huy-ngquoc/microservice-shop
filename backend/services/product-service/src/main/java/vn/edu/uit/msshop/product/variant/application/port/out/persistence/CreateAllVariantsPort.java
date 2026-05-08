@@ -7,5 +7,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
 
 public interface CreateAllVariantsPort {
-  List<Variant> createAll(final Collection<NewVariant> newVariants);
+    List<Variant> createAll(
+            final Collection<NewVariant> newVariants);
 }

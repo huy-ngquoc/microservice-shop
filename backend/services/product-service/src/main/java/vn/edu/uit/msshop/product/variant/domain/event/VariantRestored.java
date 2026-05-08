@@ -10,12 +10,13 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class VariantRestored {
-  @EqualsAndHashCode.Include
-  private final UUID eventId = UUID.randomUUID();
+    @EqualsAndHashCode.Include
+    private final UUID eventId = UUID.randomUUID();
 
-  private final Instant occurrenceTime = Instant.now();
+    private final Instant occurrenceTime = Instant.now();
 
-  private final VariantId variantId;
+    private final VariantId variantId;
 }

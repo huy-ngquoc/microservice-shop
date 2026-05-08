@@ -10,11 +10,12 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCou
 
 @Component
 public class VariantSoldCountPersistenceMapper {
-  public VariantSoldCount toDomain(final VariantSoldCountDocument doc) {
-    final var variantId = new VariantId(doc.getVariantId());
-    final var productId = new VariantProductId(doc.getProductId());
-    final var value = new VariantSoldCountValue(doc.getValue());
+    public VariantSoldCount toDomain(
+            final VariantSoldCountDocument doc) {
+        final var variantId = new VariantId(doc.getVariantId());
+        final var productId = new VariantProductId(doc.getProductId());
+        final var value = new VariantSoldCountValue(doc.getValue());
 
-    return new VariantSoldCount(variantId, productId, value);
-  }
+        return new VariantSoldCount(variantId, productId, value);
+    }
 }

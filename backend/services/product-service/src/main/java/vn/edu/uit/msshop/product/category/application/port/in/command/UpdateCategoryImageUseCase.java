@@ -4,5 +4,6 @@ import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategory
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView;
 
 public interface UpdateCategoryImageUseCase {
-  CategoryImageView updateImage(final UpdateCategoryImageCommand command);
+    CategoryImageView updateImage(
+            final UpdateCategoryImageCommand command);
 }

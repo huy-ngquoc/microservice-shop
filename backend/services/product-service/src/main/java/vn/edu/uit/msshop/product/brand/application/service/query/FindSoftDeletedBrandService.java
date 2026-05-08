@@ -14,13 +14,15 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 @Service
 @RequiredArgsConstructor
 public class FindSoftDeletedBrandService implements FindSoftDeletedBrandUseCase {
-  private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
-  private final BrandViewMapper mapper;
+    private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
+    private final BrandViewMapper mapper;
 
-  @Override
-  @Transactional(readOnly = true)
-  public BrandView findSoftDeletedById(final BrandId id) {
-    return this.loadSoftDeletedPort.loadSoftDeletedById(id).map(this.mapper::toView)
-        .orElseThrow(() -> new BrandNotFoundException(id));
-  }
+    @Override
+    @Transactional(
+            readOnly = true)
+    public BrandView findSoftDeletedById(
+            final BrandId id) {
+        return this.loadSoftDeletedPort.loadSoftDeletedById(id).map(this.mapper::toView)
+                .orElseThrow(() -> new BrandNotFoundException(id));
+    }
 }

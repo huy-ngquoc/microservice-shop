@@ -1,11 +1,14 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantImageKeyNotFoundException;
@@ -25,79 +28,103 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 @Slf4j
 public class UpdateVariantImageService implements UpdateVariantImageUseCase {
-  private final LoadVariantPort loadPort;
-  private final UpdateVariantPort updatePort;
-  private final VariantImageStoragePort imageStoragePort;
-  private final VariantViewMapper mapper;
-  private final PublishVariantEventPort eventPort;
+    private final LoadVariantPort loadPort;
+    private final UpdateVariantPort updatePort;
+    private final VariantImageStoragePort imageStoragePort;
+    private final VariantViewMapper mapper;
+    private final PublishVariantEventPort eventPort;
 
-  @Override
-  @Transactional
-  public VariantImageView updateImage(final UpdateVariantImageCommand command) {
-    final var variantId = command.id();
-    final var variant = this.loadPort.loadById(variantId)
-        .orElseThrow(() -> new VariantNotFoundException(variantId));
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT_LIST,
+                            allEntries = true)
+            })
+    public VariantImageView updateImage(
+            final UpdateVariantImageCommand command) {
+        final var variantId = command.id();
+        final var variant = this.loadPort.loadById(variantId)
+                .orElseThrow(() -> new VariantNotFoundException(variantId));
 
-    final var expectedVersion = command.expectedVersion();
-    final var currentVersion = variant.getVersion();
-    if (!expectedVersion.equals(currentVersion)) {
-      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = variant.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
+        }
+
+        final var saved = this.commitImageChange(variant, command.newImageKey());
+        if (saved == null) {
+            return this.mapper.toImageView(variant);
+        }
+
+        final var event = new VariantImageUpdated(saved.getId(), saved.getImageKey(), variant.getImageKey());
+        this.eventPort.publish(event);
+
+        this.deleteOldImage(variant.getImageKey());
+
+        return this.mapper.toImageView(saved);
     }
 
-    final var saved = this.commitImageChange(variant, command.newImageKey());
-    if (saved == null) {
-      return this.mapper.toImageView(variant);
+    private @Nullable Variant commitImageChange(
+            final Variant current,
+            final VariantImageKey newImageKey) {
+        if (newImageKey.equals(current.getImageKey())) {
+            return null;
+        }
+
+        this.ensureImageKeyExistsInTemp(newImageKey);
+        this.imageStoragePort.publishImage(newImageKey);
+
+        try {
+            final var next = new Variant(
+                    current.getId(),
+                    current.getProductId(),
+                    current.getProductName(),
+                    current.getPrice(),
+                    current.getTraits(),
+                    current.getTargets(),
+                    newImageKey,
+                    current.getVersion(),
+                    current.getDeletionTime());
+            return this.updatePort.update(next);
+        } catch (final RuntimeException e) {
+            try {
+                this.imageStoragePort.unpublishImage(newImageKey);
+            } catch (final RuntimeException compensateEx) {
+                e.addSuppressed(compensateEx);
+                log.error("Compensation failed for key '{}'",
+                        newImageKey.value(),
+                        compensateEx);
+            }
+            throw e;
+        }
     }
 
-    final var event =
-        new VariantImageUpdated(saved.getId(), saved.getImageKey(), variant.getImageKey());
-    this.eventPort.publish(event);
-
-    this.deleteOldImage(variant.getImageKey());
-
-    return this.mapper.toImageView(saved);
-  }
-
-  private @Nullable Variant commitImageChange(final Variant current,
-      final VariantImageKey newImageKey) {
-    if (newImageKey.equals(current.getImageKey())) {
-      return null;
+    private void ensureImageKeyExistsInTemp(
+            final VariantImageKey imageKey) {
+        if (!this.imageStoragePort.existsAsTemp(imageKey)) {
+            throw new VariantImageKeyNotFoundException(imageKey);
+        }
     }
 
-    this.ensureImageKeyExistsInTemp(newImageKey);
-    this.imageStoragePort.publishImage(newImageKey);
+    private void deleteOldImage(
+            @Nullable
+            final VariantImageKey oldKey) {
+        if (oldKey == null) {
+            return;
+        }
 
-    try {
-      final var next = new Variant(current.getId(), current.getProductId(),
-          current.getProductName(), current.getPrice(), current.getTraits(), current.getTargets(),
-          newImageKey, current.getVersion(), current.getDeletionTime());
-      return this.updatePort.update(next);
-    } catch (final RuntimeException e) {
-      try {
-        this.imageStoragePort.unpublishImage(newImageKey);
-      } catch (final RuntimeException compensateEx) {
-        e.addSuppressed(compensateEx);
-        log.error("Compensation failed for key '{}'", newImageKey.value(), compensateEx);
-      }
-      throw e;
+        try {
+            this.imageStoragePort.deleteImage(oldKey);
+        } catch (final RuntimeException e) {
+            log.warn("Failed to delete old image key '{}', manual cleanup required",
+                    oldKey.value(),
+                    e);
+        }
     }
-  }
-
-  private void ensureImageKeyExistsInTemp(final VariantImageKey imageKey) {
-    if (!this.imageStoragePort.existsAsTemp(imageKey)) {
-      throw new VariantImageKeyNotFoundException(imageKey);
-    }
-  }
-
-  private void deleteOldImage(@Nullable final VariantImageKey oldKey) {
-    if (oldKey == null) {
-      return;
-    }
-
-    try {
-      this.imageStoragePort.deleteImage(oldKey);
-    } catch (final Exception e) {
-      log.warn("Failed to delete old image key '{}', manual cleanup required", oldKey.value(), e);
-    }
-  }
 }

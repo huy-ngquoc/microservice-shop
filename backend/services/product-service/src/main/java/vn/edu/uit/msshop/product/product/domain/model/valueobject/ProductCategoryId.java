@@ -4,8 +4,18 @@ import java.util.UUID;
 
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
-public record ProductCategoryId(UUID value)implements Comparable<ProductCategoryId>{public ProductCategoryId{if(value==null){throw new DomainException("Product category ID is null");}}
+public record ProductCategoryId(
+        UUID value) implements Comparable<ProductCategoryId> {
+    public ProductCategoryId {
+        if (value == null) {
+            throw new DomainException("Product category ID is null");
+        }
+    }
 
-@Override public int compareTo(final ProductCategoryId other){return this.value.compareTo(other.value);}
+    @Override
+    public int compareTo(
+            final ProductCategoryId other) {
+        return this.value.compareTo(other.value);
+    }
 
 }

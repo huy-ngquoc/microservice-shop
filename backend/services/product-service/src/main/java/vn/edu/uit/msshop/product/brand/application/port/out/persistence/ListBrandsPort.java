@@ -5,5 +5,6 @@ import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 public interface ListBrandsPort {
-  PageResponseDto<Brand> list(final PageRequestDto pageRequest);
+    PageResponseDto<Brand> list(
+            final PageRequestDto pageRequest);
 }

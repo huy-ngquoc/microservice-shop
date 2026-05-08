@@ -13,13 +13,15 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategor
 @RequiredArgsConstructor
 @Slf4j
 public class CheckSoftDeletedProductExistsByCategoryService
-    implements CheckSoftDeletedProductExistsByCategoryUseCase {
-  private final CheckSoftDeletedProductExistsByCategoryPort checkPort;
+        implements CheckSoftDeletedProductExistsByCategoryUseCase {
+    private final CheckSoftDeletedProductExistsByCategoryPort checkPort;
 
-  @Override
-  @Transactional(readOnly = true)
-  public boolean existsSoftDeletedByCategoryId(ProductCategoryId categoryId) {
-    return this.checkPort.existsSoftDeletedByCategoryId(categoryId);
-  }
+    @Override
+    @Transactional(
+            readOnly = true)
+    public boolean existsSoftDeletedByCategoryId(
+            ProductCategoryId categoryId) {
+        return this.checkPort.existsSoftDeletedByCategoryId(categoryId);
+    }
 
 }

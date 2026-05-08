@@ -4,10 +4,13 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
-public record BrandResponse(UUID id,
+public record BrandResponse(
+        UUID id,
 
-String name,
+        String name,
 
-@Nullable String logoUrl,
+        @Nullable
+        String logoUrl,
 
-long version){}
+        long version) {
+}

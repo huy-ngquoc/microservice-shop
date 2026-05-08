@@ -4,8 +4,11 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
-public record BrandLogoView(UUID id,
+public record BrandLogoView(
+        UUID id,
 
-@Nullable String logoKey,
+        @Nullable
+        String logoKey,
 
-long version){}
+        long version) {
+}

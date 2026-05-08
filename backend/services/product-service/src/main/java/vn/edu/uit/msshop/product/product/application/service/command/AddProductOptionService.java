@@ -1,10 +1,14 @@
 package vn.edu.uit.msshop.product.product.application.service.command;
 
 import java.util.HashMap;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.AddProductOptionCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
@@ -26,51 +30,75 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Service
 @RequiredArgsConstructor
 public class AddProductOptionService implements AddProductOptionUseCase {
-  private final LoadProductPort loadPort;
-  private final UpdateProductPort updatePort;
-  private final UpdateAllProductVariantTraitsPort updateProductVariantTraitsPort;
-  private final LoadProductSoldCountPort loadSoldCountPort;
-  private final LoadProductStockCountPort loadStockCountPort;
-  private final LoadProductRatingPort loadRatingPort;
-  private final PublishProductEventPort eventPort;
-  private final ProductViewMapper mapper;
+    private final LoadProductPort loadPort;
+    private final UpdateProductPort updatePort;
+    private final UpdateAllProductVariantTraitsPort updateProductVariantTraitsPort;
+    private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductStockCountPort loadStockCountPort;
+    private final LoadProductRatingPort loadRatingPort;
+    private final PublishProductEventPort eventPort;
+    private final ProductViewMapper mapper;
 
-  @Override
-  @Transactional
-  public ProductView addOption(AddProductOptionCommand command) {
-    final var productId = command.productId();
-    final var product = this.loadPort.loadById(productId)
-        .orElseThrow(() -> new ProductNotFoundException(productId));
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT_LIST,
+                            allEntries = true)
+            })
+    public ProductView addOption(
+            AddProductOptionCommand command) {
+        final var productId = command.id();
+        final var product = this.loadPort.loadById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
-    final var expectedVersion = command.expectedVersion();
-    if (!expectedVersion.equals(product.getVersion())) {
-      throw new OptimisticLockException(expectedVersion.value(), product.getVersion().value());
+        final var expectedVersion = command.expectedVersion();
+        if (!expectedVersion.equals(product.getVersion())) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    product.getVersion().value());
+        }
+
+        final var newConfig = product.getConfiguration()
+                .addOption(
+                        command.newOption(),
+                        command.defaultTrait());
+
+        final var newTraitsMap = new HashMap<ProductVariantId, ProductVariantTraits>(
+                newConfig.variants().size(), 1);
+        for (final var v : newConfig.variants().values()) {
+            newTraitsMap.put(v.id(), v.traits());
+        }
+
+        final var next = new Product(
+                product.getId(),
+                product.getName(),
+                product.getCategoryId(),
+                product.getBrandId(),
+                newConfig,
+                product.getImageKeys(),
+                product.getVersion(),
+                product.getDeletionTime());
+
+        final var savedProduct = this.updatePort.update(next);
+        final var savedProductId = savedProduct.getId();
+
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
+        final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
+
+        this.eventPort.publish(new ProductUpdated(savedProductId));
+
+        this.updateProductVariantTraitsPort.updateTraitsByIds(newTraitsMap);
+
+        return this.mapper.toView(
+                savedProduct,
+                soldCount,
+                stockCount,
+                rating);
     }
-
-    final var newConfig =
-        product.getConfiguration().addOption(command.newOption(), command.defaultTrait());
-
-    final var newTraitsMap =
-        new HashMap<ProductVariantId, ProductVariantTraits>(newConfig.variants().size(), 1);
-    for (final var v : newConfig.variants().values()) {
-      newTraitsMap.put(v.id(), v.traits());
-    }
-
-    final var next = new Product(product.getId(), product.getName(), product.getCategoryId(),
-        product.getBrandId(), newConfig, product.getImageKeys(), product.getVersion(),
-        product.getDeletionTime());
-
-    final var savedProduct = this.updatePort.update(next);
-    final var savedProductId = savedProduct.getId();
-
-    final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
-    final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
-    final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
-
-    this.eventPort.publish(new ProductUpdated(savedProductId));
-
-    this.updateProductVariantTraitsPort.updateTraitsByIds(newTraitsMap);
-
-    return this.mapper.toView(savedProduct, soldCount, stockCount, rating);
-  }
 }

@@ -28,69 +28,97 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @Component
 @RequiredArgsConstructor
 public class ProductRatingPersistenceAdapter
-    implements LoadProductRatingPort, LoadAllProductRatingsPort, InitializeProductRatingPort,
-    UpdateProductRatingPort, DeleteProductRatingPort {
-  private static final Collector<ProductRating, ?, Map<ProductId, ProductRating>> COLLECTOR =
-      Collectors.toUnmodifiableMap(ProductRating::getId, Function.identity(),
-          (existing, replacement) -> existing);
+        implements
+        LoadProductRatingPort,
+        LoadAllProductRatingsPort,
+        InitializeProductRatingPort,
+        UpdateProductRatingPort,
+        DeleteProductRatingPort {
+    private static final Collector<
+            ProductRating,
+            ?,
+            Map<ProductId, ProductRating>> COLLECTOR = Collectors.toUnmodifiableMap(
+                    ProductRating::getId,
+                    Function.identity(),
+                    (
+                            existing,
+                            replacement) -> existing);
 
-  private final ProductRatingMongoRepository repository;
-  private final ProductRatingPersistenceMapper mapper;
-  private final MongoTemplate mongoTemplate;
+    private final ProductRatingMongoRepository repository;
+    private final ProductRatingPersistenceMapper mapper;
+    private final MongoTemplate mongoTemplate;
 
-  @Override
-  public ProductRating loadByIdOrZero(final ProductId id) {
-    final var jpaId = id.value();
-    return this.repository.findById(jpaId).map(this.mapper::toDomain)
-        .orElseGet(() -> ProductRating.zero(id));
-  }
-
-  @Override
-  public Map<ProductId, ProductRating> loadAllByIds(final Set<ProductId> ids) {
-    if (ids.isEmpty()) {
-      return Map.of();
+    @Override
+    public ProductRating loadByIdOrZero(
+            final ProductId id) {
+        final var jpaId = id.value();
+        return this.repository.findById(jpaId)
+                .map(this.mapper::toDomain)
+                .orElseGet(() -> ProductRating.zero(id));
     }
 
-    final var jpaIds = ids.stream().map(ProductId::value).toList();
-    return this.repository.findAllById(jpaIds).stream().map(this.mapper::toDomain)
-        .collect(ProductRatingPersistenceAdapter.COLLECTOR);
-  }
+    @Override
+    public Map<ProductId, ProductRating> loadAllByIds(
+            final Set<ProductId> ids) {
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
 
-  @Override
-  public ProductRating initialize(final ProductId id) {
-    final var jpaId = id.value();
+        final var jpaIds = ids.stream()
+                .map(ProductId::value)
+                .toList();
+        return this.repository.findAllById(jpaIds).stream()
+                .map(this.mapper::toDomain)
+                .collect(ProductRatingPersistenceAdapter.COLLECTOR);
+    }
 
-    final var query = new Query(Criteria.where("_id").is(jpaId));
-    final var update = new Update().setOnInsert(ProductRatingDocument.Fields.average, 0.0F)
-        .setOnInsert(ProductRatingDocument.Fields.amount, 0)
-        .setOnInsert(ProductRatingDocument.Fields.lastUpdatedTime, Instant.now());
+    @Override
+    public ProductRating initialize(
+            final ProductId id) {
+        final var jpaId = id.value();
 
-    return this.upsertAndReturnDomain(query, update);
-  }
+        final var query = new Query(Criteria.where("_id").is(jpaId));
+        final var update = new Update()
+                .setOnInsert(ProductRatingDocument.Fields.average, 0.0F)
+                .setOnInsert(ProductRatingDocument.Fields.amount, 0)
+                .setOnInsert(ProductRatingDocument.Fields.lastUpdatedTime, Instant.now());
 
-  @Override
-  public ProductRating update(final ProductRating rating) {
-    final var query = new Query(Criteria.where("_id").is(rating.getId().value()));
-    final var update =
-        new Update().set(ProductRatingDocument.Fields.average, rating.getAverage().value())
-            .set(ProductRatingDocument.Fields.amount, rating.getAmount().value())
-            .set(ProductRatingDocument.Fields.lastUpdatedTime, Instant.now());
+        return this.upsertAndReturnDomain(query, update);
+    }
 
-    return this.upsertAndReturnDomain(query, update);
-  }
+    @Override
+    public ProductRating update(
+            final ProductRating rating) {
+        final var query = new Query(Criteria.where("_id").is(rating.getId().value()));
+        final var update = new Update()
+                .set(ProductRatingDocument.Fields.average, rating.getAverage().value())
+                .set(ProductRatingDocument.Fields.amount, rating.getAmount().value())
+                .set(ProductRatingDocument.Fields.lastUpdatedTime, Instant.now());
 
-  @Override
-  public void deleteById(final ProductId id) {
-    final var jpaId = id.value();
-    this.repository.deleteById(jpaId);
-  }
+        return this.upsertAndReturnDomain(query, update);
+    }
 
-  private ProductRating upsertAndReturnDomain(final Query query, final Update update) {
-    final var options = FindAndModifyOptions.options().returnNew(true).upsert(true);
-    final var doc =
-        this.mongoTemplate.findAndModify(query, update, options, ProductRatingDocument.class);
-    Objects.requireNonNull(doc, "find-and-modify with upsert must return a non-null document");
+    @Override
+    public void deleteById(
+            final ProductId id) {
+        final var jpaId = id.value();
+        this.repository.deleteById(jpaId);
+    }
 
-    return this.mapper.toDomain(doc);
-  }
+    private ProductRating upsertAndReturnDomain(
+            final Query query,
+            final Update update) {
+        final var options = FindAndModifyOptions
+                .options()
+                .returnNew(true)
+                .upsert(true);
+        final var doc = this.mongoTemplate.findAndModify(
+                query,
+                update,
+                options,
+                ProductRatingDocument.class);
+        Objects.requireNonNull(doc, "find-and-modify with upsert must return a non-null document");
+
+        return this.mapper.toDomain(doc);
+    }
 }

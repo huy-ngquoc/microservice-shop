@@ -13,18 +13,19 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class BrandLogoUpdated {
-  @EqualsAndHashCode.Include
-  private final UUID eventId = UUID.randomUUID();
+    @EqualsAndHashCode.Include
+    private final UUID eventId = UUID.randomUUID();
 
-  private final Instant occurrenceTime = Instant.now();
+    private final Instant occurrenceTime = Instant.now();
 
-  private final BrandId brandId;
+    private final BrandId brandId;
 
-  @Nullable
-  private final BrandLogoKey newLogoKey;
+    @Nullable
+    private final BrandLogoKey newLogoKey;
 
-  @Nullable
-  private final BrandLogoKey oldLogoKey;
+    @Nullable
+    private final BrandLogoKey oldLogoKey;
 }

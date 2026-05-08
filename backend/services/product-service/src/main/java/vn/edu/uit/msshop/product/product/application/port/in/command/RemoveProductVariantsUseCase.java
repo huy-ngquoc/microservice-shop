@@ -4,5 +4,6 @@ import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductVa
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 
 public interface RemoveProductVariantsUseCase {
-  ProductView removeVariants(final RemoveProductVariantsCommand command);
+    ProductView removeVariants(
+            final RemoveProductVariantsCommand command);
 }

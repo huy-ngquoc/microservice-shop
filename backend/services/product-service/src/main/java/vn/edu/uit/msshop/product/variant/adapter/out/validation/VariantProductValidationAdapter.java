@@ -11,11 +11,12 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @Component
 @RequiredArgsConstructor
 public class VariantProductValidationAdapter implements CheckProductExistsPort {
-  private final CheckProductExistsUseCase checkExistsUseCase;
+    private final CheckProductExistsUseCase checkExistsUseCase;
 
-  @Override
-  public boolean existsById(final VariantProductId productId) {
-    return this.checkExistsUseCase.existsById(new ProductId(productId.value()));
-  }
+    @Override
+    public boolean existsById(
+            final VariantProductId productId) {
+        return this.checkExistsUseCase.existsById(new ProductId(productId.value()));
+    }
 
 }

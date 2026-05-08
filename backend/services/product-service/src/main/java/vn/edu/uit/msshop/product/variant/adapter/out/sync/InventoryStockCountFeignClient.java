@@ -9,13 +9,17 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.variant.adapter.out.sync.request.FindAllUpdatedStockCountsRequest;
 import vn.edu.uit.msshop.product.variant.adapter.out.sync.response.StockCountResponse;
 
-@FeignClient(name = "inventory-service")
+@FeignClient(
+        name = "inventory-service")
 public interface InventoryStockCountFeignClient {
-  @PostMapping("/inventory/public/updated_inventory")
-  PageResponseDto<StockCountResponse> getStockCounts(
-      @RequestBody FindAllUpdatedStockCountsRequest request,
+    @PostMapping("/inventory/public/updated_inventory")
+    PageResponseDto<StockCountResponse> getStockCounts(
+            @RequestBody
+            FindAllUpdatedStockCountsRequest request,
 
-      @RequestParam int pageNumber,
+            @RequestParam
+            int pageNumber,
 
-      @RequestParam int pageSize);
+            @RequestParam
+            int pageSize);
 }
