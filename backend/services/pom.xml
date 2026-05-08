@@ -30,13 +30,21 @@
         <module>shared-webmvc</module>
         <module>shared-spring-data</module>
         <module>shared-cloudinary</module>
-        
+
         <module>config-server</module>
         <module>discovery-server</module>
-        <!-- <module>identity-service</module> -->
         <module>product-service</module>
-        <!-- <module>order-service</module> -->
-        <!-- <module>inventory-service</module> -->
+        <module>account-service/account</module>
+        <module>auth-service/auth</module>
+        <module>cart-service/cart</module>
+        <module>image-service/image</module>
+        <module>inventory-service/inventory</module>
+        <module>notification-service/notification</module>
+        <module>order-service/order</module>
+        <module>payment-service/payment</module>
+        <module>fake-payment/payment</module>
+        <module>rating-service/rating</module>
+        <module>recommendation-service/recommendation</module>
     </modules>
 
     <scm>
@@ -185,6 +193,11 @@
                             <groupId>com.google.errorprone</groupId>
                             <artifactId>error_prone_core</artifactId>
                             <version>${error-prone.version}</version>
+                        </path>
+                        <path>
+                            <groupId>com.google.code.findbugs</groupId>
+                            <artifactId>jsr305</artifactId>
+                            <version>3.0.2</version>
                         </path>
                     </annotationProcessorPaths>
                     <compilerArgs>
