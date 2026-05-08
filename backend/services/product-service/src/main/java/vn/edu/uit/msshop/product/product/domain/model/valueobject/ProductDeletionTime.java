@@ -6,14 +6,33 @@ import org.jspecify.annotations.Nullable;
 
 import vn.edu.uit.msshop.shared.domain.Domains;
 
-public record ProductDeletionTime(Instant value){public ProductDeletionTime{Domains.requireNonNull(value,"Deletion time value CANNOT be null");}
+public record ProductDeletionTime(
+        Instant value) {
+    public ProductDeletionTime {
+        Domains.requireNonNull(value, "Deletion time value CANNOT be null");
+    }
 
-public static ProductDeletionTime now(){return new ProductDeletionTime(Instant.now());}
+    public static ProductDeletionTime now() {
+        return new ProductDeletionTime(Instant.now());
+    }
 
-public static @Nullable ProductDeletionTime ofNullable(@Nullable final Instant value){if(value==null){return null;}
+    public static @Nullable ProductDeletionTime ofNullable(
+            @Nullable
+            final Instant value) {
+        if (value == null) {
+            return null;
+        }
 
-return new ProductDeletionTime(value);}
+        return new ProductDeletionTime(value);
+    }
 
-public static @Nullable Instant unwrap(@Nullable final ProductDeletionTime deletionTime){if(deletionTime==null){return null;}
+    public static @Nullable Instant unwrap(
+            @Nullable
+            final ProductDeletionTime deletionTime) {
+        if (deletionTime == null) {
+            return null;
+        }
 
-return deletionTime.value();}}
+        return deletionTime.value();
+    }
+}

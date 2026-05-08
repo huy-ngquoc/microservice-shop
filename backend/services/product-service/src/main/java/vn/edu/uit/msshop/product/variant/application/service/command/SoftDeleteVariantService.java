@@ -1,10 +1,13 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantUseCase;
@@ -21,40 +24,64 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletio
 @Service
 @RequiredArgsConstructor
 public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
-  private final LoadVariantPort loadPort;
-  private final LoadVariantSoldCountPort loadSoldCountPort;
-  private final LoadVariantStockCountPort loadStockCountPort;
-  private final UpdateVariantPort updatePort;
-  private final RemoveVariantFromProductPort removeFromProductPort;
-  private final PublishVariantEventPort eventPort;
+    private final LoadVariantPort loadPort;
+    private final LoadVariantSoldCountPort loadSoldCountPort;
+    private final LoadVariantStockCountPort loadStockCountPort;
+    private final UpdateVariantPort updatePort;
+    private final RemoveVariantFromProductPort removeFromProductPort;
+    private final PublishVariantEventPort eventPort;
 
-  @Override
-  @Transactional
-  public void delete(final SoftDeleteVariantCommand command) {
-    final var variantId = command.id();
-    final var variant = this.loadPort.loadById(variantId)
-        .orElseThrow(() -> new VariantNotFoundException(variantId));
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT_LIST,
+                            allEntries = true)
+            })
+    public void delete(
+            final SoftDeleteVariantCommand command) {
+        final var variantId = command.id();
+        final var variant = this.loadPort.loadById(variantId)
+                .orElseThrow(() -> new VariantNotFoundException(variantId));
 
-    final var expectedVersion = command.expectedVersion();
-    final var currentVersion = variant.getVersion();
-    if (!expectedVersion.equals(currentVersion)) {
-      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = variant.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        final var productId = variant.getProductId();
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
+                variantId, productId);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
+                variantId, productId);
+        final var soldDecrement = soldCount.getValue().value();
+        final var stockDecrement = stockCount.getValue().value();
+
+        final var next = new Variant(
+                variant.getId(),
+                variant.getProductId(),
+                variant.getProductName(),
+                variant.getPrice(),
+                variant.getTraits(),
+                variant.getTargets(),
+                variant.getImageKey(),
+                variant.getVersion(),
+                VariantDeletionTime.now());
+        final var saved = this.updatePort.update(next);
+
+        this.removeFromProductPort.removeFromProduct(
+                saved.getId(),
+                saved.getProductId(),
+                soldDecrement,
+                stockDecrement);
+
+        this.eventPort.publish(new VariantSoftDeleted(saved.getId()));
     }
-
-    final var productId = variant.getProductId();
-    final var soldCount = this.loadSoldCountPort.loadByIdOrZero(variantId, productId);
-    final var stockCount = this.loadStockCountPort.loadByIdOrZero(variantId, productId);
-    final var soldDecrement = soldCount.getValue().value();
-    final var stockDecrement = stockCount.getValue().value();
-
-    final var next = new Variant(variant.getId(), variant.getProductId(), variant.getProductName(),
-        variant.getPrice(), variant.getTraits(), variant.getTargets(), variant.getImageKey(),
-        variant.getVersion(), VariantDeletionTime.now());
-    final var saved = this.updatePort.update(next);
-
-    this.removeFromProductPort.removeFromProduct(saved.getId(), saved.getProductId(), soldDecrement,
-        stockDecrement);
-
-    this.eventPort.publish(new VariantSoftDeleted(saved.getId()));
-  }
 }

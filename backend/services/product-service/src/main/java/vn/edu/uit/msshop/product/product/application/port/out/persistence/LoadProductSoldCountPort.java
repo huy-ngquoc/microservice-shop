@@ -4,5 +4,6 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 public interface LoadProductSoldCountPort {
-  ProductSoldCount loadByIdOrZero(final ProductId id);
+    ProductSoldCount loadByIdOrZero(
+            final ProductId id);
 }

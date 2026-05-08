@@ -7,4 +7,10 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
-public record UpdateVariantInfoCommand(VariantId id,Change<VariantPrice>price,Change<VariantTraits>traits,Change<VariantTargets>targets,VariantVersion expectedVersion){}
+public record UpdateVariantInfoCommand(
+        VariantId id,
+        Change<VariantPrice> price,
+        Change<VariantTraits> traits,
+        Change<VariantTargets> targets,
+        VariantVersion expectedVersion) {
+}

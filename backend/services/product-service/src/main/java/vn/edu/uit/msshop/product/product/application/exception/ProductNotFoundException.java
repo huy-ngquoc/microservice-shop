@@ -5,11 +5,19 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.application.exception.NotFoundException;
 
 public final class ProductNotFoundException extends NotFoundException {
-  public ProductNotFoundException(final ProductId id, final Throwable cause) {
-    super(Product.class.getSimpleName(), id.value().toString(), cause);
-  }
+    public ProductNotFoundException(
+            final ProductId id,
+            final Throwable cause) {
+        super(
+                Product.class.getSimpleName(),
+                id.value().toString(),
+                cause);
+    }
 
-  public ProductNotFoundException(final ProductId id) {
-    super(Product.class.getSimpleName(), id.value().toString());
-  }
+    public ProductNotFoundException(
+            final ProductId id) {
+        super(
+                Product.class.getSimpleName(),
+                id.value().toString());
+    }
 }

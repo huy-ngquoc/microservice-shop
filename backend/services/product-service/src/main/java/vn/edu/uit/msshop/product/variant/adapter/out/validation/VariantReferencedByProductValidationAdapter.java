@@ -11,12 +11,13 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 @Component
 @RequiredArgsConstructor
 public class VariantReferencedByProductValidationAdapter
-    implements CheckVariantReferencedByProductPort {
-  private final CheckProductExistsByVariantUseCase checkExistsByVariantUseCase;
+        implements CheckVariantReferencedByProductPort {
+    private final CheckProductExistsByVariantUseCase checkExistsByVariantUseCase;
 
-  @Override
-  public boolean isReferencedByProduct(final VariantId variantId) {
-    return this.checkExistsByVariantUseCase
-        .existsByVariantId(new ProductVariantId(variantId.value()));
-  }
+    @Override
+    public boolean isReferencedByProduct(
+            final VariantId variantId) {
+        return this.checkExistsByVariantUseCase
+                .existsByVariantId(new ProductVariantId(variantId.value()));
+    }
 }

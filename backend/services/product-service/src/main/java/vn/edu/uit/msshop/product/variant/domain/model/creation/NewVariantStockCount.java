@@ -7,15 +7,22 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class NewVariantStockCount {
-  @EqualsAndHashCode.Include
-  private final VariantId variantId;
+    @EqualsAndHashCode.Include
+    private final VariantId variantId;
 
-  private final VariantProductId productId;
+    private final VariantProductId productId;
 
-  public NewVariantStockCount(final VariantId variantId, final VariantProductId productId) {
-    this.variantId = Domains.requireNonNull(variantId, "Variant ID must NOT be null");
-    this.productId = Domains.requireNonNull(productId, "Variant product ID must NOT be null");
-  }
+    public NewVariantStockCount(
+            final VariantId variantId,
+            final VariantProductId productId) {
+        this.variantId = Domains.requireNonNull(
+                variantId,
+                "Variant ID must NOT be null");
+        this.productId = Domains.requireNonNull(
+                productId,
+                "Variant product ID must NOT be null");
+    }
 }

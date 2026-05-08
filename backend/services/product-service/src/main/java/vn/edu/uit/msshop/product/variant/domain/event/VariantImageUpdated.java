@@ -13,18 +13,19 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public final class VariantImageUpdated {
-  @EqualsAndHashCode.Include
-  private final UUID eventId = UUID.randomUUID();
+    @EqualsAndHashCode.Include
+    private final UUID eventId = UUID.randomUUID();
 
-  private final Instant occurrenceTime = Instant.now();
+    private final Instant occurrenceTime = Instant.now();
 
-  private final VariantId categoryId;
+    private final VariantId categoryId;
 
-  @Nullable
-  private final VariantImageKey newImageKey;
+    @Nullable
+    private final VariantImageKey newImageKey;
 
-  @Nullable
-  private final VariantImageKey oldImageKey;
+    @Nullable
+    private final VariantImageKey oldImageKey;
 }

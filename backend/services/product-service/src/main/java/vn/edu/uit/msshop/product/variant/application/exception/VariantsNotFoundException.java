@@ -8,11 +8,17 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.shared.application.exception.NotFoundException;
 
 public final class VariantsNotFoundException extends NotFoundException {
-  public VariantsNotFoundException(final Set<VariantId> missing) {
-    super(Variant.class.getSimpleName(), formatIds(missing));
-  }
+    public VariantsNotFoundException(
+            final Set<VariantId> missing) {
+        super(
+                Variant.class.getSimpleName(),
+                VariantsNotFoundException.formatIds(missing));
+    }
 
-  private static String formatIds(Set<VariantId> ids) {
-    return ids.stream().map(id -> id.value().toString()).collect(Collectors.joining(","));
-  }
+    private static String formatIds(
+            Set<VariantId> ids) {
+        return ids.stream()
+                .map(id -> id.value().toString())
+                .collect(Collectors.joining(","));
+    }
 }

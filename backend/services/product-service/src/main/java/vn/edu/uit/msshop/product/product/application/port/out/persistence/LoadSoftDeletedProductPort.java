@@ -6,5 +6,6 @@ import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 public interface LoadSoftDeletedProductPort {
-  Optional<Product> loadSoftDeletedById(final ProductId id);
+    Optional<Product> loadSoftDeletedById(
+            final ProductId id);
 }

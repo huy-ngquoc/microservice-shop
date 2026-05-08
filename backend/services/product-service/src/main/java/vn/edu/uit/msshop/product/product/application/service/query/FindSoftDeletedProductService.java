@@ -17,23 +17,25 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @Service
 @RequiredArgsConstructor
 public class FindSoftDeletedProductService implements FindSoftDeletedProductUseCase {
-  private final LoadSoftDeletedProductPort loadSoftDeletedPort;
-  private final LoadProductSoldCountPort loadSoldCountPort;
-  private final LoadProductStockCountPort loadStockCountPort;
-  private final LoadProductRatingPort loadRatingPort;
-  private final ProductViewMapper mapper;
+    private final LoadSoftDeletedProductPort loadSoftDeletedPort;
+    private final LoadProductSoldCountPort loadSoldCountPort;
+    private final LoadProductStockCountPort loadStockCountPort;
+    private final LoadProductRatingPort loadRatingPort;
+    private final ProductViewMapper mapper;
 
-  @Override
-  @Transactional(readOnly = true)
-  public ProductView findSoftDeletedById(final ProductId id) {
-    final var product = this.loadSoftDeletedPort.loadSoftDeletedById(id)
-        .orElseThrow(() -> new ProductNotFoundException(id));
+    @Override
+    @Transactional(
+            readOnly = true)
+    public ProductView findSoftDeletedById(
+            final ProductId id) {
+        final var product = this.loadSoftDeletedPort.loadSoftDeletedById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
 
-    final var soldCount = this.loadSoldCountPort.loadByIdOrZero(id);
-    final var stockCount = this.loadStockCountPort.loadByIdOrZero(id);
-    final var rating = this.loadRatingPort.loadByIdOrZero(id);
+        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(id);
+        final var stockCount = this.loadStockCountPort.loadByIdOrZero(id);
+        final var rating = this.loadRatingPort.loadByIdOrZero(id);
 
-    return this.mapper.toView(product, soldCount, stockCount, rating);
-  }
+        return this.mapper.toView(product, soldCount, stockCount, rating);
+    }
 
 }

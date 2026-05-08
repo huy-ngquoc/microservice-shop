@@ -7,5 +7,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 public interface LoadAllVariantSoldCountsPort {
-  Map<VariantId, VariantSoldCount> loadAllByIds(final Set<VariantId> ids);
+    Map<VariantId, VariantSoldCount> loadAllByIds(
+            final Set<VariantId> ids);
 }

@@ -4,8 +4,11 @@ import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
 
-public record CategoryImageView(UUID id,
+public record CategoryImageView(
+        UUID id,
 
-@Nullable String imageKey,
+        @Nullable
+        String imageKey,
 
-long version){}
+        long version) {
+}

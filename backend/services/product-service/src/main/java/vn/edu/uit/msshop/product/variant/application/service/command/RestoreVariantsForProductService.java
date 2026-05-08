@@ -2,10 +2,12 @@ package vn.edu.uit.msshop.product.variant.application.service.command;
 
 import java.util.Collection;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
@@ -17,25 +19,40 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 @Service
 @RequiredArgsConstructor
 public class RestoreVariantsForProductService implements RestoreVariantsForProductUseCase {
-  private final LoadAllSoftDeletedVariantsPort loadAllSoftDeletedPort;
-  private final UpdateAllVariantsPort updateAllPort;
-  private final PublishVariantEventPort eventPort;
+    private final LoadAllSoftDeletedVariantsPort loadAllSoftDeletedPort;
+    private final UpdateAllVariantsPort updateAllPort;
+    private final PublishVariantEventPort eventPort;
 
-  @Override
-  @Transactional
-  public void restoreByIds(final Collection<VariantId> ids) {
-    final var variants = this.loadAllSoftDeletedPort.loadAllSoftDeletedByIds(ids);
+    @Override
+    @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.VARIANT_LIST,
+            allEntries = true)
+    public void restoreByIds(
+            final Collection<VariantId> ids) {
+        final var variants = this.loadAllSoftDeletedPort
+                .loadAllSoftDeletedByIds(ids);
 
-    final var next = variants.stream().map(RestoreVariantsForProductService::toRestored).toList();
+        final var next = variants.stream()
+                .map(RestoreVariantsForProductService::toRestored)
+                .toList();
 
-    final var saved = this.updateAllPort.updateAll(next);
+        final var saved = this.updateAllPort.updateAll(next);
 
-    saved.forEach(s -> this.eventPort.publish(new VariantRestored(s.getId())));
-  }
+        saved.forEach(s -> this.eventPort.publish(new VariantRestored(s.getId())));
+    }
 
-  private static Variant toRestored(final Variant variant) {
-    return new Variant(variant.getId(), variant.getProductId(), variant.getProductName(),
-        variant.getPrice(), variant.getTraits(), variant.getTargets(), variant.getImageKey(),
-        variant.getVersion(), null);
-  }
+    private static Variant toRestored(
+            final Variant variant) {
+        return new Variant(
+                variant.getId(),
+                variant.getProductId(),
+                variant.getProductName(),
+                variant.getPrice(),
+                variant.getTraits(),
+                variant.getTargets(),
+                variant.getImageKey(),
+                variant.getVersion(),
+                null);
+    }
 }

@@ -13,25 +13,29 @@ import lombok.experimental.FieldNameConstants;
 
 @Document("VariantStockCounts")
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public final class VariantStockCountDocument {
-  @Id
-  @EqualsAndHashCode.Include
-  private final UUID variantId;
+    @Id
+    @EqualsAndHashCode.Include
+    private final UUID variantId;
 
-  private final UUID productId;
+    private final UUID productId;
 
-  private final int value;
+    private final int value;
 
-  private final Instant lastUpdatedTime;
+    private final Instant lastUpdatedTime;
 
-  @PersistenceCreator
-  VariantStockCountDocument(final UUID variantId, final UUID productId, int value,
-      Instant lastUpdatedTime) {
-    this.variantId = variantId;
-    this.productId = productId;
-    this.value = value;
-    this.lastUpdatedTime = lastUpdatedTime;
-  }
+    @PersistenceCreator
+    VariantStockCountDocument(
+            final UUID variantId,
+            final UUID productId,
+            int value,
+            Instant lastUpdatedTime) {
+        this.variantId = variantId;
+        this.productId = productId;
+        this.value = value;
+        this.lastUpdatedTime = lastUpdatedTime;
+    }
 }

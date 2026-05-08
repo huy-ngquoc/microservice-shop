@@ -5,5 +5,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.ListVariantsQuery
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 
 public interface ListVariantsUseCase {
-  PageResponseDto<VariantView> list(final ListVariantsQuery query);
+    PageResponseDto<VariantView> list(
+            final ListVariantsQuery query);
 }

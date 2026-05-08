@@ -21,34 +21,37 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Service
 @RequiredArgsConstructor
 public class HardDeleteProductService implements HardDeleteProductUseCase {
-  private final LoadSoftDeletedProductPort loadSoftDeletedPort;
-  private final DeleteProductPort deletePort;
-  private final DeleteProductSoldCountPort deleteSoldCountPort;
-  private final DeleteProductStockCountPort deleteStockCountPort;
-  private final DeleteProductRatingPort deleteRatingPort;
-  private final HardDeleteAllProductVariantsPort hardDeleteAllVariantsPort;
-  private final PublishProductEventPort eventPort;
+    private final LoadSoftDeletedProductPort loadSoftDeletedPort;
+    private final DeleteProductPort deletePort;
+    private final DeleteProductSoldCountPort deleteSoldCountPort;
+    private final DeleteProductStockCountPort deleteStockCountPort;
+    private final DeleteProductRatingPort deleteRatingPort;
+    private final HardDeleteAllProductVariantsPort hardDeleteAllVariantsPort;
+    private final PublishProductEventPort eventPort;
 
-  @Override
-  @Transactional
-  public void purge(HardDeleteProductCommand command) {
-    final var productId = command.id();
-    final var product = this.loadSoftDeletedPort.loadSoftDeletedById(productId)
-        .orElseThrow(() -> new ProductNotFoundException(productId));
+    @Override
+    @Transactional
+    public void purge(
+            HardDeleteProductCommand command) {
+        final var productId = command.id();
+        final var product = this.loadSoftDeletedPort.loadSoftDeletedById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
-    final var expectedVersion = command.expectedVersion();
-    final var currentVersion = product.getVersion();
-    if (!expectedVersion.equals(currentVersion)) {
-      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = product.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        this.deletePort.deleteById(productId);
+        this.deleteSoldCountPort.deleteById(productId);
+        this.deleteStockCountPort.deleteById(productId);
+        this.deleteRatingPort.deleteById(productId);
+
+        this.hardDeleteAllVariantsPort.purgeByProductId(productId);
+
+        this.eventPort.publish(new ProductPurged(productId));
     }
-
-    this.deletePort.deleteById(productId);
-    this.deleteSoldCountPort.deleteById(productId);
-    this.deleteStockCountPort.deleteById(productId);
-    this.deleteRatingPort.deleteById(productId);
-
-    this.hardDeleteAllVariantsPort.purgeByProductId(productId);
-
-    this.eventPort.publish(new ProductPurged(productId));
-  }
 }

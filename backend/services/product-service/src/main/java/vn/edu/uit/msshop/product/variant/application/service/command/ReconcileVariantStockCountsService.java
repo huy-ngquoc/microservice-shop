@@ -12,18 +12,21 @@ import vn.edu.uit.msshop.product.variant.application.port.out.sync.FetchInventor
 @Service
 @RequiredArgsConstructor
 public class ReconcileVariantStockCountsService implements ReconcileVariantStockCountsUseCase {
-  private final FetchInventoryStockCountsPort fetchPort;
-  private final SetAllVariantStockCountsUseCase setAllUseCase;
+    private final FetchInventoryStockCountsPort fetchPort;
+    private final SetAllVariantStockCountsUseCase setAllUseCase;
 
-  @Override
-  public void execute(final ReconcileVariantStockCountsCommand command) {
-    final var fetched = fetchPort.fetchAll(command.rangeStartTime(), command.rangeEndTime());
-    if (fetched.isEmpty()) {
-      return;
+    @Override
+    public void execute(
+            final ReconcileVariantStockCountsCommand command) {
+        final var fetched = fetchPort.fetchAll(
+                command.rangeStartTime(),
+                command.rangeEndTime());
+        if (fetched.isEmpty()) {
+            return;
+        }
+
+        final var setCommand = new SetAllVariantStockCountsCommand(fetched);
+        this.setAllUseCase.execute(setCommand);
     }
-
-    final var setCommand = new SetAllVariantStockCountsCommand(fetched);
-    this.setAllUseCase.execute(setCommand);
-  }
 
 }

@@ -48,190 +48,252 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
-  private final ListProductsUseCase listUseCase;
-  private final ListSoftDeletedProductsUseCase listSoftDeletedUseCase;
-  private final FindProductUseCase findUseCase;
-  private final CheckProductExistsUseCase checkExistsUseCase;
-  private final FindSoftDeletedProductUseCase findSoftDeletedUseCase;
-  private final CreateProductUseCase createUseCase;
-  private final RestoreProductUseCase restoreUseCase;
-  private final AddProductOptionUseCase addOptionUseCase;
-  private final AddProductVariantsUseCase addVariantsUseCase;
-  private final UpdateProductInfoUseCase updateInfoUseCase;
-  private final UpdateProductOptionUseCase updateOptionUseCase;
-  private final RemoveProductOptionUseCase removeOptionUseCase;
-  private final SoftDeleteProductUseCase softDeleteUseCase;
-  private final HardDeleteProductUseCase hardDeleteUseCase;
-  private final ProductWebMapper mapper;
+    private final ListProductsUseCase listUseCase;
+    private final ListSoftDeletedProductsUseCase listSoftDeletedUseCase;
+    private final FindProductUseCase findUseCase;
+    private final CheckProductExistsUseCase checkExistsUseCase;
+    private final FindSoftDeletedProductUseCase findSoftDeletedUseCase;
+    private final CreateProductUseCase createUseCase;
+    private final RestoreProductUseCase restoreUseCase;
+    private final AddProductOptionUseCase addOptionUseCase;
+    private final AddProductVariantsUseCase addVariantsUseCase;
+    private final UpdateProductInfoUseCase updateInfoUseCase;
+    private final UpdateProductOptionUseCase updateOptionUseCase;
+    private final RemoveProductOptionUseCase removeOptionUseCase;
+    private final SoftDeleteProductUseCase softDeleteUseCase;
+    private final HardDeleteProductUseCase hardDeleteUseCase;
+    private final ProductWebMapper mapper;
 
-  // TODO: product response has too much info.
-  @GetMapping
-  public ResponseEntity<PageResponseDto<ProductResponse>> list(
-      @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
+    // TODO: product response has too much info.
+    @GetMapping
+    public ResponseEntity<PageResponseDto<ProductResponse>> list(
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
 
-      @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
 
-      @RequestParam(required = false) @Nullable final String sortBy,
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
 
-      @RequestParam(
-          defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
-    final var request = new PageRequestDto(page, size, sortBy, direction);
-    final var views = this.listUseCase.list(request);
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
+        final var request = new PageRequestDto(page, size, sortBy, direction);
+        final var views = this.listUseCase.list(request);
 
-    final var response = views.map(this.mapper::toResponse);
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/deleted")
-  public ResponseEntity<PageResponseDto<ProductResponse>> listSoftDeleted(
-      @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
-
-      @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
-
-      @RequestParam(required = false) @Nullable final String sortBy,
-
-      @RequestParam(
-          defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
-    final var request = new PageRequestDto(page, size, sortBy, direction);
-    final var views = this.listSoftDeletedUseCase.listSoftDeleted(request);
-
-    final var response = views.map(this.mapper::toResponse);
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<ProductResponse> findById(@PathVariable final UUID id) {
-    final var view = this.findUseCase.findById(this.mapper.toProductId(id));
-
-    final var response = this.mapper.toResponse(view);
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/{id}/exists")
-  public ResponseEntity<Void> existsById(@PathVariable final UUID id) {
-    final var existed = this.checkExistsUseCase.existsById(this.mapper.toProductId(id));
-    if (!existed) {
-      return ResponseEntity.notFound().build();
+        final var response = views.map(this.mapper::toResponse);
+        return ResponseEntity.ok(response);
     }
 
-    return ResponseEntity.noContent().build();
-  }
+    @GetMapping("/deleted")
+    public ResponseEntity<PageResponseDto<ProductResponse>> listSoftDeleted(
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
 
-  @GetMapping("/deleted/{id}")
-  public ResponseEntity<ProductResponse> findSoftDeletedById(@PathVariable final UUID id) {
-    final var view = this.findSoftDeletedUseCase.findSoftDeletedById(this.mapper.toProductId(id));
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
 
-    final var response = this.mapper.toResponse(view);
-    return ResponseEntity.ok(response);
-  }
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
 
-  @PostMapping
-  public ResponseEntity<ProductResponse> create(
-      @RequestBody @Valid final CreateProductRequest request) {
-    final var view = this.createUseCase.create(this.mapper.toCreateCommand(request));
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
+        final var request = new PageRequestDto(page, size, sortBy, direction);
+        final var views = this.listSoftDeletedUseCase.listSoftDeleted(request);
 
-    final var response = this.mapper.toResponse(view);
-    final var location = WebMvcLinkBuilder
-        .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
+        final var response = views.map(this.mapper::toResponse);
+        return ResponseEntity.ok(response);
+    }
 
-    return ResponseEntity.created(location).body(response);
-  }
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> findById(
+            @PathVariable
+            final UUID id) {
+        final var view = this.findUseCase.findById(this.mapper.toProductId(id));
 
-  @PostMapping("/simple")
-  public ResponseEntity<ProductResponse> createSimple(
-      @RequestBody @Valid final CreateSimpleProductRequest request) {
-    final var view = this.createUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
+    }
 
-    final var response = this.mapper.toResponse(view);
-    final var location = WebMvcLinkBuilder
-        .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Void> existsById(
+            @PathVariable
+            final UUID id) {
+        final var existed = this.checkExistsUseCase.existsById(this.mapper.toProductId(id));
+        if (!existed) {
+            return ResponseEntity.notFound().build();
+        }
 
-    return ResponseEntity.created(location).body(response);
-  }
+        return ResponseEntity.noContent().build();
+    }
 
-  @PostMapping("/{id}/restore")
-  public ResponseEntity<Void> restoreById(@PathVariable final UUID id,
+    @GetMapping("/deleted/{id}")
+    public ResponseEntity<ProductResponse> findSoftDeletedById(
+            @PathVariable
+            final UUID id) {
+        final var view = this.findSoftDeletedUseCase.findSoftDeletedById(this.mapper.toProductId(id));
 
-      @RequestParam final long version) {
-    final var command = this.mapper.toRestoreCommand(id, version);
-    this.restoreUseCase.restore(command);
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
+    }
 
-    return ResponseEntity.noContent().build();
-  }
+    @PostMapping
+    public ResponseEntity<ProductResponse> create(
+            @RequestBody
+            @Valid
+            final CreateProductRequest request) {
+        final var view = this.createUseCase.create(this.mapper.toCreateCommand(request));
 
-  @PostMapping("/{id}/options")
-  public ResponseEntity<ProductResponse> addOption(@PathVariable final UUID id,
+        final var response = this.mapper.toResponse(view);
+        final var location = WebMvcLinkBuilder
+                .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
 
-      @RequestBody @Valid final AddProductOptionRequest request) {
-    final var command = this.mapper.toAddOptionCommand(id, request);
-    final var view = this.addOptionUseCase.addOption(command);
-    return ResponseEntity.ok(this.mapper.toResponse(view));
-  }
+        return ResponseEntity.created(location).body(response);
+    }
 
-  @PostMapping("/{id}/variants")
-  public ResponseEntity<ProductResponse> addVariant(@PathVariable final UUID id,
+    @PostMapping("/simple")
+    public ResponseEntity<ProductResponse> createSimple(
+            @RequestBody
+            @Valid
+            final CreateSimpleProductRequest request) {
+        final var view = this.createUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
 
-      @RequestBody @Valid final AddProductVariantRequest request) {
-    final var command = this.mapper.toAddVariantsCommand(id, request);
-    final var view = this.addVariantsUseCase.addVariants(command);
-    return ResponseEntity.ok(this.mapper.toResponse(view));
-  }
+        final var response = this.mapper.toResponse(view);
+        final var location = WebMvcLinkBuilder
+                .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
 
-  @PostMapping("/{id}/variants/batch")
-  public ResponseEntity<ProductResponse> addAllVariants(@PathVariable final UUID id,
-      @RequestBody @Valid final AddProductVariantsRequest request) {
-    final var command = this.mapper.toAddVariantsCommand(id, request);
-    final var view = this.addVariantsUseCase.addVariants(command);
-    return ResponseEntity.ok(this.mapper.toResponse(view));
-  }
+        return ResponseEntity.created(location).body(response);
+    }
 
-  @PatchMapping("/{id}")
-  public ResponseEntity<ProductResponse> updateInfo(@PathVariable final UUID id,
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreById(
+            @PathVariable
+            final UUID id,
 
-      @RequestBody @Valid final UpdateProductInfoRequest request) {
-    final var command = this.mapper.toUpdateInfoCommand(id, request);
-    final var view = this.updateInfoUseCase.updateInfo(command);
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toRestoreCommand(id, version);
+        this.restoreUseCase.restore(command);
 
-    final var response = this.mapper.toResponse(view);
-    return ResponseEntity.ok(response);
-  }
+        return ResponseEntity.noContent().build();
+    }
 
-  @PatchMapping("/{id}/options/{index}")
-  public ResponseEntity<ProductResponse> updateOption(@PathVariable final UUID id,
-      @PathVariable final int index, @RequestBody @Valid final UpdateProductOptionRequest request) {
-    final var command = this.mapper.toUpdateOptionCommand(id, index, request);
-    final var view = this.updateOptionUseCase.updateOption(command);
-    return ResponseEntity.ok(this.mapper.toResponse(view));
-  }
+    @PostMapping("/{id}/options")
+    public ResponseEntity<ProductResponse> addOption(
+            @PathVariable
+            final UUID id,
 
-  @DeleteMapping("/{id}/options/{index}")
-  public ResponseEntity<ProductResponse> removeOption(@PathVariable final UUID id,
+            @RequestBody
+            @Valid
+            final AddProductOptionRequest request) {
+        final var command = this.mapper.toAddOptionCommand(id, request);
+        final var view = this.addOptionUseCase.addOption(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
 
-      @PathVariable final int index,
+    @PostMapping("/{id}/variants")
+    public ResponseEntity<ProductResponse> addVariant(
+            @PathVariable
+            final UUID id,
 
-      @RequestBody @Valid final RemoveProductOptionRequest request) {
-    final var command = this.mapper.toRemoveOptionCommand(id, index, request);
-    final var view = this.removeOptionUseCase.removeOption(command);
-    return ResponseEntity.ok(this.mapper.toResponse(view));
-  }
+            @RequestBody
+            @Valid
+            final AddProductVariantRequest request) {
+        final var command = this.mapper.toAddVariantsCommand(id, request);
+        final var view = this.addVariantsUseCase.addVariants(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> softDeleteById(@PathVariable final UUID id,
+    @PostMapping("/{id}/variants/batch")
+    public ResponseEntity<ProductResponse> addAllVariants(
+            @PathVariable
+            final UUID id,
+            @RequestBody
+            @Valid
+            final AddProductVariantsRequest request) {
+        final var command = this.mapper.toAddVariantsCommand(id, request);
+        final var view = this.addVariantsUseCase.addVariants(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
 
-      @RequestParam final long version) {
-    final var command = this.mapper.toSoftDeleteCommand(id, version);
-    this.softDeleteUseCase.delete(command);
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProductResponse> updateInfo(
+            @PathVariable
+            final UUID id,
 
-    return ResponseEntity.noContent().build();
-  }
+            @RequestBody
+            @Valid
+            final UpdateProductInfoRequest request) {
+        final var command = this.mapper.toUpdateInfoCommand(id, request);
+        final var view = this.updateInfoUseCase.updateInfo(command);
 
-  @DeleteMapping("/{id}/purge")
-  public ResponseEntity<Void> hardDeleteById(@PathVariable final UUID id,
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
+    }
 
-      @RequestParam final long version) {
-    final var command = this.mapper.toHardDeleteCommand(id, version);
-    this.hardDeleteUseCase.purge(command);
+    @PatchMapping("/{id}/options/{index}")
+    public ResponseEntity<ProductResponse> updateOption(
+            @PathVariable
+            final UUID id,
+            @PathVariable
+            final int index,
+            @RequestBody
+            @Valid
+            final UpdateProductOptionRequest request) {
+        final var command = this.mapper.toUpdateOptionCommand(id, index, request);
+        final var view = this.updateOptionUseCase.updateOption(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
 
-    return ResponseEntity.noContent().build();
-  }
+    @DeleteMapping("/{id}/options/{index}")
+    public ResponseEntity<ProductResponse> removeOption(
+            @PathVariable
+            final UUID id,
+
+            @PathVariable
+            final int index,
+
+            @RequestBody
+            @Valid
+            final RemoveProductOptionRequest request) {
+        final var command = this.mapper.toRemoveOptionCommand(id, index, request);
+        final var view = this.removeOptionUseCase.removeOption(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> softDeleteById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toSoftDeleteCommand(id, version);
+        this.softDeleteUseCase.delete(command);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/purge")
+    public ResponseEntity<Void> hardDeleteById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toHardDeleteCommand(id, version);
+        this.hardDeleteUseCase.purge(command);
+
+        return ResponseEntity.noContent().build();
+    }
 }

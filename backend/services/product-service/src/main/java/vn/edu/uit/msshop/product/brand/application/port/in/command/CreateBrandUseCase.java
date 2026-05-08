@@ -4,5 +4,6 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.CreateBrandComman
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 
 public interface CreateBrandUseCase {
-  BrandView create(final CreateBrandCommand command);
+    BrandView create(
+            final CreateBrandCommand command);
 }

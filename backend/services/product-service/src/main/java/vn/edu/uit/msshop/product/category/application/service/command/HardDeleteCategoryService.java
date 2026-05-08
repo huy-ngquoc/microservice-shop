@@ -23,44 +23,51 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 @Slf4j
 public class HardDeleteCategoryService implements HardDeleteCategoryUseCase {
-  private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
-  private final CheckCategoryHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
-  private final DeleteCategoryPort deletePort;
-  private final CategoryImageStoragePort imageStoragePort;
-  private final PublishCategoryEventPort eventPort;
+    private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
+    private final CheckCategoryHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
+    private final DeleteCategoryPort deletePort;
+    private final CategoryImageStoragePort imageStoragePort;
+    private final PublishCategoryEventPort eventPort;
 
-  @Override
-  @Transactional
-  public void purge(final HardDeleteCategoryCommand command) {
-    final var categoryId = command.id();
-    final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
-        .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+    @Override
+    @Transactional
+    public void purge(
+            final HardDeleteCategoryCommand command) {
+        final var categoryId = command.id();
+        final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-    final var expectedVersion = command.expectedVersion();
-    final var currentVersion = category.getVersion();
-    if (!expectedVersion.equals(currentVersion)) {
-      throw new OptimisticLockException(expectedVersion.value(), currentVersion.value());
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = category.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(categoryId)) {
+            throw new BusinessRuleException("Cannot delete category with existing products");
+        }
+
+        this.deletePort.deleteById(categoryId);
+        this.eventPort.publish(new CategoryPurged(categoryId));
+
+        this.deleteLogo(category.getImageKey());
     }
 
-    if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(categoryId)) {
-      throw new BusinessRuleException("Cannot delete category with existing products");
+    private void deleteLogo(
+            @Nullable
+            final CategoryImageKey key) {
+        if (key == null) {
+            return;
+        }
+
+        try {
+            this.imageStoragePort.deleteImage(key);
+        } catch (final RuntimeException e) {
+            log.warn("Hard delete: failed to delete image '{}', manual cleanup required",
+                    key.value(),
+                    e);
+        }
     }
-
-    this.deletePort.deleteById(categoryId);
-    this.eventPort.publish(new CategoryPurged(categoryId));
-
-    this.deleteLogo(category.getImageKey());
-  }
-
-  private void deleteLogo(@Nullable final CategoryImageKey key) {
-    if (key == null) {
-      return;
-    }
-
-    try {
-      this.imageStoragePort.deleteImage(key);
-    } catch (final RuntimeException e) {
-      log.warn("Hard delete: failed to delete image '{}', manual cleanup required", key.value(), e);
-    }
-  }
 }

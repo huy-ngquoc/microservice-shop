@@ -32,131 +32,168 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductStockCountPersistenceAdapter
-    implements LoadProductStockCountPort, LoadAllProductStockCountsPort,
-    InitializeProductStockCountPort, IncreaseAllProductStockCountsPort,
-    DecreaseAllProductStockCountsPort, DeleteProductStockCountPort {
-  private static final Collector<ProductStockCount, ?, Map<ProductId, ProductStockCount>> COLLECTOR =
-      Collectors.toUnmodifiableMap(ProductStockCount::getId, Function.identity(),
-          (existing, replacement) -> existing);
+        implements
+        LoadProductStockCountPort,
+        LoadAllProductStockCountsPort,
+        InitializeProductStockCountPort,
+        IncreaseAllProductStockCountsPort,
+        DecreaseAllProductStockCountsPort,
+        DeleteProductStockCountPort {
+    private static final Collector<
+            ProductStockCount,
+            ?,
+            Map<ProductId, ProductStockCount>> COLLECTOR = Collectors.toUnmodifiableMap(
+                    ProductStockCount::getId,
+                    Function.identity(),
+                    (
+                            existing,
+                            replacement) -> existing);
 
-  private final ProductStockCountMongoRepository repository;
-  private final ProductStockCountPersistenceMapper mapper;
-  private final MongoTemplate mongoTemplate;
+    private final ProductStockCountMongoRepository repository;
+    private final ProductStockCountPersistenceMapper mapper;
+    private final MongoTemplate mongoTemplate;
 
-  @Override
-  public ProductStockCount loadByIdOrZero(final ProductId id) {
-    final var jpaId = id.value();
+    @Override
+    public ProductStockCount loadByIdOrZero(
+            final ProductId id) {
+        final var jpaId = id.value();
 
-    return this.repository.findById(jpaId).map(this.mapper::toDomain)
-        .orElseGet(() -> ProductStockCount.zero(id));
-  }
-
-  @Override
-  public Map<ProductId, ProductStockCount> loadAllByIds(final Collection<ProductId> ids) {
-    if (ids.isEmpty()) {
-      return Map.of();
+        return this.repository.findById(jpaId)
+                .map(this.mapper::toDomain)
+                .orElseGet(() -> ProductStockCount.zero(id));
     }
 
-    final var jpaIds = ids.stream().map(ProductId::value).collect(Collectors.toSet());
+    @Override
+    public Map<ProductId, ProductStockCount> loadAllByIds(
+            final Collection<ProductId> ids) {
+        if (ids.isEmpty()) {
+            return Map.of();
+        }
 
-    return this.repository.findAllById(jpaIds).stream().map(this.mapper::toDomain)
-        .collect(ProductStockCountPersistenceAdapter.COLLECTOR);
-  }
+        final var jpaIds = ids.stream()
+                .map(ProductId::value)
+                .collect(Collectors.toSet());
 
-  @Override
-  public ProductStockCount initialize(final ProductId id) {
-    final var jpaId = id.value();
-
-    final var query = new Query(Criteria.where("_id").is(jpaId));
-    final var update = new Update().setOnInsert(ProductStockCountDocument.Fields.value, 0)
-        .setOnInsert(ProductStockCountDocument.Fields.lastUpdatedTime, Instant.now());
-
-    return this.upsertAndReturnDomain(query, update);
-  }
-
-  @Override
-  public void increaseAll(final Map<ProductId, Integer> incrementByProductId) {
-    if (incrementByProductId.isEmpty()) {
-      return;
+        return this.repository.findAllById(jpaIds)
+                .stream()
+                .map(this.mapper::toDomain)
+                .collect(ProductStockCountPersistenceAdapter.COLLECTOR);
     }
 
-    final var instantNow = Instant.now();
-    final var bulkOps = this.mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-        ProductStockCountDocument.class);
+    @Override
+    public ProductStockCount initialize(
+            final ProductId id) {
+        final var jpaId = id.value();
 
-    for (final var entry : incrementByProductId.entrySet()) {
-      final var id = entry.getKey();
-      final var jpaId = id.value();
-      final var increment = entry.getValue();
+        final var query = new Query(Criteria.where("_id").is(jpaId));
+        final var update = new Update()
+                .setOnInsert(ProductStockCountDocument.Fields.value, 0)
+                .setOnInsert(ProductStockCountDocument.Fields.lastUpdatedTime, Instant.now());
 
-      final var query = new Query(Criteria.where("_id").is(jpaId));
-      final var update = new Update().inc(ProductStockCountDocument.Fields.value, increment)
-          .set(ProductStockCountDocument.Fields.lastUpdatedTime, instantNow);
-
-      bulkOps.upsert(query, update);
+        return this.upsertAndReturnDomain(query, update);
     }
 
-    bulkOps.execute();
-  }
+    @Override
+    public void increaseAll(
+            final Map<ProductId, Integer> incrementByProductId) {
+        if (incrementByProductId.isEmpty()) {
+            return;
+        }
 
-  @Override
-  public void decreaseAll(Map<ProductId, Integer> decrementByProductId) {
-    if (decrementByProductId.isEmpty()) {
-      return;
+        final var instantNow = Instant.now();
+        final var bulkOps = this.mongoTemplate.bulkOps(
+                BulkOperations.BulkMode.UNORDERED,
+                ProductStockCountDocument.class);
+
+        for (final var entry : incrementByProductId.entrySet()) {
+            final var id = entry.getKey();
+            final var jpaId = id.value();
+            final var increment = entry.getValue();
+
+            final var query = new Query(Criteria.where("_id").is(jpaId));
+            final var update = new Update()
+                    .inc(ProductStockCountDocument.Fields.value, increment)
+                    .set(ProductStockCountDocument.Fields.lastUpdatedTime, instantNow);
+
+            bulkOps.upsert(query, update);
+        }
+
+        bulkOps.execute();
     }
 
-    final var instantNow = Instant.now();
-    final var bulkOps = this.mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED,
-        ProductStockCountDocument.class);
+    @Override
+    public void decreaseAll(
+            Map<ProductId, Integer> decrementByProductId) {
+        if (decrementByProductId.isEmpty()) {
+            return;
+        }
 
-    int expectedOps = 0;
-    for (final var entry : decrementByProductId.entrySet()) {
-      final var dec = entry.getValue();
-      if (dec <= 0) {
-        continue;
-      }
+        final var instantNow = Instant.now();
+        final var bulkOps = this.mongoTemplate.bulkOps(
+                BulkOperations.BulkMode.UNORDERED,
+                ProductStockCountDocument.class);
 
-      final var id = entry.getKey();
-      final var jpaId = id.value();
+        int expectedOps = 0;
+        for (final var entry : decrementByProductId.entrySet()) {
+            final var dec = entry.getValue();
+            if (dec <= 0) {
+                continue;
+            }
 
-      final var query = new Query(
-          Criteria.where("_id").is(jpaId).and(ProductStockCountDocument.Fields.value).gte(dec));
-      final var update = new Update().inc(ProductStockCountDocument.Fields.value, -dec)
-          .set(ProductStockCountDocument.Fields.lastUpdatedTime, instantNow);
-      bulkOps.updateOne(query, update);
+            final var id = entry.getKey();
+            final var jpaId = id.value();
 
-      ++expectedOps;
+            final var query = new Query(
+                    Criteria.where("_id").is(jpaId)
+                            .and(ProductStockCountDocument.Fields.value).gte(dec));
+            final var update = new Update()
+                    .inc(ProductStockCountDocument.Fields.value, -dec)
+                    .set(ProductStockCountDocument.Fields.lastUpdatedTime, instantNow);
+            bulkOps.updateOne(query, update);
+
+            ++expectedOps;
+        }
+
+        if (expectedOps <= 0) {
+            return;
+        }
+
+        final var result = bulkOps.execute();
+        final var modified = result.getModifiedCount();
+
+        if (modified < expectedOps) {
+            log.warn(
+                    "ProductStockCount decrease drift: expected={}, modified={}, productIds={}. "
+                            + "Possible causes: (1) document not initialized, (2) current value < decrement "
+                            + "(state divergence between variant and product aggregate). "
+                            + "Reconcile job should self-heal.",
+                    expectedOps,
+                    modified,
+                    decrementByProductId.keySet());
+        }
     }
 
-    if (expectedOps <= 0) {
-      return;
+    @Override
+    public void deleteById(
+            final ProductId id) {
+        final var jpaId = id.value();
+        this.repository.deleteById(jpaId);
     }
 
-    final var result = bulkOps.execute();
-    final var modified = result.getModifiedCount();
+    private ProductStockCount upsertAndReturnDomain(
+            final Query query,
+            final Update update) {
+        final var options = FindAndModifyOptions
+                .options()
+                .returnNew(true)
+                .upsert(true);
+        final var doc = this.mongoTemplate.findAndModify(
+                query,
+                update,
+                options,
+                ProductStockCountDocument.class);
+        Objects.requireNonNull(doc, "find-and-modify with upsert must return a non-null document");
 
-    if (modified < expectedOps) {
-      log.warn(
-          "ProductStockCount decrease drift: expected={}, modified={}, productIds={}. "
-              + "Possible causes: (1) document not initialized, (2) current value < decrement "
-              + "(state divergence between variant and product aggregate). "
-              + "Reconcile job should self-heal.",
-          expectedOps, modified, decrementByProductId.keySet());
+        return this.mapper.toDomain(doc);
     }
-  }
-
-  @Override
-  public void deleteById(final ProductId id) {
-    final var jpaId = id.value();
-    this.repository.deleteById(jpaId);
-  }
-
-  private ProductStockCount upsertAndReturnDomain(final Query query, final Update update) {
-    final var options = FindAndModifyOptions.options().returnNew(true).upsert(true);
-    final var doc =
-        this.mongoTemplate.findAndModify(query, update, options, ProductStockCountDocument.class);
-    Objects.requireNonNull(doc, "find-and-modify with upsert must return a non-null document");
-
-    return this.mapper.toDomain(doc);
-  }
 }

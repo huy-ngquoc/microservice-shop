@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import vn.edu.uit.msshop.product.variant.adapter.out.sync.response.SoldCountResponse;
 
-@FeignClient(name = "order-service")
+@FeignClient(
+        name = "order-service")
 public interface OrderSoldCountFeignClient {
-  @GetMapping("/order/public/sold_counts")
-  List<SoldCountResponse> getSoldCounts();
+    @GetMapping("/order/public/sold_counts")
+    List<SoldCountResponse> getSoldCounts();
 }

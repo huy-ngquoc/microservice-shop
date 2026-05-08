@@ -43,162 +43,208 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequestMapping("/categories")
 @RequiredArgsConstructor
 public class CategoryController {
-  private final ListCategoriesUseCase listUseCase;
-  private final ListSoftDeletedCategoriesUseCase listSoftDeletedUseCase;
-  private final FindCategoryUseCase findUseCase;
-  private final FindCategoryImageUseCase findImageUseCase;
-  private final CheckCategoryExistsUseCase checkExistsUseCase;
-  private final FindSoftDeletedCategoryUseCase findSoftDeletedUseCase;
-  private final CreateCategoryUseCase createUseCase;
-  private final RestoreCategoryUseCase restoreUseCase;
-  private final UpdateCategoryInfoUseCase updateInfoUseCase;
-  private final UpdateCategoryImageUseCase updateImageUseCase;
-  private final DeleteCategoryImageUseCase deleteImageUseCase;
-  private final SoftDeleteCategoryUseCase softDeleteUseCase;
-  private final HardDeleteCategoryUseCase hardDeleteUseCase;
-  private final CategoryWebMapper mapper;
+    private final ListCategoriesUseCase listUseCase;
+    private final ListSoftDeletedCategoriesUseCase listSoftDeletedUseCase;
+    private final FindCategoryUseCase findUseCase;
+    private final FindCategoryImageUseCase findImageUseCase;
+    private final CheckCategoryExistsUseCase checkExistsUseCase;
+    private final FindSoftDeletedCategoryUseCase findSoftDeletedUseCase;
+    private final CreateCategoryUseCase createUseCase;
+    private final RestoreCategoryUseCase restoreUseCase;
+    private final UpdateCategoryInfoUseCase updateInfoUseCase;
+    private final UpdateCategoryImageUseCase updateImageUseCase;
+    private final DeleteCategoryImageUseCase deleteImageUseCase;
+    private final SoftDeleteCategoryUseCase softDeleteUseCase;
+    private final HardDeleteCategoryUseCase hardDeleteUseCase;
+    private final CategoryWebMapper mapper;
 
-  @GetMapping
-  public ResponseEntity<PageResponseDto<CategoryResponse>> list(
-      @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
+    @GetMapping
+    public ResponseEntity<PageResponseDto<CategoryResponse>> list(
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
 
-      @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
 
-      @RequestParam(required = false) @Nullable final String sortBy,
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
 
-      @RequestParam(
-          defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
-    final var request = new PageRequestDto(page, size, sortBy, direction);
-    final var views = listUseCase.list(request);
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
+        final var request = new PageRequestDto(page, size, sortBy, direction);
+        final var views = listUseCase.list(request);
 
-    final var response = views.map(this.mapper::toResponse);
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/deleted")
-  public ResponseEntity<PageResponseDto<CategoryResponse>> listSoftDeleted(
-      @RequestParam(defaultValue = PageRequestDto.DEFAULT_PAGE_STRING) final int page,
-
-      @RequestParam(defaultValue = PageRequestDto.DEFAULT_SIZE_STRING) final int size,
-
-      @RequestParam(required = false) @Nullable final String sortBy,
-
-      @RequestParam(
-          defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING) final PageRequestDto.Direction direction) {
-    final var request = new PageRequestDto(page, size, sortBy, direction);
-    final var views = listSoftDeletedUseCase.listSoftDeleted(request);
-
-    final var response = views.map(this.mapper::toResponse);
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<CategoryResponse> findById(@PathVariable final UUID id) {
-    final var view = this.findUseCase.findById(this.mapper.toCategoryId(id));
-
-    final var response = this.mapper.toResponse(view);
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/{id}/image")
-  public ResponseEntity<CategoryImageResponse> findImageById(@PathVariable final UUID id) {
-    final var view = this.findImageUseCase.findImageById(this.mapper.toCategoryId(id));
-
-    final var response = this.mapper.toImageResponse(view);
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/{id}/exists")
-  public ResponseEntity<Void> existsById(@PathVariable final UUID id) {
-    final var existed = this.checkExistsUseCase.existsById(this.mapper.toCategoryId(id));
-    if (!existed) {
-      return ResponseEntity.notFound().build();
+        final var response = views.map(this.mapper::toResponse);
+        return ResponseEntity.ok(response);
     }
 
-    return ResponseEntity.noContent().build();
-  }
+    @GetMapping("/deleted")
+    public ResponseEntity<PageResponseDto<CategoryResponse>> listSoftDeleted(
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
 
-  @GetMapping("/deleted/{id}")
-  public ResponseEntity<CategoryResponse> findSoftDeletedById(@PathVariable final UUID id) {
-    final var view = this.findSoftDeletedUseCase.findSoftDeletedById(this.mapper.toCategoryId(id));
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
 
-    final var response = this.mapper.toResponse(view);
-    return ResponseEntity.ok(response);
-  }
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
 
-  @PostMapping
-  public ResponseEntity<CategoryResponse> create(
-      @RequestBody @Valid final CreateCategoryRequest request) {
-    final var command = this.mapper.toCreateCommand(request);
-    final var view = this.createUseCase.create(command);
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction) {
+        final var request = new PageRequestDto(page, size, sortBy, direction);
+        final var views = listSoftDeletedUseCase.listSoftDeleted(request);
 
-    final var response = this.mapper.toResponse(view);
-    final var location = WebMvcLinkBuilder
-        .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
+        final var response = views.map(this.mapper::toResponse);
+        return ResponseEntity.ok(response);
+    }
 
-    return ResponseEntity.created(location).body(response);
-  }
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryResponse> findById(
+            @PathVariable
+            final UUID id) {
+        final var view = this.findUseCase.findById(this.mapper.toCategoryId(id));
 
-  @PostMapping("/{id}/restore")
-  public ResponseEntity<Void> restore(@PathVariable final UUID id,
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
+    }
 
-      @RequestParam final long version) {
-    final var command = this.mapper.toRestoreCommand(id, version);
-    this.restoreUseCase.restore(command);
+    @GetMapping("/{id}/image")
+    public ResponseEntity<CategoryImageResponse> findImageById(
+            @PathVariable
+            final UUID id) {
+        final var view = this.findImageUseCase.findImageById(this.mapper.toCategoryId(id));
 
-    return ResponseEntity.noContent().build();
-  }
+        final var response = this.mapper.toImageResponse(view);
+        return ResponseEntity.ok(response);
+    }
 
-  @PatchMapping("/{id}/info")
-  public ResponseEntity<CategoryResponse> updateInfo(@PathVariable final UUID id,
+    @GetMapping("/{id}/exists")
+    public ResponseEntity<Void> existsById(
+            @PathVariable
+            final UUID id) {
+        final var existed = this.checkExistsUseCase.existsById(this.mapper.toCategoryId(id));
+        if (!existed) {
+            return ResponseEntity.notFound().build();
+        }
 
-      @RequestBody @Valid final UpdateCategoryInfoRequest request) {
-    final var command = this.mapper.toUpdateInfoCommand(id, request);
-    final var view = this.updateInfoUseCase.updateInfo(command);
+        return ResponseEntity.noContent().build();
+    }
 
-    final var response = this.mapper.toResponse(view);
-    return ResponseEntity.ok(response);
-  }
+    @GetMapping("/deleted/{id}")
+    public ResponseEntity<CategoryResponse> findSoftDeletedById(
+            @PathVariable
+            final UUID id) {
+        final var view = this.findSoftDeletedUseCase.findSoftDeletedById(this.mapper.toCategoryId(id));
 
-  @PatchMapping("/{id}/image")
-  public ResponseEntity<CategoryImageResponse> updateImage(@PathVariable final UUID id,
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
+    }
 
-      @RequestBody @Valid final UpdateCategoryImageRequest request) {
-    final var command = this.mapper.toUpdateImageCommand(id, request);
-    final var view = this.updateImageUseCase.updateImage(command);
+    @PostMapping
+    public ResponseEntity<CategoryResponse> create(
+            @RequestBody
+            @Valid
+            final CreateCategoryRequest request) {
+        final var command = this.mapper.toCreateCommand(request);
+        final var view = this.createUseCase.create(command);
 
-    final var response = this.mapper.toImageResponse(view);
-    return ResponseEntity.ok(response);
-  }
+        final var response = this.mapper.toResponse(view);
+        final var location = WebMvcLinkBuilder
+                .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
 
-  @DeleteMapping("/{id}/image")
-  public ResponseEntity<CategoryImageResponse> deleteImageById(@PathVariable final UUID id,
+        return ResponseEntity.created(location).body(response);
+    }
 
-      @RequestParam final long version) {
-    final var command = this.mapper.toDeleteImageCommand(id, version);
-    final var view = this.deleteImageUseCase.deleteImage(command);
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restore(
+            @PathVariable
+            final UUID id,
 
-    final var response = this.mapper.toImageResponse(view);
-    return ResponseEntity.ok(response);
-  }
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toRestoreCommand(id, version);
+        this.restoreUseCase.restore(command);
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> softDeleteById(@PathVariable final UUID id,
+        return ResponseEntity.noContent().build();
+    }
 
-      @RequestParam final long version) {
-    final var command = this.mapper.toSoftDeleteCommand(id, version);
-    this.softDeleteUseCase.delete(command);
+    @PatchMapping("/{id}/info")
+    public ResponseEntity<CategoryResponse> updateInfo(
+            @PathVariable
+            final UUID id,
 
-    return ResponseEntity.noContent().build();
-  }
+            @RequestBody
+            @Valid
+            final UpdateCategoryInfoRequest request) {
+        final var command = this.mapper.toUpdateInfoCommand(id, request);
+        final var view = this.updateInfoUseCase.updateInfo(command);
 
-  @DeleteMapping("/{id}/purge")
-  public ResponseEntity<Void> hardDeleteById(@PathVariable final UUID id,
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
+    }
 
-      @RequestParam final long version) {
-    final var command = this.mapper.toHardDeleteCommand(id, version);
-    this.hardDeleteUseCase.purge(command);
+    @PatchMapping("/{id}/image")
+    public ResponseEntity<CategoryImageResponse> updateImage(
+            @PathVariable
+            final UUID id,
 
-    return ResponseEntity.noContent().build();
-  }
+            @RequestBody
+            @Valid
+            final UpdateCategoryImageRequest request) {
+        final var command = this.mapper.toUpdateImageCommand(id, request);
+        final var view = this.updateImageUseCase.updateImage(command);
+
+        final var response = this.mapper.toImageResponse(view);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}/image")
+    public ResponseEntity<CategoryImageResponse> deleteImageById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toDeleteImageCommand(id, version);
+        final var view = this.deleteImageUseCase.deleteImage(command);
+
+        final var response = this.mapper.toImageResponse(view);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> softDeleteById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toSoftDeleteCommand(id, version);
+        this.softDeleteUseCase.delete(command);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/purge")
+    public ResponseEntity<Void> hardDeleteById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toHardDeleteCommand(id, version);
+        this.hardDeleteUseCase.purge(command);
+
+        return ResponseEntity.noContent().build();
+    }
 }

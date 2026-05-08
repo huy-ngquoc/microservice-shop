@@ -12,20 +12,28 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VariantMongoRepository extends MongoRepository<VariantDocument, UUID> {
-  Page<VariantDocument> findAllByDeletionTimeIsNull(final Pageable pageable);
+    Page<VariantDocument> findAllByDeletionTimeIsNull(
+            final Pageable pageable);
 
-  Page<VariantDocument> findAllByTargetsInAndDeletionTimeIsNull(final Collection<String> targets,
-      final Pageable pageable);
+    Page<VariantDocument> findAllByTargetsInAndDeletionTimeIsNull(
+            final Collection<String> targets,
+            final Pageable pageable);
 
-  List<VariantDocument> findAllByIdInAndDeletionTimeIsNull(final Iterable<UUID> ids);
+    List<VariantDocument> findAllByIdInAndDeletionTimeIsNull(
+            final Iterable<UUID> ids);
 
-  List<VariantDocument> findAllByIdInAndDeletionTimeIsNotNull(final Iterable<UUID> ids);
+    List<VariantDocument> findAllByIdInAndDeletionTimeIsNotNull(
+            final Iterable<UUID> ids);
 
-  Optional<VariantDocument> findByIdAndDeletionTimeIsNull(final UUID id);
+    Optional<VariantDocument> findByIdAndDeletionTimeIsNull(
+            final UUID id);
 
-  Optional<VariantDocument> findByIdAndDeletionTimeIsNotNull(final UUID id);
+    Optional<VariantDocument> findByIdAndDeletionTimeIsNotNull(
+            final UUID id);
 
-  List<VariantDocument> findAllByProductId(final UUID productId);
+    List<VariantDocument> findAllByProductId(
+            final UUID productId);
 
-  void deleteAllByProductId(final UUID productId);
+    void deleteAllByProductId(
+            final UUID productId);
 }

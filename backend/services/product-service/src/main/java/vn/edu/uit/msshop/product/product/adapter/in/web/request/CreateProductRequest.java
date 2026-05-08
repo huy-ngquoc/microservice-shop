@@ -12,12 +12,28 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 
-public record CreateProductRequest(@NotBlank String name,
+public record CreateProductRequest(
+        @NotBlank
+        String name,
 
-@NotNull UUID categoryId,
+        @NotNull
+        UUID categoryId,
 
-@NotNull UUID brandId,
+        @NotNull
+        UUID brandId,
 
-@NotEmpty @Size(max=ProductOptions.MAX_AMOUNT)List<@NotBlank @Size(max=ProductOption.MAX_RAW_LENGTH_VALUE)String>options,
+        @NotEmpty
+        @Size(
+                max = ProductOptions.MAX_AMOUNT)
+        List<
+                @NotBlank @Size(
+                        max = ProductOption.MAX_RAW_LENGTH_VALUE) String> options,
 
-@NotEmpty List<@Valid CreateProductVariantRequest>variants){public CreateProductRequest{if(variants.size()>ProductVariants.MAX_AMOUNT){throw new IllegalArgumentException("Too many variants");}}}
+        @NotEmpty
+        List<@Valid CreateProductVariantRequest> variants) {
+    public CreateProductRequest {
+        if (variants.size() > ProductVariants.MAX_AMOUNT) {
+            throw new IllegalArgumentException("Too many variants");
+        }
+    }
+}

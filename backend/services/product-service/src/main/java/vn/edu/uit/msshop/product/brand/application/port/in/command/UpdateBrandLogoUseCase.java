@@ -4,5 +4,6 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandLogoCo
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 
 public interface UpdateBrandLogoUseCase {
-  BrandLogoView updateLogo(final UpdateBrandLogoCommand command);
+    BrandLogoView updateLogo(
+            final UpdateBrandLogoCommand command);
 }

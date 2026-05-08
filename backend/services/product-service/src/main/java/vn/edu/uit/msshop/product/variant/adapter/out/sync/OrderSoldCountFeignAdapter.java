@@ -14,16 +14,19 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCou
 @Component
 @RequiredArgsConstructor
 public class OrderSoldCountFeignAdapter implements FetchAllOrderSoldCountsPort {
-  private final OrderSoldCountFeignClient feignClient;
+    private final OrderSoldCountFeignClient feignClient;
 
-  @Override
-  public Collection<VariantOrderSoldCount> fetchAll() {
-    return this.feignClient.getSoldCounts().stream().map(OrderSoldCountFeignAdapter::toDomainDto)
-        .toList();
-  }
+    @Override
+    public Collection<VariantOrderSoldCount> fetchAll() {
+        return this.feignClient.getSoldCounts().stream()
+                .map(OrderSoldCountFeignAdapter::toDomainDto)
+                .toList();
+    }
 
-  private static VariantOrderSoldCount toDomainDto(final SoldCountResponse response) {
-    return new VariantOrderSoldCount(new VariantId(response.variantId()),
-        new VariantSoldCountValue(response.soldCount()));
-  }
+    private static VariantOrderSoldCount toDomainDto(
+            final SoldCountResponse response) {
+        return new VariantOrderSoldCount(
+                new VariantId(response.variantId()),
+                new VariantSoldCountValue(response.soldCount()));
+    }
 }

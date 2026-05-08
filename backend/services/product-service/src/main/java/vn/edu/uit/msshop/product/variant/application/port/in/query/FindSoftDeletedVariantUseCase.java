@@ -4,5 +4,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 public interface FindSoftDeletedVariantUseCase {
-  VariantView findSoftDeletedById(final VariantId id);
+    VariantView findSoftDeletedById(
+            final VariantId id);
 }

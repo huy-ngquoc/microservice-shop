@@ -11,25 +11,36 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductMongoRepository extends MongoRepository<ProductDocument, UUID> {
-  List<ProductDocument> findAllByDeletionTimeIsNull(final Iterable<UUID> ids);
+    List<ProductDocument> findAllByDeletionTimeIsNull(
+            final Iterable<UUID> ids);
 
-  Page<ProductDocument> findAllByDeletionTimeIsNull(final Pageable pageable);
+    Page<ProductDocument> findAllByDeletionTimeIsNull(
+            final Pageable pageable);
 
-  Page<ProductDocument> findAllByDeletionTimeIsNotNull(final Pageable pageable);
+    Page<ProductDocument> findAllByDeletionTimeIsNotNull(
+            final Pageable pageable);
 
-  Optional<ProductDocument> findByIdAndDeletionTimeIsNull(final UUID id);
+    Optional<ProductDocument> findByIdAndDeletionTimeIsNull(
+            final UUID id);
 
-  Optional<ProductDocument> findByIdAndDeletionTimeIsNotNull(final UUID id);
+    Optional<ProductDocument> findByIdAndDeletionTimeIsNotNull(
+            final UUID id);
 
-  boolean existsByIdAndDeletionTimeIsNull(final UUID id);
+    boolean existsByIdAndDeletionTimeIsNull(
+            final UUID id);
 
-  boolean existsByBrandIdAndDeletionTimeIsNull(final UUID brandId);
+    boolean existsByBrandIdAndDeletionTimeIsNull(
+            final UUID brandId);
 
-  boolean existsByBrandIdAndDeletionTimeIsNotNull(final UUID brandId);
+    boolean existsByBrandIdAndDeletionTimeIsNotNull(
+            final UUID brandId);
 
-  boolean existsByCategoryIdAndDeletionTimeIsNull(final UUID categoryId);
+    boolean existsByCategoryIdAndDeletionTimeIsNull(
+            final UUID categoryId);
 
-  boolean existsByCategoryIdAndDeletionTimeIsNotNull(final UUID categoryId);
+    boolean existsByCategoryIdAndDeletionTimeIsNotNull(
+            final UUID categoryId);
 
-  boolean existsByVariants_Id(final UUID variantId);
+    boolean existsByVariants_Id(
+            final UUID variantId);
 }

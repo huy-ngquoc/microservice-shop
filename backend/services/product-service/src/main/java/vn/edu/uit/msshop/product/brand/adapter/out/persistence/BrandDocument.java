@@ -15,39 +15,44 @@ import lombok.experimental.FieldNameConstants;
 
 @Document("Brands")
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public class BrandDocument {
-  @Id
-  @EqualsAndHashCode.Include
-  private final UUID id;
+    @Id
+    @EqualsAndHashCode.Include
+    private final UUID id;
 
-  private final String name;
+    private final String name;
 
-  @Nullable
-  private final String logoKey;
+    @Nullable
+    private final String logoKey;
 
-  @Version
-  @Nullable
-  private final Long version;
+    @Version
+    @Nullable
+    private final Long version;
 
-  @Nullable
-  private final Instant deletionTime;
+    @Nullable
+    private final Instant deletionTime;
 
-  @PersistenceCreator
-  public BrandDocument(final UUID id,
+    @PersistenceCreator
+    public BrandDocument(
+            final UUID id,
 
-      final String name,
+            final String name,
 
-      @Nullable final String logoKey,
+            @Nullable
+            final String logoKey,
 
-      @Nullable final Long version,
+            @Nullable
+            final Long version,
 
-      @Nullable final Instant deletionTime) {
-    this.id = id;
-    this.name = name;
-    this.logoKey = logoKey;
-    this.version = version;
-    this.deletionTime = deletionTime;
-  }
+            @Nullable
+            final Instant deletionTime) {
+        this.id = id;
+        this.name = name;
+        this.logoKey = logoKey;
+        this.version = version;
+        this.deletionTime = deletionTime;
+    }
 }

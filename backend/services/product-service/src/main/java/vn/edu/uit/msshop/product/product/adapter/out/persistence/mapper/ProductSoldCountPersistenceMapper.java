@@ -9,10 +9,11 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductSoldCou
 
 @Component
 public class ProductSoldCountPersistenceMapper {
-  public ProductSoldCount toDomain(final ProductSoldCountDocument entity) {
-    final var id = new ProductId(entity.getId());
-    final var value = new ProductSoldCountValue(entity.getSoldCount());
+    public ProductSoldCount toDomain(
+            final ProductSoldCountDocument entity) {
+        final var id = new ProductId(entity.getId());
+        final var value = new ProductSoldCountValue(entity.getSoldCount());
 
-    return new ProductSoldCount(id, value);
-  }
+        return new ProductSoldCount(id, value);
+    }
 }

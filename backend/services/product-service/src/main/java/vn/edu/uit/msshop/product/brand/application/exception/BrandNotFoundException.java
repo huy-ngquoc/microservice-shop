@@ -5,11 +5,14 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.shared.application.exception.NotFoundException;
 
 public final class BrandNotFoundException extends NotFoundException {
-  public BrandNotFoundException(final BrandId id, final Throwable cause) {
-    super(Brand.class.getSimpleName(), id.value().toString(), cause);
-  }
+    public BrandNotFoundException(
+            final BrandId id,
+            final Throwable cause) {
+        super(Brand.class.getSimpleName(), id.value().toString(), cause);
+    }
 
-  public BrandNotFoundException(final BrandId id) {
-    super(Brand.class.getSimpleName(), id.value().toString());
-  }
+    public BrandNotFoundException(
+            final BrandId id) {
+        super(Brand.class.getSimpleName(), id.value().toString());
+    }
 }

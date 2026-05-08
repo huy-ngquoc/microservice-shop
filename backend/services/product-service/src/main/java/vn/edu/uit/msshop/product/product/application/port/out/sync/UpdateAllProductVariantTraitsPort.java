@@ -6,5 +6,6 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 
 public interface UpdateAllProductVariantTraitsPort {
-  void updateTraitsByIds(final Map<ProductVariantId, ProductVariantTraits> newTraitsMap);
+    void updateTraitsByIds(
+            final Map<ProductVariantId, ProductVariantTraits> newTraitsMap);
 }
