@@ -1,4 +1,5 @@
 package vn.uit.edu.payment.adapter.out.event.documents;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -12,7 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="payment_success")
+@Table(
+        name = "payment_success")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,8 +25,8 @@ public class PaymentSuccessDocument {
     private UUID eventId;
     private UUID orderId;
     private String eventStatus;
-    private Integer retryCount; 
+    private Integer retryCount;
     private Instant createdAt;
-    private Instant updatedAt; 
+    private Instant updatedAt;
     private String lastError;
 }

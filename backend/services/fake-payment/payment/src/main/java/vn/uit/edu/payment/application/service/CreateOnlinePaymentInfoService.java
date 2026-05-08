@@ -25,66 +25,75 @@ import vn.uit.edu.payment.domain.model.valueobject.TransactionId;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUseCase  {
+public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUseCase {
     private final SaveOnlinePaymentInfoPort savePort;
     private final PayOS payOS;
-    private static final String RETURN_URL="";
-    private static final String CANCEL_URL="";
-    private static final long PAYMENT_LINK_LIFETIME = 15*60;
+    private static final String RETURN_URL = "";
+    private static final String CANCEL_URL = "";
+    private static final long PAYMENT_LINK_LIFETIME = 15 * 60;
     private final PublishPaymentEventPort publishEventPort;
     private final PaymentLinkCreatedRepository paymentLinkCreatedRepo;
 
     @Override
     @Transactional
-    public String createPaymentLink(Payment payment) {
-        
-        /*long orderCode=  System.currentTimeMillis();
-        CreatePaymentLinkRequest request = CreatePaymentLinkRequest.builder()
-        .orderCode(orderCode)
-        .amount(payment.getPaymentValue().value())
-        .description("Payment")
-        .returnUrl(RETURN_URL)
-        .cancelUrl(CANCEL_URL)
-        .expiredAt((System.currentTimeMillis() / 1000)+PAYMENT_LINK_LIFETIME)
-        .build();
-        var paymentLink = payOS.paymentRequests().create(request);
-        
-         OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new PaymentLink(paymentLink.getCheckoutUrl()), new OnlinePaymentNumber(orderCode),new TransactionId(null), new CreateAt(Instant.now()));
+    public String createPaymentLink(
+            Payment payment) {
+
+        /*
+         * long orderCode= System.currentTimeMillis();
+         * CreatePaymentLinkRequest request = CreatePaymentLinkRequest.builder()
+         * .orderCode(orderCode)
+         * .amount(payment.getPaymentValue().value())
+         * .description("Payment")
+         * .returnUrl(RETURN_URL)
+         * .cancelUrl(CANCEL_URL)
+         * .expiredAt((System.currentTimeMillis() / 1000)+PAYMENT_LINK_LIFETIME)
+         * .build();
+         * var paymentLink = payOS.paymentRequests().create(request);
+         *
+         * OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new
+         * PaymentLink(paymentLink.getCheckoutUrl()), new
+         * OnlinePaymentNumber(orderCode),new TransactionId(null), new
+         * CreateAt(Instant.now()));
+         * this.savePort.save(info);
+         * String result = paymentLink.getCheckoutUrl();
+         * var paymentLinkCreatedDocument = PaymentLinkCreatedDocument.builder()
+         * .eventId(UUID.randomUUID())
+         * .paymentLink(result)
+         * .orderId(payment.getOrderId().value())
+         * .userEmail(payment.getUserEmail().value())
+         * .userId(payment.getUserId().value())
+         * .eventStatus("PENDING")
+         * .retryCount(0)
+         * .createdAt(Instant.now())
+         * .updatedAt(null)
+         * .lastError(null).build();
+         * publishEventPort.publishPaymentLinkCreated(paymentLinkCreatedRepo.save(
+         * paymentLinkCreatedDocument));
+         *
+         * return result;
+         */
+        String result = UUID.randomUUID().toString();
+
+        OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new PaymentLink(result),
+                new OnlinePaymentNumber(System.currentTimeMillis()), new TransactionId(null),
+                new CreateAt(Instant.now()));
         this.savePort.save(info);
-        String result = paymentLink.getCheckoutUrl();
         var paymentLinkCreatedDocument = PaymentLinkCreatedDocument.builder()
-        .eventId(UUID.randomUUID())
-        .paymentLink(result)
-        .orderId(payment.getOrderId().value())
-        .userEmail(payment.getUserEmail().value())
-        .userId(payment.getUserId().value())
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
+                .eventId(UUID.randomUUID())
+                .paymentLink(result)
+                .orderId(payment.getOrderId().value())
+                .userEmail(payment.getUserEmail().value())
+                .userId(payment.getUserId().value())
+                .eventStatus("PENDING")
+                .retryCount(0)
+                .createdAt(Instant.now())
+                .updatedAt(null)
+                .lastError(null).build();
         publishEventPort.publishPaymentLinkCreated(paymentLinkCreatedRepo.save(paymentLinkCreatedDocument));
 
-       return result;*/
-       String result = UUID.randomUUID().toString();
-       
-       OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new PaymentLink(result), new OnlinePaymentNumber(System.currentTimeMillis()),new TransactionId(null), new CreateAt(Instant.now()));
-       this.savePort.save(info);
-       var paymentLinkCreatedDocument = PaymentLinkCreatedDocument.builder()
-        .eventId(UUID.randomUUID())
-        .paymentLink(result)
-        .orderId(payment.getOrderId().value())
-        .userEmail(payment.getUserEmail().value())
-        .userId(payment.getUserId().value())
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null).build();
-        publishEventPort.publishPaymentLinkCreated(paymentLinkCreatedRepo.save(paymentLinkCreatedDocument));
-
-       return result;
+        return result;
 
     }
-    
+
 }

@@ -2,6 +2,7 @@ package vn.uit.edu.payment.adapter.in.web;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -54,88 +55,128 @@ public class PaymentController {
     private final EventDocumentRepository eventDocumentRepo;
 
     @GetMapping("/{paymentId}")
-    public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable UUID paymentId) {
+    public ResponseEntity<PaymentResponse> getPaymentById(
+            @PathVariable
+            UUID paymentId) {
         final var result = mapper.toResponse(loadPaymentUseCase.findById(new PaymentId(paymentId)));
         return ResponseEntity.ok(result);
     }
+
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId, @RequestHeader("X-User-Id") String userIdFromHeader) {
-        System.out.println("X-User-Id "+userIdFromHeader+"newiwniweviwenvioernoviernv");
+    public ResponseEntity<PaymentResponse> getPaymentByOrderId(
+            @PathVariable
+            UUID orderId,
+            @RequestHeader("X-User-Id")
+            String userIdFromHeader) {
+        System.out.println("X-User-Id " + userIdFromHeader + "newiwniweviwenvioernoviernv");
         final var payment = loadPaymentUseCase.loadByOrderId(new OrderId(orderId));
-        if(payment==null) return ResponseEntity.notFound().build();
+        if (payment == null)
+            return ResponseEntity.notFound().build();
         final var result = mapper.toResponse(payment);
         return ResponseEntity.ok(result);
     }
+
     @DeleteMapping("/clear")
     public ResponseEntity<Void> clearDatabase() {
         springDataOnlinePaymentInfoRepo.deleteAll();
         springDataPaymentJpaRepo.deleteAll();
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/public/order/{orderId}")
-    public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId) {
+    public ResponseEntity<PaymentResponse> getPaymentByOrderId(
+            @PathVariable
+            UUID orderId) {
         final var payment = loadPaymentUseCase.loadByOrderId(new OrderId(orderId));
-        if(payment==null) return ResponseEntity.notFound().build();
+        if (payment == null)
+            return ResponseEntity.notFound().build();
         final var result = mapper.toResponse(payment);
         return ResponseEntity.ok(result);
     }
+
     @GetMapping("/public/refunds")
     public ResponseEntity<List<PaybackPayments>> getRefunds() {
         return ResponseEntity.ok(refundRepo.findAll());
     }
+
     @DeleteMapping("/clear_refunds")
     public ResponseEntity<Void> clearRefunds() {
         refundRepo.deleteAll();
         return ResponseEntity.noContent().build();
     }
+
     @PostMapping("/create")
-    public ResponseEntity<PaymentResponse> createPayment(@RequestBody CreatePaymentRequest request) {
+    public ResponseEntity<PaymentResponse> createPayment(
+            @RequestBody
+            CreatePaymentRequest request) {
         final var command = mapper.toCommand(request);
-        final var result =createUseCase.create(command);
-        return ResponseEntity.ok(mapper.toResponse(result));
-    } 
-    @PutMapping("/update")
-    public ResponseEntity<PaymentResponse> updatePayment(@RequestBody UpdatePaymentRequest request) {
-        final var command = mapper.toCommand(request);
-        final var result =updateUseCase.update(command);
+        final var result = createUseCase.create(command);
         return ResponseEntity.ok(mapper.toResponse(result));
     }
-    @PutMapping("/update/online_cancelled") 
-    public ResponseEntity<Void> onlinePaymentCancelled(@RequestParam UUID orderId) {
+
+    @PutMapping("/update")
+    public ResponseEntity<PaymentResponse> updatePayment(
+            @RequestBody
+            UpdatePaymentRequest request) {
+        final var command = mapper.toCommand(request);
+        final var result = updateUseCase.update(command);
+        return ResponseEntity.ok(mapper.toResponse(result));
+    }
+
+    @PutMapping("/update/online_cancelled")
+    public ResponseEntity<Void> onlinePaymentCancelled(
+            @RequestParam
+            UUID orderId) {
         this.updateUseCase.onlinePaymentCancelled(new OrderId(orderId));
         return ResponseEntity.noContent().build();
-    } 
+    }
+
     @PutMapping("/update/online_expired")
-    public ResponseEntity<Void> onlinePaymentExpired(@RequestParam UUID orderId) {
+    public ResponseEntity<Void> onlinePaymentExpired(
+            @RequestParam
+            UUID orderId) {
         this.updateUseCase.onlinePaymentExpire(new OrderId(orderId));
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/pay_os/web_hook")
-    public ResponseEntity<String> handlePayOSWebHook(@RequestBody Webhook body) {
+    public ResponseEntity<String> handlePayOSWebHook(
+            @RequestBody
+            Webhook body) {
         webHookPort.handlePayOSWebHook(body);
         return ResponseEntity.ok("Confirmed");
     }
+
     @GetMapping("/online_payment_link/{orderId}")
-    public ResponseEntity<String> getOnlinePaymentLink(@PathVariable UUID orderId) {
+    public ResponseEntity<String> getOnlinePaymentLink(
+            @PathVariable
+            UUID orderId) {
         String result = loadOnlinePaymentUseCase.getPaymentLink(new OrderId(orderId));
         return ResponseEntity.ok(result);
     }
+
     @PostMapping("/fake_web_hook")
-    public ResponseEntity<Void> fakeWebHook(@RequestBody UUID orderId) {
+    public ResponseEntity<Void> fakeWebHook(
+            @RequestBody
+            UUID orderId) {
         webHookPort.fakeWebHook(orderId);
         return ResponseEntity.noContent().build();
     }
+
     @PostMapping("/public/create_payment")
-    public ResponseEntity<Void> createPayment(@RequestBody OrderCreated orderCreated) {
-        if(!eventDocumentRepo.existsById(orderCreated.eventId())) {
-        CreatePaymentCommand command = mapper.toCommand(orderCreated);
-        createUseCase.create(command);
-        eventDocumentRepo.save(new EventDocument(orderCreated.eventId(), Instant.now()));
-       
+    public ResponseEntity<Void> createPayment(
+            @RequestBody
+            OrderCreated orderCreated) {
+        Random rand = new Random();
+        int randomNumber = rand.nextInt(20);
+        if(randomNumber>=12) return ResponseEntity.internalServerError().build();
+        if (!eventDocumentRepo.existsById(orderCreated.eventId())) {
+            CreatePaymentCommand command = mapper.toCommand(orderCreated);
+            createUseCase.create(command);
+            eventDocumentRepo.save(new EventDocument(orderCreated.eventId(), Instant.now()));
+
         }
-         return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 
 }
-

@@ -196,10 +196,10 @@ services:
             - ORDER_DB_URL=${ORDER_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
-    payment-service:
+    fake-payment-service:
         build:
             context: .
-            dockerfile: backend/services/payment-service/payment/Dockerfile
+            dockerfile: backend/services/fake-payment/payment/Dockerfile
         container_name: payment-service
         ports:
             - "8074:8074"

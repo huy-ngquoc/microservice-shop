@@ -15,8 +15,10 @@ import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 public class PaymentCreatedFailService {
     private final PaymentCreatedFailedRepository paymentCreatedFailRepo;
     private final PublishPaymentEventPort publishEventPort;
-     @Transactional
-    public void saveAndSendPaymentCreatedFail(PaymentCreatedFailDocument document) {
+
+    @Transactional
+    public void saveAndSendPaymentCreatedFail(
+            PaymentCreatedFailDocument document) {
         final var savedEvent = paymentCreatedFailRepo.save(document);
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
