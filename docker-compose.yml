@@ -1,8 +1,23 @@
 services:
+    # Build-only image: pre-installs parent POM and all shared modules into ~/.m2
+    # so domain services can use `FROM microservice-shop-shared-base AS build`.
+    # Other services declare it via `additional_contexts: service:shared-base`,
+    # which makes Compose build it first. The `entrypoint: ["true"]` causes the
+    # container to exit immediately if `up` ever tries to start it.
+    shared-base:
+        image: microservice-shop-shared-base
+        build:
+            context: .
+            dockerfile: backend/services/Dockerfile.shared-base
+        entrypoint: [ "true" ]
+        restart: "no"
+
     config-server:
         build:
             context: . # Trỏ về thư mục gốc chứa pom.xml tổng và common-dto
-            dockerfile: backend/services/config-server/Dockerfile # Đường dẫn tới file Dockerfile
+            dockerfile: backend/services/config-server/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: config-server
         healthcheck:
             test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/actuator/health" ]
@@ -25,6 +40,8 @@ services:
         build:
             context: .
             dockerfile: backend/services/discovery-server/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: discovery-server
         ports:
             - "8761:8761"
@@ -45,6 +62,8 @@ services:
         build:
             context: .
             dockerfile: backend/services/account-service/account/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: account-service
         ports:
             - "8071:8071"
@@ -65,6 +84,8 @@ services:
         build:
             context: .
             dockerfile: backend/services/auth-service/auth/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: auth-service
         ports:
             - "8082:8082"
@@ -84,6 +105,8 @@ services:
         build:
             context: .
             dockerfile: backend/services/cart-service/cart/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: cart-service
         ports:
             - "8089:8089"
@@ -104,6 +127,8 @@ services:
         build:
             context: .
             dockerfile: backend/services/inventory-service/inventory/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: inventory-service
         ports:
             - "8090:8090"
@@ -125,6 +150,8 @@ services:
         build:
             context: .
             dockerfile: backend/services/notification-service/notification/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: notification-service
         ports:
             - "8092:8092"
@@ -144,6 +171,8 @@ services:
         build:
             context: .
             dockerfile: backend/services/rating-service/rating/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: rating-service
         ports:
             - "8072:8072"
@@ -162,6 +191,8 @@ services:
         build:
             context: .
             dockerfile: backend/services/recommendation-service/recommendation/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: recommendation-service
         ports:
             - "8080:8080"
@@ -179,6 +210,8 @@ services:
         build:
             context: .
             dockerfile: backend/services/order-service/order/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: order-service
         ports:
             - "8000:8000"
@@ -196,10 +229,12 @@ services:
             - ORDER_DB_URL=${ORDER_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
-    payment-service:
+    fake-payment-service:
         build:
             context: .
-            dockerfile: backend/services/payment-service/payment/Dockerfile
+            dockerfile: backend/services/fake-payment/payment/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: payment-service
         ports:
             - "8074:8074"
@@ -219,6 +254,8 @@ services:
         build:
             context: .
             dockerfile: backend/services/product-service/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
         container_name: product-service
         ports:
             - "8070:8070"
@@ -580,10 +617,10 @@ services:
         container_name: redis_cart
         restart: always
         ports:
-            - "6379:6379"
+            - "6382:6379"
         command: redis-server --save 300 10 --requirepass binh123 --appendonly yes --appendfsync everysec --loglevel warning
         volumes:
-            - redis_data:/data
+            - redis_cart:/data
         networks:
             - microservices-net
         deploy:
@@ -609,7 +646,6 @@ volumes:
     mongo_rating:
     postgres_payment:
     mongo_order:
-    redis_data:
     postgres_inventory:
     mongo_auth:
     mongo_account:
