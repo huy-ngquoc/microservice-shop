@@ -1,28 +1,12 @@
 # Stage 1: Build
-FROM maven:3.9-eclipse-temurin-25 AS build
+FROM microservice-shop-shared-base AS build
 WORKDIR /app
 
-COPY backend/services/pom.xml backend/services/
-COPY backend/services/.mvn backend/services/.mvn
-COPY backend/services/shared-cloudinary/pom.xml backend/services/shared-cloudinary/
-COPY backend/services/shared-kernel/pom.xml backend/services/shared-kernel/
-COPY backend/services/shared-spring-data/pom.xml backend/services/shared-spring-data/
-COPY backend/services/shared-webmvc/pom.xml backend/services/shared-webmvc/
-COPY backend/services/config-server/pom.xml backend/services/config-server/
-COPY backend/services/discovery-server/pom.xml backend/services/discovery-server/
 COPY backend/services/product-service/pom.xml backend/services/product-service/
+RUN mvn -f backend/services/product-service/pom.xml dependency:go-offline -B
 
-RUN mvn -f backend/services/pom.xml dependency:go-offline -B
-
-COPY backend/services/shared-cloudinary/src backend/services/shared-cloudinary/src
-COPY backend/services/shared-kernel/src backend/services/shared-kernel/src
-COPY backend/services/shared-spring-data/src backend/services/shared-spring-data/src
-COPY backend/services/shared-webmvc/src backend/services/shared-webmvc/src
 COPY backend/services/product-service/src backend/services/product-service/src
-
-COPY backend/services/java-formatter.xml backend/services/java-formatter.xml
-
-RUN mvn clean package -f backend/services/pom.xml -pl product-service -am -DskipTests
+RUN mvn clean package -f backend/services/product-service/pom.xml -DskipTests
 
 # Stage 2: Run
 FROM eclipse-temurin:25-jre-alpine

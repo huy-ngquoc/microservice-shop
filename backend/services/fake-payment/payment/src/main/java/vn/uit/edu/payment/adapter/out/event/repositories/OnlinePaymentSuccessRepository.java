@@ -11,11 +11,15 @@ import org.springframework.stereotype.Repository;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentSuccessDocument;
 
 @Repository
-public interface OnlinePaymentSuccessRepository extends JpaRepository<OnlinePaymentSuccessDocument,UUID> {
-    public List<OnlinePaymentSuccessDocument> findByEventStatus(String eventStatus);
+public interface OnlinePaymentSuccessRepository extends JpaRepository<OnlinePaymentSuccessDocument, UUID> {
+    public List<OnlinePaymentSuccessDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<OnlinePaymentSuccessDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public List<OnlinePaymentSuccessDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 
 }

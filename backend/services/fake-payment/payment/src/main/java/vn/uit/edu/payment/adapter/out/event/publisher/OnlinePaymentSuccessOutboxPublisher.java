@@ -15,62 +15,76 @@ import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentSuccessDocume
 import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentSuccessRepository;
 import vn.uit.edu.payment.domain.event.OnlinePaymentSuccess;
 
-
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class OnlinePaymentSuccessOutboxPublisher {
     private final OnlinePaymentSuccessRepository onlinePaymentSuccessRepo;
-    private static final String PUBLISH_TOPIC="payment-online-topic";
+    private static final String PUBLISH_TOPIC = "payment-online-topic";
     private final KafkaTemplate<String, OnlinePaymentSuccess> kafkaTemplate;
 
-     @Scheduled(fixedDelay=5000)
+    @Scheduled(
+            fixedDelay = 5000)
     public void publishPendingEvents() {
-        List<OnlinePaymentSuccessDocument> pendingEvents = onlinePaymentSuccessRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        List<OnlinePaymentSuccessDocument> pendingEvents = onlinePaymentSuccessRepo
+                .findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (OnlinePaymentSuccessDocument event : pendingEvents) {
             try {
-                OnlinePaymentSuccess onlinePaymentExpired = new OnlinePaymentSuccess(event.getOrderId(), event.getEventId(), event.getUserEmail(), event.getUserId());
+                OnlinePaymentSuccess onlinePaymentExpired = new OnlinePaymentSuccess(event.getOrderId(),
+                        event.getEventId(), event.getUserEmail(), event.getUserId());
                 kafkaTemplate.send(PUBLISH_TOPIC, onlinePaymentExpired)
-                    .whenComplete((result, ex) -> {
-                        if (ex == null) {
-                            
-                            updateStatus(event, "SENT", null);
-                        } else {
-                            
-                            handleFailure(event, ex.getMessage());
-                        }
-                    });
+                        .whenComplete((
+                                result,
+                                ex) -> {
+                            if (ex == null) {
+
+                                updateStatus(event, "SENT", null);
+                            } else {
+
+                                handleFailure(event, ex.getMessage());
+                            }
+                        });
             } catch (Exception e) {
                 handleFailure(event, e.getMessage());
             }
         }
     }
 
-    private void updateStatus(OnlinePaymentSuccessDocument event, String status, String error) {
+    private void updateStatus(
+            OnlinePaymentSuccessDocument event,
+            String status,
+            String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
         onlinePaymentSuccessRepo.save(event);
     }
+
     @Transactional
-    public void markAsSent(OnlinePaymentSuccessDocument event) {
+    public void markAsSent(
+            OnlinePaymentSuccessDocument event) {
         updateStatus(event, "SENT", null);
     }
-    private void handleFailure(OnlinePaymentSuccessDocument event, String error) {
+
+    private void handleFailure(
+            OnlinePaymentSuccessDocument event,
+            String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
         } else {
             event.setRetryCount(retries + 1);
-            updateStatus(event, "PENDING", error); 
+            updateStatus(event, "PENDING", error);
         }
     }
-    @Scheduled(cron = "0 0 0 * * ?") 
+
+    @Scheduled(
+            cron = "0 0 0 * * ?")
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
-    
-    onlinePaymentSuccessRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
-   
-}
+
+        onlinePaymentSuccessRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+
+    }
 }

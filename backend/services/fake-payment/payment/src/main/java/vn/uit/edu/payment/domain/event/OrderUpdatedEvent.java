@@ -17,9 +17,9 @@ public class OrderUpdatedEvent {
     private UUID orderId;
 
     private List<OrderDetailEvent> details;
-    
+
     private String status;
-    
+
     private UUID userId;
 
     private long originPrice;
@@ -29,10 +29,6 @@ public class OrderUpdatedEvent {
     private long discount;
 
     private long totalPrice;
-
-    
-
-    
 
     private String currency;
     private String paymentMethod;

@@ -6,7 +6,6 @@ import org.jspecify.annotations.NonNull;
 
 import vn.uit.edu.payment.application.common.Patch;
 
-
 public record PatchRequest<T>(
         @NonNull
         Op op,

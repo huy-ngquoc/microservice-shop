@@ -21,11 +21,19 @@ import vn.uit.edu.payment.domain.model.valueobject.TransactionId;
 public class OnlinePaymentEntityMapper {
     private final LoadPaymentPort loadPaymentPort;
     private final PaymentEntityMapper mapper;
-    public OnlinePaymentInfo toDomain(OnlinePaymentInfoJpaEntity entity) {
-        return new OnlinePaymentInfo(new PaymentId(entity.getId()), new PaymentLink(entity.getPaymentLink()), new OnlinePaymentNumber(entity.getPaymentCode()), new TransactionId(entity.getTransactionId()), new CreateAt(Instant.now()));
+
+    public OnlinePaymentInfo toDomain(
+            OnlinePaymentInfoJpaEntity entity) {
+        return new OnlinePaymentInfo(new PaymentId(entity.getId()), new PaymentLink(entity.getPaymentLink()),
+                new OnlinePaymentNumber(entity.getPaymentCode()), new TransactionId(entity.getTransactionId()),
+                new CreateAt(Instant.now()));
     }
-    public OnlinePaymentInfoJpaEntity toEntity(OnlinePaymentInfo domain) {
-        Payment p = loadPaymentPort.loadPaymentById(domain.getPaymentId()).orElseThrow(()-> new PaymentNotFoundException(domain.getPaymentId()));
-        return new OnlinePaymentInfoJpaEntity(mapper.toEntity(p), domain.getPaymentNumber().value(), domain.getLink().value(), domain.getTransactionId().value(), domain.getCreateAt().value());
+
+    public OnlinePaymentInfoJpaEntity toEntity(
+            OnlinePaymentInfo domain) {
+        Payment p = loadPaymentPort.loadPaymentById(domain.getPaymentId())
+                .orElseThrow(() -> new PaymentNotFoundException(domain.getPaymentId()));
+        return new OnlinePaymentInfoJpaEntity(mapper.toEntity(p), domain.getPaymentNumber().value(),
+                domain.getLink().value(), domain.getTransactionId().value(), domain.getCreateAt().value());
     }
 }

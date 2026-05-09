@@ -1,8 +1,7 @@
 # Stage 1: Build
-FROM maven:3.9-eclipse-temurin-25 AS build
+FROM microservice-shop-shared-base AS build
 WORKDIR /app
 
-# Chỉ copy đúng pom.xml và source code của inventory-service
 COPY backend/services/rating-service/rating/pom.xml backend/services/rating-service/rating/
 RUN mvn -f backend/services/rating-service/rating/pom.xml dependency:go-offline -B
 
