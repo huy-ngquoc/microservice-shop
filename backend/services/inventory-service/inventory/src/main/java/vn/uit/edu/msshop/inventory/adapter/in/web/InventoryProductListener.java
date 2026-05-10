@@ -19,7 +19,7 @@ import vn.uit.edu.msshop.inventory.application.port.in.CreateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.in.DeleteInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
-import vn.uit.edu.msshop.inventory.config.RedisConfig;
+import vn.uit.edu.msshop.inventory.bootstrap.config.RedisConfig;
 import vn.uit.edu.msshop.inventory.domain.event.product.VariantDeleted;
 import vn.uit.edu.msshop.inventory.domain.event.product.VariantPurge;
 import vn.uit.edu.msshop.inventory.domain.event.product.VariantRestore;
@@ -29,98 +29,113 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 @Component
 @RequiredArgsConstructor
-@KafkaListener(topics="product-topic", groupId="product-inventory-group")
+@KafkaListener(
+        topics = "product-topic",
+        groupId = "product-inventory-group")
 public class InventoryProductListener {
     private final CreateInventoryUseCase createUseCase;
     private final EventDocumentRepository eventDocumentRepo;
     private final LoadInventoryPort loadPort;
     private final DeleteInventoryUseCase deleteUseCase;
     private final SaveInventoryPort savePort;
-    
-    
-    private final RedisTemplate<String,Map<String,String>> redisTemplate;
+
+    private final RedisTemplate<String, Map<String, String>> redisTemplate;
     private final RedisConfig redisConfig;
-    
-    /*@KafkaHandler
-    @Transactional
-    public void onProductCreated(ProductCreated productCreated) {
-        System.out.println("Received event from product service");
-        if(eventDocumentRepo.existsById(productCreated.getEventId())) return;
-        List<VariantId> variantIds = productCreated.getVariantCreateds().stream().map(item->new VariantId(item.getVariantId())).toList();
-        createUseCase.createNewsFromListVariantId(variantIds);
-        eventDocumentRepo.save(EventDocument.builder().eventId(productCreated.getEventId()).receiveAt(Instant.now()).build());
-    }*/
+
+    /*
+     * @KafkaHandler
+     * 
+     * @Transactional
+     * public void onProductCreated(ProductCreated productCreated) {
+     * System.out.println("Received event from product service");
+     * if(eventDocumentRepo.existsById(productCreated.getEventId())) return;
+     * List<VariantId> variantIds =
+     * productCreated.getVariantCreateds().stream().map(item->new
+     * VariantId(item.getVariantId())).toList();
+     * createUseCase.createNewsFromListVariantId(variantIds);
+     * eventDocumentRepo.save(EventDocument.builder().eventId(productCreated.
+     * getEventId()).receiveAt(Instant.now()).build());
+     * }
+     */
     @KafkaHandler
     @Transactional
-    public void onVariantUpdate(VariantUpdate event) {
+    public void onVariantUpdate(
+            VariantUpdate event) {
         System.out.println("Receive variant updatedddd");
-        if(eventDocumentRepo.existsById(event.getEventId())) return;
+        if (eventDocumentRepo.existsById(event.getEventId()))
+            return;
         Inventory i = loadPort.loadByVariantId(new VariantId(event.getVariantId())).orElse(null);
-        if(i==null) {
+        if (i == null) {
             createUseCase.create(new VariantId(event.getVariantId()));
-        }
-        else {
+        } else {
             updateInventoryStatus(i.getVariantId().value(), "ENABLE", redisConfig.getUpdateInventoryStatus());
         }
         eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
     }
+
     @KafkaHandler
     @Transactional
-    public void onVariantPurge(VariantPurge event) {
-        if(eventDocumentRepo.existsById(event.getEventId())) return;
-        
+    public void onVariantPurge(
+            VariantPurge event) {
+        if (eventDocumentRepo.existsById(event.getEventId()))
+            return;
+
         deleteUseCase.deleteByVariantId(new VariantId(event.getVariantId()));
         eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
     }
+
     @KafkaHandler
     @Transactional
-    public void onVariantRestore(VariantRestore event) {
-        if(eventDocumentRepo.existsById(event.getEventId())) return;
+    public void onVariantRestore(
+            VariantRestore event) {
+        if (eventDocumentRepo.existsById(event.getEventId()))
+            return;
         Inventory i = loadPort.loadByVariantId(new VariantId(event.getVariantId())).orElse(null);
-        if(i==null) {
+        if (i == null) {
 
-        }
-        else {
+        } else {
             updateInventoryStatus(i.getVariantId().value(), "ENABLE", redisConfig.getUpdateInventoryStatus());
-            
 
         }
         eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
     }
 
     @KafkaHandler
-    //@Transactional
-    public void onVariantDeleted(VariantDeleted event) {
-        if(eventDocumentRepo.existsById(event.getEventId())) return;
+    // @Transactional
+    public void onVariantDeleted(
+            VariantDeleted event) {
+        if (eventDocumentRepo.existsById(event.getEventId()))
+            return;
         System.out.println("On variant deleted");
         Inventory i = loadPort.loadByVariantId(new VariantId(event.getVariantId())).orElse(null);
-        if(i==null) {
+        if (i == null) {
             System.out.println("I is null");
-        }
-        else {
+        } else {
             updateInventoryStatus(i.getVariantId().value(), "DISABLE", redisConfig.getUpdateInventoryStatus());
-            //savePort.save(toSave);
+            // savePort.save(toSave);
 
         }
         eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
     }
 
-    @KafkaHandler(isDefault = true)
-    public void ignoreOthers(Object event) {
-        
+    @KafkaHandler(
+            isDefault = true)
+    public void ignoreOthers(
+            Object event) {
+
         System.out.println("Received strange event, ignore");
     }
-    private void updateInventoryStatus(UUID variantId, String status, DefaultRedisScript<Long> updateStatusScript) {
-    String key = "inventory:variant:" + variantId.toString();
-    
-    
-    redisTemplate.execute(
-        updateStatusScript, 
-        List.of(key), 
-        status
-    );
-}
 
+    private void updateInventoryStatus(
+            UUID variantId,
+            String status,
+            DefaultRedisScript<Long> updateStatusScript) {
+        String key = "inventory:variant:" + variantId.toString();
 
+        redisTemplate.execute(
+                updateStatusScript,
+                List.of(key),
+                status);
+    }
 
 }
