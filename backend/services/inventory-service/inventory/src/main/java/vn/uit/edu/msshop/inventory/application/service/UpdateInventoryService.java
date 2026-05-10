@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ import vn.uit.edu.msshop.inventory.application.port.in.UpdateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.PublishInventoryEventPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
+import vn.uit.edu.msshop.inventory.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.Quantity;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.ReservedQuantity;
@@ -45,6 +48,18 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.INVENTORY,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.INVENTORY_BY_VARIANT,
+                            key = "#command.variantId().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.INVENTORY_LIST,
+                            allEntries = true)
+            })
     public InventoryView update(
             UpdateInventoryCommand command) {
         Inventory inventory = loadPort.loadByVariantId(command.variantId())
@@ -83,6 +98,18 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.INVENTORY,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.INVENTORY_BY_VARIANT,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.INVENTORY_LIST,
+                            allEntries = true)
+            })
     public List<InventoryView> updateWhenOrderCancelled(
             OrderCancelledCommand commands) {
         List<Inventory> inventories = loadPort.findAllByListVariantId(
@@ -160,6 +187,18 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.INVENTORY,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.INVENTORY_BY_VARIANT,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.INVENTORY_LIST,
+                            allEntries = true)
+            })
     public List<InventoryView> updateWhenOrderShipped(
             OrderShippedCommand commands) {
         List<Inventory> inventories = loadPort.findAllByListVariantId(

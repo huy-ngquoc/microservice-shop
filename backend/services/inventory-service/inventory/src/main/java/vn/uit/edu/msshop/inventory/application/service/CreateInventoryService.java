@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import vn.uit.edu.msshop.inventory.application.port.in.CreateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
 import vn.uit.edu.msshop.inventory.application.port.out.PublishInventoryEventPort;
 import vn.uit.edu.msshop.inventory.application.port.out.SaveInventoryPort;
+import vn.uit.edu.msshop.inventory.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
@@ -41,6 +43,9 @@ public class CreateInventoryService implements CreateInventoryUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.INVENTORY_LIST,
+            allEntries = true)
     public InventoryView create(
             VariantId variantId) {
         Optional<Inventory> inventoryExist = loadPort.loadByVariantId(variantId);
@@ -53,6 +58,9 @@ public class CreateInventoryService implements CreateInventoryUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.INVENTORY_LIST,
+            allEntries = true)
     public InventoryView create(
             CreateInventoryCommand command) {
         Optional<Inventory> inventoryExist = loadPort.loadByVariantId(command.variantId());
@@ -79,6 +87,9 @@ public class CreateInventoryService implements CreateInventoryUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.INVENTORY_LIST,
+            allEntries = true)
     public List<InventoryView> createNewsFromListVariantId(
             List<VariantId> variantIds) {
         return savePort.createNews(variantIds).stream().map(mapper::toView).toList();
@@ -86,6 +97,9 @@ public class CreateInventoryService implements CreateInventoryUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.INVENTORY_LIST,
+            allEntries = true)
     public List<InventoryView> createMany(
             List<CreateInventoryCommand> commands) {
         final var result = savePort.saveAll(commands.stream().map(mapper::toDomain).toList());
