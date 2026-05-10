@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.cart.application.service;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,10 @@ public class GetCartService implements GetCartUseCase {
     private final CartViewMapper mapper;
 
     @Override
-    public CartView getByUserId(UserId userId) {
-       return mapper.toView(loadPort.loadByUserId(userId));
+    
+    public CartView getByUserId(
+            UserId userId) {
+        return mapper.toView(loadPort.loadByUserId(userId));
     }
 
 }

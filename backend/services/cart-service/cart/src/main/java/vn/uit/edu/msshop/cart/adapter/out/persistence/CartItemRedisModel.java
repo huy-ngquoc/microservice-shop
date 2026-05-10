@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @Data
@@ -18,8 +19,8 @@ public class CartItemRedisModel {
     private List<String> traits;
     private String imageKey;
     private String name;
-    private BigDecimal price; 
-    
+    private BigDecimal price;
+
     private int amount;
 
 }

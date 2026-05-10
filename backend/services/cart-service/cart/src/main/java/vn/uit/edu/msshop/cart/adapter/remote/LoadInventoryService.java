@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import vn.uit.edu.msshop.cart.adapter.in.web.response.InventoryResponse;
 
-@FeignClient(name="inventory-service")
+@FeignClient(
+        name = "inventory-service")
 public interface LoadInventoryService {
     @PostMapping("/inventory/public/variants")
     List<InventoryResponse> getInventoryBatch(
-        @RequestBody List<UUID> variantIds
-    );
+            @RequestBody
+            List<UUID> variantIds);
 }

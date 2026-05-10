@@ -23,38 +23,61 @@ import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantTraits;
 
 @Component
 public class CartRedisModelMapper {
-    private CartDetail.Draft toDraft(CartItemRedisModel model) {
+    private CartDetail.Draft toDraft(
+            CartItemRedisModel model) {
         return CartDetail.Draft.builder().variantId(new VariantId(UUID.fromString(model.getVariantId())))
-        .imageKey(new ImageKey(model.getImageKey()))
-        .name(new ProductName(model.getName()))
-        .amount(new Amount(model.getAmount()))
-        .price(new UnitPrice(model.getPrice().longValue()))
-        .traits(new VariantTraits(model.getTraits()))
-        .build();
+                .imageKey(new ImageKey(model.getImageKey()))
+                .name(new ProductName(model.getName()))
+                .amount(new Amount(model.getAmount()))
+                .price(new UnitPrice(model.getPrice().longValue()))
+                .traits(new VariantTraits(model.getTraits()))
+                .build();
     }
-    
-    public Cart toDomain(CartRedisModel model) {
+
+    public Cart toDomain(
+            CartRedisModel model) {
         final var draft = Cart.Draft.builder().userId(new UserId(UUID.fromString(model.getUserId())))
-        .detailDrafts(model.getItems().stream().map(item->toDraft(item)).collect(Collectors.toCollection(ArrayList::new))).build();
+                .detailDrafts(model.getItems().stream().map(item -> toDraft(item))
+                        .collect(Collectors.toCollection(ArrayList::new)))
+                .build();
         return Cart.create(draft);
     }
-    public CartItemRedisModel toModel(CartDetail domain) {
-        return new CartItemRedisModel(domain.getVariantId().value().toString(),domain.getTraits().value(),domain.getImageKey().value() , domain.getName().value(), BigDecimal.valueOf(domain.getPrice().value()), domain.getAmount().value());
+
+    public CartItemRedisModel toModel(
+            CartDetail domain) {
+        return new CartItemRedisModel(domain.getVariantId().value().toString(), domain.getTraits().value(),
+                domain.getImageKey().value(), domain.getName().value(), BigDecimal.valueOf(domain.getPrice().value()),
+                domain.getAmount().value());
     }
-    public CartRedisModel toModel(Cart cart){
-        return new CartRedisModel(cart.getUserId().value().toString(), cart.getDetails().stream().map(this::toModel).toList());
+
+    public CartRedisModel toModel(
+            Cart cart) {
+        return new CartRedisModel(cart.getUserId().value().toString(),
+                cart.getDetails().stream().map(this::toModel).toList());
     }
-    public CartItemDocument toDocument(CartItemRedisModel redisModel) {
-        return new CartItemDocument(redisModel.getVariantId(), redisModel.getTraits(), redisModel.getImageKey(), redisModel.getName(), redisModel.getPrice(), redisModel.getAmount());
+
+    public CartItemDocument toDocument(
+            CartItemRedisModel redisModel) {
+        return new CartItemDocument(redisModel.getVariantId(), redisModel.getTraits(), redisModel.getImageKey(),
+                redisModel.getName(), redisModel.getPrice(), redisModel.getAmount());
     }
-    public CartDocument toDocument(CartRedisModel redisModel) {
-        return new CartDocument(UUID.fromString(redisModel.getUserId()), redisModel.getItems().stream().map(item->toDocument(item)).toList());
+
+    public CartDocument toDocument(
+            CartRedisModel redisModel) {
+        return new CartDocument(UUID.fromString(redisModel.getUserId()),
+                redisModel.getItems().stream().map(item -> toDocument(item)).toList());
     }
-    public CartItemRedisModel toRedisModel(CartItemDocument document) {
-        return new CartItemRedisModel(document.getVariantId(), document.getTraits(), document.getVariantId(), document.getName(), document.getPrice(), document.getAmount());
+
+    public CartItemRedisModel toRedisModel(
+            CartItemDocument document) {
+        return new CartItemRedisModel(document.getVariantId(), document.getTraits(), document.getVariantId(),
+                document.getName(), document.getPrice(), document.getAmount());
     }
-    public CartRedisModel toRedisModel(CartDocument cartDocument) {
-        return new CartRedisModel(cartDocument.getUserId().toString(), cartDocument.getItems().stream().map(item->toRedisModel(item)).toList());
+
+    public CartRedisModel toRedisModel(
+            CartDocument cartDocument) {
+        return new CartRedisModel(cartDocument.getUserId().toString(),
+                cartDocument.getItems().stream().map(item -> toRedisModel(item)).toList());
     }
 
 }
