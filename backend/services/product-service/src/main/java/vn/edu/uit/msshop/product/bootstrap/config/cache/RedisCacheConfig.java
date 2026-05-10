@@ -12,25 +12,15 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.dao.QueryTimeoutException;
-import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.serializer.GenericJacksonJsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType;
 import lombok.extern.slf4j.Slf4j;
-import tools.jackson.databind.DefaultTyping;
 import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import vn.edu.uit.msshop.product.bootstrap.config.properties.RedisCacheProperties;
+import vn.edu.uit.msshop.shared.cache.CircuitBreakingCacheManager;
+import vn.edu.uit.msshop.shared.cache.RedisCacheConfigSupport;
 
 @Configuration
 @EnableCaching
@@ -49,31 +39,10 @@ public class RedisCacheConfig
             final RedisCacheProperties props,
             final ObjectMapper objectMapper,
             final CircuitBreaker redisCacheCircuitBreaker) {
-        final var redisMapper = objectMapper.rebuild()
-                .activateDefaultTyping(
-                        BasicPolymorphicTypeValidator.builder()
-                                .allowIfSubType("vn.edu.uit.msshop")
-                                .allowIfSubType("java.util")
-                                .allowIfSubType("java.time")
-                                .allowIfSubType("java.lang")
-                                .build(),
-                        DefaultTyping.NON_FINAL_AND_RECORDS,
-                        JsonTypeInfo.As.PROPERTY)
-                .build();
-
-        final var jsonSerializer = new GenericJacksonJsonRedisSerializer(redisMapper);
-        final var valueSerializer = RedisSerializationContext.SerializationPair
-                .fromSerializer(jsonSerializer);
-
-        final var stringSerializer = new StringRedisSerializer();
-        final var keySerializer = RedisSerializationContext.SerializationPair
-                .fromSerializer(stringSerializer);
-
-        final var base = RedisCacheConfiguration.defaultCacheConfig()
-                .disableCachingNullValues()
-                .computePrefixWith(cacheName -> props.keyPrefix() + ":" + cacheName + ":")
-                .serializeValuesWith(valueSerializer)
-                .serializeKeysWith(keySerializer);
+        final var redisMapper = RedisCacheConfigSupport.buildCacheObjectMapper(objectMapper);
+        final var base = RedisCacheConfigSupport.buildBaseConfig(
+                redisMapper,
+                props.keyPrefix());
 
         final var configs = Map.<String, RedisCacheConfiguration>ofEntries(
                 Map.entry(CacheNames.BRAND, base.entryTtl(props.brandTtl())),
@@ -98,29 +67,16 @@ public class RedisCacheConfig
     @Bean
     CircuitBreaker redisCacheCircuitBreaker(
             final RedisCacheProperties props) {
-        final var cb = props.circuitBreaker();
-        final var config = CircuitBreakerConfig.custom()
-                .slidingWindowType(SlidingWindowType.COUNT_BASED)
-                .slidingWindowSize(cb.slidingWindowSize())
-                .minimumNumberOfCalls(cb.minimumNumberOfCalls())
-                .failureRateThreshold(cb.failureRateThreshold())
-                .waitDurationInOpenState(cb.waitDurationInOpenState())
-                .permittedNumberOfCallsInHalfOpenState(cb.permittedNumberOfCallsInHalfOpenState())
-                .recordExceptions(
-                        RedisConnectionFailureException.class,
-                        QueryTimeoutException.class)
-                .build();
-        final var name = props.keyPrefix() + "-cache";
-
-        return CircuitBreaker.of(name, config);
+        return RedisCacheConfigSupport.buildCacheCircuitBreaker(
+                props.keyPrefix() + "-cache",
+                props.circuitBreaker());
     }
 
     @Bean
     ApplicationListener<ContextRefreshedEvent> cacheCircuitBreakerLogger(
             final CircuitBreaker redisCacheCircuitBreaker) {
-        return event -> redisCacheCircuitBreaker.getEventPublisher()
-                .onStateTransition(e -> log.warn("Redis cache circuit: from `{}` to `{}`",
-                        e.getStateTransition().getFromState(),
-                        e.getStateTransition().getToState()));
+        return RedisCacheConfigSupport.buildStateTransitionLogger(
+                redisCacheCircuitBreaker,
+                log);
     }
 }

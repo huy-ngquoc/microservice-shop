@@ -29,6 +29,7 @@
         <module>shared-kernel</module>
         <module>shared-webmvc</module>
         <module>shared-spring-data</module>
+        <module>shared-spring-cache</module>
         <module>shared-cloudinary</module>
 
         <module>config-server</module>
@@ -61,6 +62,7 @@
         <shared-kernel.version>1.0.0-SNAPSHOT</shared-kernel.version>
         <shared-webmvc.version>1.0.0-SNAPSHOT</shared-webmvc.version>
         <shared-spring-data.version>1.0.0-SNAPSHOT</shared-spring-data.version>
+        <shared-spring-cache.version>1.0.0-SNAPSHOT</shared-spring-cache.version>
         <shared-cloudinary.version>1.0.0-SNAPSHOT</shared-cloudinary.version>
 
         <spring-cloud.version>2025.1.0</spring-cloud.version>
@@ -91,6 +93,12 @@
                 <groupId>vn.edu.uit.msshop</groupId>
                 <artifactId>shared-spring-data</artifactId>
                 <version>${shared-spring-data.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>vn.edu.uit.msshop</groupId>
+                <artifactId>shared-spring-cache</artifactId>
+                <version>${shared-spring-cache.version}</version>
             </dependency>
 
             <dependency>
