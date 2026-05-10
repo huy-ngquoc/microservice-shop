@@ -4,6 +4,8 @@ import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import vn.edu.uit.msshop.shared.cache.properties.CacheCircuitBreakerProperties;
+
 @ConfigurationProperties(
         prefix = "app.cache")
 public record RedisCacheProperties(
@@ -16,13 +18,5 @@ public record RedisCacheProperties(
         Duration productListTtl,
         Duration variantTtl,
         Duration variantListTtl,
-        CircuitBreakerProperties circuitBreaker) {
-
-    public record CircuitBreakerProperties(
-            int slidingWindowSize,
-            int minimumNumberOfCalls,
-            int failureRateThreshold,
-            Duration waitDurationInOpenState,
-            int permittedNumberOfCallsInHalfOpenState) {
-    }
+        CacheCircuitBreakerProperties circuitBreaker) {
 }
