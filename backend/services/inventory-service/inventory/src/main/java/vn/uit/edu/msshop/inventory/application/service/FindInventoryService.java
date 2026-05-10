@@ -3,6 +3,7 @@ package vn.uit.edu.msshop.inventory.application.service;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundExcept
 import vn.uit.edu.msshop.inventory.application.mapper.InventoryViewMapper;
 import vn.uit.edu.msshop.inventory.application.port.in.FindInventoryUseCase;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
+import vn.uit.edu.msshop.inventory.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.msshop.inventory.domain.model.Inventory;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
@@ -27,6 +29,9 @@ public class FindInventoryService implements FindInventoryUseCase {
     @Override
     @Transactional(
             readOnly = true)
+    @Cacheable(
+            cacheNames = CacheNames.INVENTORY,
+            key = "#id.value()")
     public InventoryView findById(
             InventoryId id) {
         final var result = loadPort.loadById(id)
@@ -37,15 +42,22 @@ public class FindInventoryService implements FindInventoryUseCase {
     @Override
     @Transactional(
             readOnly = true)
+    @Cacheable(
+            cacheNames = CacheNames.INVENTORY_BY_VARIANT,
+            key = "#id.value()")
     public InventoryView findByVariantId(
             VariantId id) {
-        final var result = loadPort.loadByVariantId(id).orElseThrow(() -> new InventoryNotFoundException(id));
+        final var result = loadPort.loadByVariantId(id)
+                .orElseThrow(() -> new InventoryNotFoundException(id));
         return mapper.toView(result);
     }
 
     @Override
     @Transactional(
             readOnly = true)
+    @Cacheable(
+            cacheNames = CacheNames.INVENTORY_LIST,
+            key = "#pageNumber + ':' + #pageSize")
     public Page<InventoryView> findAll(
             int pageNumber,
             int pageSize) {
