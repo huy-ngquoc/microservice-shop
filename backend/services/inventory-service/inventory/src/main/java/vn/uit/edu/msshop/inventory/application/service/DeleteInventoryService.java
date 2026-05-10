@@ -1,6 +1,7 @@
 package vn.uit.edu.msshop.inventory.application.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
@@ -17,10 +18,11 @@ public class DeleteInventoryService implements DeleteInventoryUseCase {
     private final DeleteInventoryPort deletePort;
 
     @Override
-    public void deleteByVariantId(VariantId id) {
-        Inventory inventory = loadPort.loadByVariantId(id).orElseThrow(()->new InventoryNotFoundException(id));
+    @Transactional
+    public void deleteByVariantId(
+            VariantId id) {
+        Inventory inventory = loadPort.loadByVariantId(id).orElseThrow(() -> new InventoryNotFoundException(id));
         deletePort.delete(inventory);
     }
-
 
 }

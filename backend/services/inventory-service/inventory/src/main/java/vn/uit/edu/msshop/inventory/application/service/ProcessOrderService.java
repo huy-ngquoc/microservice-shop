@@ -35,71 +35,70 @@ public class ProcessOrderService implements ProcessOrderUseCase {
     private final LoadInventoryPort loadPort;
     private final SaveInventoryPort savePort;
     private final ProcessedOrderRepository processedOrderRepo;
-    
-    
+
     @Override
     @Transactional
-    public void processOrder(List<OrderDetail> orderDetails) {
-        
-        List<VariantId> ids = orderDetails.stream().map(item->item.getVariantId()).toList();
+    public void processOrder(
+            List<OrderDetail> orderDetails) {
+
+        List<VariantId> ids = orderDetails.stream().map(item -> item.getVariantId()).toList();
         List<Inventory> inventories = loadPort.findByListVariantId(ids);
         Map<UUID, Inventory> inventoryMap = new HashMap<>();
         List<Inventory> toSaves = new ArrayList<>();
-        for(Inventory i: inventories) {
+        for (Inventory i : inventories) {
             inventoryMap.put(i.getVariantId().value(), i);
         }
         List<InventoryUpdatedDocument> events = new ArrayList<>();
-        
-        for(OrderDetail o:orderDetails) {
+
+        for (OrderDetail o : orderDetails) {
             Inventory i = inventoryMap.get(o.getVariantId().value());
-            if(i==null) throw new InventoryNotFoundException(o.getVariantId());
-            //if(i.getQuantity().value()<o.getQuantity().value()) throw new InsufficientStockException(o.getVariantId());
-            
-            int newQuantity = i.getQuantity().value()-o.getQuantity().value();
-            int newReservedQuantity = i.getReservedQuantity().value()+o.getQuantity().value();
-            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(i.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity))
-            .status(i.getStatus())
-            .build();
+            if (i == null)
+                throw new InventoryNotFoundException(o.getVariantId());
+            // if(i.getQuantity().value()<o.getQuantity().value()) throw new
+            // InsufficientStockException(o.getVariantId());
+
+            int newQuantity = i.getQuantity().value() - o.getQuantity().value();
+            int newReservedQuantity = i.getReservedQuantity().value() + o.getQuantity().value();
+            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(i.getId())
+                    .quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity))
+                    .status(i.getStatus())
+                    .build();
             final var toSave = i.applyUpdateInfo(updateInfo);
 
-             InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
-        .variantId(i.getVariantId().value())
-        .newQuantity(newQuantity)
-        .newReservedQuantity(newReservedQuantity)
-        .eventStatus("PENDING")
-        .retryCount(0)
-        .createdAt(Instant.now())
-        .updatedAt(null)
-        .lastError(null)
-        .isRead(false)
-        .build();
+            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
+                    .variantId(i.getVariantId().value())
+                    .newQuantity(newQuantity)
+                    .newReservedQuantity(newReservedQuantity)
+                    .eventStatus("PENDING")
+                    .retryCount(0)
+                    .createdAt(Instant.now())
+                    .updatedAt(null)
+                    .lastError(null)
+                    .isRead(false)
+                    .build();
             events.add(event);
             toSaves.add(toSave);
         }
-        
-    
+
         inventoryUpdatedRepo.saveAll(events);
         savePort.saveAll(toSaves);
-        //System.out.println("Tao don hang thanh cong");
-        
-    
-
+        // System.out.println("Tao don hang thanh cong");
 
     }
-    
 
     @Override
-    @jakarta.transaction.Transactional
-    public void processOrderOutbox(OrderOutbox outbox) {
-        if(processedOrderRepo.existsById(outbox.getId())) throw new RuntimeException("Trung du lieu");
-        List<OrderDetail> details = outbox.getRequests().stream().map(item->new OrderDetail(new VariantId(item.getVariantId()), new Quantity(item.getQuantity()))).toList();
-        
+    @Transactional
+    public void processOrderOutbox(
+            OrderOutbox outbox) {
+        if (processedOrderRepo.existsById(outbox.getId()))
+            throw new RuntimeException("Trung du lieu");
+        List<OrderDetail> details = outbox.getRequests().stream()
+                .map(item -> new OrderDetail(new VariantId(item.getVariantId()), new Quantity(item.getQuantity())))
+                .toList();
+
         processedOrderRepo.save(new ProcessedOrder(outbox.getId(), outbox.getOutboxStatus()));
-       
+
         processOrder(details);
 
     }
 }
-    
-    
-
