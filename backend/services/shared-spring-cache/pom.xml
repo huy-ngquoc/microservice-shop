@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>shared-spring-cache</artifactId>
-    <name>shared-cache</name>
+    <name>shared-spring-cache</name>
     <description>Shared spring cache for MSShop application</description>
 
     <dependencyManagement />
