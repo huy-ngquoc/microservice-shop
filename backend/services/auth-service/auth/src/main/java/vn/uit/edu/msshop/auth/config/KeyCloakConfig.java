@@ -12,9 +12,11 @@ public class KeyCloakConfig {
     @Value("${app.keycloak.admin.realm}") private String realm;
     @Value("${app.keycloak.admin.client-id}") private String clientId;
     @Value("${app.keycloak.admin.client-secret}") private String clientSecret;
+    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") private String issuerUri;
 
     @Bean
     public Keycloak keycloak() {
+        System.out.println("Issuer uri" +issuerUri);
         System.out.println("Realmmmm========================" +realm);
         return KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
