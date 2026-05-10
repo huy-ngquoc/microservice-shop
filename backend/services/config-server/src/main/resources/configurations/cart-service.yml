@@ -23,7 +23,9 @@ spring:
                 spring.json.type.mapping: 
                     OrderCreatedSuccess:vn.uit.edu.msshop.cart.domain.event.OrderCreatedSuccess,
                     ProductUpdated:vn.uit.edu.msshop.cart.domain.event.ProductUpdated,
-                    ProductDeleted:vn.uit.edu.msshop.cart.domain.event.ProductDeleted
+                    ProductDeleted:vn.uit.edu.msshop.cart.domain.event.ProductDeleted,
+                    VariantUpdatedIntegrationEvent:vn.uit.edu.msshop.cart.domain.event.VariantUpdatedIntegrationEvent,
+                    VariantSoftDeletedIntegrationEvent:vn.uit.edu.msshop.cart.domain.event.VariantSoftDeletedIntegrationEvent
 eureka:
     client:
         serviceUrl:
