@@ -30,6 +30,11 @@
     <dependencies>
         <dependency>
             <groupId>vn.edu.uit.msshop</groupId>
+            <artifactId>shared-kernel</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>vn.edu.uit.msshop</groupId>
             <artifactId>shared-spring-cache</artifactId>
         </dependency>
 
