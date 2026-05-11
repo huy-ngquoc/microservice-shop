@@ -9,10 +9,13 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import vn.uit.edu.msshop.cart.adapter.in.web.request.CreateCartItemRequest;
 import vn.uit.edu.msshop.cart.adapter.in.web.request.FindVariantsByIdsRequest;
 import vn.uit.edu.msshop.cart.adapter.in.web.response.VariantResponse;
+import vn.uit.edu.msshop.cart.application.exception.ServiceUnavailableException;
 import vn.uit.edu.msshop.cart.application.port.out.LoadVariantPort;
 import vn.uit.edu.msshop.cart.domain.model.CartDetail;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.Amount;
@@ -24,9 +27,11 @@ import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantTraits;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoadVariantService implements LoadVariantPort {
     private final ProductCaller productCaller;
     @Override
+    @CircuitBreaker(name="loadCartDetails")
     public List<CartDetail> loadCartDetails(
             List<CreateCartItemRequest> detailRequest) {
         List<CartDetail> result = new ArrayList<>();
@@ -50,6 +55,10 @@ public class LoadVariantService implements LoadVariantPort {
             result.add(cd);
         }
         return result;
+    }
+    public List<CartDetail> callDetailFail(List<CreateCartItemRequest> detailRequest, Throwable t) {
+        log.error(t.getMessage());
+        throw new ServiceUnavailableException(t.getMessage());
     }
 
 }
