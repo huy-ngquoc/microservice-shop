@@ -1,0 +1,53 @@
+# Build outputs
+**/target/
+**/*.jar
+**/*.class
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# AI/Tool directories
+.claude/
+.kiro/
+.qoder/
+.gemini/
+.cursor/
+.code-review-graph/
+
+# Config/doc files at root
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+QODER.md
+*.rules
+.mcp.json
+.opencode.json
+
+# Environment files
+**/*.env
+.env*
+
+# Logs and crash dumps
+**/*.log
+**/logs/
+hs_err_*.log
+
+# Node (if any)
+**/node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+**/*.tmp
+**/*.swp
+**/~*
