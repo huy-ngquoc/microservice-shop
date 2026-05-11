@@ -7,11 +7,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTarget;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
 
 public record CreateSimpleProductRequest(
         @NotBlank
+        @Size(
+                max = ProductName.MAX_LENGTH)
         String name,
 
         @NotNull
