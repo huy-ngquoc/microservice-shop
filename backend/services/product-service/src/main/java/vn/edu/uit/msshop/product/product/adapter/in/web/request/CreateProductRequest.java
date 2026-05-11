@@ -10,10 +10,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 
 public record CreateProductRequest(
         @NotBlank
+        @Size(
+                max = ProductName.MAX_LENGTH)
         String name,
 
         @NotNull
