@@ -16,6 +16,7 @@ import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedD
 import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.InventoryUpdatedDocumentRepository;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.ProcessedOrder;
 import vn.uit.edu.msshop.inventory.adapter.out.persistence.ProcessedOrderRepository;
+import vn.uit.edu.msshop.inventory.application.exception.InsufficientStockException;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
 import vn.uit.edu.msshop.inventory.application.port.in.ProcessOrderUseCase;
 import vn.uit.edu.msshop.inventory.application.port.out.LoadInventoryPort;
@@ -53,10 +54,12 @@ public class ProcessOrderService implements ProcessOrderUseCase {
         for(OrderDetail o:orderDetails) {
             Inventory i = inventoryMap.get(o.getVariantId().value());
             if(i==null) throw new InventoryNotFoundException(o.getVariantId());
-            //if(i.getQuantity().value()<o.getQuantity().value()) throw new InsufficientStockException(o.getVariantId());
+            if(i.getQuantity().value()<o.getQuantity().value()) throw new InsufficientStockException(o.getVariantId());
             
             int newQuantity = i.getQuantity().value()-o.getQuantity().value();
             int newReservedQuantity = i.getReservedQuantity().value()+o.getQuantity().value();
+            if(newQuantity<0) throw new InsufficientStockException(o.getVariantId());
+
             final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(i.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity))
             .status(i.getStatus())
             .build();
