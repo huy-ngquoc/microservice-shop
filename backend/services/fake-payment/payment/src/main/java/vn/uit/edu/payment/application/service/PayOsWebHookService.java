@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.payos.PayOS;
 import vn.payos.model.webhooks.Webhook;
 import vn.payos.model.webhooks.WebhookData;
@@ -193,7 +194,7 @@ public class PayOsWebHookService implements PayOsWebHookPort {
     private PaymentSuccessDocument createPaymentSuccessEvent(
             Payment p) {
         return PaymentSuccessDocument.builder()
-                .eventId(UUID.randomUUID())
+                .eventId(UUIDs.newId())
                 .orderId(p.getOrderId().value())
                 .eventStatus("PENDING").retryCount(0)
                 .createdAt(Instant.now()).build();
@@ -202,7 +203,7 @@ public class PayOsWebHookService implements PayOsWebHookPort {
     private OnlinePaymentSuccessDocument createOnlinePaymentSuccessEvent(
             Payment p) {
         return OnlinePaymentSuccessDocument.builder()
-                .eventId(UUID.randomUUID())
+                .eventId(UUIDs.newId())
                 .orderId(p.getOrderId().value())
                 .userEmail(p.getUserEmail().value())
                 .userId(p.getUserId().value())

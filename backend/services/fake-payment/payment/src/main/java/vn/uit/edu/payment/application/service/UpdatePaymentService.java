@@ -9,6 +9,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocument;
 import vn.uit.edu.payment.adapter.out.event.repositories.OnlinePaymentExpiredDocumentRepository;
 import vn.uit.edu.payment.application.dto.command.UpdatePaymentCommand;
@@ -65,7 +66,7 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
         final var next = payment.applyUpdateInfo(update);
         final Payment saved = savePort.save(next);
         OnlinePaymentExpiredDocument outboxEvent = OnlinePaymentExpiredDocument.builder()
-                .eventId(UUID.randomUUID())
+                .eventId(UUIDs.newId())
                 .orderId(saved.getOrderId().value())
                 .userId(saved.getUserId().value())
                 .eventStatus("PENDING")
