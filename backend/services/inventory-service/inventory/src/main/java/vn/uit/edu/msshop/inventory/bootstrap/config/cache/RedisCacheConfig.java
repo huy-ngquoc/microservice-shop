@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.bootstrap.config.cache;
+package vn.uit.edu.msshop.inventory.bootstrap.config.cache;
 
 import java.util.Map;
 
@@ -18,9 +18,9 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
-import vn.edu.uit.msshop.product.bootstrap.config.properties.RedisCacheProperties;
 import vn.edu.uit.msshop.shared.cache.CircuitBreakingCacheManager;
 import vn.edu.uit.msshop.shared.cache.RedisCacheConfigSupport;
+import vn.uit.edu.msshop.inventory.bootstrap.config.cache.properties.RedisCacheProperties;
 
 @Configuration
 @EnableCaching
@@ -45,14 +45,9 @@ public class RedisCacheConfig
                 props.keyPrefix());
 
         final var configs = Map.<String, RedisCacheConfiguration>ofEntries(
-                Map.entry(CacheNames.BRAND, base.entryTtl(props.brandTtl())),
-                Map.entry(CacheNames.BRAND_LIST, base.entryTtl(props.brandListTtl())),
-                Map.entry(CacheNames.CATEGORY, base.entryTtl(props.categoryTtl())),
-                Map.entry(CacheNames.CATEGORY_LIST, base.entryTtl(props.categoryListTtl())),
-                Map.entry(CacheNames.PRODUCT, base.entryTtl(props.productTtl())),
-                Map.entry(CacheNames.PRODUCT_LIST, base.entryTtl(props.productListTtl())),
-                Map.entry(CacheNames.VARIANT, base.entryTtl(props.variantTtl())),
-                Map.entry(CacheNames.VARIANT_LIST, base.entryTtl(props.variantListTtl())));
+                Map.entry(CacheNames.INVENTORY, base.entryTtl(props.inventoryTtl())),
+                Map.entry(CacheNames.INVENTORY_LIST, base.entryTtl(props.inventoryListTtl())),
+                Map.entry(CacheNames.INVENTORY_BY_VARIANT, base.entryTtl(props.inventoryByVariantTtl())));
 
         final var redisManager = RedisCacheManager.builder(factory)
                 .cacheDefaults(base)
