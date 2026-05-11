@@ -2,13 +2,17 @@ package vn.uit.edu.msshop.account.domain.model.valueobject;
 
 import java.util.UUID;
 
-public record AccountId(UUID value) {
-    public AccountId{
-        if(value==null) {
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
+
+public record AccountId(
+        UUID value) {
+    public AccountId {
+        if (value == null) {
             throw new IllegalArgumentException("Id null");
         }
     }
+
     public static AccountId newId() {
-        return new AccountId(UUID.randomUUID());
+        return new AccountId(UUIDs.newId());
     }
 }
