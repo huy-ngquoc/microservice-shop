@@ -3,6 +3,7 @@ package vn.edu.uit.msshop.product.product.domain.model.valueobject;
 import java.util.UUID;
 
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 
 public record ProductVariantId(
         UUID value) implements Comparable<ProductVariantId> {
@@ -13,7 +14,7 @@ public record ProductVariantId(
     }
 
     public static ProductVariantId newId() {
-        return new ProductVariantId(UUID.randomUUID());
+        return new ProductVariantId(UUIDs.newId());
     }
 
     @Override
