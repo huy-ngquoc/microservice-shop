@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.payment.adapter.in.web.request.CreatePaymentRequest;
 import vn.uit.edu.payment.adapter.in.web.request.UpdatePaymentRequest;
 import vn.uit.edu.payment.adapter.in.web.request.common.ChangeRequest;
@@ -32,7 +33,7 @@ public class PaymentWebMapper {
     public CreatePaymentCommand toCommand(
             CreatePaymentRequest request) {
         return new CreatePaymentCommand(
-                new PaymentId(UUID.randomUUID()),
+                new PaymentId(UUIDs.newId()),
                 new Currency(request.currency()),
                 new OrderId(request.orderId()),
                 new PaymentMethod(request.paymentMethod()),
@@ -45,7 +46,7 @@ public class PaymentWebMapper {
     public CreatePaymentCommand toCommand(
             OrderCreated event) {
         return new CreatePaymentCommand(
-                new PaymentId(UUID.randomUUID()),
+                new PaymentId(UUIDs.newId()),
                 new Currency(event.currency()),
                 new OrderId(event.orderId()),
                 new PaymentMethod(event.paymentMethod()),
