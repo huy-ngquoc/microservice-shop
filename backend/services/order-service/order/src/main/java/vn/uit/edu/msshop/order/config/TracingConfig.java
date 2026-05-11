@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.observability.MongoObservationCommandListener;
 
 import brave.Tracing;
+import brave.sampler.Sampler;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
@@ -21,6 +22,9 @@ public class TracingConfig {
 
     @Value("${management.zipkin.tracing.endpoint:http://localhost:9411/api/v2/spans}")
     private String zipkinEndpoint;
+
+    @Value("${management.tracing.sampling.probability:0.1}")
+    private double samplingProbability;
 
    @Bean
     public io.micrometer.observation.ObservationHandler<io.micrometer.observation.Observation.Context> tracingObservationHandler(Tracer tracer) {
@@ -37,6 +41,7 @@ public class TracingConfig {
 
         return Tracing.newBuilder()
                 .localServiceName("order-service")
+                .sampler(Sampler.create((float) samplingProbability))
                 .addSpanHandler(spanHandler) // QUAN TRỌNG: Gắn Handler vào đây
                 .build();
     
