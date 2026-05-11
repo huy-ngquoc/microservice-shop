@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.inventory.bootstrap.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,6 +15,10 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
 
 @Configuration
 public class TracingConfig {
+
+    @Value("${management.zipkin.tracing.endpoint:http://localhost:9411/api/v2/spans}")
+    private String zipkinEndpoint;
+
     @Bean
     public io.micrometer.observation.ObservationHandler<
             io.micrometer.observation.Observation.Context> tracingObservationHandler(
@@ -24,8 +29,7 @@ public class TracingConfig {
     @Bean
     public Tracing tracing() {
 
-        // Dùng URLConnectionSender thay cho OkHttpSender
-        var sender = OkHttpSender.create("http://localhost:9411/api/v2/spans");
+        var sender = OkHttpSender.create(zipkinEndpoint);
 
         // 2. Cấu hình Handler để xử lý Span trước khi gửi
         var spanHandler = AsyncZipkinSpanHandler.create(sender);
