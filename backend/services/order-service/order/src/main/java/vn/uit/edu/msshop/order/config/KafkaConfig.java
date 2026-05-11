@@ -23,4 +23,8 @@ public class KafkaConfig {
     public NewTopic orderInventoryTopic() {
         return TopicBuilder.name("order-inventory").build();
     }
+    @Bean
+    public NewTopic orderFailTopic() {
+        return TopicBuilder.name("order-save-fail-topic").build();
+    }
 }

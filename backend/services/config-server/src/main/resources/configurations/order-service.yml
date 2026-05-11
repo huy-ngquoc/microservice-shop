@@ -1,4 +1,8 @@
 spring:
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: false
   data:
     redis:
       host: ${REDIS_ORDER_HOST:localhost}       
@@ -37,7 +41,8 @@ spring:
                     PaymentSuccess:vn.uit.edu.msshop.order.domain.event.PaymentSuccess,
                     PaymentLinkCreated:java.lang.Object,
                     OnlinePaymentSuccess:java.lang.Object,
-                    PaymentCreatedFail:vn.uit.edu.msshop.order.domain.event.PaymentCreatedFail
+                    PaymentCreatedFail:vn.uit.edu.msshop.order.domain.event.PaymentCreatedFail,
+                    OrderCompositeEvent:vn.uit.edu.msshop.order.domain.event.OrderCompositeEvent
         producer:
             bootstrap-servers: ${KAFKA_URL:localhost:9092}
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -54,9 +59,11 @@ spring:
                     OrderCreatedSuccess:vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess,
                     OrderUpdatedEvent:vn.uit.edu.msshop.order.domain.event.OrderUpdatedEvent,
                     PaymentLinkCreated:java.lang.Object,
-                    OnlinePaymentSuccess:java.lang.Object
+                    OnlinePaymentSuccess:java.lang.Object,
+                    OrderCompositeEvent:vn.uit.edu.msshop.order.domain.event.OrderCompositeEvent
 logging:
   level:
+        vn.uit.edu.msshop.order.adapter.remote: DEBUG
         org.springframework.data.mongodb.core.MongoTemplate: OFF
         org.apache.kafka: ERROR
         org.springframework.kafka: ERROR
@@ -93,25 +100,39 @@ eureka:
         lease-renewal-interval-in-seconds: 5 
         lease-expiration-duration-in-seconds: 10
 feign:
-   client:
-       config:
+    client:
+        config:
             product-service:
                 connectTimeout: 2000
                 readTimeout: 2000
+                retryer: feign.Retryer.NEVER_RETRY
             inventory-service:
                 connectTimeout: 2000
                 readTimeout: 2000
             payment-service:
                 connectTimeout: 5000
                 readTimeout: 5000
-resilience4J:
+resilience4j:
    circuitbreaker:
-       instances:
-           productService:
-               slidingWindowSize: 10
-               slowCallDurationThreshold: 2s
-               slowCallRateThreshold: 50
-               waitDurationInOpenState: 10s
+        instances:
+            productService:
+                slidingWindowSize: 10
+                slowCallDurationThreshold: 2s
+                slowCallRateThreshold: 50
+                waitDurationInOpenState: 10s
+                recordExceptions:
+                    - java.util.concurrent.TimeoutException
+                    - io.github.resilience4j.circuitbreaker.CallNotPermittedException 
+            mongoService:
+                slidingWindowSize: 10
+                failureRateThreshold: 50
+                waitDurationInOpenState: 20s
+                recordExceptions:
+                    - org.springframework.dao.DataAccessException
+                    - com.mongodb.MongoException
+                    - com.mongodb.MongoSocketException
+                    - com.mongodb.MongoTimeoutException
+                    - org.springframework.dao.DataAccessResourceFailureException
 
     
     
