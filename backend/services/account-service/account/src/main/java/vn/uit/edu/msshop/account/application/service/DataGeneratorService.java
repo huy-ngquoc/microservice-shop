@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import vn.uit.edu.msshop.account.adapter.in.web.mapper.AccountWebMapper;
 import vn.uit.edu.msshop.account.adapter.in.web.request.CreateAccountRequest;
