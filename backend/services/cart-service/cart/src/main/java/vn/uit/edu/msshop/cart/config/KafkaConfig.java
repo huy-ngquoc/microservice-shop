@@ -10,7 +10,7 @@ public class KafkaConfig {
     @Bean
     public NewTopic accountTopic() {
         return TopicBuilder.name("cart-topic").partitions(3)
-                .replicas(1)   
+                .replicas(1)
                 .build();
     }
 }

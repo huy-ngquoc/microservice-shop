@@ -19,12 +19,13 @@ public class ClearCartService implements ClearCartUseCase {
     private final LoadCartPort loadPort;
 
     @Override
-    public void clear(ClearCartCommand command) {
+    public void clear(
+            ClearCartCommand command) {
         Cart cart = loadPort.loadByUserId(command.userId());
-        for(CartDetail cd: cart.getDetails()) {
+        for (CartDetail cd : cart.getDetails()) {
             variantToUserPort.removeMapping(cd.getVariantId(), cart.getUserId());
         }
         deletePort.clearCart(command);
     }
-    
+
 }

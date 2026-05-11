@@ -15,7 +15,9 @@ import vn.uit.edu.msshop.cart.adapter.out.event.repositories.EventDocumentReposi
 @Slf4j
 public class EventDBCleaner {
     private final EventDocumentRepository eventDocumentRepo;
-    @Scheduled(cron="0 0 0 * * ?")
+
+    @Scheduled(
+            cron = "0 0 0 * * ?")
     public void cleanUpOldReceivedEvent() {
         Instant threshold = Instant.now().minus(7, ChronoUnit.DAYS);
         eventDocumentRepo.deleteByReceiveAtBefore(threshold);
