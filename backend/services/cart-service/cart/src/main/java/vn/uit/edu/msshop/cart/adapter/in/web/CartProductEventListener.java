@@ -20,11 +20,15 @@ import vn.uit.edu.msshop.cart.application.port.in.UpdateCartInfoUseCase;
 import vn.uit.edu.msshop.cart.application.port.out.VariantToUserPort;
 import vn.uit.edu.msshop.cart.domain.event.ProductDeleted;
 import vn.uit.edu.msshop.cart.domain.event.ProductUpdated;
+import vn.uit.edu.msshop.cart.domain.event.VariantSoftDeletedIntegrationEvent;
+import vn.uit.edu.msshop.cart.domain.event.VariantUpdatedIntegrationEvent;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.UserId;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantId;
 
 @Component
-@KafkaListener(topics="product-topic", groupId="product-group")
+@KafkaListener(
+        topics = "variant-topic",
+        groupId = "cart-group")
 @RequiredArgsConstructor
 public class CartProductEventListener {
     private final VariantToUserPort variantToUserPort;
@@ -33,23 +37,58 @@ public class CartProductEventListener {
     private final DeleteCartItemUseCase deleteItemUseCase;
     private final EventDocumentRepository eventDocumentRepo;
 
-    @KafkaHandler
-    public void updateCartItem(ProductUpdated event) {
-        if(!eventDocumentRepo.existsById(event.getEventId())) {
+    //@KafkaHandler
+    public void updateCartItem(
+            ProductUpdated event) {
+        if (!eventDocumentRepo.existsById(event.getEventId())) {
             Set<String> userIds = variantToUserPort.getByVariantId(new VariantId(event.getVariantId()));
-            List<UpdateCartInfoCommand> commands = userIds.stream().map(item->mapper.toCommand(event, item)).toList();
+            List<UpdateCartInfoCommand> commands = userIds.stream().map(item -> mapper.toCommand(event, item)).toList();
             updateCartInfoUseCase.updateInfo(commands);
-            eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
+            eventDocumentRepo
+                    .save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
+        }
+    }
+
+    //@KafkaHandler
+    public void onVariantDelete(
+            ProductDeleted event) {
+        if (!eventDocumentRepo.existsById(event.getEventId())) {
+            Set<String> userIds = variantToUserPort.getByVariantId(new VariantId(event.getVariantId()));
+            List<DeleteCartItemCommand> commands = userIds.stream()
+                    .map(item -> new DeleteCartItemCommand(new UserId(UUID.fromString(item)),
+                            new VariantId(event.getVariantId())))
+                    .toList();
+            deleteItemUseCase.deleteManyItems(commands);
+            eventDocumentRepo
+                    .save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
+        }
+
+    }
+
+    @KafkaHandler
+    public void onVariantUpdate(VariantUpdatedIntegrationEvent event) {
+        System.out.println("Nhan event");
+         if (!eventDocumentRepo.existsById(event.eventId())) {
+                System.out.println("Update new price "+event.unitPrice());
+            Set<String> userIds = variantToUserPort.getByVariantId(new VariantId(event.variantId()));
+            List<UpdateCartInfoCommand> commands = userIds.stream().map(item -> mapper.toCommand(event, item)).toList();
+            updateCartInfoUseCase.updateInfo(commands);
+            eventDocumentRepo
+                    .save(EventDocument.builder().eventId(event.eventId()).receiveAt(Instant.now()).build());
         }
     }
     @KafkaHandler
-    public void onVariantDelete(ProductDeleted event) {
-        if(!eventDocumentRepo.existsById(event.getEventId())) {
-            Set<String> userIds = variantToUserPort.getByVariantId(new VariantId(event.getVariantId()));
-            List<DeleteCartItemCommand> commands = userIds.stream().map(item->new DeleteCartItemCommand(new UserId(UUID.fromString(item)), new VariantId(event.getVariantId()))).toList();
+    public void onVariantSoftDelete(VariantSoftDeletedIntegrationEvent event) {
+        System.out.println("Nhan event delete");
+        if (!eventDocumentRepo.existsById(event.eventId())) {
+            Set<String> userIds = variantToUserPort.getByVariantId(new VariantId(event.variantId()));
+            List<DeleteCartItemCommand> commands = userIds.stream()
+                    .map(item -> new DeleteCartItemCommand(new UserId(UUID.fromString(item)),
+                            new VariantId(event.variantId())))
+                    .toList();
             deleteItemUseCase.deleteManyItems(commands);
-            eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
+            eventDocumentRepo
+                    .save(EventDocument.builder().eventId(event.eventId()).receiveAt(Instant.now()).build());
         }
-
     }
 }

@@ -2,6 +2,7 @@ package vn.uit.edu.msshop.order.adapter.in.web.response;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 public record OrderResponse(
     String orderId,
@@ -17,7 +18,8 @@ public record OrderResponse(
     Instant updateAt,
     String currency,
     String paymentMethod,
-    String paymentStatus
+    String paymentStatus, 
+    UUID userId
 ) {
 
 }

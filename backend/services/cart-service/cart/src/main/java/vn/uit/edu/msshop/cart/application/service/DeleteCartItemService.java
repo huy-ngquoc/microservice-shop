@@ -2,6 +2,7 @@ package vn.uit.edu.msshop.cart.application.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -17,14 +18,18 @@ public class DeleteCartItemService implements DeleteCartItemUseCase {
     private final VariantToUserPort variantToUserPort;
 
     @Override
-    public void deleteCartItem(DeleteCartItemCommand command) {
+    
+    public void deleteCartItem(
+            DeleteCartItemCommand command) {
         variantToUserPort.removeMapping(command.variantId(), command.userId());
         deletePort.deleteCartItem(command);
     }
 
     @Override
-    public void deleteManyItems(List<DeleteCartItemCommand> commands) {
-        for(DeleteCartItemCommand command: commands ) {
+    @CachePut(value="Cart", key="#command.userId().value()")
+    public void deleteManyItems(
+            List<DeleteCartItemCommand> commands) {
+        for (DeleteCartItemCommand command : commands) {
             variantToUserPort.removeMapping(command.variantId(), command.userId());
         }
         deletePort.deleteManyCartItems(commands);

@@ -1,7 +1,6 @@
 package vn.uit.edu.payment.application.service;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,14 +60,11 @@ public class PayOSService implements PayOSUseCase {
         }
 
     }
-
-    private void handleOnlinePaymentExpired(
-            Payment payment) {
-
-        if (payment != null) {
-            final var updateInfo = Payment.UpdateInfo.builder().paymentId(payment.getPaymentId())
-                    .currency(payment.getCurrency())
-                    .paymentStatus(new PaymentStatus("CANCELLED")).paymentMethod(payment.getPaymentMethod()).build();
+private void handleOnlinePaymentExpired(Payment payment) {
+       
+        if(payment!=null) {
+            final var updateInfo = Payment.UpdateInfo.builder().paymentId(payment.getPaymentId()).currency(payment.getCurrency())
+            .paymentStatus(new PaymentStatus("EXPIRED")).paymentMethod(payment.getPaymentMethod()).build();
             final var saved = payment.applyUpdateInfo(updateInfo);
             savePaymentPort.save(saved);
             final var savedEvent = onlinePaymentExpiredRepo.save(createOnlinePaymentExpiredEvent(saved));

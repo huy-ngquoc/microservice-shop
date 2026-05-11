@@ -16,18 +16,23 @@ import vn.uit.edu.msshop.cart.application.port.in.DeleteCartItemUseCase;
 import vn.uit.edu.msshop.cart.domain.event.OrderCreatedSuccess;
 
 @Component
-@KafkaListener(topics="cart-topic", groupId="order-group")
+@KafkaListener(
+        topics = "cart-topic",
+        groupId = "order-group")
 @RequiredArgsConstructor
 public class CartEventListener {
     private final DeleteCartItemUseCase deleteItemUseCase;
     private final CartWebMapper mapper;
     private final EventDocumentRepository eventDocumentRepository;
-    
+
     @KafkaHandler
-    public void onOrderCreated(OrderCreatedSuccess orderCreatedSuccess) {
-        if(eventDocumentRepository.existsById(orderCreatedSuccess.eventId())) return;
+    public void onOrderCreated(
+            OrderCreatedSuccess orderCreatedSuccess) {
+        if (eventDocumentRepository.existsById(orderCreatedSuccess.eventId()))
+            return;
         List<DeleteCartItemCommand> commands = mapper.toCommand(orderCreatedSuccess);
         deleteItemUseCase.deleteManyItems(commands);
-        eventDocumentRepository.save(EventDocument.builder().eventId(orderCreatedSuccess.eventId()).receiveAt(Instant.now()).build());
+        eventDocumentRepository
+                .save(EventDocument.builder().eventId(orderCreatedSuccess.eventId()).receiveAt(Instant.now()).build());
     }
 }

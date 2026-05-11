@@ -13,21 +13,23 @@ import vn.uit.edu.msshop.cart.domain.model.CartDetail;
 @Component
 @RequiredArgsConstructor
 public class CartViewMapper {
-    
-    public CartDetailView toView(CartDetail cartDetail) {
-        return new CartDetailView(cartDetail.getVariantId().value(),cartDetail.getTraits().value(), cartDetail.getImageKey().value(), cartDetail.getName().value(), cartDetail.getPrice().value(), cartDetail.getAmount().value());
+
+    public CartDetailView toView(
+            CartDetail cartDetail) {
+        return new CartDetailView(cartDetail.getVariantId().value(), cartDetail.getTraits().value(),
+                cartDetail.getImageKey().value(), cartDetail.getName().value(), cartDetail.getPrice().value(),
+                cartDetail.getAmount().value());
     }
-    public CartView toView(Cart cart) {
-        CartView result=  new CartView(cart.getUserId().value(),new ArrayList<>());
-        
-        
-        
-        for(CartDetail detail:cart.getDetails()) {
-           
+
+    public CartView toView(
+            Cart cart) {
+        CartView result = new CartView(cart.getUserId().value(), new ArrayList<>());
+
+        for (CartDetail detail : cart.getDetails()) {
+
             result.getDetailViews().add(toView(detail));
         }
         return result;
     }
-   
-  
+
 }

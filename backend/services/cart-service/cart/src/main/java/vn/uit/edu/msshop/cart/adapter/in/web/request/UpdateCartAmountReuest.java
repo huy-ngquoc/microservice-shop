@@ -13,7 +13,6 @@ import vn.uit.edu.msshop.cart.adapter.in.web.request.common.ChangeRequest;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCartAmountReuest {
-    private UUID userId;
     private UUID variantId;
     private ChangeRequest<Integer> amount;
 }
