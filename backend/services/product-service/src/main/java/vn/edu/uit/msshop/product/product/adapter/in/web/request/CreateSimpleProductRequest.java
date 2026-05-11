@@ -6,6 +6,7 @@ import java.util.UUID;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTarget;
@@ -23,6 +24,7 @@ public record CreateSimpleProductRequest(
         @NotNull
         UUID brandId,
 
+        @PositiveOrZero
         Long price,
 
         @NotEmpty
