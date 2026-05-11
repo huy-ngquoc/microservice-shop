@@ -15,7 +15,12 @@
 
     <dependencyManagement />
 
-    <dependencies />
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.uuid</groupId>
+            <artifactId>java-uuid-generator</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
