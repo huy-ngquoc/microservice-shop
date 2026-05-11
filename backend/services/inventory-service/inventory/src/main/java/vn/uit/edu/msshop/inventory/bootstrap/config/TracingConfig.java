@@ -39,7 +39,7 @@ public class TracingConfig {
         var spanHandler = AsyncZipkinSpanHandler.create(sender);
 
         return Tracing.newBuilder()
-                .localServiceName("order-service")
+                .localServiceName("inventory-service")
                 .sampler(Sampler.create((float) samplingProbability))
                 .addSpanHandler(spanHandler) // QUAN TRỌNG: Gắn Handler vào đây
                 .build();
