@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.cart.application.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -35,18 +36,21 @@ public class UpdateCartInfoService implements UpdateCartInfoUseCase {
         
     }
     private List<CartDetail.UpdateInfo> getUpdateDetailInfos(List<UpdateCartInfoCommand> commands, Cart cart) {
-
-        return commands.stream().map(item->{
+        List<CartDetail.UpdateInfo> updateInfos = new ArrayList<>();
+        for(UpdateCartInfoCommand item:commands) {
             CartDetail detail = cart.findByVariantId(item.variantId());
-            if(detail==null) return new ArrayList<>();
+            if(detail==null) continue ;
             System.out.println("Price "+item.unitPrice().apply(detail.getPrice()).value());
-            return CartDetail.UpdateInfo.builder().variantId(item.variantId())
+            updateInfos.add(CartDetail.UpdateInfo.builder().variantId(item.variantId())
             .imageKey(item.imageKey().apply(detail.getImageKey()))
             .name(item.name().apply(detail.getName()))
             .price(item.unitPrice().apply(detail.getPrice()))
             .traits(item.traits().apply(detail.getTraits()))
-            .build();
-        }).toList();
+            .build());
+        }
+        return updateInfos;
+
+        
 
         
 

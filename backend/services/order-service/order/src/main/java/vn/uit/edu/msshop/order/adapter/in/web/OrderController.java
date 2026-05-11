@@ -136,11 +136,11 @@ public class OrderController {
     }
  
     @PostMapping("/create") 
-    public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest request/*,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role*/) {
+    public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest request,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
         /*if(!checkPermission.isUser(role)&&!checkPermission.isSameUser(userFromHeader,request.userId().toString())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }*/
-        final var command = this.mapper.toCommand(request);
+        final var command = this.mapper.toCommand(request,userFromHeader);
         try {
         final var result= this.createService.create(command);
         //eventPublisher.publishOrderCreatedEvent(new OrderCreated(request.currency(),result,request.paymentMethod(),request.totalPrice()));

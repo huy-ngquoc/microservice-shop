@@ -46,7 +46,8 @@ public ReactiveJwtDecoder jwtDecoder() {
                 
                 //.pathMatchers("/account/create")
                 .permitAll()
-                .pathMatchers("/order/**").permitAll()
+                .pathMatchers("/product/**").permitAll()
+                //.pathMatchers("/order/**").permitAll()
                 .anyExchange().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
