@@ -12,6 +12,7 @@ COPY backend/services/java-formatter.xml backend/services/java-formatter.xml
 COPY backend/services/shared-kernel/pom.xml backend/services/shared-kernel/
 COPY backend/services/shared-webmvc/pom.xml backend/services/shared-webmvc/
 COPY backend/services/shared-spring-data/pom.xml backend/services/shared-spring-data/
+COPY backend/services/shared-spring-cache/pom.xml backend/services/shared-spring-cache/
 COPY backend/services/shared-cloudinary/pom.xml backend/services/shared-cloudinary/
 
 # Install parent POM (-N: non-recursive, do not build child modules)
@@ -21,10 +22,6 @@ RUN mvn install -f backend/services/pom.xml -N -B -DskipTests
 COPY backend/services/shared-kernel/src backend/services/shared-kernel/src
 RUN mvn install -f backend/services/shared-kernel/pom.xml -B -DskipTests
 
-# shared-cloudinary: no local deps
-COPY backend/services/shared-cloudinary/src backend/services/shared-cloudinary/src
-RUN mvn install -f backend/services/shared-cloudinary/pom.xml -B -DskipTests
-
 # shared-webmvc: depends on shared-kernel
 COPY backend/services/shared-webmvc/src backend/services/shared-webmvc/src
 RUN mvn install -f backend/services/shared-webmvc/pom.xml -B -DskipTests
@@ -32,3 +29,11 @@ RUN mvn install -f backend/services/shared-webmvc/pom.xml -B -DskipTests
 # shared-spring-data: depends on shared-kernel
 COPY backend/services/shared-spring-data/src backend/services/shared-spring-data/src
 RUN mvn install -f backend/services/shared-spring-data/pom.xml -B -DskipTests
+
+# shared-spring-cache: no local deps
+COPY backend/services/shared-spring-cache/src backend/services/shared-spring-cache/src
+RUN mvn install -f backend/services/shared-spring-cache/pom.xml -B -DskipTests
+
+# shared-cloudinary: no local deps
+COPY backend/services/shared-cloudinary/src backend/services/shared-cloudinary/src
+RUN mvn install -f backend/services/shared-cloudinary/pom.xml -B -DskipTests

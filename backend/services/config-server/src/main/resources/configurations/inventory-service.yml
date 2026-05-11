@@ -1,9 +1,7 @@
 server:
     port: 8090
     address: 0.0.0.0
-redis:
-    host: ${REDIS_INVENTORY_HOST:localhost}
-    port: ${REDIS_PORT:6381}
+
 spring:
     data:
         redis:
@@ -14,6 +12,10 @@ spring:
             lettuce:
                 pool:
                     max-active: 8
+    cache:
+        type: redis
+        redis:
+            cache-null-values: false
     datasource:
         driver-class-name: org.postgresql.Driver
         url: jdbc:postgresql://${INVENTORY_DB_URL:localhost:5440}/inventory
@@ -64,36 +66,36 @@ spring:
                     InventoryUpdated:vn.uit.edu.msshop.inventory.domain.event.InventoryUpdated,
                     UpdateManyInventoriesEvent:vn.uit.edu.msshop.inventory.domain.event.UpdateManyInventoriesEvent
 logging:
-  level:
-    org.hibernate.SQL: OFF 
-    org.hibernate.type.descriptor.sql.BasicBinder: OFF
-    org.springframework.data.mongodb.core.MongoTemplate: OFF
-    org.apache.kafka: ERROR
-    org.springframework.kafka: ERROR
-    io.micrometer.tracing: DEBUG
-    io.zipkin.reporter2: DEBUG
-    root: WARN
-    vn.uit.edu.msshop.inventory: INFO
-    io.lettuce.core: WARN
-  pattern:
-    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+    level:
+        org.hibernate.SQL: OFF 
+        org.hibernate.type.descriptor.sql.BasicBinder: OFF
+        org.springframework.data.mongodb.core.MongoTemplate: OFF
+        org.apache.kafka: ERROR
+        org.springframework.kafka: ERROR
+        io.micrometer.tracing: DEBUG
+        io.zipkin.reporter2: DEBUG
+        root: WARN
+        vn.uit.edu.msshop.inventory: INFO
+        io.lettuce.core: WARN
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-      tracing:
-        sampling:
-            probability: 1.0 
-      zipkin:
+    endpoints:
+        web:
+        exposure:
+            include: "*"
         tracing:
-            endpoint: http://127.0.0.1:9411/api/v2/spans
-      metrics:
+            sampling:
+                probability: 1.0 
+        zipkin:
+            tracing:
+                endpoint: http://127.0.0.1:9411/api/v2/spans
+        metrics:
+            tags:
+                application: ${spring.application.name}
+    metrics:
         tags:
-            application: ${spring.application.name}
-  metrics:
-    tags:
-      application: ${spring.application.name}
+        application: ${spring.application.name}
 eureka:
     client:
         serviceUrl:
@@ -102,3 +104,15 @@ eureka:
         prefer-ip-address: true
         lease-renewal-interval-in-seconds: 5 
         lease-expiration-duration-in-seconds: 10
+app:
+    cache:
+        key-prefix: ${spring.application.name}
+        inventory-ttl: 30m
+        inventory-list-ttl: 5m
+        inventory-by-variant-ttl: 30m
+        circuit-breaker:
+            sliding-window-size: 10
+            minimum-number-of-calls: 5
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 5s
+            permitted-number-of-calls-in-half-open-state: 3

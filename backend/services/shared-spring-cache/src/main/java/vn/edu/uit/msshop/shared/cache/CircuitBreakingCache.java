@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.bootstrap.config.cache;
+package vn.edu.uit.msshop.shared.cache;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
