@@ -1,2 +1,39 @@
-## Environment files ##
+# Build outputs
+**/target/
+**/*.jar
+**/*.class
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# AI/Tool directories
+.claude/
+.kiro/
+.qoder/
+.gemini/
+.cursor/
+
+# Added by code-review-graph
+.code-review-graph/
+
+# Environment files
 **/*.env
+.env*
+
+# Logs and crash dumps
+**/*.log
+**/logs/
+hs_err_*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+**/*.tmp
+**/*.swp
+**/~*
