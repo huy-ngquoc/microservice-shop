@@ -1,10 +1,10 @@
 package vn.uit.edu.msshop.order.adapter.in.web.mapper;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.msshop.order.adapter.in.web.request.CreateOrderRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateOrderRequest;
@@ -25,6 +25,7 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentMethod;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingFee;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
+
 /*String orderId,
     String fullName,
     String address,
@@ -37,16 +38,24 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
     Instant createAt */
 @Component
 public class OrderWebMapper {
-    
-    public CreateOrderCommand toCommand(CreateOrderRequest request) {
-        ShippingInfo shippingInfo = new ShippingInfo(request.fullName(), request.address(), request.phone(), request.email());
+
+    public CreateOrderCommand toCommand(
+            CreateOrderRequest request) {
+        ShippingInfo shippingInfo = new ShippingInfo(request.fullName(), request.address(), request.phone(),
+                request.email());
         List<OrderDetailCommand> details = request.detailRequests().stream().map(this::toOrderDetailCommand).toList();
-        return new CreateOrderCommand(new OrderId(UUID.randomUUID()), shippingInfo, details, new UserId(request.userId()), new ShippingFee(request.shippingFee()), new Discount(request.discount()), new Currency(request.currency()), new PaymentMethod(request.paymentMethod()));
+        return new CreateOrderCommand(new OrderId(UUIDs.newId()), shippingInfo, details, new UserId(request.userId()),
+                new ShippingFee(request.shippingFee()), new Discount(request.discount()),
+                new Currency(request.currency()), new PaymentMethod(request.paymentMethod()));
     }
-    public OrderDetailCommand toOrderDetailCommand(OrderDetailRequest detailRequest) {
+
+    public OrderDetailCommand toOrderDetailCommand(
+            OrderDetailRequest detailRequest) {
         return new OrderDetailCommand(detailRequest.variantId(), detailRequest.quantity());
     }
-    public UpdateOrderCommand toCommand(UpdateOrderRequest request) {
+
+    public UpdateOrderCommand toCommand(
+            UpdateOrderRequest request) {
         String fullName = request.fullName().value();
         String address = request.address().value();
         String email = request.email().value();
@@ -54,19 +63,30 @@ public class OrderWebMapper {
         ShippingInfo shippingInfo = new ShippingInfo(fullName, address, phone, email);
         Change<ShippingInfo> changeShippingInfo = Change.set(shippingInfo);
         Change<OrderStatus> changeOrderStatus = ChangeRequest.toChange(request.orderStatus(), OrderStatus::new);
-        return new UpdateOrderCommand(new OrderId(request.id()),changeShippingInfo,changeOrderStatus);
+        return new UpdateOrderCommand(new OrderId(request.id()), changeShippingInfo, changeOrderStatus);
     }
 
-    public OrderDetailResponse toResponse(OrderDetail orderDetail) {
-        return new OrderDetailResponse(orderDetail.variantId().toString(), orderDetail.productId().toString(), orderDetail.productName(), orderDetail.traits(), orderDetail.amount(), orderDetail.unitPrice());
+    public OrderDetailResponse toResponse(
+            OrderDetail orderDetail) {
+        return new OrderDetailResponse(orderDetail.variantId().toString(), orderDetail.productId().toString(),
+                orderDetail.productName(), orderDetail.traits(), orderDetail.amount(), orderDetail.unitPrice());
     }
 
-    public OrderResponse toResponse(OrderView orderView) {
-        List<OrderDetailResponse> detailResponses = orderView.details().stream().map(item->toResponse(item)).toList();
-        return new OrderResponse(orderView.orderId().toString(),orderView.shippingInfo().fullName(),orderView.shippingInfo().address(),orderView.shippingInfo().email(),orderView.shippingInfo().phone(),detailResponses,orderView.shippingFee().value(),orderView.discount().value(),orderView.status().value(),orderView.createAt().value(),orderView.updateAt().value(),orderView.currency().value(), orderView.paymentMethod().value(), orderView.paymentStatus().value());
+    public OrderResponse toResponse(
+            OrderView orderView) {
+        List<OrderDetailResponse> detailResponses = orderView.details().stream().map(item -> toResponse(item)).toList();
+        return new OrderResponse(orderView.orderId().toString(), orderView.shippingInfo().fullName(),
+                orderView.shippingInfo().address(), orderView.shippingInfo().email(), orderView.shippingInfo().phone(),
+                detailResponses, orderView.shippingFee().value(), orderView.discount().value(),
+                orderView.status().value(), orderView.createAt().value(), orderView.updateAt().value(),
+                orderView.currency().value(), orderView.paymentMethod().value(), orderView.paymentStatus().value());
     }
-    /*public OrderCreatedSuccess toEvent(CreateOrderRequest request) {
-        return new OrderCreatedSuccess(request.userId(),request.detailRequests().stream().map(item->item.variantId()).toList());
-    }*/
-    
+    /*
+     * public OrderCreatedSuccess toEvent(CreateOrderRequest request) {
+     * return new
+     * OrderCreatedSuccess(request.userId(),request.detailRequests().stream().map(
+     * item->item.variantId()).toList());
+     * }
+     */
+
 }
