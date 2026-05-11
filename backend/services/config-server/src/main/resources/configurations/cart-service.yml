@@ -48,5 +48,8 @@ resilience4J:
                slowCallDurationThreshold: 2s
                slowCallRateThreshold: 50
                waitDurationInOpenState: 10s
+               recordExceptions:
+                    - java.util.concurrent.TimeoutException
+                    - io.github.resilience4j.circuitbreaker.CallNotPermittedException
                     
        

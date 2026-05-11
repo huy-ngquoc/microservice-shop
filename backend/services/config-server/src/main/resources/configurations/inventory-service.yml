@@ -94,7 +94,7 @@ management:
             tags:
                 application: ${spring.application.name}
     metrics:
-        tags: inventory
+        tags: ["inventory"]
         application: ${spring.application.name}
 eureka:
     client:

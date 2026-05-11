@@ -6,6 +6,10 @@ spring:
                     issuer-uri: http://${KEYCLOAK_URL:localhost:8080}/realms/ms_shop
                     jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
     cloud:
+        loadbalancer:
+            clients: 
+                retry: 
+                    enabled: false
         gateway:
             discovery:
                 locator:
