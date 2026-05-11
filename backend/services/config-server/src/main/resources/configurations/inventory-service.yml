@@ -72,8 +72,8 @@ logging:
         org.springframework.data.mongodb.core.MongoTemplate: OFF
         org.apache.kafka: ERROR
         org.springframework.kafka: ERROR
-        io.micrometer.tracing: DEBUG
-        io.zipkin.reporter2: DEBUG
+        io.micrometer.tracing: WARN
+        io.zipkin.reporter2: WARN
         root: WARN
         vn.uit.edu.msshop.inventory: INFO
         io.lettuce.core: WARN
