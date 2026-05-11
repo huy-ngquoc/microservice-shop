@@ -68,19 +68,19 @@ logging:
   pattern:
         level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 management:
-        endpoints:
-            web:
-        exposure:
-            include: "*"
+    endpoints:
+        web:
+            exposure:
+                include: "*"
+    tracing:
+        sampling:
+            probability: 0.1
+    zipkin:
         tracing:
-            sampling:
-                probability: 0.1 
-        zipkin:
-            tracing:
-                endpoint: http://127.0.0.1:9411/api/v2/spans
-        metrics:
-            tags:
-                application: ${spring.application.name}
+            endpoint: http://ms_zipkin:9411/api/v2/spans
+    metrics:
+        tags:
+            application: ${spring.application.name}
 server:
   port: 8000
   address: 0.0.0.0
