@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import feign.FeignException;
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.exception.VariantNotEnoughException;
@@ -151,6 +152,12 @@ public class OrderController {
         }
         catch(VariantNotEnoughException| InsufficientStockException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        catch(FeignException e) {
+            if(e.status()==404) {
+                throw new VariantNotFoundException(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     } 
 

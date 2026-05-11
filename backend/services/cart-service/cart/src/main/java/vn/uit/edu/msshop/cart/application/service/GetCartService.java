@@ -1,10 +1,10 @@
 package vn.uit.edu.msshop.cart.application.service;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.cart.application.dto.query.CartView;
+import vn.uit.edu.msshop.cart.application.exception.CartNotFoundException;
 import vn.uit.edu.msshop.cart.application.mapper.CartViewMapper;
 import vn.uit.edu.msshop.cart.application.port.in.GetCartUseCase;
 import vn.uit.edu.msshop.cart.application.port.out.LoadCartPort;
@@ -20,7 +20,9 @@ public class GetCartService implements GetCartUseCase {
     
     public CartView getByUserId(
             UserId userId) {
-        return mapper.toView(loadPort.loadByUserId(userId));
+            final var cart = loadPort.loadByUserId(userId);
+            if(cart==null) throw new CartNotFoundException(userId);
+        return mapper.toView(cart);
     }
 
 }
