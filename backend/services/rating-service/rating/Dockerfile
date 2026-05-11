@@ -12,4 +12,9 @@ RUN mvn clean package -f backend/services/rating-service/rating/pom.xml -DskipTe
 FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 COPY --from=build /app/backend/services/rating-service/rating/target/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", \
+    "-XX:+UseContainerSupport", \
+    "-XX:MaxRAMPercentage=75.0", \
+    "-XX:InitialRAMPercentage=50.0", \
+    "-Xss256k", \
+    "-jar", "app.jar"]
