@@ -36,6 +36,12 @@ services:
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
             - ACCOUNT_DB_URL=${ACCOUNT_DB_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 384M
+                reservations:
+                    memory: 256M
     discovery-server:
         build:
             context: .
@@ -58,6 +64,12 @@ services:
             - microservices-net
         environment:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 384M
+                reservations:
+                    memory: 256M
     account-service:
         build:
             context: .
@@ -80,6 +92,12 @@ services:
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
             - ACCOUNT_DB_URL=${ACCOUNT_DB_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     auth-service:
         build:
             context: .
@@ -101,6 +119,12 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     cart-service:
         build:
             context: .
@@ -123,6 +147,12 @@ services:
             - REDIS_HOST=${REDIS_HOST}
             - CART_MONGODB_URL=${CART_MONGODB_URL}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     inventory-service:
         build:
             context: .
@@ -146,6 +176,12 @@ services:
             - INVENTORY_DB_URL=${INVENTORY_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     notification-service:
         build:
             context: .
@@ -167,6 +203,12 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - NOTIFICATION_DB_URL=${NOTIFICATION_DB_URL}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     rating-service:
         build:
             context: .
@@ -187,6 +229,12 @@ services:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - RATING_DB_URL=${RATING_DB_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     recommendation-service:
         build:
             context: .
@@ -206,6 +254,12 @@ services:
         environment:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     order-service:
         build:
             context: .
@@ -229,6 +283,12 @@ services:
             - ORDER_DB_URL=${ORDER_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 768M
+                reservations:
+                    memory: 384M
     fake-payment-service:
         build:
             context: .
@@ -250,6 +310,12 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - PAYMENT_DB_URL=${PAYMENT_DB_URL}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     product-service:
         build:
             context: .
@@ -274,6 +340,12 @@ services:
             - PRODUCT_DB_HOST=${PRODUCT_DB_HOST}
             - PRODUCT_DB_PORT=${PRODUCT_DB_PORT}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 768M
+                reservations:
+                    memory: 384M
     postgresql:
         container_name: ms_pg_sql
         image: postgres:18
