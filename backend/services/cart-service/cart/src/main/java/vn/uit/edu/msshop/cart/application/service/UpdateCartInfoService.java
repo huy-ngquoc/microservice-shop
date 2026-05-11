@@ -38,7 +38,7 @@ public class UpdateCartInfoService implements UpdateCartInfoUseCase {
 
         return commands.stream().map(item->{
             CartDetail detail = cart.findByVariantId(item.variantId());
-            if(detail==null) throw new IllegalArgumentException("Invalid argument");
+            if(detail==null) return new ArrayList<>();
             System.out.println("Price "+item.unitPrice().apply(detail.getPrice()).value());
             return CartDetail.UpdateInfo.builder().variantId(item.variantId())
             .imageKey(item.imageKey().apply(detail.getImageKey()))
