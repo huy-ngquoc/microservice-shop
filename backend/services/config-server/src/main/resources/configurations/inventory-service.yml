@@ -91,8 +91,8 @@ management:
         tracing:
             endpoint: http://ms_zipkin:9411/api/v2/spans
     metrics:
-        tags:
-            application: ${spring.application.name}
+        tags: ["inventory"]
+        application: ${spring.application.name}
 eureka:
     client:
         serviceUrl:

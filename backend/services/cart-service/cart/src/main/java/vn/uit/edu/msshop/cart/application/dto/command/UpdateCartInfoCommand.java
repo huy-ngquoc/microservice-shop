@@ -8,6 +8,12 @@ import vn.uit.edu.msshop.cart.domain.model.valueobject.UserId;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantId;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantTraits;
 
-public record UpdateCartInfoCommand(UserId userId, VariantId variantId, Change<ImageKey> imageKey , Change<ProductName> name, Change<VariantTraits> traits, Change<UnitPrice> unitPrice) {
+public record UpdateCartInfoCommand(
+        UserId userId,
+        VariantId variantId,
+        Change<ImageKey> imageKey,
+        Change<ProductName> name,
+        Change<VariantTraits> traits,
+        Change<UnitPrice> unitPrice) {
 
 }

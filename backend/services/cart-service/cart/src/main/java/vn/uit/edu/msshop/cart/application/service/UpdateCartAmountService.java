@@ -23,19 +23,24 @@ public class UpdateCartAmountService implements UpdateCartAmountUseCase {
     private final CartViewMapper mapper;
 
     @Override
-    public CartView update(UpdateCartAmountCommand command) {
+    public CartView update(
+            UpdateCartAmountCommand command) {
         Cart cart = loadCartPort.loadByUserId(command.userId());
-        if(cart==null) throw new CartNotFoundException(command.userId());
+        if (cart == null)
+            throw new CartNotFoundException(command.userId());
         final var detail = cart.findByVariantId(command.variantId());
-        if(detail==null) return null;
-        
-        if(detail.getAmount().value()==command.newAmount().apply(detail.getAmount()).value()) return null;
-        final var update = CartDetail.UpdateAmount.builder().amount(command.newAmount().apply(detail.getAmount())).variantId(command.variantId()).build();
+        if (detail == null)
+            return null;
+
+        if (detail.getAmount().value() == command.newAmount().apply(detail.getAmount()).value())
+            return null;
+        final var update = CartDetail.UpdateAmount.builder().amount(command.newAmount().apply(detail.getAmount()))
+                .variantId(command.variantId()).build();
         List<CartDetail.UpdateAmount> updateAmounts = List.of(update);
-        final var updateAmount = Cart.UpdateAmount.builder().userId(command.userId()).detailUpdateAmounts(updateAmounts).build();
+        final var updateAmount = Cart.UpdateAmount.builder().userId(command.userId()).detailUpdateAmounts(updateAmounts)
+                .build();
         final var saved = cart.applyUpdateAmount(updateAmount);
         return mapper.toView(saveCartPort.save(saved));
     }
-
 
 }

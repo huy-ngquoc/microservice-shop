@@ -1,6 +1,7 @@
 package vn.uit.edu.msshop.cart.application.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.cart.application.dto.command.CreateCartCommand;
@@ -22,14 +23,16 @@ public class CreateCartService implements CreateCartUseCase {
     private final VariantToUserPort variantToUserPort;
 
     @Override
-    public CartView create(CreateCartCommand command) {
+    @Transactional
+    public CartView create(
+            CreateCartCommand command) {
         Cart cart = loadCartPort.loadByUserId(command.userId());
-        if(cart==null) {
-        
-            cart=Cart.createEmpty(command.userId());
+        if (cart == null) {
+
+            cart = Cart.createEmpty(command.userId());
         }
         cart = cart.addItems(command.details());
-        for(CartDetail cd: command.details()) {
+        for (CartDetail cd : command.details()) {
             variantToUserPort.addMapping(cd.getVariantId(), command.userId());
         }
         return mapper.toView(savePort.save(cart));
