@@ -96,7 +96,10 @@ public class VariantController {
     public ResponseEntity<List<VariantResponse>> findAllByIds(
             @RequestBody
             @Valid
-            FindVariantsByIdsRequest request) {
+            FindVariantsByIdsRequest request) throws InterruptedException {
+                
+        //Thread.sleep(200000);
+                
         final var variantIds = this.mapper.toVariantIds(request);
         final var variantById = this.findAllByIdsUseCase.findAllByIds(variantIds);
 

@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.cart.adapter.out.persistence;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -12,12 +13,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartItemDocument {
+public class CartItemDocument implements Serializable {
     private String variantId;
     private List<String> traits;
     private String imageKey;
     private String name;
-    private BigDecimal price; 
+    private BigDecimal price;
     private int amount;
 
 }
