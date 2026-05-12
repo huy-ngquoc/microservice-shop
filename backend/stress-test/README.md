@@ -115,12 +115,19 @@ Actual throughput/latency/error rate will vary by machine specs, Docker resource
 
 ## Quick Start (PowerShell)
 
+`run-tests.ps1` locates JMeter from PATH, `JMETER_HOME`, or the `-JMeterHome` parameter
+(use the JMeter *home* folder that contains the `bin` directory).
+
 ```powershell
 cd backend\stress-test
 
 # Allow running the unsigned local script for this PowerShell session only
 # (no permanent change to the machine's execution policy)
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process
+
+# If JMeter is not on PATH, pass the home folder or set JMETER_HOME for this session
+.\run-tests.ps1 -Test sequential -JMeterHome "C:\apache-jmeter-5.6.3"
+$env:JMETER_HOME = "C:\apache-jmeter-5.6.3"
 
 # Step 1: Verify CRUD logic works
 .\run-tests.ps1 -Test sequential
