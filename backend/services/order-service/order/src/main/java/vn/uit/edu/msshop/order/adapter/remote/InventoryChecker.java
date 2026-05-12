@@ -15,8 +15,9 @@ import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutbox;
+import vn.uit.edu.msshop.order.config.FeignConfig;
 
-@FeignClient(name="inventory-service")
+@FeignClient(name="inventory-service", configuration=FeignConfig.class)
 public interface InventoryChecker {
     @PostMapping("/inventory/public/variants")
     List<InventoryResponse> getInventoryBatch(

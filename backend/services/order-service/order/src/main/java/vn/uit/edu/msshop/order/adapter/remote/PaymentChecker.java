@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import vn.uit.edu.msshop.order.adapter.in.web.response.PaymentResponse;
+import vn.uit.edu.msshop.order.config.PaymentFeignConfig;
 import vn.uit.edu.msshop.order.domain.event.OrderCreated;
 
 
-@FeignClient(name="payment-service")
+@FeignClient(name="payment-service", configuration = PaymentFeignConfig.class)
 public interface PaymentChecker {
     @GetMapping("/payment/public/order/{orderId}")
     public ResponseEntity<PaymentResponse> getPaymentByOrderId(@PathVariable UUID orderId);
