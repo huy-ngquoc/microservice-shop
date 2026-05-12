@@ -24,6 +24,7 @@ public record CreateSimpleProductRequest(
         @NotNull
         UUID brandId,
 
+        @NotNull
         @PositiveOrZero
         Long price,
 
