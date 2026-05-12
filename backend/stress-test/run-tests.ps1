@@ -18,6 +18,15 @@ if (-not (Test-Path -Path $CONFIG_DIR -PathType Container)) {
     throw "Config directory not found: $CONFIG_DIR"
 }
 
+function Resolve-ProfileConfig {
+    param([Parameter(Mandatory=$true)][string]$FileName)
+    $path = Join-Path $CONFIG_DIR $FileName
+    if (-not (Test-Path -Path $path -PathType Leaf)) {
+        throw "Profile config not found: $path"
+    }
+    return $path
+}
+
 # Create directories if not exist
 New-Item -ItemType Directory -Force -Path $RESULTS_DIR | Out-Null
 New-Item -ItemType Directory -Force -Path $REPORT_DIR | Out-Null
@@ -28,8 +37,7 @@ switch ($Test) {
     "sequential" {
         Write-Host "Running CRUD Sequential Test (verify logic)..." -ForegroundColor Cyan
         Write-Host "Config: 3 users, 5 loops, ~180 requests total" -ForegroundColor Gray
-        $profileConfig = "$CONFIG_DIR\crud-sequential.properties"
-        if (-not (Test-Path -Path $profileConfig -PathType Leaf)) { throw "Profile config not found: $profileConfig" }
+        $profileConfig = Resolve-ProfileConfig "crud-sequential.properties"
 
         & $JMETER_BIN -n `
             -t "$SCRIPT_DIR\scripts\product-service\crud-sequential.jmx" `
@@ -40,8 +48,7 @@ switch ($Test) {
     "light" {
         Write-Host "Running CRUD Stress Test - LIGHT (~200-300 req/s)..." -ForegroundColor Green
         Write-Host "Config: 25 users, 2 min duration" -ForegroundColor Gray
-        $profileConfig = "$CONFIG_DIR\crud-stress-light.properties"
-        if (-not (Test-Path -Path $profileConfig -PathType Leaf)) { throw "Profile config not found: $profileConfig" }
+        $profileConfig = Resolve-ProfileConfig "crud-stress-light.properties"
 
         & $JMETER_BIN -n `
             -t "$SCRIPT_DIR\scripts\product-service\crud-stress.jmx" `
@@ -54,8 +61,7 @@ switch ($Test) {
         Write-Host "Running CRUD Stress Test - MEDIUM (~400-500 req/s)..." -ForegroundColor Yellow
         Write-Host "Config: 45 users, 3 min duration" -ForegroundColor Gray
         Write-Host "WARNING: Run 'light' first to warm up system!" -ForegroundColor Yellow
-        $profileConfig = "$CONFIG_DIR\crud-stress-medium.properties"
-        if (-not (Test-Path -Path $profileConfig -PathType Leaf)) { throw "Profile config not found: $profileConfig" }
+        $profileConfig = Resolve-ProfileConfig "crud-stress-medium.properties"
 
         & $JMETER_BIN -n `
             -t "$SCRIPT_DIR\scripts\product-service\crud-stress.jmx" `
@@ -68,8 +74,7 @@ switch ($Test) {
         Write-Host "Running CRUD Stress Test - HEAVY (~500+ req/s)..." -ForegroundColor Red
         Write-Host "Config: 80 users, 5 min duration" -ForegroundColor Gray
         Write-Host "WARNING: High resource usage! Monitor CPU/memory!" -ForegroundColor Red
-        $profileConfig = "$CONFIG_DIR\crud-stress-heavy.properties"
-        if (-not (Test-Path -Path $profileConfig -PathType Leaf)) { throw "Profile config not found: $profileConfig" }
+        $profileConfig = Resolve-ProfileConfig "crud-stress-heavy.properties"
 
         & $JMETER_BIN -n `
             -t "$SCRIPT_DIR\scripts\product-service\crud-stress.jmx" `
