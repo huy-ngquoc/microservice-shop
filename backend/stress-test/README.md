@@ -102,7 +102,10 @@ jmeter -n -t scripts/product-service/crud-stress.jmx \
 - `deleters`: Number of delete threads (default: 2)
 - `createRate`: Products created per minute across all writers (default: 300)
 
-## Baseline Metrics (local)
+## Example Baseline Metrics (local, illustrative)
+
+These numbers are from one local run and are **not guaranteed targets**.  
+Actual throughput/latency/error rate will vary by machine specs, Docker resource limits, and backing service state.
 
 | Metric | Value |
 |--------|-------|
@@ -152,7 +155,7 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process
 
 ## Circuit Breaker Test
 
-The test validates graceful degradation when Redis fails:
+Illustrative example from a local run (environment-dependent):
 - Redis UP: ~5,000 req/s, 15ms avg
 - Redis DOWN: ~500 req/s, 200ms avg (fallback to DB)
 - 0% errors during failover
