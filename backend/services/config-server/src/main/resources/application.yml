@@ -14,7 +14,7 @@ spring:
 management:
     tracing:
         sampling:
-            probability: 1.0 # Gửi toàn bộ 100% request để dễ debug
+            probability: 0.1 # Giảm từ 100% xuống 10% để giảm disk I/O
     zipkin:
         tracing:
-            endpoint: http://localhost:9411/api/v2/spans
+            endpoint: http://ms_zipkin:9411/api/v2/spans

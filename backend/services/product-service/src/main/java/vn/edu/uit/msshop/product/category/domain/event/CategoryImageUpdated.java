@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 
 @RequiredArgsConstructor
 @Getter
@@ -17,7 +18,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImage
         onlyExplicitlyIncluded = true)
 public class CategoryImageUpdated {
     @EqualsAndHashCode.Include
-    private final UUID eventId = UUID.randomUUID();
+    private final UUID eventId = UUIDs.newId();
 
     private final Instant occurrenceTime = Instant.now();
 

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.msshop.inventory.adapter.in.web.request.OrderOutbox;
 import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedDocument;
 import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.InventoryUpdatedDocumentRepository;
@@ -80,7 +81,7 @@ public class ProcessOrderService implements ProcessOrderUseCase {
             .build();
             final var toSave = i.applyUpdateInfo(updateInfo);
 
-            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
+            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUIDs.newId())
                     .variantId(i.getVariantId().value())
                     .newQuantity(newQuantity)
                     .newReservedQuantity(newReservedQuantity)

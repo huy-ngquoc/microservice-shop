@@ -3,6 +3,10 @@
 **/*.jar
 **/*.class
 
+# Git
+.git/
+.gitignore
+
 # IDE
 .idea/
 .vscode/
@@ -16,9 +20,16 @@
 .qoder/
 .gemini/
 .cursor/
-
-# Added by code-review-graph
 .code-review-graph/
+
+# Config/doc files at root
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+QODER.md
+*.rules
+.mcp.json
+.opencode.json
 
 # Environment files
 **/*.env
@@ -28,6 +39,9 @@
 **/*.log
 **/logs/
 hs_err_*.log
+
+# Node (if any)
+**/node_modules/
 
 # OS files
 .DS_Store
