@@ -98,7 +98,7 @@ public class VariantController {
             @Valid
             FindVariantsByIdsRequest request) throws InterruptedException {
                 
-        Thread.sleep(200000);
+        //Thread.sleep(200000);
                 
         final var variantIds = this.mapper.toVariantIds(request);
         final var variantById = this.findAllByIdsUseCase.findAllByIds(variantIds);
