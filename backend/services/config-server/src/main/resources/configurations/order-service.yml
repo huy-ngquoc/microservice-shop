@@ -63,17 +63,17 @@ spring:
                     OrderCompositeEvent:vn.uit.edu.msshop.order.domain.event.OrderCompositeEvent
 logging:
   level:
-        vn.uit.edu.msshop.order.adapter.remote: DEBUG
-        org.springframework.data.mongodb.core.MongoTemplate: OFF
-        org.apache.kafka: ERROR
-        org.springframework.kafka: ERROR
-        io.micrometer.tracing: ERROR
-        io.zipkin.reporter2: ERROR
-        root: WARN
-        vn.uit.edu.msshop.order: INFO
-        io.lettuce.core: WARN
+      vn.uit.edu.msshop.order.adapter.remote: DEBUG
+      org.springframework.data.mongodb.core.MongoTemplate: OFF
+      org.apache.kafka: ERROR
+      org.springframework.kafka: ERROR
+      io.micrometer.tracing: ERROR
+      io.zipkin.reporter2: ERROR
+      root: WARN
+      vn.uit.edu.msshop.order: INFO
+      io.lettuce.core: WARN
   pattern:
-        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+      level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 management:
         endpoints:
             web:
@@ -100,18 +100,18 @@ eureka:
         lease-renewal-interval-in-seconds: 5 
         lease-expiration-duration-in-seconds: 10
 feign:
-    client:
-        config:
-            product-service:
-                connectTimeout: 2000
-                readTimeout: 2000
-                retryer: feign.Retryer.NEVER_RETRY
-            inventory-service:
-                connectTimeout: 2000
-                readTimeout: 2000
-            payment-service:
-                connectTimeout: 5000
-                readTimeout: 5000
+  client:
+    config:
+      product-service:
+        connectTimeout: 2000
+        readTimeout: 2000
+        retryer: feign.Retryer.NEVER_RETRY
+      inventory-service:
+        connectTimeout: 2000
+        readTimeout: 2000
+      payment-service:
+        connectTimeout: 5000
+        readTimeout: 5000
 resilience4j:
    circuitbreaker:
         instances:
