@@ -12,7 +12,10 @@ stress-test/
 │       ├── crud-sequential.jmx   # Sequential CRUD flow verification
 │       └── crud-stress.jmx       # Parallel CRUD stress test
 ├── config/                  # Environment configs
-│   └── local.properties
+│   ├── crud-sequential.properties
+│   ├── crud-stress-heavy.properties
+│   ├── crud-stress-light.properties
+│   └── crud-stress-medium.properties
 ├── data/                    # Test data (CSV, JSON payloads)
 ├── report/                  # Generated HTML reports (gitignored)
 └── results/                 # Raw JTL results (gitignored)
