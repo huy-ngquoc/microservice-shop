@@ -72,6 +72,7 @@
         <cloudinary.version>2.3.2</cloudinary.version>
         <dotenv.version>3.2.0</dotenv.version>
         <resilience4j.version>2.4.0</resilience4j.version>
+        <uuid-generator.version>5.2.0</uuid-generator.version>
     </properties>
 
     <dependencyManagement>
@@ -145,6 +146,11 @@
                 <version>${resilience4j.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.fasterxml.uuid</groupId>
+                <artifactId>java-uuid-generator</artifactId>
+                <version>${uuid-generator.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

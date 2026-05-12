@@ -1,9 +1,8 @@
 package vn.uit.edu.msshop.rating.adapter.in.web.mapper;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Component;
 
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.msshop.rating.adapter.in.web.request.PostRatingRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.request.UpdateRatingRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.request.common.ChangeRequest;
@@ -26,9 +25,10 @@ import vn.uit.edu.msshop.rating.domain.model.valueobject.Username;
 
 @Component
 public class RatingWebMapper {
-    public PostRatingCommand toCommand(PostRatingRequest request) {
-        final var id = new RatingId(UUID.randomUUID());
-        final var content =new Content(request.content());
+    public PostRatingCommand toCommand(
+            PostRatingRequest request) {
+        final var id = new RatingId(UUIDs.newId());
+        final var content = new Content(request.content());
         final var productId = new ProductId(request.productId());
         final var userId = new UserId(request.userId());
         final var userName = new Username(request.userName());
@@ -36,13 +36,19 @@ public class RatingWebMapper {
         final var ratingPoint = new RatingPoint(request.ratingPoint());
         return new PostRatingCommand(id, content, productId, ratingPoint, userAvatar, userId, userName);
     }
-    public UpdateRatingCommand toCommand(UpdateRatingRequest request) {
+
+    public UpdateRatingCommand toCommand(
+            UpdateRatingRequest request) {
         final var id = new RatingId(request.id());
         final var content = ChangeRequest.toChange(request.content(), Content::new);
         final var ratingPoint = ChangeRequest.toChange(request.ratingPoint(), RatingPoint::new);
-        return new UpdateRatingCommand(id,content,ratingPoint);
+        return new UpdateRatingCommand(id, content, ratingPoint);
     }
-    public RatingResponse toResponse(RatingView view) {
-        return new RatingResponse(view.ratingId(), view.content(), view.mediaURL(), view.mediaType(),view.mediaPublicId(), view.productId(), view.userId(), view.userName(), view.userAvatar(),view.ratingPoint());
+
+    public RatingResponse toResponse(
+            RatingView view) {
+        return new RatingResponse(view.ratingId(), view.content(), view.mediaURL(), view.mediaType(),
+                view.mediaPublicId(), view.productId(), view.userId(), view.userName(), view.userAvatar(),
+                view.ratingPoint());
     }
 }

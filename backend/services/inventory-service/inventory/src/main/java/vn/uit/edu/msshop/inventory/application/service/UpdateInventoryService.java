@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedDocument;
 import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.InventoryUpdatedDocumentRepository;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderCancelledCommand;
@@ -74,7 +75,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         // publishEventPort.publishInventoryUpdateEvent(new
         // InventoryUpdated(saved.getVariantId().value(), saved.getQuantity().value(),
         // saved.getReservedQuantity().value()));
-        InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
+        InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUIDs.newId())
                 .variantId(saved.getVariantId().value())
                 .newQuantity(saved.getQuantity().value())
                 .newReservedQuantity(saved.getReservedQuantity().value())
@@ -140,7 +141,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
                     .build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
             toSaves.add(toSave);
-            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
+            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUIDs.newId())
                     .variantId(toSave.getVariantId().value())
                     .newQuantity(toSave.getQuantity().value())
                     .newReservedQuantity(toSave.getReservedQuantity().value())
@@ -222,7 +223,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
                     .status(inventory.getStatus())
                     .build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
-            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
+            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUIDs.newId())
                     .variantId(toSave.getVariantId().value())
                     .newQuantity(toSave.getQuantity().value())
                     .newReservedQuantity(toSave.getReservedQuantity().value())
