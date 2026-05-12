@@ -12,6 +12,7 @@ $JMETER_BIN = "$JMETER_HOME\bin\jmeter.bat"
 $SCRIPT_DIR = $PSScriptRoot
 $RESULTS_DIR = "$SCRIPT_DIR\results"
 $REPORT_DIR = "$SCRIPT_DIR\report"
+$CONFIG_DIR = "$SCRIPT_DIR\config"
 
 # Create directories if not exist
 New-Item -ItemType Directory -Force -Path $RESULTS_DIR | Out-Null
@@ -23,22 +24,22 @@ switch ($Test) {
     "sequential" {
         Write-Host "Running CRUD Sequential Test (verify logic)..." -ForegroundColor Cyan
         Write-Host "Config: 3 users, 5 loops, ~180 requests total" -ForegroundColor Gray
+        $profileConfig = "$CONFIG_DIR\crud-sequential.properties"
 
         & $JMETER_BIN -n `
             -t "$SCRIPT_DIR\scripts\product-service\crud-sequential.jmx" `
-            -Jusers=3 -Jloops=5 `
+            -q $profileConfig `
             -l "$RESULTS_DIR\crud-sequential-$timestamp.jtl" `
             -j "$RESULTS_DIR\crud-sequential-$timestamp.log"
     }
     "light" {
         Write-Host "Running CRUD Stress Test - LIGHT (~200-300 req/s)..." -ForegroundColor Green
         Write-Host "Config: 25 users, 2 min duration" -ForegroundColor Gray
+        $profileConfig = "$CONFIG_DIR\crud-stress-light.properties"
 
         & $JMETER_BIN -n `
             -t "$SCRIPT_DIR\scripts\product-service\crud-stress.jmx" `
-            -Jduration=120 `
-            -Jwriters=5 -Jreaders=15 -Jupdaters=3 -Jdeleters=2 `
-            -JcreateRate=120 `
+            -q $profileConfig `
             -l "$RESULTS_DIR\crud-stress-light-$timestamp.jtl" `
             -j "$RESULTS_DIR\crud-stress-light-$timestamp.log" `
             -e -o "$REPORT_DIR\crud-stress-light-$timestamp"
@@ -47,12 +48,11 @@ switch ($Test) {
         Write-Host "Running CRUD Stress Test - MEDIUM (~400-500 req/s)..." -ForegroundColor Yellow
         Write-Host "Config: 45 users, 3 min duration" -ForegroundColor Gray
         Write-Host "WARNING: Run 'light' first to warm up system!" -ForegroundColor Yellow
+        $profileConfig = "$CONFIG_DIR\crud-stress-medium.properties"
 
         & $JMETER_BIN -n `
             -t "$SCRIPT_DIR\scripts\product-service\crud-stress.jmx" `
-            -Jduration=180 `
-            -Jwriters=8 -Jreaders=30 -Jupdaters=5 -Jdeleters=2 `
-            -JcreateRate=240 `
+            -q $profileConfig `
             -l "$RESULTS_DIR\crud-stress-medium-$timestamp.jtl" `
             -j "$RESULTS_DIR\crud-stress-medium-$timestamp.log" `
             -e -o "$REPORT_DIR\crud-stress-medium-$timestamp"
@@ -61,12 +61,11 @@ switch ($Test) {
         Write-Host "Running CRUD Stress Test - HEAVY (~500+ req/s)..." -ForegroundColor Red
         Write-Host "Config: 80 users, 5 min duration" -ForegroundColor Gray
         Write-Host "WARNING: High resource usage! Monitor CPU/memory!" -ForegroundColor Red
+        $profileConfig = "$CONFIG_DIR\crud-stress-heavy.properties"
 
         & $JMETER_BIN -n `
             -t "$SCRIPT_DIR\scripts\product-service\crud-stress.jmx" `
-            -Jduration=300 `
-            -Jwriters=15 -Jreaders=50 -Jupdaters=10 -Jdeleters=5 `
-            -JcreateRate=420 `
+            -q $profileConfig `
             -l "$RESULTS_DIR\crud-stress-heavy-$timestamp.jtl" `
             -j "$RESULTS_DIR\crud-stress-heavy-$timestamp.log" `
             -e -o "$REPORT_DIR\crud-stress-heavy-$timestamp"
