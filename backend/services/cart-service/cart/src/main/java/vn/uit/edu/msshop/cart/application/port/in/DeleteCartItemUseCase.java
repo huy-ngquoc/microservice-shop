@@ -5,6 +5,9 @@ import java.util.List;
 import vn.uit.edu.msshop.cart.application.dto.command.DeleteCartItemCommand;
 
 public interface DeleteCartItemUseCase {
-    public void deleteCartItem(DeleteCartItemCommand command);
-    public void deleteManyItems(List<DeleteCartItemCommand> command);
+    public void deleteCartItem(
+            DeleteCartItemCommand command);
+
+    public void deleteManyItems(
+            List<DeleteCartItemCommand> command);
 }

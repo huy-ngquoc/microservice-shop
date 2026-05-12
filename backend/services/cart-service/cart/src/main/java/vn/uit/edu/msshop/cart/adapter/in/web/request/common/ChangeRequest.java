@@ -1,11 +1,10 @@
 package vn.uit.edu.msshop.cart.adapter.in.web.request.common;
+
 import java.util.function.Function;
 
 import org.jspecify.annotations.NonNull;
 
 import vn.uit.edu.msshop.cart.application.common.Change;
-
-
 
 public record ChangeRequest<T>(
         T value) {

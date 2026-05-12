@@ -10,5 +10,6 @@ import vn.uit.edu.msshop.cart.adapter.out.event.documents.EventDocument;
 
 @Repository
 public interface EventDocumentRepository extends MongoRepository<EventDocument, UUID> {
-    public void deleteByReceiveAtBefore(Instant threshold);
+    public void deleteByReceiveAtBefore(
+            Instant threshold);
 }

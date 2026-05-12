@@ -4,19 +4,23 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutbox;
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutboxRepository;
+import vn.uit.edu.msshop.order.adapter.out.persistence.mapper.OrderDataMapper;
 import vn.uit.edu.msshop.order.application.dto.command.CreateOrderCommand;
 import vn.uit.edu.msshop.order.application.port.in.CreateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.CheckUserPort;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderDetailPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
+import vn.uit.edu.msshop.order.domain.event.OrderCompositeEvent;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.CreateAt;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
@@ -64,20 +68,21 @@ public class CreateOrderService implements CreateOrderUseCase {
     private final SaveOrderPort savePort;
     private final LoadOrderDetailPort loadOrderDetailPort;
     private final CheckUserPort checkUserPort;
-
+    private final OrderDataMapper mapper;
+   
+    
     private final OrderOutboxRepository orderOutboxRepo;
-
-    /*
-     * private String currency;
-     * private UUID orderId;
-     * private String paymentMethod;
-     * private long paymentValue;
-     * private String eventStatus;
-     * private Integer retryCount;
-     * private Instant createdAt;
-     * private Instant updatedAt;
-     * private String lastError;
-     */
+    private final KafkaTemplate<String,OrderCompositeEvent> kafkaTemplate;
+    
+/*private String currency;
+    private UUID orderId;
+    private String paymentMethod;
+    private long paymentValue;
+    private String eventStatus;
+    private Integer retryCount; 
+    private Instant createdAt;
+    private Instant updatedAt; 
+    private String lastError; */
     @Override
     @Transactional
     // @Observed(name = "mongodb.save.order")
@@ -115,54 +120,63 @@ public class CreateOrderService implements CreateOrderUseCase {
 
     @Override
     @Transactional
-    public Order manualCreate(
-            Order order) {
-
-        /*
-         * OrderCreatedDocument outboxEventOrderCreated =
-         * OrderCreatedDocument.builder().currency(order.getCurrency().value())
-         * .orderId(order.getId().value())
-         * .paymentMethod(order.getPaymentMethod().value())
-         * .paymentValue(order.getTotalPrice().value())
-         * .userEmail(order.getShippingInfo().email())
-         * .eventStatus("PENDING")
-         * .retryCount(0)
-         * .createdAt(Instant.now())
-         * .updatedAt(null).eventId(UUIDs.newId())
-         * .lastError(null).userId(order.getUserId().value()).build();
-         * final var savedEvent=orderCreatedDocumentRepo.save(outboxEventOrderCreated);
-         * OrderCreatedSuccessDocument outboxOrderCreatedSuccess =
-         * OrderCreatedSuccessDocument.builder().eventId(UUIDs.newId())
-         * .userId(order.getUserId().value())
-         * .variantIds(order.getDetails().stream().map(item->item.variantId()).toList())
-         * .eventStatus("PENDING")
-         * .retryCount(0)
-         * .createdAt(Instant.now())
-         * .updatedAt(null)
-         * .lastError(null).build();
-         * final var savedOutboxOrderCreatedSuccess =
-         * orderCreatedSuccessDocumentRepo.save(outboxOrderCreatedSuccess);
-         * final var result =savePort.save(order);
-         * TransactionSynchronizationManager.registerSynchronization(new
-         * TransactionSynchronization() {
-         * 
-         * @Override
-         * public void afterCommit() {
-         * //publishPort.publishOrderCreated_InventoryEvent(
-         * savedOutboxEventOrderCreatedInventory);
-         * publishPort.publishOrderCreatedEvent(savedEvent);
-         * publishPort.publishClearCartEvent(savedOutboxOrderCreatedSuccess);
-         * 
-         * }
-         * });
-         */
+    @CircuitBreaker(name="mongoService")
+    public Order manualCreate(Order order) {
+        
+        /*OrderCreatedDocument outboxEventOrderCreated = OrderCreatedDocument.builder().currency(order.getCurrency().value())
+        .orderId(order.getId().value())
+        .paymentMethod(order.getPaymentMethod().value())
+        .paymentValue(order.getTotalPrice().value())
+        .userEmail(order.getShippingInfo().email())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null).eventId(UUID.randomUUID())
+        .lastError(null).userId(order.getUserId().value()).build();
+        final var savedEvent=orderCreatedDocumentRepo.save(outboxEventOrderCreated);
+         OrderCreatedSuccessDocument outboxOrderCreatedSuccess = OrderCreatedSuccessDocument.builder().eventId(UUID.randomUUID())
+        .userId(order.getUserId().value())
+        .variantIds(order.getDetails().stream().map(item->item.variantId()).toList())
+        .eventStatus("PENDING")
+        .retryCount(0)
+        .createdAt(Instant.now())
+        .updatedAt(null)
+        .lastError(null).build();
+        final var savedOutboxOrderCreatedSuccess = orderCreatedSuccessDocumentRepo.save(outboxOrderCreatedSuccess);
+              final var result =savePort.save(order);
+              TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                //publishPort.publishOrderCreated_InventoryEvent(savedOutboxEventOrderCreatedInventory);
+                publishPort.publishOrderCreatedEvent(savedEvent);
+                publishPort.publishClearCartEvent(savedOutboxOrderCreatedSuccess);
+                
+            }
+        });*/
         final var result = savePort.save(order);
         final var details = result.getDetails().stream()
                 .map(item -> new OrderDetailRequest(item.variantId(), item.amount())).toList();
         final var orderOutbox = new OrderOutbox(UUIDs.newId(), result.getId().value(), "PROCESS_ORDER", details,
                 "PENDING", "PENDING", Instant.now(), 0);
         orderOutboxRepo.save(orderOutbox);
-        return result;
+        return  result;
     }
+
+    public Order createFail(Order order) {
+        final var details = order.getDetails().stream().map(item-> new OrderDetailRequest(item.variantId(), item.amount())).toList();
+        final var orderOutbox = new OrderOutbox(UUID.randomUUID(),order.getId().value(), "PROCESS_ORDER", details, "PENDING","PENDING", Instant.now(),0);
+        order.updateStatus(new OrderStatus("RETRYING"));
+        final var orderDocument = mapper.toDocument(order);
+        try {
+            kafkaTemplate.send("order-save-fail-topic", new OrderCompositeEvent(orderDocument, orderOutbox));
+        }
+        catch(RuntimeException e) {
+            throw e;
+        }
+        return order;
+    }
+
+
+
 
 }

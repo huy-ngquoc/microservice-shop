@@ -3,9 +3,13 @@ spring:
         oauth2:
             resourceserver:
                 jwt:
-                    issuer-uri: http://${KEYCLOAK_URL:localhost:9098}/realms/ms_shop
+                    issuer-uri: http://${KEYCLOAK_URL:localhost:8080}/realms/ms_shop
                     jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
     cloud:
+        loadbalancer:
+            clients: 
+                retry: 
+                    enabled: false
         gateway:
             discovery:
                 locator:
@@ -58,10 +62,10 @@ jwt:
 app:
     keycloak:
         admin:
-            server-url: http://${KEYCLOAK_URL:localhost:9098}
+            server-url: http://${KEYCLOAK_URL:localhost:8080}
             realm: ms_shop
             client-id: ms_shop_rest_api
-            client-secret: nUAtOw5MWbvzYoudgUO4WVjwQciBiSHa
+            client-secret: sZK0dvxOGDkpQ3yzMkZ4JdSiJzGxVK5K
 eureka:
     client:
         serviceUrl:

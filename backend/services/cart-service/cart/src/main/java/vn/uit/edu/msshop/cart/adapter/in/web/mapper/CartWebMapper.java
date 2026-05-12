@@ -22,6 +22,7 @@ import vn.uit.edu.msshop.cart.application.dto.query.CartView;
 import vn.uit.edu.msshop.cart.application.port.out.LoadVariantPort;
 import vn.uit.edu.msshop.cart.domain.event.OrderCreatedSuccess;
 import vn.uit.edu.msshop.cart.domain.event.ProductUpdated;
+import vn.uit.edu.msshop.cart.domain.event.VariantUpdatedIntegrationEvent;
 import vn.uit.edu.msshop.cart.domain.model.CartDetail;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.Amount;
 import vn.uit.edu.msshop.cart.domain.model.valueobject.ImageKey;
@@ -35,36 +36,69 @@ import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantTraits;
 @RequiredArgsConstructor
 public class CartWebMapper {
     private final LoadVariantPort loadPort;
-    public CreateCartCommand toCommand(CreateCartRequest request) {
+
+    public CreateCartCommand toCommand(
+            CreateCartRequest request, String userFromHeader) {
         List<CartDetail> listCartDetails = loadPort.loadCartDetails(request.getDetailRequests());
-        return new CreateCartCommand(new UserId(request.getUserId()),listCartDetails);
+        return new CreateCartCommand(new UserId(UUID.fromString(userFromHeader)), listCartDetails);
     }
-    public UpdateCartAmountCommand toCommand(UpdateCartAmountReuest request) {
-        return new UpdateCartAmountCommand(new UserId(request.getUserId()), new VariantId(request.getVariantId()),ChangeRequest.toChange(request.getAmount(), Amount::new));
+
+    public UpdateCartAmountCommand toCommand(
+            UpdateCartAmountReuest request, String userId) {
+        return new UpdateCartAmountCommand(new UserId(UUID.fromString(userId)), new VariantId(request.getVariantId()),
+                ChangeRequest.toChange(request.getAmount(), Amount::new));
     }
-    public CartResponse toResponse(CartView view) {
-        List<CartDetailResponse> listDetailResponses = view.getDetailViews().stream().map(this::toDetailResponse).toList();
+
+    public CartResponse toResponse(
+            CartView view) {
+        List<CartDetailResponse> listDetailResponses = view.getDetailViews().stream().map(this::toDetailResponse)
+                .toList();
         return new CartResponse(view.getUserId(), listDetailResponses);
-    } 
-    public CartDetailResponse toDetailResponse(CartDetailView view) {
-        return new CartDetailResponse(view.getVariantId(), view.getName(), view.getTraits(), view.getImageKey(), view.getPrice(), view.getAmount());
     }
-    public ClearCartCommand toCommand(String userId) {
+
+    public CartDetailResponse toDetailResponse(
+            CartDetailView view) {
+        return new CartDetailResponse(view.getVariantId(), view.getName(), view.getTraits(), view.getImageKey(),
+                view.getPrice(), view.getAmount());
+    }
+
+    public ClearCartCommand toCommand(
+            String userId) {
         return new ClearCartCommand(new UserId(UUID.fromString(userId)));
     }
-    public DeleteCartItemCommand toCommand(String userId, String variantId) {
-        return new DeleteCartItemCommand(new UserId(UUID.fromString(userId)), new VariantId(UUID.fromString(variantId)));
-    }
-    public List<DeleteCartItemCommand> toCommand(OrderCreatedSuccess event) {
-        return event.variantIds().stream().map(item->new DeleteCartItemCommand(new UserId(event.userId()),new VariantId(item))).toList();
-    }
-    public UpdateCartInfoCommand toCommand(ProductUpdated event, String userId) {
 
-        final var imageKey= Change.set(new ImageKey(event.getImageKey()));
+    public DeleteCartItemCommand toCommand(
+            String userId,
+            String variantId) {
+        return new DeleteCartItemCommand(new UserId(UUID.fromString(userId)),
+                new VariantId(UUID.fromString(variantId)));
+    }
+
+    public List<DeleteCartItemCommand> toCommand(
+            OrderCreatedSuccess event) {
+        return event.variantIds().stream()
+                .map(item -> new DeleteCartItemCommand(new UserId(event.userId()), new VariantId(item))).toList();
+    }
+
+    public UpdateCartInfoCommand toCommand(
+            ProductUpdated event,
+            String userId) {
+
+        final var imageKey = Change.set(new ImageKey(event.getImageKey()));
         final var name = Change.set(new ProductName(event.getName()));
         final var traits = Change.set(new VariantTraits(event.getTraits()));
         final var unitPrice = Change.set(new UnitPrice(event.getUnitPrice()));
 
-        return new UpdateCartInfoCommand(new UserId(UUID.fromString(userId)), new VariantId(event.getVariantId()),imageKey, name,traits, unitPrice);
+        return new UpdateCartInfoCommand(new UserId(UUID.fromString(userId)), new VariantId(event.getVariantId()),
+                imageKey, name, traits, unitPrice);
+    } 
+    public UpdateCartInfoCommand toCommand(VariantUpdatedIntegrationEvent event, String userId) {
+        final var imageKey = Change.set(new ImageKey(event.imageKey()));
+        final var name = Change.set(new ProductName(event.name()));
+        final var traits = Change.set(new VariantTraits(event.traits()));
+        final var unitPrice = Change.set(new UnitPrice(event.unitPrice()));
+
+        return new UpdateCartInfoCommand(new UserId(UUID.fromString(userId)), new VariantId(event.variantId()),
+                imageKey, name, traits, unitPrice);
     }
 }
