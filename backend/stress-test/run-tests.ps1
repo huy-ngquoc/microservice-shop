@@ -1,18 +1,40 @@
 # Product Service Stress Test Runner
-# Usage: .\run-tests.ps1 -Test <sequential|light|medium|heavy>
+# Usage: .\run-tests.ps1 -Test <sequential|light|medium|heavy> [-JMeterHome <path>]
 
 param(
     [Parameter(Mandatory=$true)]
     [ValidateSet("sequential", "light", "medium", "heavy")]
-    [string]$Test
+    [string]$Test,
+    [string]$JMeterHome
 )
 
-$JMETER_HOME = "C:\Users\Alley\Desktop\apache-jmeter-5.6.3"
-$JMETER_BIN = "$JMETER_HOME\bin\jmeter.bat"
 $SCRIPT_DIR = $PSScriptRoot
 $RESULTS_DIR = "$SCRIPT_DIR\results"
 $REPORT_DIR = "$SCRIPT_DIR\report"
 $CONFIG_DIR = "$SCRIPT_DIR\config"
+
+if ($JMeterHome) {
+    $JMETER_BIN = Join-Path $JMeterHome "bin\jmeter.bat"
+    if (-not (Test-Path -Path $JMETER_BIN -PathType Leaf)) {
+        throw "JMeter not found at '$JMETER_BIN'. Provide a valid -JMeterHome path."
+    }
+}
+elseif ($env:JMETER_HOME) {
+    $JMETER_BIN = Join-Path $env:JMETER_HOME "bin\jmeter.bat"
+    if (-not (Test-Path -Path $JMETER_BIN -PathType Leaf)) {
+        throw "JMeter not found at '$JMETER_BIN' from JMETER_HOME. Set JMETER_HOME correctly or use -JMeterHome."
+    }
+}
+else {
+    $jmeterCommand = Get-Command "jmeter.bat" -ErrorAction SilentlyContinue
+    if (-not $jmeterCommand) {
+        $jmeterCommand = Get-Command "jmeter" -ErrorAction SilentlyContinue
+    }
+    if (-not $jmeterCommand) {
+        throw "JMeter executable not found. Use -JMeterHome, set JMETER_HOME, or add jmeter to PATH."
+    }
+    $JMETER_BIN = $jmeterCommand.Source
+}
 
 if (-not (Test-Path -Path $CONFIG_DIR -PathType Container)) {
     throw "Config directory not found: $CONFIG_DIR"
