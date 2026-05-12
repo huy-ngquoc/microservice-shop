@@ -4,5 +4,6 @@ import vn.uit.edu.msshop.cart.application.dto.command.UpdateCartAmountCommand;
 import vn.uit.edu.msshop.cart.application.dto.query.CartView;
 
 public interface UpdateCartAmountUseCase {
-    public CartView update(UpdateCartAmountCommand command);
+    public CartView update(
+            UpdateCartAmountCommand command);
 }

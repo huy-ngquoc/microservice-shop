@@ -243,7 +243,7 @@ services:
                 microservice-shop-shared-base: "service:shared-base"
         container_name: recommendation-service
         ports:
-            - "8080:8080"
+            - "8099:8080"
         depends_on:
             config-server:
                 condition: service_healthy
@@ -266,9 +266,10 @@ services:
             dockerfile: backend/services/order-service/order/Dockerfile
             additional_contexts:
                 microservice-shop-shared-base: "service:shared-base"
-        container_name: order-service
+        deploy:
+           replicas: 2
         ports:
-            - "8000:8000"
+            - "8000"
         depends_on:
             config-server:
                 condition: service_healthy
@@ -699,14 +700,17 @@ services:
                 limits:
                     memory: 128M
     keycloak:
-        container_name: ms_keycloak
+        container_name: ms-keycloak
         image: quay.io/keycloak/keycloak:26.5
         ports:
-            - 9098:8080
+            - "8080:8080"
         environment:
             - KEYCLOAK_ADMIN=admin
             - KEYCLOAK_ADMIN_PASSWORD=admin
-            - JAVA_OPTS_APPEND=-Xmx384m -Xms256m
+            - KC_HOSTNAME_URL=http://ms-keycloak:8080
+            - KC_HOSTNAME_STRICT=false
+            - KC_HOSTNAME_STRICT_HTTPS=false
+            - KC_HTTP_ENABLED=true
         networks:
             - microservices-net
         restart: unless-stopped
@@ -716,6 +720,9 @@ services:
                     memory: 512M
         command:
             - "start-dev"
+        volumes:
+            - keycloak_data:/opt/keycloak/data
+        
     redis_order:
         image: redis:7.2-alpine
         container_name: redis_order
@@ -803,3 +810,4 @@ volumes:
     redis_order:
     redis_inventory:
     mongo_cart:
+    keycloak_data:

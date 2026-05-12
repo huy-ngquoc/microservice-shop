@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.cart.application.dto.query;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartView {
+public class CartView implements Serializable {
     private UUID userId;
     private List<CartDetailView> detailViews;
 }

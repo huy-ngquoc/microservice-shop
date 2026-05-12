@@ -1,4 +1,5 @@
 package vn.uit.edu.msshop.cart.application.common;
+
 import java.util.Objects;
 
 public sealed interface Change<T>
