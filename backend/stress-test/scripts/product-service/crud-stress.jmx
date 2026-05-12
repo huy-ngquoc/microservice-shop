@@ -98,10 +98,10 @@
               <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
             </JSONPostProcessor>
             <hashTree/>
-            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Add to brandIds" enabled="true">
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Add to brandIds" enabled="true">
               <stringProp name="filename"></stringProp>
               <stringProp name="parameters"></stringProp>
-              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="script">String existing = props.getProperty("brandIds", "");
 String newId = vars.get("newBrandId");
 if (!"NOT_FOUND".equals(newId)) {
@@ -109,7 +109,7 @@ if (!"NOT_FOUND".equals(newId)) {
     props.put("brandIds", updated);
     log.info("Added brand: " + newId + " | All: " + updated);
 }</stringProp>
-            </BeanShellPostProcessor>
+            </JSR223PostProcessor>
             <hashTree/>
           </hashTree>
         </hashTree>
@@ -144,10 +144,10 @@ if (!"NOT_FOUND".equals(newId)) {
               <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
             </JSONPostProcessor>
             <hashTree/>
-            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Add to categoryIds" enabled="true">
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Add to categoryIds" enabled="true">
               <stringProp name="filename"></stringProp>
               <stringProp name="parameters"></stringProp>
-              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="script">String existing = props.getProperty("categoryIds", "");
 String newId = vars.get("newCategoryId");
 if (!"NOT_FOUND".equals(newId)) {
@@ -155,7 +155,7 @@ if (!"NOT_FOUND".equals(newId)) {
     props.put("categoryIds", updated);
     log.info("Added category: " + newId + " | All: " + updated);
 }</stringProp>
-            </BeanShellPostProcessor>
+            </JSR223PostProcessor>
             <hashTree/>
           </hashTree>
         </hashTree>
@@ -167,16 +167,16 @@ if (!"NOT_FOUND".equals(newId)) {
           <boolProp name="displaySystemProperties">false</boolProp>
         </DebugSampler>
         <hashTree>
-          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Log Summary" enabled="true">
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Log Summary" enabled="true">
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
-            <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="script">log.info("=== SETUP COMPLETE ===");
 log.info("Brands: " + props.getProperty("brandIds", ""));
 log.info("Categories: " + props.getProperty("categoryIds", ""));
 props.put("productIds", "");
 props.put("variantIds", "");</stringProp>
-          </BeanShellPostProcessor>
+          </JSR223PostProcessor>
           <hashTree/>
         </hashTree>
       </hashTree>
@@ -196,10 +196,10 @@ props.put("variantIds", "");</stringProp>
       </ThreadGroup>
       <hashTree>
         <!-- Get random brand/category -->
-        <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="Pick Random Brand/Category" enabled="true">
+        <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Pick Random Brand/Category" enabled="true">
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
-          <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
           <stringProp name="script">import java.util.Random;
 Random rand = new Random();
 
@@ -214,19 +214,19 @@ if (categories.length > 0 &amp;&amp; !categories[0].isEmpty()) {
 }
 
 // Random color
-String[] colors = {"Black", "White", "Navy", "Gray", "Red"};
+String[] colors = ["Black", "White", "Navy", "Gray", "Red"];
 vars.put("color", colors[rand.nextInt(colors.length)]);
 
 // Random size
-String[] sizes = {"S", "M", "L", "XL"};
+String[] sizes = ["S", "M", "L", "XL"];
 vars.put("size", sizes[rand.nextInt(sizes.length)]);
 
 // Random targets
-String[] genders = {"Male", "Female"};
-String[] bodyTypes = {"Rectangle", "Hourglass", "Pear", "Apple", "Inverted_triangle"};
+String[] genders = ["Male", "Female"];
+String[] bodyTypes = ["Rectangle", "Hourglass", "Pear", "Apple", "Inverted_triangle"];
 vars.put("gender", genders[rand.nextInt(genders.length)]);
 vars.put("bodyType", bodyTypes[rand.nextInt(bodyTypes.length)]);</stringProp>
-        </BeanShellPreProcessor>
+        </JSR223PreProcessor>
         <hashTree/>
 
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /products - Create" enabled="true">
@@ -265,10 +265,10 @@ vars.put("bodyType", bodyTypes[rand.nextInt(bodyTypes.length)]);</stringProp>
             <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND;NOT_FOUND</stringProp>
           </JSONPostProcessor>
           <hashTree/>
-          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Store Product/Variant IDs" enabled="true">
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Store Product/Variant IDs" enabled="true">
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
-            <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="script">String productId = vars.get("productId");
 String variantId = vars.get("variantId");
 
@@ -301,7 +301,7 @@ if (!"NOT_FOUND".equals(productId) &amp;&amp; !"NOT_FOUND".equals(variantId)) {
         props.put("variantIds", vExisting.isEmpty() ? variantId : vExisting + "," + variantId);
     }
 }</stringProp>
-          </BeanShellPostProcessor>
+          </JSR223PostProcessor>
           <hashTree/>
         </hashTree>
 
@@ -396,10 +396,10 @@ if (!"NOT_FOUND".equals(productId) &amp;&amp; !"NOT_FOUND".equals(variantId)) {
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           </HTTPSamplerProxy>
           <hashTree>
-            <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="Pick Random Product" enabled="true">
+            <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Pick Random Product" enabled="true">
               <stringProp name="filename"></stringProp>
               <stringProp name="parameters"></stringProp>
-              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="script">import java.util.Random;
 String ids = props.getProperty("productIds", "");
 if (!ids.isEmpty()) {
@@ -408,7 +408,7 @@ if (!ids.isEmpty()) {
 } else {
     vars.put("randomProductId", "00000000-0000-0000-0000-000000000000");
 }</stringProp>
-            </BeanShellPreProcessor>
+            </JSR223PreProcessor>
             <hashTree/>
           </hashTree>
 
@@ -423,10 +423,10 @@ if (!ids.isEmpty()) {
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           </HTTPSamplerProxy>
           <hashTree>
-            <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="Pick Random Variant" enabled="true">
+            <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Pick Random Variant" enabled="true">
               <stringProp name="filename"></stringProp>
               <stringProp name="parameters"></stringProp>
-              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="script">import java.util.Random;
 String ids = props.getProperty("variantIds", "");
 if (!ids.isEmpty()) {
@@ -435,7 +435,7 @@ if (!ids.isEmpty()) {
 } else {
     vars.put("randomVariantId", "00000000-0000-0000-0000-000000000000");
 }</stringProp>
-            </BeanShellPreProcessor>
+            </JSR223PreProcessor>
             <hashTree/>
           </hashTree>
 
@@ -510,8 +510,9 @@ if (!ids.isEmpty()) {
       </ThreadGroup>
       <hashTree>
         <!-- Pick random product/variant ONCE per iteration (sampler, not preprocessor, to avoid re-rolling before each sub-sampler) -->
-        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Pick Random Product" enabled="true">
-          <stringProp name="BeanShellSampler.query">import java.util.Random;
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Pick Random Product" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="script">import java.util.Random;
 Random rand = new Random();
 String productIds = props.getProperty("productIds", "");
 String variantIds = props.getProperty("variantIds", "");
@@ -532,10 +533,9 @@ if (!variantIds.isEmpty()) {
 
 SampleResult.setIgnore();
 SampleResult.setSuccessful(true);</stringProp>
-          <stringProp name="BeanShellSampler.filename"></stringProp>
-          <stringProp name="BeanShellSampler.parameters"></stringProp>
-          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
-        </BeanShellSampler>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+        </JSR223Sampler>
         <hashTree/>
 
         <!-- If Controller - Only run if we have products -->
@@ -659,8 +659,9 @@ SampleResult.setSuccessful(true);</stringProp>
       </ThreadGroup>
       <hashTree>
         <!-- Pick a product to delete ONCE per iteration with synchronized claim to avoid two deleters racing on same product -->
-        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Pick Random Product to Delete" enabled="true">
-          <stringProp name="BeanShellSampler.query">import java.util.Random;
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Pick Random Product to Delete" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="script">import java.util.Random;
 Random rand = new Random();
 String picked = "skip";
 
@@ -696,10 +697,9 @@ synchronized (props) {
 vars.put("deleteProductId", picked);
 SampleResult.setIgnore();
 SampleResult.setSuccessful(true);</stringProp>
-          <stringProp name="BeanShellSampler.filename"></stringProp>
-          <stringProp name="BeanShellSampler.parameters"></stringProp>
-          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
-        </BeanShellSampler>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+        </JSR223Sampler>
         <hashTree/>
 
         <!-- If Controller - Only delete if we have products -->
@@ -809,8 +809,9 @@ SampleResult.setSuccessful(true);</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
       </PostThreadGroup>
       <hashTree>
-        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Log Final Stats" enabled="true">
-          <stringProp name="BeanShellSampler.query">String productIds = props.getProperty("productIds", "");
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Log Final Stats" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="script">String productIds = props.getProperty("productIds", "");
 String variantIds = props.getProperty("variantIds", "");
 String brandIds = props.getProperty("brandIds", "");
 String categoryIds = props.getProperty("categoryIds", "");
@@ -826,10 +827,9 @@ log.info("Categories: " + categoryIds);
 
 SampleResult.setResponseData("Test complete. Products: " + productCount + ", Variants: " + variantCount, "UTF-8");
 SampleResult.setSuccessful(true);</stringProp>
-          <stringProp name="BeanShellSampler.filename"></stringProp>
-          <stringProp name="BeanShellSampler.parameters"></stringProp>
-          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
-        </BeanShellSampler>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+        </JSR223Sampler>
         <hashTree/>
 
         <!-- Optional: Cleanup brands/categories (disabled by default) -->
@@ -838,12 +838,12 @@ SampleResult.setSuccessful(true);</stringProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </LoopController>
         <hashTree>
-          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="Get Brand IDs" enabled="true">
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Get Brand IDs" enabled="true">
             <stringProp name="filename"></stringProp>
             <stringProp name="parameters"></stringProp>
-            <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="script">vars.put("cleanupBrandIds", props.getProperty("brandIds", ""));</stringProp>
-          </BeanShellPreProcessor>
+          </JSR223PreProcessor>
           <hashTree/>
           <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="For Each Brand" enabled="true">
             <stringProp name="ForeachController.inputVal">cleanupBrandIds</stringProp>
