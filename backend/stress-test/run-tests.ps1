@@ -13,16 +13,28 @@ $RESULTS_DIR = "$SCRIPT_DIR\results"
 $REPORT_DIR = "$SCRIPT_DIR\report"
 $CONFIG_DIR = "$SCRIPT_DIR\config"
 
+function Resolve-JMeterBinFromHome {
+    param([Parameter(Mandatory=$true)][string]$HomePath)
+    $binDir = Join-Path $HomePath "bin"
+    foreach ($candidate in @("jmeter.bat", "jmeter")) {
+        $candidatePath = Join-Path $binDir $candidate
+        if (Test-Path -Path $candidatePath -PathType Leaf) {
+            return $candidatePath
+        }
+    }
+    return $null
+}
+
 if ($JMeterHome) {
-    $JMETER_BIN = Join-Path $JMeterHome "bin\jmeter.bat"
-    if (-not (Test-Path -Path $JMETER_BIN -PathType Leaf)) {
-        throw "JMeter not found at '$JMETER_BIN'. Provide a valid -JMeterHome path."
+    $JMETER_BIN = Resolve-JMeterBinFromHome -HomePath $JMeterHome
+    if (-not $JMETER_BIN) {
+        throw "JMeter not found under '$JMeterHome\bin'. Provide a valid -JMeterHome path."
     }
 }
 elseif ($env:JMETER_HOME) {
-    $JMETER_BIN = Join-Path $env:JMETER_HOME "bin\jmeter.bat"
-    if (-not (Test-Path -Path $JMETER_BIN -PathType Leaf)) {
-        throw "JMeter not found at '$JMETER_BIN' from JMETER_HOME. Set JMETER_HOME correctly or use -JMeterHome."
+    $JMETER_BIN = Resolve-JMeterBinFromHome -HomePath $env:JMETER_HOME
+    if (-not $JMETER_BIN) {
+        throw "JMeter not found under '$env:JMETER_HOME\bin' from JMETER_HOME. Set JMETER_HOME correctly or use -JMeterHome."
     }
 }
 else {
