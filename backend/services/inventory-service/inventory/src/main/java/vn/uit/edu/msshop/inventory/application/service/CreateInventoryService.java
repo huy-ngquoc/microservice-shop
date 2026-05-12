@@ -3,13 +3,13 @@ package vn.uit.edu.msshop.inventory.application.service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedDocument;
 import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.InventoryUpdatedDocumentRepository;
 import vn.uit.edu.msshop.inventory.application.dto.command.CreateInventoryCommand;
@@ -70,7 +70,7 @@ public class CreateInventoryService implements CreateInventoryUseCase {
 
         // publishPort.publishInventoryUpdateEvent(new
         // InventoryUpdated(command.variantId().value(),command.quantity().value(),0));
-        InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUID.randomUUID())
+        InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUIDs.newId())
                 .variantId(result.getVariantId().value())
                 .newQuantity(result.getQuantity().value())
                 .newReservedQuantity(0)

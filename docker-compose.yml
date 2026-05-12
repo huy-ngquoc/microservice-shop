@@ -36,6 +36,12 @@ services:
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
             - ACCOUNT_DB_URL=${ACCOUNT_DB_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 384M
+                reservations:
+                    memory: 256M
     discovery-server:
         build:
             context: .
@@ -58,6 +64,12 @@ services:
             - microservices-net
         environment:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 384M
+                reservations:
+                    memory: 256M
     account-service:
         build:
             context: .
@@ -80,6 +92,12 @@ services:
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
             - ACCOUNT_DB_URL=${ACCOUNT_DB_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     auth-service:
         build:
             context: .
@@ -101,6 +119,12 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     cart-service:
         build:
             context: .
@@ -123,6 +147,12 @@ services:
             - REDIS_HOST=${REDIS_HOST}
             - CART_MONGODB_URL=${CART_MONGODB_URL}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     inventory-service:
         build:
             context: .
@@ -146,6 +176,12 @@ services:
             - INVENTORY_DB_URL=${INVENTORY_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     notification-service:
         build:
             context: .
@@ -167,6 +203,12 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - NOTIFICATION_DB_URL=${NOTIFICATION_DB_URL}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     rating-service:
         build:
             context: .
@@ -187,6 +229,12 @@ services:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - RATING_DB_URL=${RATING_DB_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     recommendation-service:
         build:
             context: .
@@ -206,6 +254,12 @@ services:
         environment:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     order-service:
         build:
             context: .
@@ -230,6 +284,12 @@ services:
             - ORDER_DB_URL=${ORDER_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 768M
+                reservations:
+                    memory: 384M
     fake-payment-service:
         build:
             context: .
@@ -251,6 +311,12 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - PAYMENT_DB_URL=${PAYMENT_DB_URL}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
+                reservations:
+                    memory: 256M
     product-service:
         build:
             context: .
@@ -275,6 +341,12 @@ services:
             - PRODUCT_DB_HOST=${PRODUCT_DB_HOST}
             - PRODUCT_DB_PORT=${PRODUCT_DB_PORT}
             - KAFKA_URL=${KAFKA_URL}
+        deploy:
+            resources:
+                limits:
+                    memory: 768M
+                reservations:
+                    memory: 384M
     postgresql:
         container_name: ms_pg_sql
         image: postgres:18
@@ -290,6 +362,10 @@ services:
         networks:
             - microservices-net
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
     postgresql_account:
         container_name: ms_pg_sql_account
         image: postgres:18
@@ -306,6 +382,10 @@ services:
         networks:
             - microservices-net
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
     postgresql_inventory:
         container_name: ms_pg_sql_inventory
         image: postgres:18
@@ -321,6 +401,10 @@ services:
             - "5440:5432"
         networks:
             - microservices-net
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
     postgresql_payment:
         container_name: ms_pg_sql_payment
         image: postgres:18
@@ -337,6 +421,10 @@ services:
         networks:
             - microservices-net
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
     pgadmin:
         container_name: ms_pgadmin
         image: dpage/pgadmin4:9
@@ -352,6 +440,10 @@ services:
         networks:
             - microservices-net
         restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
 
     zipkin:
         container_name: ms_zipkin
@@ -362,6 +454,11 @@ services:
             - "9411:9411"
         networks:
             - microservices-net
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
 
     mongo:
         container_name: ms_mongo_db
@@ -385,6 +482,11 @@ services:
             - "/etc/mongo/keyfile"
         networks:
             - microservices-net
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
         healthcheck:
             test: |
                 mongosh --quiet -u alibou -p alibou --authenticationDatabase admin --eval "
@@ -413,6 +515,11 @@ services:
             - TZ=UTC
         networks:
             - microservices-net
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
     mongodb_notification:
         container_name: ms_mongo_db_notification
         image: mongo:8
@@ -426,6 +533,11 @@ services:
             - TZ=UTC
         networks:
             - microservices-net
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
     mongodb_rating:
         container_name: ms_mongo_db_rating
         image: mongo:8
@@ -439,6 +551,11 @@ services:
             - TZ=UTC
         networks:
             - microservices-net
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
     mongodb_order:
         container_name: ms_mongo_db_order
         image: mongo:8
@@ -473,6 +590,11 @@ services:
         entrypoint: [ "/bin/sh", "-c", "chown 999:999 /data/configdb/mongodb.key && chmod 400 /data/configdb/mongodb.key && exec docker-entrypoint.sh $$@" ]
         networks:
             - microservices-net
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
 
     mongo-express:
         container_name: ms_mongo_express
@@ -486,6 +608,10 @@ services:
             - ME_CONFIG_MONGODB_SERVER=mongo
         networks:
             - microservices-net
+        deploy:
+            resources:
+                limits:
+                    memory: 128M
 
     redis:
         container_name: ms_redis
@@ -502,6 +628,10 @@ services:
             - "allkeys-lfu"
         networks:
             - microservices-net
+        deploy:
+            resources:
+                limits:
+                    memory: 300M
         healthcheck:
             test: [ "CMD", "redis-cli", "ping" ]
             interval: 10s
@@ -547,8 +677,14 @@ services:
             KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
             KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
             TZ: UTC
+            KAFKA_HEAP_OPTS: "-Xmx512m -Xms512m"
         networks:
             - microservices-net
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 1G
 
     mail-dev:
         container_name: ms_mail_dev
@@ -558,6 +694,11 @@ services:
             - 1025:1025
         networks:
             - microservices-net
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 128M
     keycloak:
         container_name: ms-keycloak
         image: quay.io/keycloak/keycloak:26.5
@@ -572,6 +713,11 @@ services:
             - KC_HTTP_ENABLED=true
         networks:
             - microservices-net
+        restart: unless-stopped
+        deploy:
+            resources:
+                limits:
+                    memory: 512M
         command:
             - "start-dev"
         volumes:
@@ -580,7 +726,7 @@ services:
     redis_order:
         image: redis:7.2-alpine
         container_name: redis_order
-        restart: always
+        restart: unless-stopped
         ports:
             - "6380:6379"
         command: redis-server --save 300 10 --requirepass binh123 --appendonly yes --appendfsync everysec --loglevel warning
@@ -601,7 +747,7 @@ services:
     redis_inventory:
         image: redis:7.2-alpine
         container_name: redis_inventory
-        restart: always
+        restart: unless-stopped
         ports:
             - "6381:6379"
         command: redis-server --save 300 10 --requirepass binh123 --appendonly yes --appendfsync everysec --loglevel warning
@@ -623,7 +769,7 @@ services:
     redis_cart:
         image: redis:7.2-alpine
         container_name: redis_cart
-        restart: always
+        restart: unless-stopped
         ports:
             - "6382:6379"
         command: redis-server --save 300 10 --requirepass binh123 --appendonly yes --appendfsync everysec --loglevel warning

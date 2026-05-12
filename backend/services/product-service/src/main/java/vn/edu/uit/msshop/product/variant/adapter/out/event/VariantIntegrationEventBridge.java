@@ -15,6 +15,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVa
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 
 @Component
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class VariantIntegrationEventBridge {
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
 
         final var msg = new VariantUpdatedIntegrationEvent(
-                UUID.randomUUID(),
+                UUIDs.newId(),
                 variant.getId().value(),
                 variant.getTraits().unwrap(), variant.getPrice().value(),
                 variant.getProductName().value(),
@@ -45,7 +46,7 @@ public class VariantIntegrationEventBridge {
     public void on(
             final VariantSoftDeleted event) {
         final var msg = new VariantSoftDeletedIntegrationEvent(
-                UUID.randomUUID(),
+                UUIDs.newId(),
                 event.getVariantId().value());
         this.integrationPort.publishSoftDeleted(msg);
     }

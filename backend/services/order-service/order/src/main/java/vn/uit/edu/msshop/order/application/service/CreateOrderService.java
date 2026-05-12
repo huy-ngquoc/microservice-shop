@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutbox;
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutboxRepository;
@@ -28,6 +29,7 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.OriginPrice;
 import vn.uit.edu.msshop.order.domain.model.valueobject.PaymentStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.TotalPrice;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UpdateAt;
+
 /*@NonNull
     OrderId id,
 
@@ -83,42 +85,39 @@ public class CreateOrderService implements CreateOrderUseCase {
     private String lastError; */
     @Override
     @Transactional
-    //@Observed(name = "mongodb.save.order")
-    public UUID create(CreateOrderCommand command) {
+    // @Observed(name = "mongodb.save.order")
+    public UUID create(
+            CreateOrderCommand command) {
         this.checkUserPort.isUserAvailable(command.userId().value());
-        List<OrderDetailRequest> requests= command.details().stream().map(item->new OrderDetailRequest(item.variantId(), item.quantity())).toList();
+        List<OrderDetailRequest> requests = command.details().stream()
+                .map(item -> new OrderDetailRequest(item.variantId(), item.quantity())).toList();
         List<OrderDetail> listDetails = loadOrderDetailPort.loadByListDetail(requests);
-        long originPrice =0;
-        for(OrderDetail d : listDetails) {
-            originPrice+=d.amount()*d.unitPrice();
+        long originPrice = 0;
+        for (OrderDetail d : listDetails) {
+            originPrice += d.amount() * d.unitPrice();
         }
-        
-        final var draft = Order.Draft.builder().id(command.id()).shippingInfo(command.shippingInfo())
-        .details(listDetails)
-        .status(new OrderStatus("PENDING"))
-        .userId(command.userId())
-        .originPrice(new OriginPrice(originPrice))
-        .shippingFee(command.shippingFee())
-        .discount(command.discount())
-        .totalPrice(new TotalPrice(originPrice+command.shippingFee().value()-command.discount().value()))
-        .createAt(new CreateAt(Instant.now()))
-        .updateAt(new UpdateAt(null))
-        .currency(command.currency())
-        .paymentMethod(command.paymentMethod())
-        .paymentStatus(new PaymentStatus("PENDING"))
-        .build();
-        final var saved = Order.create(draft);
-        
-    
-   
-        
 
-        //final var saved = savePort.save(order);
+        final var draft = Order.Draft.builder().id(command.id()).shippingInfo(command.shippingInfo())
+                .details(listDetails)
+                .status(new OrderStatus("PENDING"))
+                .userId(command.userId())
+                .originPrice(new OriginPrice(originPrice))
+                .shippingFee(command.shippingFee())
+                .discount(command.discount())
+                .totalPrice(new TotalPrice(originPrice + command.shippingFee().value() - command.discount().value()))
+                .createAt(new CreateAt(Instant.now()))
+                .updateAt(new UpdateAt(null))
+                .currency(command.currency())
+                .paymentMethod(command.paymentMethod())
+                .paymentStatus(new PaymentStatus("PENDING"))
+                .build();
+        final var saved = Order.create(draft);
+
+        // final var saved = savePort.save(order);
         manualCreate(saved);
         return saved.getId().value();
     }
-   
-    
+
     @Override
     @Transactional
     @CircuitBreaker(name="mongoService")
@@ -155,8 +154,10 @@ public class CreateOrderService implements CreateOrderUseCase {
             }
         });*/
         final var result = savePort.save(order);
-        final var details = result.getDetails().stream().map(item-> new OrderDetailRequest(item.variantId(), item.amount())).toList();
-        final var orderOutbox = new OrderOutbox(UUID.randomUUID(), result.getId().value(), "PROCESS_ORDER", details, "PENDING","PENDING", Instant.now(),0);
+        final var details = result.getDetails().stream()
+                .map(item -> new OrderDetailRequest(item.variantId(), item.amount())).toList();
+        final var orderOutbox = new OrderOutbox(UUIDs.newId(), result.getId().value(), "PROCESS_ORDER", details,
+                "PENDING", "PENDING", Instant.now(), 0);
         orderOutboxRepo.save(orderOutbox);
         return  result;
     }

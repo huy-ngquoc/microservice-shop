@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.payment.adapter.in.web.mapper.PaymentWebMapper;
 import vn.uit.edu.payment.adapter.out.event.documents.EventDocument;
 import vn.uit.edu.payment.adapter.out.event.documents.PaymentCreatedFailDocument;
@@ -72,7 +73,7 @@ public class OrderEventListener {
     public void paymentCreatedFail(
             OrderCreated event) {
         PaymentCreatedFailDocument document = PaymentCreatedFailDocument.builder()
-                .eventId(UUID.randomUUID())
+                .eventId(UUIDs.newId())
                 .orderId(event.orderId())
                 .userId(event.userId())
                 .userEmail(event.userEmail())

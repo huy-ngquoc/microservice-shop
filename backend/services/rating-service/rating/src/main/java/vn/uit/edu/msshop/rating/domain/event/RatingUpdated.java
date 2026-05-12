@@ -6,13 +6,16 @@ import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingId;
+
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded=true)
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
 public class RatingUpdated {
     @EqualsAndHashCode.Include
-    private final UUID eventId = UUID.randomUUID();
+    private final UUID eventId = UUIDs.newId();
     private final Instant occurentTime = Instant.now();
     private final RatingId ratingId;
 }

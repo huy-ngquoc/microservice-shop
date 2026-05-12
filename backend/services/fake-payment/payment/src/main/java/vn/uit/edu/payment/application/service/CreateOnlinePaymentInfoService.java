@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.payos.PayOS;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
 import vn.uit.edu.payment.adapter.out.event.documents.PaymentLinkCreatedDocument;
@@ -58,7 +59,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
          * this.savePort.save(info);
          * String result = paymentLink.getCheckoutUrl();
          * var paymentLinkCreatedDocument = PaymentLinkCreatedDocument.builder()
-         * .eventId(UUID.randomUUID())
+         * .eventId(UUIDs.newId())
          * .paymentLink(result)
          * .orderId(payment.getOrderId().value())
          * .userEmail(payment.getUserEmail().value())
@@ -73,14 +74,14 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
          *
          * return result;
          */
-        String result = UUID.randomUUID().toString();
+        String result = UUIDs.newId().toString();
 
         OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new PaymentLink(result),
                 new OnlinePaymentNumber(System.currentTimeMillis()), new TransactionId(null),
                 new CreateAt(Instant.now()));
         this.savePort.save(info);
         var paymentLinkCreatedDocument = PaymentLinkCreatedDocument.builder()
-                .eventId(UUID.randomUUID())
+                .eventId(UUIDs.newId())
                 .paymentLink(result)
                 .orderId(payment.getOrderId().value())
                 .userEmail(payment.getUserEmail().value())

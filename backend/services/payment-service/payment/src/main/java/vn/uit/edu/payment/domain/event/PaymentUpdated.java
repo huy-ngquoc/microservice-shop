@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 
 @RequiredArgsConstructor
@@ -14,7 +15,7 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
         onlyExplicitlyIncluded = true)
 public class PaymentUpdated {
     @EqualsAndHashCode.Include
-    private final UUID eventId = UUID.randomUUID();
+    private final UUID eventId = UUIDs.newId();
 
     private final Instant occurrenceTime = Instant.now();
 

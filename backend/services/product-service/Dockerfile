@@ -12,4 +12,9 @@ RUN mvn clean package -f backend/services/product-service/pom.xml -DskipTests
 FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 COPY --from=build /app/backend/services/product-service/target/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", \
+    "-XX:+UseContainerSupport", \
+    "-XX:MaxRAMPercentage=75.0", \
+    "-XX:InitialRAMPercentage=50.0", \
+    "-Xss256k", \
+    "-jar", "app.jar"]
