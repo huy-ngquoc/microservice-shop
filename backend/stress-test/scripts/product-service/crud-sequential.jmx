@@ -172,8 +172,13 @@ log.info("Setup complete - Brand: " + brandId + ", Category: " + categoryId)</st
           <stringProp name="parameters"></stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="cacheKey">true</stringProp>
-          <stringProp name="script">vars.put("brandId", props.get("brandId"))
-vars.put("categoryId", props.get("categoryId"))</stringProp>
+          <stringProp name="script">def brandId = props.get("brandId")
+def categoryId = props.get("categoryId")
+if (!brandId || !categoryId) {
+    throw new IllegalStateException("Missing setup properties: brandId/categoryId. Ensure setup thread group succeeded before CRUD flow.")
+}
+vars.put("brandId", brandId.toString())
+vars.put("categoryId", categoryId.toString())</stringProp>
         </JSR223PreProcessor>
         <hashTree/>
 
