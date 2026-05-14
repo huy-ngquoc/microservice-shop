@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
 import vn.edu.uit.msshop.shared.cache.CircuitBreakingCacheManager;
 import vn.edu.uit.msshop.shared.cache.RedisCacheConfigSupport;
-import vn.uit.edu.msshop.inventory.bootstrap.config.cache.properties.RedisCacheProperties;
+import vn.uit.edu.msshop.inventory.bootstrap.config.properties.RedisCacheProperties;
 
 @Configuration
 @EnableCaching
