@@ -2,7 +2,7 @@ server:
     port: 8074
 
 spring:
-    
+
     command-listener:
         observation:
             enabled: true
@@ -25,14 +25,14 @@ spring:
             max-file-size: 5MB
             max-request-size: 6MB
     kafka:
-        bootstrap-servers: ${KAFKA_URL:localhost:9092} 
+        bootstrap-servers: ${KAFKA_URL:localhost:9092}
         consumer:
             group-id: account-group
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
             properties:
                 spring.json.trusted.packages: "*"
-                spring.json.type.mapping: 
+                spring.json.type.mapping:
                     OrderCreated:vn.uit.edu.payment.domain.event.OrderCreated,
                     CodPaymentCancelled:vn.uit.edu.payment.domain.event.CodPaymentCancelled,
                     CodPaymentReceived:vn.uit.edu.payment.domain.event.CodPaymentReceived,
@@ -43,7 +43,7 @@ spring:
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
             properties:
-                spring.json.type.mapping: 
+                spring.json.type.mapping:
                     OnlinePaymentExpired:vn.uit.edu.payment.domain.event.OnlinePaymentExpired,
                     OnlinePaymentCancelled:vn.uit.edu.payment.domain.event.OnlinePaymentCancelled,
                     CodPaymentCreated:vn.uit.edu.payment.domain.event.CodPaymentCreated,
@@ -51,19 +51,47 @@ spring:
                     PaymentLinkCreated:vn.uit.edu.payment.domain.event.PaymentLinkCreated,
                     OnlinePaymentSuccess:vn.uit.edu.payment.domain.event.OnlinePaymentSuccess,
                     PaymentCreatedFail:vn.uit.edu.payment.domain.event.PaymentCreatedFail
+    data:
+        redis:
+            host: ${REDIS_PAYMENT_HOST:localhost}
+            port: ${REDIS_PORT:6379}
+            password: binh123
+            timeout: 60000
+            client-type: lettuce
+            lettuce:
+                pool:
+                    max-active: 32
+                    max-idle: 16
+                    min-idle: 8
+    cache:
+        type: redis
+        redis:
+            cache-null-values: false
 logging:
-  level:
-    org.apache.kafka: ERROR
-    org.springframework.kafka: ERROR
+    level:
+        org.apache.kafka: ERROR
+        org.springframework.kafka: ERROR
 payos:
-    client-id: 
-    api-key: 
-    checksum-key: 
+    client-id:
+    api-key:
+    checksum-key:
+app:
+    cache:
+        key-prefix: ${spring.application.name}
+        payment-by-id-ttl: 10m
+        payment-by-order-id-ttl: 10m
+        online-payment-link-by-order-id-ttl: 15m
+        circuit-breaker:
+            sliding-window-size: 10
+            minimum-number-of-calls: 5
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 5s
+            permitted-number-of-calls-in-half-open-state: 3
 eureka:
     client:
         serviceUrl:
             defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
     instance:
         prefer-ip-address: true
-        lease-renewal-interval-in-seconds: 5 
+        lease-renewal-interval-in-seconds: 5
         lease-expiration-duration-in-seconds: 10
