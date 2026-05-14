@@ -2,6 +2,7 @@ package vn.uit.edu.payment.application.service;
 
 import java.time.Instant;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import vn.uit.edu.payment.adapter.out.event.repositories.PaymentLinkCreatedRepos
 import vn.uit.edu.payment.application.port.in.CreateOnlinePaymentInfoUseCase;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.application.port.out.SaveOnlinePaymentInfoPort;
+import vn.uit.edu.payment.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.payment.domain.model.OnlinePaymentInfo;
 import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.CreateAt;
@@ -36,6 +38,9 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.ONLINE_PAYMENT_LINK_BY_ORDER_ID,
+            key = "#payment.orderId().value()")
     public String createPaymentLink(
             Payment payment) {
 
