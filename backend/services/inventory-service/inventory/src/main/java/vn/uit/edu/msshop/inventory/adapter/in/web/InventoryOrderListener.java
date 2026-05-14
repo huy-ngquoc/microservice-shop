@@ -38,7 +38,7 @@ public class InventoryOrderListener {
         eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
         if(event.getStatus().equals("SHIPPING")) {
             if(orderShippedRepo.existsById(event.getOrderId())) return;
-            System.out.println("Shipping");
+            //System.out.println("Shipping");
             updateUseCase.updateWhenOrderShipped(webMapper.toShippedCommand(event));
             orderShippedRepo.save(new OrderShipped(event.getOrderId(), Instant.now()));
         }
@@ -49,7 +49,7 @@ public class InventoryOrderListener {
         }
         else if(event.getStatus().equals("PAYMENT_ERROR")||event.getStatus().equals("PAYMENT_EXPIRED")) {
             if(orderCancelledRepo.existsById(event.getOrderId())) return;
-            System.out.println("Cancell order");
+            //System.out.println("Cancell order");
             updateUseCase.updateWhenOrderCancelled(webMapper.toCancelledCommand(event));
             orderCancelledRepo.save(new OrderCancelled(event.getOrderId(),Instant.now()));
         }
