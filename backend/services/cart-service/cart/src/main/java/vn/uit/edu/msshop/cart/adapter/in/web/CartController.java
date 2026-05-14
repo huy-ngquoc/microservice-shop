@@ -19,7 +19,6 @@ import vn.uit.edu.msshop.cart.adapter.in.web.mapper.CartWebMapper;
 import vn.uit.edu.msshop.cart.adapter.in.web.request.CreateCartRequest;
 import vn.uit.edu.msshop.cart.adapter.in.web.request.UpdateCartAmountReuest;
 import vn.uit.edu.msshop.cart.adapter.in.web.response.CartResponse;
-import vn.uit.edu.msshop.cart.adapter.out.persistence.VariantToUserRepository;
 import vn.uit.edu.msshop.cart.application.dto.command.CreateCartCommand;
 import vn.uit.edu.msshop.cart.application.dto.command.UpdateCartAmountCommand;
 import vn.uit.edu.msshop.cart.application.dto.query.CartView;
@@ -117,9 +116,9 @@ public class CartController {
             String role,
             @RequestBody
             CreateCartRequest request) {
-        if (!checkPermission.isUser(role)) {
+        /*if (!checkPermission.isUser(role)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        }*/
         try {
         CreateCartCommand command = cartWebMapper.toCommand(request, userFromHeader);
         CartView view = createUseCase.create(command);

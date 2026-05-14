@@ -20,7 +20,7 @@ spring:
             uuid: STANDARD 
     data:
         redis:
-            host: ${REDIS_HOST:localhost}
+            host: ${REDIS_PRODUCT_HOST:localhost}
             port: ${REDIS_PORT:6379}
             timeout: 200ms
             connect-timeout: 500ms

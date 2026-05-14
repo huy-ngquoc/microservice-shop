@@ -3,7 +3,7 @@ import random
 
 # Cấu hình tên file
 INPUT_FILE = "created_variant_ids.txt"    # File chứa danh sách ID (mỗi dòng 1 ID)
-OUTPUT_FILE = "order_details.csv"
+OUTPUT_FILE = "cart_details.csv"
 TOTAL_ROWS = 500                # Số dòng muốn tạo ra cho JMeter
 
 def load_variant_ids(file_path):
@@ -19,7 +19,7 @@ def load_variant_ids(file_path):
 def generate_order_line(variant_ids):
     # Chọn ngẫu nhiên từ 1 đến 3 item cho một đơn hàng
     # Nếu danh sách ID ít hơn 3, lấy tối đa số lượng đang có
-    num_items = random.randint(1, min(3, len(variant_ids)))
+    num_items = 1
     selected_variants = random.sample(variant_ids, num_items)
     
     order_items = []
@@ -29,7 +29,7 @@ def generate_order_line(variant_ids):
             
         order_items.append({
             "variantId": vid,
-            "quantity": qty
+            "amount": qty
         })
     
     # Chuyển sang JSON string
