@@ -13,6 +13,7 @@ stress-test/
 │       └── crud-stress.jmx       # Parallel CRUD stress test
 ├── config/                  # Environment configs
 │   ├── crud-sequential.properties
+│   ├── crud-stress-extreme.properties
 │   ├── crud-stress-heavy.properties
 │   ├── crud-stress-light.properties
 │   └── crud-stress-medium.properties
@@ -143,6 +144,9 @@ $env:JMETER_HOME = "C:\apache-jmeter-5.6.3"
 
 # Step 4: Heavy stress test (find limits)
 .\run-tests.ps1 -Test heavy
+
+# Step 5: Extreme stress test
+.\run-tests.ps1 -Test extreme
 ```
 
 ## Test Profiles
@@ -153,6 +157,7 @@ $env:JMETER_HOME = "C:\apache-jmeter-5.6.3"
 | `light` | 25 | 2 min | 200-300 req/s | Warm up, baseline |
 | `medium` | 45 | 3 min | 400-500 req/s | 80% capacity test |
 | `heavy` | 80 | 5 min | 500+ req/s | Find breaking point |
+| `extreme` | 100 | 60 min | 1000+ req/s | Blow up PC |
 
 ## Performance Requirements
 
