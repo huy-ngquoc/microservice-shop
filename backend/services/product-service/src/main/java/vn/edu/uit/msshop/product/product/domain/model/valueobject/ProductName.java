@@ -5,7 +5,7 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductName(
         String value) {
-    public static final int MAX_LENGTH = 40;
+    public static final int MAX_LENGTH = 200;
 
     public ProductName {
         if (value == null) {

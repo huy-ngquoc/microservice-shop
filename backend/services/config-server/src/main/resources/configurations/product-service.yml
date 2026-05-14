@@ -69,10 +69,10 @@ app:
         variant-ttl: 1h
         variant-list-ttl: 5m
         circuit-breaker:
-            sliding-window-size: 10
-            minimum-number-of-calls: 5
+            sliding-window-size: 20
+            minimum-number-of-calls: 10
             failure-rate-threshold: 50
-            wait-duration-in-open-state: 5s
+            wait-duration-in-open-state: 30s
             permitted-number-of-calls-in-half-open-state: 3
 
 logging:

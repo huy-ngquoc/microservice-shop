@@ -267,8 +267,8 @@ services:
             additional_contexts:
                 microservice-shop-shared-base: "service:shared-base"
         deploy:
-           replicas: 2
-           resources:
+            replicas: 2
+            resources:
                 limits:
                     memory: 768M
                 reservations:
@@ -289,7 +289,6 @@ services:
             - ORDER_DB_URL=${ORDER_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
-            
     fake-payment-service:
         build:
             context: .
@@ -340,13 +339,15 @@ services:
             - PRODUCT_DB_HOST=${PRODUCT_DB_HOST}
             - PRODUCT_DB_PORT=${PRODUCT_DB_PORT}
             - KAFKA_URL=${KAFKA_URL}
+            - REDIS_HOST=${REDIS_HOST}
+            - REDIS_PORT=${REDIS_PORT}
         deploy:
             replicas: 2
             resources:
                 limits:
-                    memory: 768M
+                    memory: 1536M
                 reservations:
-                    memory: 384M
+                    memory: 768M
     postgresql:
         container_name: ms_pg_sql
         image: postgres:18
@@ -722,7 +723,7 @@ services:
             - "start-dev"
         volumes:
             - keycloak_data:/opt/keycloak/data
-        
+
     redis_order:
         image: redis:7.2-alpine
         container_name: redis_order
