@@ -2,6 +2,8 @@ package vn.uit.edu.payment.application.service;
 
 import java.time.Instant;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -19,6 +21,7 @@ import vn.uit.edu.payment.application.port.in.UpdatePaymentUseCase;
 import vn.uit.edu.payment.application.port.out.LoadPaymentPort;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.application.port.out.SavePaymentPort;
+import vn.uit.edu.payment.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.payment.domain.event.PaymentUpdated;
 import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.OrderId;
@@ -36,6 +39,15 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PAYMENT_BY_ID,
+                            key = "#command.paymentId().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PAYMENT_BY_ORDER_ID,
+                            key = "#result.orderId()")
+            })
     public PaymentView update(
             UpdatePaymentCommand command) {
         final var payment = loadPort.loadPaymentById(command.paymentId())
@@ -52,12 +64,25 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PAYMENT_BY_ORDER_ID,
+                            key = "#orderId.value().toString()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.ONLINE_PAYMENT_LINK_BY_ORDER_ID,
+                            key = "#orderId.value().toString()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PAYMENT_BY_ID,
+                            allEntries = true)
+            })
     public void onlinePaymentExpire(
             OrderId orderId) {
         final var payment = loadPort.loadPaymentByOrderId(orderId);
-        if (payment == null)
+        if (payment == null) {
             return;
+        }
         final var update = Payment.UpdateInfo.builder().paymentId(payment.getPaymentId())
                 .currency(payment.getCurrency())
                 .paymentMethod(payment.getPaymentMethod()).paymentStatus(new PaymentStatus("EXPIRED"))
@@ -85,12 +110,26 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PAYMENT_BY_ORDER_ID,
+                            key = "#orderId.value().toString()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.ONLINE_PAYMENT_LINK_BY_ORDER_ID,
+                            key = "#orderId.value().toString()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PAYMENT_BY_ID,
+                            allEntries = true)
+            })
     public void onlinePaymentCancelled(
             OrderId orderId) {
         final var payment = loadPort.loadPaymentByOrderId(orderId);
-        if (payment == null)
+        if (payment == null) {
             return;
+        }
+
         final var update = Payment.UpdateInfo.builder().paymentId(payment.getPaymentId())
                 .currency(payment.getCurrency())
                 .paymentMethod(payment.getPaymentMethod()).paymentStatus(new PaymentStatus("CANCELLED"))
