@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.inventory.bootstrap.config.cache.properties;
+package vn.uit.edu.msshop.inventory.bootstrap.config.properties;
 
 import java.time.Duration;
 
