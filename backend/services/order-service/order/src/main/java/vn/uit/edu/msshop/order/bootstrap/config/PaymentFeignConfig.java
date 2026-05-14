@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.config;
+package vn.uit.edu.msshop.order.bootstrap.config;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,14 +12,14 @@ public class PaymentFeignConfig {
     public feign.Logger.Level feignLoggerLevel() {
         return feign.Logger.Level.FULL;
     }
+
     @Bean
     public Request.Options options() {
         // connectTimeout: 2s, readTimeout: 2s
         return new Request.Options(
-            5000, TimeUnit.MILLISECONDS, 
-            5000, TimeUnit.MILLISECONDS, 
-            true
-        );
+                5000, TimeUnit.MILLISECONDS,
+                5000, TimeUnit.MILLISECONDS,
+                true);
     }
 
     @Bean

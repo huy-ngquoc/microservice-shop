@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.config;
+package vn.uit.edu.msshop.order.bootstrap.config;
 
 import java.util.concurrent.Executor;
 
@@ -11,17 +11,18 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class AsyncConfig {
 
-    @Bean(name = "taskExecutor")
+    @Bean(
+            name = "taskExecutor")
     public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         // Số lượng Thread tối thiểu luôn chạy
-        executor.setCorePoolSize(10); 
+        executor.setCorePoolSize(10);
         // Số lượng Thread tối đa nếu hàng đợi bị đầy
-        executor.setMaxPoolSize(20); 
+        executor.setMaxPoolSize(20);
         // Hàng đợi chứa các task chờ xử lý
-        executor.setQueueCapacity(500); 
+        executor.setQueueCapacity(500);
         // Tên tiền tố để dễ debug trong log
-        executor.setThreadNamePrefix("OrderCleaner-"); 
+        executor.setThreadNamePrefix("OrderCleaner-");
         executor.initialize();
         return executor;
     }

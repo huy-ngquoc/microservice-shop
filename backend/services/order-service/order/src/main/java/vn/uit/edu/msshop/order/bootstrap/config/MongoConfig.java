@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.config;
+package vn.uit.edu.msshop.order.bootstrap.config;
 
 import org.bson.UuidRepresentation;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +10,6 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-
-
 
 @Configuration
 public class MongoConfig extends AbstractMongoClientConfiguration {
@@ -28,15 +26,17 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     }
 
     @Override
-    protected void configureClientSettings(MongoClientSettings.Builder builder) {
-        
+    protected void configureClientSettings(
+            MongoClientSettings.Builder builder) {
+
         builder
-            .applyConnectionString(new ConnectionString(mongoUri))
-            .uuidRepresentation(UuidRepresentation.STANDARD);
+                .applyConnectionString(new ConnectionString(mongoUri))
+                .uuidRepresentation(UuidRepresentation.STANDARD);
     }
 
     @Bean
-    MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
+    MongoTransactionManager transactionManager(
+            MongoDatabaseFactory dbFactory) {
         return new MongoTransactionManager(dbFactory);
     }
 }

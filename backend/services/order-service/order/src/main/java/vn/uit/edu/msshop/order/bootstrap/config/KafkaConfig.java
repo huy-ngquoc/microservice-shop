@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.config;
+package vn.uit.edu.msshop.order.bootstrap.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -11,18 +11,22 @@ public class KafkaConfig {
     public NewTopic accountTopic() {
         return TopicBuilder.name("order-topic").build();
     }
+
     @Bean
     public NewTopic productTopic() {
         return TopicBuilder.name("order-product").build();
     }
+
     @Bean
     public NewTopic paymentStatusTopic() {
         return TopicBuilder.name("payment-status-topic").build();
     }
+
     @Bean
     public NewTopic orderInventoryTopic() {
         return TopicBuilder.name("order-inventory").build();
     }
+
     @Bean
     public NewTopic orderFailTopic() {
         return TopicBuilder.name("order-save-fail-topic").build();
