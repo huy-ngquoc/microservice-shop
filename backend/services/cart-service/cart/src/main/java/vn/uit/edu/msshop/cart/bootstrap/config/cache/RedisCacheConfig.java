@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.bootstrap.config.cache;
+package vn.uit.edu.msshop.cart.bootstrap.config.cache;
 
 import java.util.List;
 import java.util.Map;
@@ -16,12 +16,13 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
-import vn.edu.uit.msshop.product.bootstrap.config.properties.RedisCacheProperties;
 import vn.edu.uit.msshop.shared.cache.CircuitBreakingCacheManager;
 import vn.edu.uit.msshop.shared.cache.RedisCacheConfigSupport;
+import vn.uit.edu.msshop.cart.bootstrap.config.properties.RedisCacheProperties;
 
 @Configuration
 @EnableCaching
@@ -29,6 +30,13 @@ import vn.edu.uit.msshop.shared.cache.RedisCacheConfigSupport;
 @Slf4j
 public class RedisCacheConfig
         implements CachingConfigurer {
+    private static final List<String> ALLOWED_SUB_TYPES = List.of(
+            "vn.uit.edu.msshop",
+            "vn.edu.uit.msshop",
+            "java.util",
+            "java.time",
+            "java.lang");
+
     @Override
     public CacheErrorHandler errorHandler() {
         return new LoggingCacheErrorHandler(true);
@@ -40,20 +48,15 @@ public class RedisCacheConfig
             final RedisCacheProperties props,
             final ObjectMapper objectMapper,
             final CircuitBreaker redisCacheCircuitBreaker) {
-        final var redisMapper = RedisCacheConfigSupport.buildCacheObjectMapper(objectMapper);
+        final var redisMapper = RedisCacheConfigSupport.buildCacheObjectMapper(
+                objectMapper,
+                ALLOWED_SUB_TYPES);
         final var base = RedisCacheConfigSupport.buildBaseConfig(
                 redisMapper,
                 props.keyPrefix());
 
         final var configs = Map.<String, RedisCacheConfiguration>ofEntries(
-                Map.entry(CacheNames.BRAND, base.entryTtl(props.brandTtl())),
-                Map.entry(CacheNames.BRAND_LIST, base.entryTtl(props.brandListTtl())),
-                Map.entry(CacheNames.CATEGORY, base.entryTtl(props.categoryTtl())),
-                Map.entry(CacheNames.CATEGORY_LIST, base.entryTtl(props.categoryListTtl())),
-                Map.entry(CacheNames.PRODUCT, base.entryTtl(props.productTtl())),
-                Map.entry(CacheNames.PRODUCT_LIST, base.entryTtl(props.productListTtl())),
-                Map.entry(CacheNames.VARIANT, base.entryTtl(props.variantTtl())),
-                Map.entry(CacheNames.VARIANT_LIST, base.entryTtl(props.variantListTtl())));
+                Map.entry(CacheNames.CART_BY_USER_ID, base.entryTtl(props.cartByUserIdTtl())));
 
         final var redisManager = RedisCacheManager.builder(factory)
                 .cacheDefaults(base)
