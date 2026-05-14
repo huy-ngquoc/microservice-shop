@@ -42,10 +42,9 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     private final LoadInventoryPort loadPort;
 
     private final InventoryViewMapper mapper;
-    private final PublishInventoryEventPort publishEventPort;
-    private final InventoryUpdatedDocumentRepository inventoryUpdatedDocumentRepo;
+    
 
-    private final RedisTemplate<String, Map<String, String>> redisTemplate;
+    
 
     @Override
     @Transactional
@@ -75,25 +74,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         // publishEventPort.publishInventoryUpdateEvent(new
         // InventoryUpdated(saved.getVariantId().value(), saved.getQuantity().value(),
         // saved.getReservedQuantity().value()));
-        InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUIDs.newId())
-                .variantId(saved.getVariantId().value())
-                .newQuantity(saved.getQuantity().value())
-                .newReservedQuantity(saved.getReservedQuantity().value())
-                .eventStatus("PENDING")
-                .retryCount(0)
-                .createdAt(Instant.now())
-                .updatedAt(null)
-                .lastError(null)
-                .isRead(true)
-                .build();
-        final var savedEvent = inventoryUpdatedDocumentRepo.save(event);
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishEventPort.publishInventoryUpdateEvent(savedEvent);
-
-            }
-        });
+        
         return mapper.toView(saved);
     }
 
@@ -116,7 +97,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         List<Inventory> inventories = loadPort.findAllByListVariantId(
                 commands.getDetailCommands().stream().map(item -> item.getVariantId()).toList());
 
-        List<InventoryUpdatedDocument> events = new ArrayList<>();
+       
         Map<UUID, Inventory> inventoryMap = new HashMap<>();
         List<Inventory> toSaves = new ArrayList<>();
         for (Inventory i : inventories) {
@@ -141,18 +122,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
                     .build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
             toSaves.add(toSave);
-            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUIDs.newId())
-                    .variantId(toSave.getVariantId().value())
-                    .newQuantity(toSave.getQuantity().value())
-                    .newReservedQuantity(toSave.getReservedQuantity().value())
-                    .eventStatus("PENDING")
-                    .retryCount(0)
-                    .createdAt(Instant.now())
-                    .updatedAt(null)
-                    .lastError(null)
-                    .isRead(false)
-                    .build();
-            events.add(event);
+            
 
         }
 
@@ -172,15 +142,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
          * }
          */
         savePort.saveAll(toSaves);
-        inventoryUpdatedDocumentRepo.saveAll(events);
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                for (final var event : events) {
-                    publishEventPort.publishInventoryUpdateEvent(event);
-                }
-            }
-        });
+        
 
         return inventories.stream().map(mapper::toView).toList();
 
@@ -209,7 +171,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         for (Inventory i : inventories) {
             inventoryMap.put(i.getVariantId().value(), i);
         }
-        List<InventoryUpdatedDocument> events = new ArrayList<>();
+        
         for (OrderDetailCommand detailCommand : commands.getDetailCommands()) {
             Inventory inventory = inventoryMap.get(detailCommand.getVariantId().value());
             if (inventory == null)
@@ -223,18 +185,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
                     .status(inventory.getStatus())
                     .build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
-            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUIDs.newId())
-                    .variantId(toSave.getVariantId().value())
-                    .newQuantity(toSave.getQuantity().value())
-                    .newReservedQuantity(toSave.getReservedQuantity().value())
-                    .eventStatus("PENDING")
-                    .retryCount(0)
-                    .createdAt(Instant.now())
-                    .updatedAt(null)
-                    .lastError(null)
-                    .isRead(false)
-                    .build();
-            events.add(event);
+            
             toSaves.add(toSave);
 
         }
@@ -250,15 +201,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
          * }
          */
         savePort.saveAll(toSaves);
-        inventoryUpdatedDocumentRepo.saveAll(events);
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                for (final var event : events) {
-                    publishEventPort.publishInventoryUpdateEvent(event);
-                }
-            }
-        });
+        
 
         return inventories.stream().map(mapper::toView).toList();
 

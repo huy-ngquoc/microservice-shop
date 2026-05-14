@@ -86,7 +86,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
                 && !checkPermission.isSameUser(userIdFromHeader, order.getUserId().value().toString())) {
             throw new RuntimeException("Unauthorized");
         }
-        System.out.println("Order currency is " + order.getCurrency().value());
+        //System.out.println("Order currency is " + order.getCurrency().value());
         String oldStatus = order.getStatus().value();
 
         String commandStatus = command.status().apply(order.getStatus()).value();
@@ -115,7 +115,7 @@ public class UpdateOrderService implements UpdateOrderUseCase {
             updateVariantSoldCount(next);
         }
         if (isSendEvent) {
-            System.out.println("Send eventtttttttttttttttttttttttttttttttt");
+            //System.out.println("Send eventtttttttttttttttttttttttttttttttt");
             List<OrderDetailEvent> detailEvents = saved.getDetails().stream()
                     .map(item -> new OrderDetailEvent(item.variantId(), item.productId(), item.amount())).toList();
             OrderUpdatedEventDocument eventDocument = OrderUpdatedEventDocument.builder()
