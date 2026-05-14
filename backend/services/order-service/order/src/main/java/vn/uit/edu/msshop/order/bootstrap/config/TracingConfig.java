@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.order.config;
+package vn.uit.edu.msshop.order.bootstrap.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.mongodb.autoconfigure.MongoClientSettingsBuilderCustomizer;
@@ -26,12 +26,14 @@ public class TracingConfig {
     @Value("${management.tracing.sampling.probability:0.1}")
     private double samplingProbability;
 
-   @Bean
-    public io.micrometer.observation.ObservationHandler<io.micrometer.observation.Observation.Context> tracingObservationHandler(Tracer tracer) {
+    @Bean
+    public io.micrometer.observation.ObservationHandler<
+            io.micrometer.observation.Observation.Context> tracingObservationHandler(
+                    Tracer tracer) {
         return new DefaultTracingObservationHandler(tracer);
     }
 
-   @Bean
+    @Bean
     public Tracing tracing() {
 
         var sender = OkHttpSender.create(zipkinEndpoint);
@@ -44,23 +46,29 @@ public class TracingConfig {
                 .sampler(Sampler.create((float) samplingProbability))
                 .addSpanHandler(spanHandler) // QUAN TRỌNG: Gắn Handler vào đây
                 .build();
-    
+
     }
+
     @Bean
-public MongoClientSettingsBuilderCustomizer mongoObservationCustomizer(ObservationRegistry observationRegistry) {
-    return clientSettingsBuilder -> clientSettingsBuilder
-            .addCommandListener(new MongoObservationCommandListener(observationRegistry));
-}
-   
-@Bean
-public io.micrometer.observation.ObservationHandler<io.micrometer.observation.Observation.Context> tracingObservationHandlerOther(io.micrometer.tracing.Tracer tracer) {
-    return new io.micrometer.tracing.handler.DefaultTracingObservationHandler(tracer);
-}
-   @Bean
-    public Tracer tracer(Tracing tracing) {
+    public MongoClientSettingsBuilderCustomizer mongoObservationCustomizer(
+            ObservationRegistry observationRegistry) {
+        return clientSettingsBuilder -> clientSettingsBuilder
+                .addCommandListener(new MongoObservationCommandListener(observationRegistry));
+    }
+
+    @Bean
+    public io.micrometer.observation.ObservationHandler<
+            io.micrometer.observation.Observation.Context> tracingObservationHandlerOther(
+                    io.micrometer.tracing.Tracer tracer) {
+        return new io.micrometer.tracing.handler.DefaultTracingObservationHandler(tracer);
+    }
+
+    @Bean
+    public Tracer tracer(
+            Tracing tracing) {
         // Lấy CurrentTraceContext từ object tracing thay vì tracer
         BraveCurrentTraceContext bridgeContext = new BraveCurrentTraceContext(tracing.currentTraceContext());
-        
+
         // Khởi tạo Manager quản lý dữ liệu đính kèm
         BraveBaggageManager baggageManager = new BraveBaggageManager();
 

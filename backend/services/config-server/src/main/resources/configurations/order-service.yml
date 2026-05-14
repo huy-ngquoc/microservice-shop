@@ -1,26 +1,30 @@
 spring:
-  cloud:
-    loadbalancer:
-      retry:
-        enabled: false
-  data:
-    redis:
-      host: ${REDIS_ORDER_HOST:localhost}       
-      port: ${REDIS_PORT:6380}
-      password: binh123
-      timeout: 60000   
-      client-type: lettuce     
-      lettuce:
-        pool:
-          max-active: 32 # Tăng lên để chịu tải tốt hơn
-          max-idle: 16
-          min-idle: 8
-    mongodb:
-      uri: mongodb://alibou:alibou@${ORDER_DB_URL:localhost:27019}/order_db?authSource=admin&replicaSet=rs0&directConnection=true&uuidRepresentation=STANDARD&maxPoolSize=200&minPoolSize=20
-      command-listener:
-        observation:
-          enabled: true
-  kafka:
+    cloud:
+        loadbalancer:
+            retry:
+                enabled: false
+    data:
+        redis:
+            host: ${REDIS_ORDER_HOST:localhost}
+            port: ${REDIS_PORT:6380}
+            password: binh123
+            timeout: 60000
+            client-type: lettuce
+            lettuce:
+                pool:
+                    max-active: 32
+                    max-idle: 16
+                    min-idle: 8
+        mongodb:
+            uri: mongodb://alibou:alibou@${ORDER_DB_URL:localhost:27019}/order_db?authSource=admin&replicaSet=rs0&directConnection=true&uuidRepresentation=STANDARD&maxPoolSize=200&minPoolSize=20
+            command-listener:
+                observation:
+                    enabled: true
+    cache:
+        type: redis
+        redis:
+            cache-null-values: false
+    kafka:
         bootstrap-servers: ${KAFKA_URL:localhost:9092}
         consumer:
             group-id: order-group
@@ -30,7 +34,7 @@ spring:
                 spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
                 spring.json.trusted.packages: "*"
                 spring.json.value.default.type: java.lang.Object
-                spring.json.type.mapping: 
+                spring.json.type.mapping:
                     OnlinePaymentExpired:vn.uit.edu.msshop.order.domain.event.OnlinePaymentExpired,
                     OnlinePaymentCancelled:vn.uit.edu.msshop.order.domain.event.OnlinePaymentCancelled,
                     ProductCreated:vn.uit.edu.msshop.order.domain.event.product.ProductCreated,
@@ -51,29 +55,40 @@ spring:
                 acks: all
                 properties:
                     enable.idempotence: true
-                max.block.ms: 10000        # Tăng lên 10s
-                delivery.timeout.ms: 30000  # Tăng lên 30s (Chuẩn của Kafka)
+                max.block.ms: 10000
+                delivery.timeout.ms: 30000
                 request.timeout.ms: 10000
-                spring.json.type.mapping: 
+                spring.json.type.mapping:
                     OrderCreated:vn.uit.edu.msshop.order.domain.event.OrderCreated,
                     OrderCreatedSuccess:vn.uit.edu.msshop.order.domain.event.OrderCreatedSuccess,
                     OrderUpdatedEvent:vn.uit.edu.msshop.order.domain.event.OrderUpdatedEvent,
                     PaymentLinkCreated:java.lang.Object,
                     OnlinePaymentSuccess:java.lang.Object,
                     OrderCompositeEvent:vn.uit.edu.msshop.order.domain.event.OrderCompositeEvent
+app:
+    cache:
+        key-prefix: ${spring.application.name}
+        order-ttl: 10m
+        variant-sold-count-ttl: 30m
+        circuit-breaker:
+            sliding-window-size: 10
+            minimum-number-of-calls: 5
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 5s
+            permitted-number-of-calls-in-half-open-state: 3
 logging:
-  level:
-      vn.uit.edu.msshop.order.adapter.remote: DEBUG
-      org.springframework.data.mongodb.core.MongoTemplate: OFF
-      org.apache.kafka: ERROR
-      org.springframework.kafka: ERROR
-      io.micrometer.tracing: ERROR
-      io.zipkin.reporter2: ERROR
-      root: WARN
-      vn.uit.edu.msshop.order: INFO
-      io.lettuce.core: WARN
-  pattern:
-      level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+    level:
+        vn.uit.edu.msshop.order.adapter.remote: DEBUG
+        org.springframework.data.mongodb.core.MongoTemplate: OFF
+        org.apache.kafka: ERROR
+        org.springframework.kafka: ERROR
+        io.micrometer.tracing: ERROR
+        io.zipkin.reporter2: ERROR
+        root: WARN
+        vn.uit.edu.msshop.order: INFO
+        io.lettuce.core: WARN
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 management:
     endpoints:
         web:
@@ -89,31 +104,31 @@ management:
         tags:
             application: ${spring.application.name}
 server:
-  port: 8000
-  address: 0.0.0.0
+    port: 8000
+    address: 0.0.0.0
 eureka:
     client:
         serviceUrl:
             defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
     instance:
         prefer-ip-address: true
-        lease-renewal-interval-in-seconds: 5 
+        lease-renewal-interval-in-seconds: 5
         lease-expiration-duration-in-seconds: 10
 feign:
-  client:
-    config:
-      product-service:
-        connectTimeout: 2000
-        readTimeout: 2000
-        retryer: feign.Retryer.NEVER_RETRY
-      inventory-service:
-        connectTimeout: 2000
-        readTimeout: 2000
-      payment-service:
-        connectTimeout: 5000
-        readTimeout: 5000
+    client:
+        config:
+            product-service:
+                connectTimeout: 2000
+                readTimeout: 2000
+                retryer: feign.Retryer.NEVER_RETRY
+            inventory-service:
+                connectTimeout: 2000
+                readTimeout: 2000
+            payment-service:
+                connectTimeout: 5000
+                readTimeout: 5000
 resilience4j:
-   circuitbreaker:
+    circuitbreaker:
         instances:
             productService:
                 slidingWindowSize: 10
@@ -122,7 +137,7 @@ resilience4j:
                 waitDurationInOpenState: 10s
                 recordExceptions:
                     - java.util.concurrent.TimeoutException
-                    - io.github.resilience4j.circuitbreaker.CallNotPermittedException 
+                    - io.github.resilience4j.circuitbreaker.CallNotPermittedException
             mongoService:
                 slidingWindowSize: 10
                 failureRateThreshold: 50
@@ -133,8 +148,3 @@ resilience4j:
                     - com.mongodb.MongoSocketException
                     - com.mongodb.MongoTimeoutException
                     - org.springframework.dao.DataAccessResourceFailureException
-
-    
-    
-
-    

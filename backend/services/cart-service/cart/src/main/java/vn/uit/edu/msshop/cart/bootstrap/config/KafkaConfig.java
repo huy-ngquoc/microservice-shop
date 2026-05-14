@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.cart.config;
+package vn.uit.edu.msshop.cart.bootstrap.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
