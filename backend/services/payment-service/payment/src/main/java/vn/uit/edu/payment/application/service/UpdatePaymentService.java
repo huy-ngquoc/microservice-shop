@@ -97,6 +97,7 @@ public class UpdatePaymentService implements UpdatePaymentUseCase {
                 .build();
         final var next = payment.applyUpdateInfo(update);
         final Payment saved = savePort.save(next);
+        this.savePort.save(saved);
     }
 
 }
