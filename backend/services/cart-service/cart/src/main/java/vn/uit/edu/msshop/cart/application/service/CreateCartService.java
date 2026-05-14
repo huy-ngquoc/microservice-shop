@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.cart.application.service;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +12,7 @@ import vn.uit.edu.msshop.cart.application.port.in.CreateCartUseCase;
 import vn.uit.edu.msshop.cart.application.port.out.LoadCartPort;
 import vn.uit.edu.msshop.cart.application.port.out.SaveCartPort;
 import vn.uit.edu.msshop.cart.application.port.out.VariantToUserPort;
+import vn.uit.edu.msshop.cart.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.msshop.cart.domain.model.Cart;
 import vn.uit.edu.msshop.cart.domain.model.CartDetail;
 
@@ -24,6 +26,9 @@ public class CreateCartService implements CreateCartUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            value = CacheNames.CART_BY_USER_ID,
+            key = "#command.userId().value()")
     public CartView create(
             CreateCartCommand command) {
         Cart cart = loadCartPort.loadByUserId(command.userId());
