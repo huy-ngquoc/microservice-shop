@@ -1,26 +1,26 @@
 server:
     port: 8089
 spring:
-  mongodb:
-    uri: mongodb://alibou:alibou@${CART_MONGODB_URL:localhost:27021}/cart_db?authSource=admin&uuidRepresentation=STANDARD&maxPoolSize=200&minPoolSize=20
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}       
-      port: 6379
-      password: binh123
-      timeout: 60000        
-      lettuce:
-        pool:
-          max-active: 8
-  kafka:
-        bootstrap-servers: ${KAFKA_URL:localhost:9092} 
+    mongodb:
+        uri: mongodb://alibou:alibou@${CART_MONGODB_URL:localhost:27021}/cart_db?authSource=admin&uuidRepresentation=STANDARD&maxPoolSize=200&minPoolSize=20
+    data:
+        redis:
+            host: ${REDIS_HOST:localhost}
+            port: 6379
+            password: binh123
+            timeout: 60000
+            lettuce:
+                pool:
+                    max-active: 8
+    kafka:
+        bootstrap-servers: ${KAFKA_URL:localhost:9092}
         consumer:
             group-id: order-group
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
             value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
             properties:
                 spring.json.trusted.packages: "*"
-                spring.json.type.mapping: 
+                spring.json.type.mapping:
                     OrderCreatedSuccess:vn.uit.edu.msshop.cart.domain.event.OrderCreatedSuccess,
                     ProductUpdated:vn.uit.edu.msshop.cart.domain.event.ProductUpdated,
                     ProductDeleted:vn.uit.edu.msshop.cart.domain.event.ProductDeleted,
@@ -32,24 +32,32 @@ eureka:
             defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka/}
     instance:
         prefer-ip-address: true
-        lease-renewal-interval-in-seconds: 5 
+        lease-renewal-interval-in-seconds: 5
         lease-expiration-duration-in-seconds: 10
 feign:
-   client:
-       config:
-           product-service:
-               connectTimeout: 2000
-               readTimeout: 2000
+    client:
+        config:
+            product-service:
+                connectTimeout: 2000
+                readTimeout: 2000
 resilience4J:
-   circuitbreaker:
-       instances:
-           productService:
-               slidingWindowSize: 10
-               slowCallDurationThreshold: 2s
-               slowCallRateThreshold: 50
-               waitDurationInOpenState: 10s
-               recordExceptions:
+    circuitbreaker:
+        instances:
+            productService:
+                slidingWindowSize: 10
+                slowCallDurationThreshold: 2s
+                slowCallRateThreshold: 50
+                waitDurationInOpenState: 10s
+                recordExceptions:
                     - java.util.concurrent.TimeoutException
                     - io.github.resilience4j.circuitbreaker.CallNotPermittedException
-                    
-       
+app:
+    cache:
+        key-prefix: ${spring.application.name}
+        cart-by-user-id-ttl: 30m
+        circuit-breaker:
+            sliding-window-size: 10
+            minimum-number-of-calls: 5
+            failure-rate-threshold: 50
+            wait-duration-in-open-state: 5s
+            permitted-number-of-calls-in-half-open-state: 3
