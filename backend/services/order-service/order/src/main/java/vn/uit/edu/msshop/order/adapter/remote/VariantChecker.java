@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import vn.uit.edu.msshop.order.adapter.in.web.request.FindVariantsByIdsRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.VariantResponse;
-import vn.uit.edu.msshop.order.config.FeignConfig;
+import vn.uit.edu.msshop.order.bootstrap.config.FeignConfig;
 
-@FeignClient(name="product-service",configuration=FeignConfig.class)
+@FeignClient(
+        name = "product-service",
+        configuration = FeignConfig.class)
 public interface VariantChecker {
     @PostMapping("/variants/order-search")
     public ResponseEntity<List<VariantResponse>> findAllByIds(
