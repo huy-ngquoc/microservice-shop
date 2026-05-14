@@ -322,9 +322,8 @@ services:
             dockerfile: backend/services/product-service/Dockerfile
             additional_contexts:
                 microservice-shop-shared-base: "service:shared-base"
-        container_name: product-service
         ports:
-            - "8070:8070"
+            - "8070"
         depends_on:
             config-server:
                 condition: service_healthy
@@ -343,6 +342,7 @@ services:
             - REDIS_HOST=${REDIS_HOST}
             - REDIS_PORT=${REDIS_PORT}
         deploy:
+            replicas: 2
             resources:
                 limits:
                     memory: 1536M

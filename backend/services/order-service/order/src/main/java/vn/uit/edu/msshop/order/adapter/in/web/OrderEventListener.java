@@ -2,6 +2,7 @@ package vn.uit.edu.msshop.order.adapter.in.web;
 
 import java.time.Instant;
 import java.util.List;
+
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -118,10 +119,9 @@ public class OrderEventListener {
     @KafkaHandler
     public void onOnlinePaymentSuccess(
             PaymentSuccess event) {
-        System.out.println("Nhan event");
+        
         if (event.getEventId() == null || event.getOrderId() == null) {
-            System.out.println("Con di me may");
-            System.out.println(event.getOrderId().toString());
+            
             return;
         }
         if (!eventDocumentRepo.existsById(event.getEventId())) {

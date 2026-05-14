@@ -22,7 +22,7 @@ public class PayOSWorkerAdapter implements PayOSWorker {
     private final PayOSService payOSService;
 
     @Override
-    @Scheduled(fixedDelay=5000)
+    @Scheduled(fixedDelay=60000*5)
     public void checkExpiredPayments() {
         Instant timeOut = Instant.now().minus(1, ChronoUnit.MINUTES);
         List<Payment> payments = loadPaymentPort.loadExpiredPayment(timeOut);

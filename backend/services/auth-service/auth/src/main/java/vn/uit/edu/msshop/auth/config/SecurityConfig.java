@@ -46,7 +46,9 @@ public ReactiveJwtDecoder jwtDecoder() {
                 
                 //.pathMatchers("/account/create")
                 .permitAll()
-                .pathMatchers("/product/**").permitAll()
+                .pathMatchers("/products/**").permitAll()
+                .pathMatchers("/variants/**").permitAll()
+                .pathMatchers("/fake_payment/**").permitAll()
                 //.pathMatchers("/order/**").permitAll()
                 .anyExchange().authenticated()
             )

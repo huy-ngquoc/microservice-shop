@@ -35,8 +35,8 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 @Service
 @RequiredArgsConstructor
 public class ProcessOrderService implements ProcessOrderUseCase {
-    private final InventoryUpdatedDocumentRepository inventoryUpdatedRepo;
-    private final PublishInventoryEventPort publishPort;
+    
+    
     private final LoadInventoryPort loadPort;
     private final SaveInventoryPort savePort;
     private final ProcessedOrderRepository processedOrderRepo;
@@ -81,22 +81,11 @@ public class ProcessOrderService implements ProcessOrderUseCase {
             .build();
             final var toSave = i.applyUpdateInfo(updateInfo);
 
-            InventoryUpdatedDocument event = InventoryUpdatedDocument.builder().eventId(UUIDs.newId())
-                    .variantId(i.getVariantId().value())
-                    .newQuantity(newQuantity)
-                    .newReservedQuantity(newReservedQuantity)
-                    .eventStatus("PENDING")
-                    .retryCount(0)
-                    .createdAt(Instant.now())
-                    .updatedAt(null)
-                    .lastError(null)
-                    .isRead(false)
-                    .build();
-            events.add(event);
+            
             toSaves.add(toSave);
         }
 
-        inventoryUpdatedRepo.saveAll(events);
+        
         savePort.saveAll(toSaves);
         // System.out.println("Tao don hang thanh cong");
 
