@@ -268,6 +268,11 @@ services:
                 microservice-shop-shared-base: "service:shared-base"
         deploy:
            replicas: 2
+           resources:
+                limits:
+                    memory: 768M
+                reservations:
+                    memory: 384M
         ports:
             - "8000"
         depends_on:
@@ -284,12 +289,7 @@ services:
             - ORDER_DB_URL=${ORDER_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
-        deploy:
-            resources:
-                limits:
-                    memory: 768M
-                reservations:
-                    memory: 384M
+            
     fake-payment-service:
         build:
             context: .
@@ -323,9 +323,8 @@ services:
             dockerfile: backend/services/product-service/Dockerfile
             additional_contexts:
                 microservice-shop-shared-base: "service:shared-base"
-        container_name: product-service
         ports:
-            - "8070:8070"
+            - "8070"
         depends_on:
             config-server:
                 condition: service_healthy
@@ -342,6 +341,7 @@ services:
             - PRODUCT_DB_PORT=${PRODUCT_DB_PORT}
             - KAFKA_URL=${KAFKA_URL}
         deploy:
+            replicas: 2
             resources:
                 limits:
                     memory: 768M

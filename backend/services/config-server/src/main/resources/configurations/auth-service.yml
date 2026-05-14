@@ -43,6 +43,12 @@ spring:
                         uri: lb://INVENTORY-SERVICE
                         predicates:
                         - Path=/inventory/**
+                      - id: product-service
+                        uri: lb://PRODUCT-SERVICE
+                        predicates:
+                        - Path=/products/**,/variants/**
+                      
+                        
 
 management:
   endpoints:

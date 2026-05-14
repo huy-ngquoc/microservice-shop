@@ -41,7 +41,7 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/payment")
+@RequestMapping("/fake_payment")
 public class PaymentController {
     private final CreatePaymentUseCase createUseCase;
     private final UpdatePaymentUseCase updateUseCase;
@@ -156,9 +156,12 @@ public class PaymentController {
     }
 
     @PostMapping("/fake_web_hook")
-    public ResponseEntity<Void> fakeWebHook(
+    public ResponseEntity<?> fakeWebHook(
             @RequestBody
             UUID orderId) {
+                 Random rand = new Random();
+        int randomNumber = rand.nextInt(20);
+        if(randomNumber>=12) return ResponseEntity.ok("That bai");
         webHookPort.fakeWebHook(orderId);
         return ResponseEntity.noContent().build();
     }
