@@ -341,6 +341,7 @@ services:
             - KAFKA_URL=${KAFKA_URL}
             - REDIS_HOST=${REDIS_HOST}
             - REDIS_PORT=${REDIS_PORT}
+            - ZIPKIN_URL=${ZIPKIN_URL}
         deploy:
             replicas: 2
             resources:
