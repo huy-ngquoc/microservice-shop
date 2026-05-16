@@ -56,7 +56,17 @@ spring:
         scheduling:
             pool:
                 size: 1
-
+management:
+    endpoints:
+        web:
+            exposure:
+                include: "*"
+    tracing:
+        sampling:
+            probability: 0.1
+    metrics:
+        tags:
+            application: ${spring.application.name}
 app:
     cache:
         key-prefix: ${spring.application.name}
@@ -74,7 +84,11 @@ app:
             failure-rate-threshold: 50
             wait-duration-in-open-state: 30s
             permitted-number-of-calls-in-half-open-state: 3
-
+    observability:
+        tracing:
+            service-name: ${spring.application.name}
+            sampling-probability: 0.1
+            zipkin-endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
 logging:
     level:
         "[vn.edu.uit.msshop]": INFO
@@ -84,6 +98,10 @@ logging:
                     mongodb:
                         core:
                             MongoTemplate: WARN
+        "[io.micrometer.tracing]": WARN
+        "[io.zipkin.reporter2]": WARN
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 eureka:
     client:
         serviceUrl:
