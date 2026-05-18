@@ -32,7 +32,17 @@
             <groupId>vn.edu.uit.msshop</groupId>
             <artifactId>shared-kernel</artifactId>
         </dependency>
-        
+
+        <dependency>
+            <groupId>vn.edu.uit.msshop</groupId>
+            <artifactId>shared-observability</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.ttddyy.observation</groupId>
+            <artifactId>datasource-micrometer-spring-boot</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>vn.edu.uit.msshop</groupId>
             <artifactId>shared-spring-cache</artifactId>
@@ -89,32 +99,12 @@
 
         <dependency>
             <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-tracing-bridge-brave</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-observation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.micrometer</groupId>
             <artifactId>micrometer-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-micrometer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.zipkin.reporter2</groupId>
-            <artifactId>zipkin-reporter-brave</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.zipkin.reporter2</groupId>
-            <artifactId>zipkin-sender-okhttp3</artifactId>
         </dependency>
 
         <dependency>
