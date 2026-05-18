@@ -30,6 +30,7 @@
         <module>shared-webmvc</module>
         <module>shared-spring-data</module>
         <module>shared-spring-cache</module>
+        <module>shared-observability</module>
         <module>shared-cloudinary</module>
 
         <module>config-server</module>
@@ -63,6 +64,7 @@
         <shared-webmvc.version>1.0.0-SNAPSHOT</shared-webmvc.version>
         <shared-spring-data.version>1.0.0-SNAPSHOT</shared-spring-data.version>
         <shared-spring-cache.version>1.0.0-SNAPSHOT</shared-spring-cache.version>
+        <shared-observability.version>1.0.0-SNAPSHOT</shared-observability.version>
         <shared-cloudinary.version>1.0.0-SNAPSHOT</shared-cloudinary.version>
 
         <spring-cloud.version>2025.1.0</spring-cloud.version>
@@ -73,6 +75,7 @@
         <dotenv.version>3.2.0</dotenv.version>
         <resilience4j.version>2.4.0</resilience4j.version>
         <uuid-generator.version>5.2.0</uuid-generator.version>
+        <datasource-micrometer.version>2.2.1</datasource-micrometer.version>
     </properties>
 
     <dependencyManagement>
@@ -100,6 +103,12 @@
                 <groupId>vn.edu.uit.msshop</groupId>
                 <artifactId>shared-spring-cache</artifactId>
                 <version>${shared-spring-cache.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>vn.edu.uit.msshop</groupId>
+                <artifactId>shared-observability</artifactId>
+                <version>${shared-observability.version}</version>
             </dependency>
 
             <dependency>
@@ -150,6 +159,12 @@
                 <groupId>com.fasterxml.uuid</groupId>
                 <artifactId>java-uuid-generator</artifactId>
                 <version>${uuid-generator.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.ttddyy.observation</groupId>
+                <artifactId>datasource-micrometer-spring-boot</artifactId>
+                <version>${datasource-micrometer.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
