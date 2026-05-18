@@ -36,6 +36,7 @@ services:
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
             - ACCOUNT_DB_URL=${ACCOUNT_DB_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -64,6 +65,7 @@ services:
             - microservices-net
         environment:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -92,6 +94,7 @@ services:
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
             - ACCOUNT_DB_URL=${ACCOUNT_DB_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -119,6 +122,7 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -147,6 +151,7 @@ services:
             - REDIS_HOST=${REDIS_HOST}
             - CART_MONGODB_URL=${CART_MONGODB_URL}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -176,6 +181,7 @@ services:
             - INVENTORY_DB_URL=${INVENTORY_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -203,6 +209,7 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - NOTIFICATION_DB_URL=${NOTIFICATION_DB_URL}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -229,6 +236,7 @@ services:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - RATING_DB_URL=${RATING_DB_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -254,6 +262,7 @@ services:
         environment:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -289,6 +298,7 @@ services:
             - ORDER_DB_URL=${ORDER_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
     fake-payment-service:
         build:
             context: .
@@ -310,6 +320,7 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - PAYMENT_DB_URL=${PAYMENT_DB_URL}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -341,6 +352,7 @@ services:
             - KAFKA_URL=${KAFKA_URL}
             - REDIS_HOST=${REDIS_HOST}
             - REDIS_PORT=${REDIS_PORT}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             replicas: 2
             resources:
