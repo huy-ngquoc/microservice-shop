@@ -12,9 +12,24 @@ spring:
                 native:
                     search-locations: classpath:/configurations
 management:
-    tracing:
-        sampling:
-            probability: 0.1 # Giảm từ 100% xuống 10% để giảm disk I/O
-    zipkin:
+    endpoints:
+        web:
+            exposure:
+                include: "*"
+    metrics:
+        tags:
+            application: ${spring.application.name}
+
+app:
+    observability:
         tracing:
-            endpoint: http://ms_zipkin:9411/api/v2/spans
+            service-name: ${spring.application.name}
+            sampling-probability: 0.1
+            zipkin-endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+
+logging:
+    level:
+        "[io.micrometer.tracing]": WARN
+        "[io.zipkin.reporter2]": WARN
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

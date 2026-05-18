@@ -96,6 +96,11 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>vn.edu.uit.msshop</groupId>
+            <artifactId>shared-observability</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

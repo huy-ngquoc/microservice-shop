@@ -67,13 +67,13 @@ spring:
                     UpdateManyInventoriesEvent:vn.uit.edu.msshop.inventory.domain.event.UpdateManyInventoriesEvent
 logging:
     level:
-        org.hibernate.SQL: OFF 
+        org.hibernate.SQL: OFF
         org.hibernate.type.descriptor.sql.BasicBinder: OFF
         org.springframework.data.mongodb.core.MongoTemplate: OFF
         org.apache.kafka: ERROR
         org.springframework.kafka: ERROR
-        io.micrometer.tracing: WARN
-        io.zipkin.reporter2: WARN
+        "[io.micrometer.tracing]": WARN
+        "[io.zipkin.reporter2]": WARN
         root: WARN
         vn.uit.edu.msshop.inventory: INFO
         io.lettuce.core: WARN
@@ -84,15 +84,9 @@ management:
         web:
             exposure:
                 include: "*"
-    tracing:
-        sampling:
-            probability: 0.1
-    zipkin:
-        tracing:
-            endpoint: http://ms_zipkin:9411/api/v2/spans
     metrics:
-        tags: ["inventory"]
-        application: ${spring.application.name}
+        tags:
+            application: ${spring.application.name}
 eureka:
     client:
         serviceUrl:
@@ -102,6 +96,11 @@ eureka:
         lease-renewal-interval-in-seconds: 5 
         lease-expiration-duration-in-seconds: 10
 app:
+    observability:
+        tracing:
+            service-name: ${spring.application.name}
+            sampling-probability: 0.1
+            zipkin-endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
     cache:
         key-prefix: ${spring.application.name}
         inventory-ttl: 30m
