@@ -9,14 +9,18 @@ import org.springframework.data.mongodb.observability.MongoObservationCommandLis
 
 import io.micrometer.observation.ObservationRegistry;
 
-// Spring Boot's MicrometerTracingAutoConfiguration wires HTTP server spans,
-// Feign client spans, Lettuce/Redis spans, Brave Tracing with MDC decorator
-// and the AsyncZipkinSpanHandler when spring-boot-micrometer-tracing +
-// micrometer-tracing-bridge-brave + zipkin-reporter-brave are on the
-// classpath. MongoDB driver observation is the only piece Boot does NOT
-// auto-wire — we plug a CommandListener into MongoClientSettings and pass an
-// observation ContextProvider so each Mongo command becomes a child span of
-// the active request span.
+// Responsibility split inside this module:
+//   - TracingAutoConfiguration: real brave.Tracing, Micrometer Tracer bridge,
+//     Propagator (B3 extract/inject), MDC scope decorator, AsyncZipkinSpan
+//     Handler — none of which Spring Boot 4 modular auto-wires by itself.
+//   - Spring Boot's MicrometerTracingAutoConfiguration on top consumes those
+//     beans to register the DefaultTracingObservationHandler + propagating
+//     receiver/sender handlers that turn HTTP / Feign / Lettuce observation
+//     events into Brave spans.
+//   - This class: plug a Mongo CommandListener into MongoClientSettings and
+//     pass an observation ContextProvider so each Mongo command emits a
+//     child span of the active request span. Boot has no equivalent for
+//     Mongo driver observation, so we add it here.
 //
 // Conditional on the Mongo support classes so non-Mongo services that pull
 // shared-observability never trigger class loading of MongoClient* types.
