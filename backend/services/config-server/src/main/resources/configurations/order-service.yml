@@ -66,6 +66,11 @@ spring:
                     OnlinePaymentSuccess:java.lang.Object,
                     OrderCompositeEvent:vn.uit.edu.msshop.order.domain.event.OrderCompositeEvent
 app:
+    observability:
+        tracing:
+            service-name: ${spring.application.name}
+            sampling-probability: 0.1
+            zipkin-endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
     cache:
         key-prefix: ${spring.application.name}
         order-ttl: 10m
@@ -82,8 +87,8 @@ logging:
         org.springframework.data.mongodb.core.MongoTemplate: OFF
         org.apache.kafka: ERROR
         org.springframework.kafka: ERROR
-        io.micrometer.tracing: ERROR
-        io.zipkin.reporter2: ERROR
+        "[io.micrometer.tracing]": WARN
+        "[io.zipkin.reporter2]": WARN
         root: WARN
         vn.uit.edu.msshop.order: INFO
         io.lettuce.core: WARN
@@ -94,12 +99,6 @@ management:
         web:
             exposure:
                 include: "*"
-    tracing:
-        sampling:
-            probability: 0.1
-    zipkin:
-        tracing:
-            endpoint: http://ms_zipkin:9411/api/v2/spans
     metrics:
         tags:
             application: ${spring.application.name}
