@@ -71,11 +71,28 @@ logging:
     level:
         org.apache.kafka: ERROR
         org.springframework.kafka: ERROR
+        "[io.micrometer.tracing]": WARN
+        "[io.zipkin.reporter2]": WARN
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+management:
+    endpoints:
+        web:
+            exposure:
+                include: "*"
+    metrics:
+        tags:
+            application: ${spring.application.name}
 payos:
     client-id:
     api-key:
     checksum-key:
 app:
+    observability:
+        tracing:
+            service-name: ${spring.application.name}
+            sampling-probability: 0.1
+            zipkin-endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
     cache:
         key-prefix: ${spring.application.name}
         payment-by-id-ttl: 10m
