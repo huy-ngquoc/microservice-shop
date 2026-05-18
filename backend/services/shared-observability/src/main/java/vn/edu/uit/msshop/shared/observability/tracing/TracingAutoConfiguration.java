@@ -14,7 +14,9 @@ import brave.sampler.Sampler;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveCurrentTraceContext;
+import io.micrometer.tracing.brave.bridge.BravePropagator;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
+import io.micrometer.tracing.propagation.Propagator;
 import vn.edu.uit.msshop.shared.observability.tracing.properties.TracingProperties;
 import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
@@ -68,5 +70,19 @@ public class TracingAutoConfiguration {
                 tracing.tracer(),
                 new BraveCurrentTraceContext(tracing.currentTraceContext()),
                 new BraveBaggageManager());
+    }
+
+    // B3 header extract (inbound) / inject (outbound) for cross-service trace
+    // context propagation. Spring Boot's MicrometerTracingAutoConfiguration
+    // declares its propagatingReceiver/SenderTracingObservationHandler beans
+    // as @ConditionalOnBean(Propagator.class); without this bean those
+    // handlers skip themselves, B3 headers are ignored on inbound requests
+    // and never injected on outbound Feign calls — each service starts a
+    // fresh trace and the cross-service trace tree breaks.
+    @Bean
+    @ConditionalOnMissingBean
+    Propagator propagator(
+            final Tracing tracing) {
+        return new BravePropagator(tracing);
     }
 }
