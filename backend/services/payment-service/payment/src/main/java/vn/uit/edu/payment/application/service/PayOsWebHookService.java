@@ -4,8 +4,11 @@ import java.time.Instant;
 import java.util.Random;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -33,6 +36,7 @@ import vn.uit.edu.payment.application.port.out.PayOsWebHookPort;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.application.port.out.SaveOnlinePaymentInfoPort;
 import vn.uit.edu.payment.application.port.out.SavePaymentPort;
+import vn.uit.edu.payment.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.payment.domain.model.OnlinePaymentInfo;
 import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.OnlinePaymentNumber;
@@ -57,8 +61,22 @@ public class PayOsWebHookService implements PayOsWebHookPort {
     private final ObjectMapper objectMapper;
 
     // private static boolean isMockMode=true;
-    @Override
 
+    // TODO: refactor this method to refactor `@Caching` more effective.
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PAYMENT_BY_ID,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PAYMENT_BY_ORDER_ID,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.ONLINE_PAYMENT_LINK_BY_ORDER_ID,
+                            allEntries = true)
+            })
     public void handlePayOSWebHook(
             Webhook body) {
         WebhookData webhookData;
@@ -95,8 +113,7 @@ public class PayOsWebHookService implements PayOsWebHookPort {
         }
     }
 
-    @org.springframework.transaction.annotation.Transactional
-    public void processPaymentUpdate(
+    private void processPaymentUpdate(
             WebhookData webhookData) {
         long orderCode = webhookData.getOrderCode();
         log.info("Bắt đầu xử lý Webhook cho OrderCode: {}", orderCode);

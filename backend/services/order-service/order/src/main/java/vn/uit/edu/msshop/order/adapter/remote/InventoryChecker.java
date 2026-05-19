@@ -15,25 +15,46 @@ import vn.uit.edu.msshop.order.adapter.in.web.request.OrderDetailRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.request.UpdateInventoryFromOrderServiceRequest;
 import vn.uit.edu.msshop.order.adapter.in.web.response.InventoryResponse;
 import vn.uit.edu.msshop.order.adapter.out.persistence.OrderOutbox;
-import vn.uit.edu.msshop.order.config.FeignConfig;
+import vn.uit.edu.msshop.order.bootstrap.config.FeignConfig;
 
-@FeignClient(name="inventory-service", configuration=FeignConfig.class)
+@FeignClient(
+        name = "inventory-service",
+        configuration = FeignConfig.class)
 public interface InventoryChecker {
     @PostMapping("/inventory/public/variants")
     List<InventoryResponse> getInventoryBatch(
-        @RequestBody List<UUID> variantIds
-    );
+            @RequestBody
+            List<UUID> variantIds);
+
     @PostMapping("/inventory/public/variants")
-    public ResponseEntity<List<InventoryResponse>> getByVariantIds(@RequestBody List<UUID> variantIds);
+    public ResponseEntity<List<InventoryResponse>> getByVariantIds(
+            @RequestBody
+            List<UUID> variantIds);
+
     @PostMapping("/inventory/public/process_order")
-    void processOrder(@RequestBody List<OrderDetailRequest> requests);
-    @PostMapping("/inventory/public/create") 
-    public ResponseEntity<Void> create( @RequestBody List<CreateInventoryRequest> requests);
+    void processOrder(
+            @RequestBody
+            List<OrderDetailRequest> requests);
+
+    @PostMapping("/inventory/public/create")
+    public ResponseEntity<Void> create(
+            @RequestBody
+            List<CreateInventoryRequest> requests);
+
     @PutMapping("/inventory/update_from_order")
-    public ResponseEntity<Void> updateFromOrderService(@RequestBody UpdateInventoryFromOrderServiceRequest request);
+    public ResponseEntity<Void> updateFromOrderService(
+            @RequestBody
+            UpdateInventoryFromOrderServiceRequest request);
+
     @PostMapping("inventory/public/roll_back/{messageType}")
-    public ResponseEntity<?> rollback(@RequestBody List<OrderDetailRequest> requests, @PathVariable String messageType);
+    public ResponseEntity<?> rollback(
+            @RequestBody
+            List<OrderDetailRequest> requests,
+            @PathVariable
+            String messageType);
 
     @PostMapping("inventory/public/process_order_outbox")
-    public ResponseEntity<String> process(@RequestBody OrderOutbox request);
+    public ResponseEntity<String> process(
+            @RequestBody
+            OrderOutbox request);
 }

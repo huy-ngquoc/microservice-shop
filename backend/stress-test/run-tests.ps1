@@ -3,7 +3,7 @@
 
 param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet("sequential", "light", "medium", "heavy")]
+    [ValidateSet("sequential", "light", "medium", "heavy", "extreme")]
     [string]$Test,
     [string]$JMeterHome
 )
@@ -116,6 +116,19 @@ switch ($Test) {
             -l "$RESULTS_DIR\crud-stress-heavy-$timestamp.jtl" `
             -j "$RESULTS_DIR\crud-stress-heavy-$timestamp.log" `
             -e -o "$REPORT_DIR\crud-stress-heavy-$timestamp"
+    }
+    "extreme" {
+        Write-Host "Running CRUD Stress Test - EXTREME (~1000 req/s)..." -ForegroundColor Red
+        Write-Host "Config: 100 users, 60 min duration" -ForegroundColor Gray
+        Write-Host "WARNING: Very high resource usage! Monitor CPU/memory!" -ForegroundColor Red
+        $profileConfig = Resolve-ProfileConfig "crud-stress-extreme.properties"
+
+        & $JMETER_BIN -n `
+            -t "$SCRIPT_DIR\scripts\product-service\crud-stress.jmx" `
+            -q $profileConfig `
+            -l "$RESULTS_DIR\crud-stress-extreme-$timestamp.jtl" `
+            -j "$RESULTS_DIR\crud-stress-extreme-$timestamp.log" `
+            -e -o "$REPORT_DIR\crud-stress-extreme-$timestamp"
     }
 }
 

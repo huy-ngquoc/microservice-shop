@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -29,6 +30,7 @@ import vn.uit.edu.msshop.order.application.port.in.UpdateOrderUseCase;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
+import vn.uit.edu.msshop.order.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderDetail;
@@ -76,6 +78,9 @@ public class UpdateOrderService implements UpdateOrderUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.ORDERS,
+            key = "#command.id().value()")
     public void update(
             UpdateOrderCommand command,
             String userIdFromHeader,
@@ -150,6 +155,9 @@ public class UpdateOrderService implements UpdateOrderUseCase {
 
     @Override
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.ORDERS,
+            key = "#orderId.value()")
     public void forceCancellOrder(
             OrderId orderId) {
         Order order = loadOrderPort.loadById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));

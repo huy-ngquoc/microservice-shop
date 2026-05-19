@@ -2,6 +2,8 @@ package vn.uit.edu.payment.application.service;
 
 import java.time.Instant;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -21,6 +23,7 @@ import vn.uit.edu.payment.application.port.out.LoadOnlinePaymentInfoPort;
 import vn.uit.edu.payment.application.port.out.LoadPaymentPort;
 import vn.uit.edu.payment.application.port.out.PublishPaymentEventPort;
 import vn.uit.edu.payment.application.port.out.SavePaymentPort;
+import vn.uit.edu.payment.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.payment.domain.model.OnlinePaymentInfo;
 import vn.uit.edu.payment.domain.model.Payment;
 import vn.uit.edu.payment.domain.model.valueobject.OnlinePaymentNumber;
@@ -41,8 +44,21 @@ public class PayOSService implements PayOSUseCase {
     private final PublishPaymentEventPort eventPort;
     private final OnlinePaymentExpiredDocumentRepository onlinePaymentExpiredRepo;
 
+    // TODO: refactor this method to refactor `@Caching` more effective.
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PAYMENT_BY_ID,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PAYMENT_BY_ORDER_ID,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.ONLINE_PAYMENT_LINK_BY_ORDER_ID,
+                            allEntries = true)
+            })
     public void syncPaymentData(
             long orderCode) {
         try {

@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.inventory.bootstrap.config.cache;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -20,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.ObjectMapper;
 import vn.edu.uit.msshop.shared.cache.CircuitBreakingCacheManager;
 import vn.edu.uit.msshop.shared.cache.RedisCacheConfigSupport;
-import vn.uit.edu.msshop.inventory.bootstrap.config.cache.properties.RedisCacheProperties;
+import vn.uit.edu.msshop.inventory.bootstrap.config.properties.RedisCacheProperties;
 
 @Configuration
 @EnableCaching
@@ -28,6 +29,15 @@ import vn.uit.edu.msshop.inventory.bootstrap.config.cache.properties.RedisCacheP
 @Slf4j
 public class RedisCacheConfig
         implements CachingConfigurer {
+    // TODO: rename from `vn.uit.edu.msshop` to
+    // `vn.edu.uit.msshop.msshop` for consistence
+    private static final List<String> ALLOWED_SUB_TYPES = List.of(
+            "vn.uit.edu.msshop",
+            "vn.edu.uit.msshop",
+            "java.util",
+            "java.time",
+            "java.lang");
+
     @Override
     public CacheErrorHandler errorHandler() {
         return new LoggingCacheErrorHandler(true);
@@ -39,7 +49,9 @@ public class RedisCacheConfig
             final RedisCacheProperties props,
             final ObjectMapper objectMapper,
             final CircuitBreaker redisCacheCircuitBreaker) {
-        final var redisMapper = RedisCacheConfigSupport.buildCacheObjectMapper(objectMapper);
+        final var redisMapper = RedisCacheConfigSupport.buildCacheObjectMapper(
+                objectMapper,
+                ALLOWED_SUB_TYPES);
         final var base = RedisCacheConfigSupport.buildBaseConfig(
                 redisMapper,
                 props.keyPrefix());
