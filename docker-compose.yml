@@ -299,15 +299,43 @@ services:
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
             - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
+    payment-service:
+        build:
+            context: .
+            dockerfile: backend/services/payment-service/payment/Dockerfile
+            additional_contexts:
+                microservice-shop-shared-base: "service:shared-base"
+        container_name: payment-service
+        ports:
+            - "8074:8074"
+        depends_on:
+            config-server:
+                condition: service_healthy
+            discovery-server:
+                condition: service_healthy
+        networks:
+            - microservices-net
+        environment:
+            - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - PAYMENT_DB_URL=${PAYMENT_DB_URL}
+            - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
+        deploy:
+            resources:
+                limits:
+                    memory: 768M
+                reservations:
+                    memory: 384M
     fake-payment-service:
         build:
             context: .
             dockerfile: backend/services/fake-payment/payment/Dockerfile
             additional_contexts:
                 microservice-shop-shared-base: "service:shared-base"
-        container_name: payment-service
+        container_name: fake-payment-service
         ports:
-            - "8074:8074"
+            - "8075:8074"
         depends_on:
             config-server:
                 condition: service_healthy

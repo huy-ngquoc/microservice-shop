@@ -84,9 +84,9 @@ management:
         tags:
             application: ${spring.application.name}
 payos:
-    client-id:
-    api-key:
-    checksum-key:
+    client-id: 
+    api-key: 
+    checksum-key: 
 app:
     observability:
         tracing:

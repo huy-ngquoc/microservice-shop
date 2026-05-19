@@ -40,7 +40,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
     @Transactional
     @CacheEvict(
             cacheNames = CacheNames.ONLINE_PAYMENT_LINK_BY_ORDER_ID,
-            key = "#payment.orderId().value()")
+            key = "#payment.getOrderId().value()")
     public String createPaymentLink(
             Payment payment) {
 
