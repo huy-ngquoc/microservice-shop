@@ -16,6 +16,7 @@ import vn.uit.edu.msshop.account.application.port.in.FindAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.out.LoadAccountPort;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
+import vn.uit.edu.msshop.account.domain.model.valueobject.KeyCloakId;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,13 @@ public class FindAccountService implements FindAccountUseCase{
     public AccountView findByAccountName(AccountName name) {
         final var result = loadPort.loadByUsername(name);
         if(result==null) return null;
+        return accountViewMapper.toView(result);
+    }
+
+    @Override
+    public AccountView findByKeycloakId(
+            KeyCloakId keycloakId) {
+        final var result = loadPort.loadByKeycloakId(keycloakId).orElseThrow(()->new AccountNotFoundException(keycloakId));
         return accountViewMapper.toView(result);
     }
 

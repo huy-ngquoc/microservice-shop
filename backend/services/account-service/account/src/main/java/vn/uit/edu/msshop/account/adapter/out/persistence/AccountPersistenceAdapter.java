@@ -12,6 +12,7 @@ import vn.uit.edu.msshop.account.application.port.out.SaveAccountPort;
 import vn.uit.edu.msshop.account.domain.model.Account;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
+import vn.uit.edu.msshop.account.domain.model.valueobject.KeyCloakId;
 
 @Component
 @RequiredArgsConstructor
@@ -52,6 +53,14 @@ public class AccountPersistenceAdapter implements LoadAccountPort, SaveAccountPo
         final var result = repository.findByName(name.value());
         if(result==null) return null;
         return mapper.toDomain(result);
+    }
+
+    @Override
+    public Optional<Account> loadByKeycloakId(
+            KeyCloakId id) {
+       final var result = repository.findByKeycloakId(id.value().toString());
+       if(result.isEmpty()) return Optional.empty();
+       return Optional.of(mapper.toDomain(result.get()));
     }
 
    

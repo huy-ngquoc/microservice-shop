@@ -31,6 +31,7 @@ import vn.uit.edu.msshop.account.application.port.in.RefreshTokenUseCase;
 import vn.uit.edu.msshop.account.application.port.in.UpdateAccountUseCase;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
+import vn.uit.edu.msshop.account.domain.model.valueobject.KeyCloakId;
 
 
 @RestController
@@ -50,6 +51,12 @@ public class AccountController {
     @GetMapping("/{id}")
     public ResponseEntity<AccountResponse> findById(@PathVariable UUID id) {
         final var view = this.findUseCase.findAccountById(new AccountId(id));
+        final var response = this.webMapper.toResponse(view);
+        return ResponseEntity.ok(response);  
+    }
+    @GetMapping("/keycloak/{id}")
+    public ResponseEntity<AccountResponse> findByKeycloakId(@PathVariable UUID id) {
+        final var view = this.findUseCase.findByKeycloakId(new KeyCloakId(id));
         final var response = this.webMapper.toResponse(view);
         return ResponseEntity.ok(response);  
     }
