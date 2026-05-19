@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,9 +40,17 @@ public class SyncAccountService {
                 saveAccountPort.save(mapper.toDomain(accountOutboxEntity.getAccount()));
                 return;
             }
+            final var accountEntity = accountOutboxEntity.getAccount();
            // System.out.println("Call create accountttttt");
             try {
-               Response respone= createKeyCloakPort.createAccount(toUserRepresentation(accountOutboxEntity), accountOutboxEntity.getUserRole());
+               Response response= createKeyCloakPort.createAccount(toUserRepresentation(accountOutboxEntity), accountOutboxEntity.getUserRole());
+               if (response.getStatus() == 201) {
+                   String keycloakId = CreatedResponseUtil.getCreatedId(response);
+                   accountEntity.setKeycloakId(keycloakId);
+                } else {
+    // Xử lý logic khi tạo thất bại (ví dụ: Trùng email, trùng username...)
+                    throw new RuntimeException("Tạo tài khoản Keycloak thất bại, mã lỗi: " + response.getStatus());
+                }
             }
             catch(RuntimeException e) {
                 e.printStackTrace();
@@ -50,7 +59,7 @@ public class SyncAccountService {
                 return;
             }
             accountOutboxEntity.handleSuccess();
-            final var accountEntity = accountOutboxEntity.getAccount();
+            
             accountEntity.setStatus("ACTIVE");
             toSaves.add(mapper.toDomain(accountEntity));
             toDelete.add(accountOutboxEntity);
