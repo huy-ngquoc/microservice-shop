@@ -110,6 +110,7 @@ public class OrderController {
         if(e instanceof OrderNotFoundException ex) {
             return ResponseEntity.notFound().build();
         }
+        e.printStackTrace();
         return ResponseEntity.internalServerError().build();
     }
     }
