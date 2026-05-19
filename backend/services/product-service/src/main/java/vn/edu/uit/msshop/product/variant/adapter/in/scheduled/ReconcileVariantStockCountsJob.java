@@ -22,7 +22,7 @@ public class ReconcileVariantStockCountsJob {
 
     @Scheduled(
             fixedRate = 2,
-            timeUnit = TimeUnit.MINUTES)
+            timeUnit = TimeUnit.HOURS)
     public void reconcile() {
         final var rangeEndTime = Instant.now();
         final var rangeStartTime = rangeEndTime.minus(Duration.ofHours(RATE_IN_HOURS));

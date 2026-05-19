@@ -125,6 +125,7 @@ public class CartController {
         return ResponseEntity.ok(cartWebMapper.toResponse(view));
         }
         catch(Exception e) {
+e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
