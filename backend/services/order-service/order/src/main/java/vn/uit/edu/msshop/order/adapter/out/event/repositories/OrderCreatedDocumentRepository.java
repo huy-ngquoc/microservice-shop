@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +16,7 @@ public interface OrderCreatedDocumentRepository extends MongoRepository<OrderCre
     public List<OrderCreatedDocument> findByEventStatus(String eventStatus);
 
     public List<OrderCreatedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public Page<OrderCreatedDocument> findByEventStatusOrderByCreatedAtAsc(String status, Pageable pageable);
 
     public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
 }
