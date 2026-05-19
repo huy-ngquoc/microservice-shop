@@ -47,6 +47,9 @@ management:
         web:
             exposure:
                 include: "*"
+    zipkin:
+        tracing:
+            endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
     metrics:
         tags:
             application: ${spring.application.name}
@@ -61,6 +64,7 @@ app:
             service-name: ${spring.application.name}
             sampling-probability: 0.1
             zipkin-endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+            endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
     keycloak:
         admin:
             server-url: http://${KEYCLOAK_URL:localhost:8080}
