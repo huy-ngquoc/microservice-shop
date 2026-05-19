@@ -36,6 +36,7 @@ services:
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
             - ACCOUNT_DB_URL=${ACCOUNT_DB_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -64,12 +65,13 @@ services:
             - microservices-net
         environment:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
-                    memory: 384M
+                    memory: 512M
                 reservations:
-                    memory: 256M
+                    memory: 320M
     account-service:
         build:
             context: .
@@ -92,12 +94,13 @@ services:
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
             - ACCOUNT_DB_URL=${ACCOUNT_DB_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 768M
                 reservations:
-                    memory: 256M
+                    memory: 384M
     auth-service:
         build:
             context: .
@@ -119,6 +122,7 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -147,6 +151,7 @@ services:
             - REDIS_HOST=${REDIS_HOST}
             - CART_MONGODB_URL=${CART_MONGODB_URL}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -176,12 +181,13 @@ services:
             - INVENTORY_DB_URL=${INVENTORY_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 768M
                 reservations:
-                    memory: 256M
+                    memory: 384M
     notification-service:
         build:
             context: .
@@ -203,6 +209,7 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - NOTIFICATION_DB_URL=${NOTIFICATION_DB_URL}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -229,6 +236,7 @@ services:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - RATING_DB_URL=${RATING_DB_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -254,6 +262,7 @@ services:
         environment:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
@@ -289,6 +298,7 @@ services:
             - ORDER_DB_URL=${ORDER_DB_URL}
             - REDIS_PORT=${REDIS_PORT}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
     fake-payment-service:
         build:
             context: .
@@ -310,12 +320,13 @@ services:
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
             - PAYMENT_DB_URL=${PAYMENT_DB_URL}
             - KAFKA_URL=${KAFKA_URL}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 768M
                 reservations:
-                    memory: 256M
+                    memory: 384M
     product-service:
         build:
             context: .
@@ -341,6 +352,7 @@ services:
             - KAFKA_URL=${KAFKA_URL}
             - REDIS_PRODUCT_HOST=${REDIS_PRODUCT_HOST}
             - REDIS_PORT=${REDIS_PORT}
+            - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:
             replicas: 2
             resources:
@@ -444,7 +456,9 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 384M
+                reservations:
+                    memory: 192M
 
     zipkin:
         container_name: ms_zipkin
@@ -459,7 +473,9 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 384M
+                reservations:
+                    memory: 192M
 
     mongo:
         container_name: ms_mongo_db
@@ -520,7 +536,9 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 384M
+                reservations:
+                    memory: 192M
     mongodb_notification:
         container_name: ms_mongo_db_notification
         image: mongo:8
@@ -556,7 +574,9 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 256M
+                    memory: 384M
+                reservations:
+                    memory: 192M
     mongodb_order:
         container_name: ms_mongo_db_order
         image: mongo:8
@@ -718,7 +738,9 @@ services:
         deploy:
             resources:
                 limits:
-                    memory: 512M
+                    memory: 768M
+                reservations:
+                    memory: 384M
         command:
             - "start-dev"
         volumes:

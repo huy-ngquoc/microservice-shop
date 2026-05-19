@@ -1,4 +1,4 @@
-package vn.uit.edu.payment.config;
+package vn.uit.edu.payment.bootstrap.config;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +11,7 @@ public class KafkaConfig {
     public NewTopic accountTopic() {
         return TopicBuilder.name("payment-online-topic").build();
     }
+
     @Bean
     public NewTopic paymentTopic() {
         return TopicBuilder.name("payment-topic").build();

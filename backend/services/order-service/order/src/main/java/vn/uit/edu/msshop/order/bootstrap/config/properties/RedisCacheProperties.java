@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.inventory.bootstrap.config.cache.properties;
+package vn.uit.edu.msshop.order.bootstrap.config.properties;
 
 import java.time.Duration;
 
@@ -10,8 +10,7 @@ import vn.edu.uit.msshop.shared.cache.properties.CacheCircuitBreakerProperties;
         prefix = "app.cache")
 public record RedisCacheProperties(
         String keyPrefix,
-        Duration inventoryTtl,
-        Duration inventoryListTtl,
-        Duration inventoryByVariantTtl,
+        Duration orderTtl,
+        Duration variantSoldCountTtl,
         CacheCircuitBreakerProperties circuitBreaker) {
 }
