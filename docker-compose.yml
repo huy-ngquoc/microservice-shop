@@ -339,7 +339,7 @@ services:
             - PRODUCT_DB_HOST=${PRODUCT_DB_HOST}
             - PRODUCT_DB_PORT=${PRODUCT_DB_PORT}
             - KAFKA_URL=${KAFKA_URL}
-            - REDIS_HOST=${REDIS_HOST}
+            - REDIS_PRODUCT_HOST=${REDIS_PRODUCT_HOST}
             - REDIS_PORT=${REDIS_PORT}
         deploy:
             replicas: 2

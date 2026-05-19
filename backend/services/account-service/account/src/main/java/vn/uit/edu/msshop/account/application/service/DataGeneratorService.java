@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.util.Random;
 
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 import vn.uit.edu.msshop.account.adapter.in.web.mapper.AccountWebMapper;
 import vn.uit.edu.msshop.account.adapter.in.web.request.CreateAccountRequest;
 import vn.uit.edu.msshop.account.application.port.in.CreateAccountUseCase;
+import java.util.UUID;
 
 //@Component
 
@@ -34,7 +36,7 @@ public class DataGeneratorService {
             System.out.println("Da du user");
             return;
         }
-        String name = "user_" + UUIDs.newId().toString().substring(0, 5);
+        String name = "user_" + UUID.randomUUID().toString().substring(0, 5);
         String password = UUIDs.newId().toString().substring(0, 10);
         String role = random.nextBoolean() ? "Client_User" : "Client_Admin";
         String phone = "0" + (100000000 + random.nextInt(900000000));
