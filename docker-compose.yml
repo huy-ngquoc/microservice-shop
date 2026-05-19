@@ -321,6 +321,11 @@ services:
             - PAYMENT_DB_URL=${PAYMENT_DB_URL}
             - KAFKA_URL=${KAFKA_URL}
             - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
+            - REDIS_PAYMENT_HOST:${REDIS_PAYMENT_HOST}
+            - REDIS_PORT:${REDIS_PORT}
+            - PAYOS_CHECKSUM_KEY=${PAYOS_CHECKSUM_KEY}
+            - PAYOS_API_KEY=${PAYOS_API_KEY}
+            - PAYOS_CLIENT_ID=${PAYOS_CLIENT_ID}
         deploy:
             resources:
                 limits:
@@ -668,6 +673,31 @@ services:
         restart: unless-stopped
         ports:
             - "6379:6379"
+        environment:
+            - TZ=UTC
+        command:
+            - "--maxmemory"
+            - "256mb"
+            - "--maxmemory-policy"
+            - "allkeys-lfu"
+        networks:
+            - microservices-net
+        deploy:
+            resources:
+                limits:
+                    memory: 300M
+        healthcheck:
+            test: [ "CMD", "redis-cli", "ping" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 5s
+    redis_payment:
+        container_name: ms_redis_payment
+        image: redis:8.6
+        restart: unless-stopped
+        ports:
+            - "6388:6379"
         environment:
             - TZ=UTC
         command:
