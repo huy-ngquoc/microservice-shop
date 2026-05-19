@@ -3,6 +3,7 @@ package vn.uit.edu.msshop.order.adapter.out.event.publisher;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderUpdatedReposi
 import vn.uit.edu.msshop.order.adapter.remote.PaymentChecker;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
+import vn.uit.edu.msshop.order.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.msshop.order.domain.event.OrderCreated;
 import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 import vn.uit.edu.msshop.order.domain.model.Order;
@@ -32,6 +34,9 @@ public class CreatePaymentService {
     private final OrderUpdatedRepository orderUpdatedRepo;
 
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.ORDERS,
+            key = "#event.getOrderId()")
     public void createPayment(
             OrderCreatedDocument event) {
         OrderCreated orderCreated = new OrderCreated(event.getEventId(), event.getCurrency(), event.getOrderId(),
