@@ -17,7 +17,7 @@ public class ReconcileVariantSoldCountsJob {
 
     @Scheduled(
             fixedRate = 2,
-            timeUnit = TimeUnit.MINUTES)
+            timeUnit = TimeUnit.HOURS)
     public void reconcile() {
         try {
             this.reconcileVariantSoldCountsUseCase.execute();

@@ -5,7 +5,7 @@ import time
 import os
 
 # Cấu hình URL
-PRODUCT_API = 'http://localhost:8070/products'
+PRODUCT_API = 'http://localhost:64364/products'
 INVENTORY_API = 'http://localhost:8090/inventory/'
 LOG_FILE = 'created_variant_ids.txt'
 
@@ -66,8 +66,8 @@ def create_product():
 
     payload = {
         "name": product_name,
-        "categoryId": "9d6211a9-8d03-49fe-97f4-f679e4fd1f43",
-        "brandId": "9449baf4-cc75-449e-a4a0-847a473fc277",
+        "categoryId": "019e35ff-dc11-73ed-b5d2-bd397d6df37d",
+        "brandId": "019e35fe-87df-7752-9ce9-68562df83717",
         "options": product_options,
         "variants": [{
             "price": random.randint(10, 25) * 20000,
@@ -110,8 +110,8 @@ def create_product():
 
     payload = {
         "name": product_name,
-        "categoryId": "9d6211a9-8d03-49fe-97f4-f679e4fd1f43",
-        "brandId": "9449baf4-cc75-449e-a4a0-847a473fc277",
+        "categoryId": "019e35ff-dc11-73ed-b5d2-bd397d6df37d",
+        "brandId": "019e35fe-87df-7752-9ce9-68562df83717",
         "options": product_options,
         "variants": [
             {
