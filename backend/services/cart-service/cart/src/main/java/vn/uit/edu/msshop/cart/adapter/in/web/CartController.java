@@ -1,5 +1,6 @@
 package vn.uit.edu.msshop.cart.adapter.in.web;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import vn.uit.edu.msshop.cart.adapter.in.web.response.CartResponse;
 import vn.uit.edu.msshop.cart.application.dto.command.CreateCartCommand;
 import vn.uit.edu.msshop.cart.application.dto.command.UpdateCartAmountCommand;
 import vn.uit.edu.msshop.cart.application.dto.query.CartView;
+import vn.uit.edu.msshop.cart.application.exception.CartNotFoundException;
 import vn.uit.edu.msshop.cart.application.port.in.CheckPermissionUseCase;
 import vn.uit.edu.msshop.cart.application.port.in.ClearCartUseCase;
 import vn.uit.edu.msshop.cart.application.port.in.CreateCartUseCase;
@@ -56,8 +58,13 @@ public class CartController {
             CartResponse response = null;
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
+        try {
         final var result = getCartUseCase.getByUserId(new UserId(UUID.fromString(userFromHeader)));
         return ResponseEntity.ok(cartWebMapper.toResponse(result));
+        }
+        catch(CartNotFoundException e) {
+            return ResponseEntity.ok(new CartResponse(UUID.fromString(userFromHeader),new ArrayList<>()));
+        }
 
     }
 
