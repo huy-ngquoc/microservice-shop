@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.payment.application.dto.command.CreatePaymentCommand;
 import vn.uit.edu.payment.application.dto.query.PaymentView;
+import vn.uit.edu.payment.application.exception.PaymentAlreadyExistException;
 import vn.uit.edu.payment.application.mapper.PaymentViewMapper;
 import vn.uit.edu.payment.application.port.in.CreateOnlinePaymentInfoUseCase;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
@@ -44,7 +45,7 @@ public class CreatePaymentService implements CreatePaymentUseCase {
         // command.orderId());
         Payment p = loadPort.loadPaymentByOrderId(command.orderId());
         if (p != null)
-            throw new RuntimeException("Payment for this order already exist");
+            throw new PaymentAlreadyExistException("Payment for this order already exist");
         final var draft = Payment.Draft.builder().paymentId(command.paymentId()).createAt(new CreateAt(Instant.now()))
                 .currency(command.currency()).orderId(command.orderId()).paymentMethod(command.paymentMethod())
                 .paymentStatus(command.paymentStatus()).paymentValue(command.paymentValue())
