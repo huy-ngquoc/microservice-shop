@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderShipped {
+public class OrderReceived {
     @Id
     private UUID orderId;
     private Instant receiveAt;

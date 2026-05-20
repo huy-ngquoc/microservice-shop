@@ -3,7 +3,7 @@ import json
 
 # Cấu hình các thông số
 LOGIN_URL = "http://localhost:8082/account/login"  # Thay bằng URL của bạn
-INPUT_FILE = "user.txt"
+INPUT_FILE = "D:/testdata/user.txt"
 OUTPUT_FILE = "tokens.txt"
 
 def get_tokens():

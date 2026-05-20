@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ import vn.uit.edu.msshop.account.adapter.in.web.request.UpdateAvatarRequest;
 import vn.uit.edu.msshop.account.adapter.in.web.response.AccountResponse;
 import vn.uit.edu.msshop.account.adapter.out.persistence.AccountOutboxEntityRepository;
 import vn.uit.edu.msshop.account.adapter.out.persistence.SpringDataAccountJpaRepository;
+import vn.uit.edu.msshop.account.application.exception.UnauthorizedException;
 import vn.uit.edu.msshop.account.application.port.in.CreateAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.in.FindAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.in.LoginUseCase;
@@ -55,8 +57,13 @@ public class AccountController {
         return ResponseEntity.ok(response);  
     }
     @GetMapping("/keycloak/{id}")
-    public ResponseEntity<AccountResponse> findByKeycloakId(@PathVariable UUID id) {
+    public ResponseEntity<AccountResponse> findByKeycloakId(@PathVariable UUID id, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole) {
         final var view = this.findUseCase.findByKeycloakId(new KeyCloakId(id));
+        if(!"Client_Admin".equals(userRole)) {
+            if(view.keyCloakId()==null||!view.keyCloakId().equals(userId)) {
+                return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).build();
+            }
+        }
         final var response = this.webMapper.toResponse(view);
         return ResponseEntity.ok(response);  
     }
@@ -101,9 +108,14 @@ public class AccountController {
         }
     }
     @PutMapping("/update")
-    public ResponseEntity<Void> update(@RequestBody UpdateAccountRequest request) {
+    public ResponseEntity<Void> update(@RequestBody UpdateAccountRequest request,@RequestHeader("X-User-Id") String userId) {
         final var updateAccountCommand = webMapper.toCommand(request);
-        this.updateUseCase.update(updateAccountCommand);
+        try{
+        this.updateUseCase.update(updateAccountCommand, userId);
+        }
+        catch(UnauthorizedException e) {
+           return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).build();
+        }
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/find_by_name")
