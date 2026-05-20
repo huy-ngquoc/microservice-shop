@@ -150,7 +150,7 @@ public class InventoryController {
     @PutMapping("/update_from_order")
     public ResponseEntity<Void> updateFromOrderService(@RequestBody UpdateInventoryFromOrderServiceRequest request) {
         if(request.getStatus().equals("SHIPPING")) {
-            updateUseCase.updateWhenOrderShipped(mapper.toOrderShippedCommand(request));
+            updateUseCase.updateWhenOrderReceived(mapper.toOrderReceivedCommand(request));
         }
         if(request.getStatus().equals("CANCELLED")) {
             updateUseCase.updateWhenOrderCancelled(mapper.toOrderCancelledCommand(request));
