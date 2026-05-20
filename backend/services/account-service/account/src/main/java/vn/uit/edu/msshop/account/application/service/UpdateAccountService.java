@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.account.adapter.out.event.AccountEventPublisherAdapter;
 import vn.uit.edu.msshop.account.application.dto.command.UpdateAccountCommand;
 import vn.uit.edu.msshop.account.application.exception.AccountNotFoundException;
+import vn.uit.edu.msshop.account.application.exception.UnauthorizedException;
 import vn.uit.edu.msshop.account.application.port.in.UpdateAccountUseCase;
 import vn.uit.edu.msshop.account.application.port.out.LoadAccountPort;
 import vn.uit.edu.msshop.account.application.port.out.SaveAccountPort;
@@ -20,8 +21,9 @@ public class UpdateAccountService implements UpdateAccountUseCase {
     private final AccountEventPublisherAdapter eventPublisherAdapter;
 
     @Override
-    public void update(UpdateAccountCommand updateAccountCommand) {
+    public void update(UpdateAccountCommand updateAccountCommand, String userId) {
         final var account = this.loadAccountPort.loadById(updateAccountCommand.accountId()).orElseThrow(()->new AccountNotFoundException(updateAccountCommand.accountId()));
+        if(userId==null||!userId.equals(account.getKeyCloakId().value())) throw new UnauthorizedException("Unauthorized");
         final var update = Account.UpdateInfo.builder().id(account.getId()).name(updateAccountCommand.accountName().apply(account.getName()))
         .email(updateAccountCommand.email().apply(account.getEmail())).password(updateAccountCommand.password().apply(account.getPassword())).role(updateAccountCommand.role().apply(account.getRole())).status(updateAccountCommand.status().apply(account.getStatus()))
         .shippingAddress(updateAccountCommand.shippingAddress().apply(account.getShippingAddress())).phoneNumber(updateAccountCommand.phoneNumber().apply(account.getPhoneNumber())).build();

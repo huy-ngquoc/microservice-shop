@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OrderShippedRepository extends JpaRepository<OrderShipped, UUID> {
+public interface OrderReceivedRepository extends JpaRepository<OrderReceived, UUID> {
 
 }

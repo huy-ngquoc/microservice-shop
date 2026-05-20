@@ -276,7 +276,7 @@ services:
             additional_contexts:
                 microservice-shop-shared-base: "service:shared-base"
         deploy:
-            replicas: 2
+            replicas: 1
             resources:
                 limits:
                     memory: 768M
