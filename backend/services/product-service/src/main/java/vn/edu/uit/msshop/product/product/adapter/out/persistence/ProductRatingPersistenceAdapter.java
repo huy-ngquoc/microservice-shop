@@ -79,7 +79,7 @@ public class ProductRatingPersistenceAdapter
 
         final var query = new Query(Criteria.where("_id").is(jpaId));
         final var update = new Update()
-                .setOnInsert(ProductRatingDocument.Fields.average, 0.0F)
+                .setOnInsert(ProductRatingDocument.Fields.total, 0)
                 .setOnInsert(ProductRatingDocument.Fields.amount, 0)
                 .setOnInsert(ProductRatingDocument.Fields.lastUpdatedTime, Instant.now());
 
@@ -91,7 +91,7 @@ public class ProductRatingPersistenceAdapter
             final ProductRating rating) {
         final var query = new Query(Criteria.where("_id").is(rating.getId().value()));
         final var update = new Update()
-                .set(ProductRatingDocument.Fields.average, rating.getAverage().value())
+                .set(ProductRatingDocument.Fields.total, rating.getTotal().value())
                 .set(ProductRatingDocument.Fields.amount, rating.getAmount().value())
                 .set(ProductRatingDocument.Fields.lastUpdatedTime, Instant.now());
 

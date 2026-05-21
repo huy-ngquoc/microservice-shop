@@ -20,9 +20,9 @@ public record ProductView(
 
         int stockCount,
 
-        float ratingAverage,
+        long ratingTotal,
 
-        int ratingCount,
+        long ratingCount,
 
         List<String> options,
 
