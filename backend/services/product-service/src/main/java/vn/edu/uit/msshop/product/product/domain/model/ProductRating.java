@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingAmount;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingAverage;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingTotal;
 import vn.edu.uit.msshop.shared.domain.Domains;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
@@ -12,46 +12,56 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
 public final class ProductRating {
+    private static final int MIN_SCORE = 5;
+    private static final int MAX_SCORE = 5;
+
     private final ProductId id;
-
-    private final ProductRatingAverage average;
-
+    private final ProductRatingTotal total;
     private final ProductRatingAmount amount;
 
     public ProductRating(
             final ProductId id,
-            final ProductRatingAverage average,
+            final ProductRatingTotal total,
             final ProductRatingAmount amount) {
         this.id = Domains.requireNonNull(id, "Product ID must NOT be null");
-        this.average = Domains.requireNonNull(average, "Product rating average must NOT be null");
+        this.total = Domains.requireNonNull(total, "Product rating total must NOT be null");
         this.amount = Domains.requireNonNull(amount, "Product rating amount must NOT be null");
 
-        ProductRating.validate(this.average, this.amount);
+        ProductRating.validate(this.total, this.amount);
     }
 
     public static ProductRating zero(
             final ProductId id) {
-        final var average = new ProductRatingAverage(0);
+        final var total = new ProductRatingTotal(0);
         final var amount = new ProductRatingAmount(0);
 
-        return new ProductRating(id, average, amount);
+        return new ProductRating(id, total, amount);
+    }
+
+    public double getAverageValue() {
+        final var amountValue = amount.value();
+        if (amountValue <= 0) {
+            return 0;
+        }
+
+        final var totalValue = total.value();
+        return (double) totalValue / amountValue;
     }
 
     private static void validate(
-            final ProductRatingAverage average,
+            final ProductRatingTotal total,
             final ProductRatingAmount amount) {
-        final var avgValue = average.value();
+        final var totalValue = total.value();
         final var amountValue = amount.value();
 
-        if (amountValue > 0) {
-            if (avgValue < 1) {
-                throw new DomainException(
-                        "Product rating average must NOT be less than 1 when there is a rating");
-            }
-        } else {
-            if (Float.compare(avgValue, 0) != 0) {
-                throw new DomainException("Product rating average must be 0 when there is NOT any rating");
-            }
+        final var minValue = amountValue * MIN_SCORE;
+        if (totalValue <= minValue) {
+            throw new DomainException("Rating total below min possible");
+        }
+
+        final var maxValue = amountValue * MAX_SCORE;
+        if (totalValue >= maxValue) {
+            throw new DomainException("Rating total above max possible");
         }
     }
 }

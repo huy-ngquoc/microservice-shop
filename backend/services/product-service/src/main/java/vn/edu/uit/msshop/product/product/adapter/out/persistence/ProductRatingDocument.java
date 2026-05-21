@@ -21,7 +21,7 @@ public final class ProductRatingDocument {
     @EqualsAndHashCode.Include
     private final UUID id;
 
-    private final float average;
+    private final long total;
 
     private final int amount;
 
@@ -29,10 +29,10 @@ public final class ProductRatingDocument {
 
     public ProductRatingDocument(
             final UUID id,
-            final float average,
+            final long total,
             final int amount) {
         this.id = id;
-        this.average = average;
+        this.total = total;
         this.amount = amount;
         this.lastUpdatedTime = Instant.now();
     }
@@ -40,11 +40,11 @@ public final class ProductRatingDocument {
     @PersistenceCreator
     ProductRatingDocument(
             final UUID id,
-            final float average,
+            final long total,
             final int amount,
             final Instant lastUpdatedTime) {
         this.id = id;
-        this.average = average;
+        this.total = total;
         this.amount = amount;
         this.lastUpdatedTime = lastUpdatedTime;
     }

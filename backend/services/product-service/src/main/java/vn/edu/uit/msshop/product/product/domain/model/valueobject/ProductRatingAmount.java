@@ -3,7 +3,7 @@ package vn.edu.uit.msshop.product.product.domain.model.valueobject;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductRatingAmount(
-        int value) {
+        long value) {
     private static final ProductRatingAmount ZERO = new ProductRatingAmount(0);
 
     public ProductRatingAmount {

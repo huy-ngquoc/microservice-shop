@@ -102,7 +102,11 @@ public class ProductWebMapper {
         final var defaultTrait = new ProductVariantTrait(request.defaultTrait());
         final var version = new ProductVersion(request.expectedVersion());
 
-        return new AddProductOptionCommand(productId, option, defaultTrait, version);
+        return new AddProductOptionCommand(
+                productId,
+                option,
+                defaultTrait,
+                version);
     }
 
     public AddProductVariantsCommand toAddVariantsCommand(
@@ -117,7 +121,10 @@ public class ProductWebMapper {
         final var newVariant = new NewProductVariant(variantPrice, variantTraits, variantTargets);
         final var newVariants = new NewProductVariants(List.of(newVariant));
 
-        return new AddProductVariantsCommand(productId, newVariants, version);
+        return new AddProductVariantsCommand(
+                productId,
+                newVariants,
+                version);
     }
 
     public AddProductVariantsCommand toAddVariantsCommand(
@@ -126,10 +133,15 @@ public class ProductWebMapper {
         final var productId = new ProductId(id);
         final var version = new ProductVersion(request.expectedVersion());
 
-        final var newVariantsList = request.variants().stream().map(this::toNewVariant).toList();
+        final var newVariantsList = request.variants().stream()
+                .map(ProductWebMapper::toNewVariant)
+                .toList();
         final var newVariants = new NewProductVariants(newVariantsList);
 
-        return new AddProductVariantsCommand(productId, newVariants, version);
+        return new AddProductVariantsCommand(
+                productId,
+                newVariants,
+                version);
     }
 
     public UpdateProductInfoCommand toUpdateInfoCommand(
@@ -142,7 +154,12 @@ public class ProductWebMapper {
         final var categoryId = ChangeRequest.toChange(request.categoryId(), ProductCategoryId::new);
         final var brandId = ChangeRequest.toChange(request.brandId(), ProductBrandId::new);
 
-        return new UpdateProductInfoCommand(productId, name, categoryId, brandId, version);
+        return new UpdateProductInfoCommand(
+                productId,
+                name,
+                categoryId,
+                brandId,
+                version);
     }
 
     public UpdateProductOptionCommand toUpdateOptionCommand(
@@ -153,7 +170,11 @@ public class ProductWebMapper {
         final var option = new ProductOption(request.option());
         final var version = new ProductVersion(request.expectedVersion());
 
-        return new UpdateProductOptionCommand(productId, index, option, version);
+        return new UpdateProductOptionCommand(
+                productId,
+                index,
+                option,
+                version);
     }
 
     public RemoveProductOptionCommand toRemoveOptionCommand(
@@ -164,7 +185,11 @@ public class ProductWebMapper {
         final var defaultPrice = ProductPrice.ofNullable(request.defaultPrice());
         final var version = new ProductVersion(request.expectedVersion());
 
-        return new RemoveProductOptionCommand(productId, index, defaultPrice, version);
+        return new RemoveProductOptionCommand(
+                productId,
+                index,
+                defaultPrice,
+                version);
     }
 
     public SoftDeleteProductCommand toSoftDeleteCommand(
@@ -192,24 +217,44 @@ public class ProductWebMapper {
 
     public ProductResponse toResponse(
             final ProductView view) {
-        final var variantsList = view.variants().stream().map(this::toVariantResponse).toList();
+        final var variantsList = view.variants().stream()
+                .map(this::toVariantResponse)
+                .toList();
 
-        return new ProductResponse(view.id(), view.name(), view.categoryId(), view.brandId(),
-                view.minPrice(), view.maxPrice(), view.soldCount(), view.stockCount(), view.ratingAverage(),
-                view.ratingCount(), view.options(), variantsList, view.imageKeys(), view.version());
+        return new ProductResponse(
+                view.id(),
+                view.name(),
+                view.categoryId(),
+                view.brandId(),
+                view.minPrice(),
+                view.maxPrice(),
+                view.soldCount(),
+                view.stockCount(),
+                view.ratingTotal(),
+                view.ratingCount(),
+                view.options(),
+                variantsList,
+                view.imageKeys(),
+                view.version());
     }
 
     public ProductVariantResponse toVariantResponse(
             final ProductVariantView view) {
-        return new ProductVariantResponse(view.id(), view.price(), view.traits());
+        return new ProductVariantResponse(
+                view.id(),
+                view.price(),
+                view.traits());
     }
 
-    private NewProductVariant toNewVariant(
+    private static NewProductVariant toNewVariant(
             final AddProductVariantsRequest.ProductVariantRequest request) {
         final var variantPrice = new ProductVariantPrice(request.price());
         final var variantTraits = ProductVariantTraits.of(request.traits());
         final var variantTargets = ProductVariantTargets.of(request.targets());
 
-        return new NewProductVariant(variantPrice, variantTraits, variantTargets);
+        return new NewProductVariant(
+                variantPrice,
+                variantTraits,
+                variantTargets);
     }
 }
