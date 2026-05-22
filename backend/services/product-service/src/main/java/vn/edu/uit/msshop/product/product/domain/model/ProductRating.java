@@ -12,8 +12,8 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
 public final class ProductRating {
-    private static final int MIN_SCORE = 5;
-    private static final int MAX_SCORE = 5;
+    private static final int MIN_POINT = 1;
+    private static final int MAX_POINT = 5;
 
     private final ProductId id;
     private final ProductRatingTotal total;
@@ -54,13 +54,13 @@ public final class ProductRating {
         final var totalValue = total.value();
         final var amountValue = amount.value();
 
-        final var minValue = amountValue * MIN_SCORE;
-        if (totalValue <= minValue) {
+        final var minValue = amountValue * MIN_POINT;
+        if (totalValue < minValue) {
             throw new DomainException("Rating total below min possible");
         }
 
-        final var maxValue = amountValue * MAX_SCORE;
-        if (totalValue >= maxValue) {
+        final var maxValue = amountValue * MAX_POINT;
+        if (totalValue > maxValue) {
             throw new DomainException("Rating total above max possible");
         }
     }
