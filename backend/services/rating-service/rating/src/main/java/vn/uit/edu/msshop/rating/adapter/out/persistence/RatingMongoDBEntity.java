@@ -37,7 +37,7 @@ public class RatingMongoDBEntity {
     private String userName;
 
     @Field("rating_point")
-    private byte ratingPoint;
+    private int ratingPoint;
 
     @Field("user_avatar")
     private String userAvatar;

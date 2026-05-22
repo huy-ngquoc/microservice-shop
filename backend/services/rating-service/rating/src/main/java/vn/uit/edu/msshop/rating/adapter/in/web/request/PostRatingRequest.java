@@ -8,5 +8,5 @@ public record PostRatingRequest(
         UUID userId,
         String userName,
         String userAvatar,
-        byte ratingPoint) {
+        int ratingPoint) {
 }
