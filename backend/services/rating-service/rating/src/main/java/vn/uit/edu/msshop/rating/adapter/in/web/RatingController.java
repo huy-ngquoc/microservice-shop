@@ -59,65 +59,108 @@ public class RatingController {
     private final LoadRatingInfoUseCase loadRatingInfoUseCase;
 
     @GetMapping("/rating_info/{productId}")
-    public ResponseEntity<RatingInfoResponse> findRatingInfoByProductId(@PathVariable UUID productId) {
-        final var result =loadRatingInfoUseCase.loadById(new ProductId(productId));
-        if(result.isEmpty()) return ResponseEntity.notFound().build();
+    public ResponseEntity<RatingInfoResponse> findRatingInfoByProductId(
+            @PathVariable
+            UUID productId) {
+        final var result = loadRatingInfoUseCase.loadById(new ProductId(productId));
+        if (result.isEmpty())
+            return ResponseEntity.notFound().build();
         return ResponseEntity.ok(ratingInfoWebMapper.toResponse(result.get()));
 
     }
+
     @GetMapping("/rating_info/all")
     public ResponseEntity<List<RatingInfoResponse>> findAllRatingInfo() {
         final var result = loadRatingInfoUseCase.loadAll();
         return ResponseEntity.ok(result.stream().map(ratingInfoWebMapper::toResponse).toList());
     }
+
     @GetMapping("/rating_info")
-    public ResponseEntity<Page<RatingInfoResponse>> findAllRatingInfoByPage(@RequestParam(defaultValue="0") int pageNumber, @RequestParam(defaultValue="7") int pageSize) {
+    public ResponseEntity<Page<RatingInfoResponse>> findAllRatingInfoByPage(
+            @RequestParam(
+                    defaultValue = "0")
+            int pageNumber,
+            @RequestParam(
+                    defaultValue = "7")
+            int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         final var result = loadRatingInfoUseCase.loadAll(pageable);
         return ResponseEntity.ok(result.map(ratingInfoWebMapper::toResponse));
     }
+
     @PostMapping("/updated_rating_info")
-    public ResponseEntity<Page<RatingInfoResponse>> findUpdatedRatingInfo(@RequestParam(defaultValue="0") int pageNumber, @RequestParam(defaultValue="7") int pageSize, @RequestBody GetUpdatedRatingInfoRequest request) {
+    public ResponseEntity<Page<RatingInfoResponse>> findUpdatedRatingInfo(
+            @RequestParam(
+                    defaultValue = "0")
+            int pageNumber,
+            @RequestParam(
+                    defaultValue = "7")
+            int pageSize,
+            @RequestBody
+            GetUpdatedRatingInfoRequest request) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         final var result = loadRatingInfoUseCase.loadUpdatedRatingInfo(request.getStart(), request.getEnd(), pageable);
         return ResponseEntity.ok(result.map(ratingInfoWebMapper::toResponse));
     }
 
-
-
     @GetMapping("/{id}")
-    public ResponseEntity<RatingResponse> findById(@PathVariable UUID id) {
+    public ResponseEntity<RatingResponse> findById(
+            @PathVariable
+            UUID id) {
         final var view = findService.findById(new RatingId(id));
         return ResponseEntity.ok(this.mapper.toResponse(view));
     }
+
     @GetMapping("/product/{productId}")
-    public ResponseEntity<Page<RatingResponse>> findByProductId(@PathVariable UUID productId, @RequestParam(defaultValue="7") int pageSize, @RequestParam(defaultValue="0") int pageNumber) {
+    public ResponseEntity<Page<RatingResponse>> findByProductId(
+            @PathVariable
+            UUID productId,
+            @RequestParam(
+                    defaultValue = "7")
+            int pageSize,
+            @RequestParam(
+                    defaultValue = "0")
+            int pageNumber) {
         final var viewPage = findService.findByProductId(new ProductId(productId), pageSize, pageNumber);
         return ResponseEntity.ok(viewPage.map(this.mapper::toResponse));
     }
+
     @PostMapping("/create")
-    public ResponseEntity<?> postRating(@RequestBody PostRatingRequest request) {
+    public ResponseEntity<?> postRating(
+            @RequestBody
+            PostRatingRequest request) {
         try {
-        postService.post(mapper.toCommand(request));
-        return ResponseEntity.noContent().build();
-        }
-        catch(ProductNotFoundException e) {
+            postService.post(mapper.toCommand(request));
+            return ResponseEntity.noContent().build();
+        } catch (ProductNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-    @PutMapping("/update") 
-    public ResponseEntity<Void> updateRating(@RequestBody UpdateRatingRequest request) {
+
+    @PutMapping("/update")
+    public ResponseEntity<Void> updateRating(
+            @RequestBody
+            UpdateRatingRequest request) {
         updateService.update(mapper.toCommand(request));
         return ResponseEntity.noContent().build();
     }
+
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteRating(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteRating(
+            @PathVariable
+            UUID id) {
         deleteService.delete(new RatingId(id));
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping(value="/upload_image/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ImageViewResponse> uploadImage(@PathVariable UUID id,@RequestPart("file") final MultipartFile file) throws IOException {
+    @PutMapping(
+            value = "/upload_image/{id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ImageViewResponse> uploadImage(
+            @PathVariable
+            UUID id,
+            @RequestPart("file")
+            final MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -126,13 +169,18 @@ public class RatingController {
         if ((contentType == null) || (!contentType.startsWith("image/"))) {
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
         }
-        final var uploadImageCommand = new UploadRatingImageCommand(new RatingId(id),file.getBytes(),file.getOriginalFilename(),file.getContentType());
-        final var imageView=uploadImageService.uploadRatingImage(uploadImageCommand);
-        final var response = new ImageViewResponse(imageView.url(),imageView.publicId(),imageView.mediaType(),imageView.size());
+        final var uploadImageCommand = new UploadRatingImageCommand(new RatingId(id), file.getBytes(),
+                file.getOriginalFilename(), file.getContentType());
+        final var imageView = uploadImageService.uploadRatingImage(uploadImageCommand);
+        final var response = new ImageViewResponse(imageView.url(), imageView.publicId(), imageView.mediaType(),
+                imageView.size());
         return ResponseEntity.ok(response);
     }
+
     @DeleteMapping("/image/{id}")
-    public ResponseEntity<Void> deleteImage(@PathVariable String id) {
+    public ResponseEntity<Void> deleteImage(
+            @PathVariable
+            String id) {
         deleteImageService.delete(new MediaPublicId(id));
         return ResponseEntity.noContent().build();
     }

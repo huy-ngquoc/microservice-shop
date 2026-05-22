@@ -16,7 +16,8 @@ public class DeleteRatingService implements DeleteRatingUseCase {
     private final PublishRatingEvent eventPublisher;
 
     @Override
-    public void delete(RatingId id) {
+    public void delete(
+            RatingId id) {
         deletePort.deleteById(id);
         eventPublisher.publish(new RatingDeleted(id));
     }

@@ -10,10 +10,17 @@ import org.springframework.data.domain.Pageable;
 import vn.uit.edu.msshop.rating.domain.model.RatingInfo;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.ProductId;
 
-
 public interface LoadRatingInfoPort {
-    public Optional<RatingInfo> loadById(ProductId productId);
+    public Optional<RatingInfo> loadById(
+            ProductId productId);
+
     public List<RatingInfo> loadAll();
-    public Page<RatingInfo> loadByPage(Pageable pageable);
-    public Page<RatingInfo> loadUpdatedRatingInfo(Instant start, Instant end,Pageable pageAble);
+
+    public Page<RatingInfo> loadByPage(
+            Pageable pageable);
+
+    public Page<RatingInfo> loadUpdatedRatingInfo(
+            Instant start,
+            Instant end,
+            Pageable pageAble);
 }

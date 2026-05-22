@@ -8,8 +8,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class RatingApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(RatingApplication.class, args);
-	}
+    public static void main(
+            final String[] args) {
+        SpringApplication.run(RatingApplication.class, args);
+    }
 
 }
