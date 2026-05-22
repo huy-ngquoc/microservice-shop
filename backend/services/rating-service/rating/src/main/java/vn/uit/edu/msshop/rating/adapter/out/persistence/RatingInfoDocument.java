@@ -18,13 +18,20 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collection="rating_info")
-@CompoundIndex(name = "idx_times", def = "{'createAt': 1, 'updateAt': 1}")
+@Document(
+        collection = "rating_info")
+@CompoundIndex(
+        name = "idx_times",
+        def = "{'createAt': 1, 'updateAt': 1}")
 public class RatingInfoDocument {
     @Id
     private UUID productId;
-    private int ratingCount;
-    private float totalPoint;
+
+    private long ratingCount;
+
+    private long ratingTotal;
+
     private Instant createAt;
+
     private Instant updateAt;
 }

@@ -26,19 +26,23 @@ public class UpdateRatingService implements UpdateRatingUseCase {
 
     @Override
     @Transactional
-    public void update(UpdateRatingCommand command) {
+    public void update(
+            UpdateRatingCommand command) {
         Rating rating = loadPort.loadById(command.ratingId());
-        
-        final var updateInfo = Rating.UpdateInfo.builder().id(command.ratingId()).content(command.content().apply(rating.getContent())).ratingPoint(command.ratingPoint().apply(rating.getRatingPoint())).build();
-        if(rating.isRatingPointChange(updateInfo)) {
-            var ratingInfo = loadRatingInfoPort.loadById(rating.getProductId()).orElseThrow(()->new RatingInfoNotFoundException(rating.getProductId()));
-            ratingInfo=ratingInfo.decreaseRatingPoint(rating.getRatingPoint());
-            ratingInfo = ratingInfo.increaseRatingPoint(updateInfo.ratingPoint());
+
+        final var updateInfo = Rating.UpdateInfo.builder().id(command.ratingId())
+                .content(command.content().apply(rating.getContent()))
+                .ratingPoint(command.ratingPoint().apply(rating.getRatingPoint())).build();
+        if (rating.isRatingPointChange(updateInfo)) {
+            var ratingInfo = loadRatingInfoPort.loadById(rating.getProductId())
+                    .orElseThrow(() -> new RatingInfoNotFoundException(rating.getProductId()));
+            ratingInfo = ratingInfo.removeRating(rating.getRatingPoint());
+            ratingInfo = ratingInfo.addRating(updateInfo.ratingPoint());
             saveRatingInfoPort.save(ratingInfo);
         }
         final var next = rating.applyUpdateInfo(updateInfo);
         final var saved = savePort.save(next);
-        
+
         eventPublisher.publish(new RatingUpdated(saved.getId()));
 
     }
