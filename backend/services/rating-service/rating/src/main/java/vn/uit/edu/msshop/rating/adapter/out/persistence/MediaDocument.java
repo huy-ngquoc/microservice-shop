@@ -17,7 +17,7 @@ public class MediaDocument {
     private String type;
     private String url;
     private int size;
-    
+
     @Field("public_id") // Đảm bảo trùng tên với key trong MongoDB
     private String publicId;
 }
