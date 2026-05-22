@@ -17,18 +17,21 @@ import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingId;
 public class FindRatingService implements FindRatingUseCase {
     private final LoadRatingPort loadPort;
     private final RatingViewMapper mapper;
+
     @Override
-    public RatingView findById(RatingId ratingId) {
+    public RatingView findById(
+            RatingId ratingId) {
         final var rating = loadPort.loadById(ratingId);
         return mapper.toView(rating);
     }
 
     @Override
-    public Page<RatingView> findByProductId(ProductId productId, int pageSize, int PageNumber) {
+    public Page<RatingView> findByProductId(
+            ProductId productId,
+            int pageSize,
+            int PageNumber) {
         Page<Rating> result = loadPort.loadByProduct(productId, pageSize, PageNumber);
         return result.map(mapper::toView);
     }
-
-    
 
 }

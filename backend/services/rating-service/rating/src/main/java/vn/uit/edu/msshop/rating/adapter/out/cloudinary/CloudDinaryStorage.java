@@ -17,9 +17,10 @@ import vn.uit.edu.msshop.rating.application.port.out.UploadRatingImagePort;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.Media;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.MediaPublicId;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingId;
+
 @Component
 @Slf4j
-public class CloudDinaryStorage implements UploadRatingImagePort,DeleteRatingImagePort {
+public class CloudDinaryStorage implements UploadRatingImagePort, DeleteRatingImagePort {
     private static final Entry<String, String> UPLOAD_OPTION_RESOURCE_TYPE = Map
             .entry(CloudDinaryOptionKeys.RESOURCE_TYPE, CloudDinaryResourceType.IMAGE.value());
     private final Uploader uploader;
@@ -30,8 +31,12 @@ public class CloudDinaryStorage implements UploadRatingImagePort,DeleteRatingIma
     }
 
     @Override
-    public Media upload(RatingId ratingId, byte[] bytes, String originalFileName, String contentType) {
-         try {
+    public Media upload(
+            RatingId ratingId,
+            byte[] bytes,
+            String originalFileName,
+            String contentType) {
+        try {
             final var uploadOptions = Map.<String, String>ofEntries(
                     Map.entry(CloudDinaryOptionKeys.ASSET_FOLDER, "rating/" + ratingId.value()),
                     UPLOAD_OPTION_RESOURCE_TYPE);
@@ -41,16 +46,16 @@ public class CloudDinaryStorage implements UploadRatingImagePort,DeleteRatingIma
             final var url = (String) response.get(CloudDinaryResultKeys.SECURE_URL);
             final var publicId = (String) response.get(CloudDinaryResultKeys.PUBLIC_ID);
             final var size = (int) response.get(CloudDinaryResultKeys.BYTES);
-            
 
-            return new Media("IMAGE",url,size,publicId);
+            return new Media("IMAGE", url, size, publicId);
         } catch (final IOException e) {
             throw new ImageUploadFailException(e);
         }
     }
 
     @Override
-    public void deleteRatingImage(MediaPublicId publicId) {
+    public void deleteRatingImage(
+            MediaPublicId publicId) {
         try {
             this.uploader.destroy(publicId.value(), Collections.emptyMap());
         } catch (final Exception e) {

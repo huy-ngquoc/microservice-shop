@@ -22,9 +22,11 @@ public class LoadRatingInfoService implements LoadRatingInfoUseCase {
     private final RatingInfoViewMapper mapper;
 
     @Override
-    public Optional<RatingInfoView> loadById(ProductId id) {
+    public Optional<RatingInfoView> loadById(
+            ProductId id) {
         final var result = loadPort.loadById(id);
-        if(result.isEmpty()) return Optional.empty();
+        if (result.isEmpty())
+            return Optional.empty();
         return Optional.of(mapper.toView(result.get()));
     }
 
@@ -35,13 +37,17 @@ public class LoadRatingInfoService implements LoadRatingInfoUseCase {
     }
 
     @Override
-    public Page<RatingInfoView> loadAll(Pageable pageable) {
+    public Page<RatingInfoView> loadAll(
+            Pageable pageable) {
         final var result = loadPort.loadByPage(pageable);
         return result.map(mapper::toView);
     }
 
     @Override
-    public Page<RatingInfoView> loadUpdatedRatingInfo(Instant start, Instant end, Pageable pageable) {
+    public Page<RatingInfoView> loadUpdatedRatingInfo(
+            Instant start,
+            Instant end,
+            Pageable pageable) {
         final var result = loadPort.loadUpdatedRatingInfo(start, end, pageable);
         return result.map(mapper::toView);
     }

@@ -23,9 +23,11 @@ public class RatingInfoPersistenceAdapter implements LoadRatingInfoPort, SaveRat
     private final RatingInfoMongoRepository repository;
 
     @Override
-    public Optional<RatingInfo> loadById(ProductId productId) {
+    public Optional<RatingInfo> loadById(
+            ProductId productId) {
         final var result = repository.findById(productId.value());
-        if(result.isEmpty()) return Optional.empty();
+        if (result.isEmpty())
+            return Optional.empty();
         return Optional.of(mapper.toDomain(result.get()));
     }
 
@@ -35,24 +37,30 @@ public class RatingInfoPersistenceAdapter implements LoadRatingInfoPort, SaveRat
     }
 
     @Override
-    public Page<RatingInfo> loadByPage(Pageable pageable) {
+    public Page<RatingInfo> loadByPage(
+            Pageable pageable) {
         final var result = repository.findAll(pageable);
         return result.map(mapper::toDomain);
     }
 
     @Override
-    public RatingInfo save(RatingInfo ratingInfo) {
+    public RatingInfo save(
+            RatingInfo ratingInfo) {
         final var result = repository.save(mapper.toDocument(ratingInfo));
         return mapper.toDomain(result);
     }
 
     @Override
-    public void delete(ProductId productId) {
+    public void delete(
+            ProductId productId) {
         repository.deleteById(productId.value());
     }
 
     @Override
-    public Page<RatingInfo> loadUpdatedRatingInfo(Instant start, Instant end, Pageable pageAble) {
+    public Page<RatingInfo> loadUpdatedRatingInfo(
+            Instant start,
+            Instant end,
+            Pageable pageAble) {
         final var result = repository.findByCreateAtBetweenOrUpdateAtBetween(start, end, start, end, pageAble);
         return result.map(mapper::toDomain);
     }

@@ -17,11 +17,6 @@ import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingPoint;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.UserAvatar;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.UserId;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.Username;
-/*UUID productId,
-    UUID userId,
-    String userName,
-    String userAvatar,
-    float ratingPoint*/
 
 @Component
 public class RatingWebMapper {
