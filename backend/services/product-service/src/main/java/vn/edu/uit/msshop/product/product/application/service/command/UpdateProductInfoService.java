@@ -83,7 +83,8 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
             return this.mapper.toView(
                     product,
                     soldCount,
-                    stockCount, rating);
+                    stockCount,
+                    rating);
         }
 
         final var expectedVersion = command.expectedVersion();
@@ -123,54 +124,35 @@ public class UpdateProductInfoService implements UpdateProductInfoUseCase {
             final Change.@Nullable Set<ProductName> nameSet,
             final Change.@Nullable Set<ProductCategoryId> categoryIdSet,
             final Change.@Nullable Set<ProductBrandId> brandIdSet) {
-        final ProductName newName;
-        final boolean nameUnchanged;
-        if ((nameSet != null)
-                && !nameSet.value().equals(current.getName())) {
-            newName = nameSet.value();
-            nameUnchanged = false;
-        } else {
-            newName = current.getName();
-            nameUnchanged = true;
+        final var applyNameResult = Change.Set.applyChange(
+                nameSet,
+                current.getName());
+
+        final var applyCategoryIdResult = Change.Set.applyChange(
+                categoryIdSet,
+                current.getCategoryId());
+        if (applyCategoryIdResult.changed()) {
+            this.validateCategoryExists(applyCategoryIdResult.newValue());
         }
 
-        final ProductCategoryId newCategoryId;
-        final boolean categoryIdUnchanged;
-        if ((categoryIdSet != null)
-                && !categoryIdSet.value().equals(current.getCategoryId())) {
-            newCategoryId = categoryIdSet.value();
-            categoryIdUnchanged = false;
-
-            this.validateCategoryExists(newCategoryId);
-        } else {
-            newCategoryId = current.getCategoryId();
-            categoryIdUnchanged = true;
+        final var applyBrandIdResult = Change.Set.applyChange(
+                brandIdSet,
+                current.getBrandId());
+        if (applyBrandIdResult.changed()) {
+            this.validateBrandExists(applyBrandIdResult.newValue());
         }
 
-        final ProductBrandId newBrandId;
-        final boolean brandIdUnchanged;
-        if ((brandIdSet != null)
-                && !brandIdSet.value().equals(current.getBrandId())) {
-            newBrandId = brandIdSet.value();
-            brandIdUnchanged = false;
-
-            this.validateBrandExists(newBrandId);
-        } else {
-            newBrandId = current.getBrandId();
-            brandIdUnchanged = true;
-        }
-
-        if (nameUnchanged
-                && categoryIdUnchanged
-                && brandIdUnchanged) {
+        if (!applyNameResult.changed()
+                && !applyCategoryIdResult.changed()
+                && !applyBrandIdResult.changed()) {
             return null;
         }
 
         return new Product(
                 current.getId(),
-                newName,
-                newCategoryId,
-                newBrandId,
+                applyNameResult.newValue(),
+                applyCategoryIdResult.newValue(),
+                applyBrandIdResult.newValue(),
                 current.getConfiguration(),
                 current.getImageKeys(),
                 current.getVersion(),
