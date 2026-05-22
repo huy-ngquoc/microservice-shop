@@ -17,9 +17,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collection = "ratings")
+@Document(
+        collection = "ratings")
 public class RatingMongoDBEntity {
-    @Id 
+    @Id
     private UUID id;
 
     @Field("product_id")
@@ -30,13 +31,13 @@ public class RatingMongoDBEntity {
 
     private String content;
 
-    private MediaDocument media; 
+    private MediaDocument media;
 
     @Field("user_name")
     private String userName;
 
     @Field("rating_point")
-    private float ratingPoint;
+    private byte ratingPoint;
 
     @Field("user_avatar")
     private String userAvatar;
