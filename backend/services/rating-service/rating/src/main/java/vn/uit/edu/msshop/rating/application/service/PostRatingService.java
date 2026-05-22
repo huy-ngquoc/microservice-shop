@@ -34,17 +34,15 @@ public class PostRatingService implements PostRatingUseCase {
             throw new ProductNotFoundException(command.productId());
         }
 
-        final var draft = Rating.Draft.builder()
-                .id(command.id())
-                .content(command.content())
-                .productId(command.productId())
-                .ratingPoint(command.ratingPoint())
-                .userId(command.userId())
-                .username(command.username())
-                .userAvatar(command.userAvatar())
-                .build();
-
-        final var rating = Rating.create(draft);
+        final var rating = new Rating(
+                command.id(),
+                command.content(),
+                null,
+                command.productId(),
+                command.ratingPoint(),
+                command.userAvatar(),
+                command.userId(),
+                command.username());
         final var saved = this.savePort.save(rating);
 
         this.updateRatingInfo(

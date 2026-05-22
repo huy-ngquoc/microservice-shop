@@ -16,7 +16,7 @@ import vn.uit.edu.msshop.rating.domain.model.valueobject.UpdateAt;
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-public class RatingInfo {
+public final class RatingInfo {
     @EqualsAndHashCode.Include
     private final ProductId productId;
 
@@ -75,6 +75,26 @@ public class RatingInfo {
         return new RatingInfo(
                 this.productId,
                 newCount,
+                newTotal,
+                createAt,
+                new UpdateAt(Instant.now()));
+    }
+
+    public RatingInfo changeRating(
+            final RatingPoint oldRatingPoint,
+            final RatingPoint newRatingPoint) {
+        final var currentTotalValue = this.ratingTotal.value();
+
+        final var oldPointValue = oldRatingPoint.value();
+        final var newPointValue = newRatingPoint.value();
+        final var deltaPointValue = newPointValue - oldPointValue;
+
+        final var newTotalValue = currentTotalValue + deltaPointValue;
+        final var newTotal = new RatingTotal(newTotalValue);
+
+        return new RatingInfo(
+                this.productId,
+                this.ratingCount,
                 newTotal,
                 createAt,
                 new UpdateAt(Instant.now()));
