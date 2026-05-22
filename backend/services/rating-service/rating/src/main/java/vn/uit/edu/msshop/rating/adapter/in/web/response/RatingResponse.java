@@ -12,5 +12,5 @@ public record RatingResponse(
         UUID userId,
         String userName,
         String userAvatar,
-        byte ratingPoint) {
+        int ratingPoint) {
 }

@@ -7,5 +7,5 @@ import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 public record UpdateRatingRequest(
         UUID id,
         ChangeRequest<String> content,
-        ChangeRequest<Byte> ratingPoint) {
+        ChangeRequest<Integer> ratingPoint) {
 }
