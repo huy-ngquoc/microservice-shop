@@ -76,13 +76,16 @@ public class UpdateCategoryInfoService implements UpdateCategoryInfoUseCase {
     private static @Nullable Category applyChanges(
             final Category current,
             final Change.Set<CategoryName> nameSet) {
-        if (nameSet.value().equals(current.getName())) {
+        final var applyNameResult = Change.Set.applyChange(
+                nameSet,
+                current.getName());
+        if (!applyNameResult.changed()) {
             return null;
         }
 
         return new Category(
                 current.getId(),
-                nameSet.value(),
+                applyNameResult.newValue(),
                 current.getImageKey(),
                 current.getVersion(),
                 current.getDeletionTime());
