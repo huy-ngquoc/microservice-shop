@@ -7,6 +7,6 @@ import vn.edu.uit.msshop.product.product.domain.sync.ProductRatingSnapshot;
 
 public interface FetchProductRatingsPort {
     Collection<ProductRatingSnapshot> fetchAll(
-            final Instant start,
-            final Instant end);
+            final Instant rangeStartTime,
+            final Instant rangeEndTime);
 }
