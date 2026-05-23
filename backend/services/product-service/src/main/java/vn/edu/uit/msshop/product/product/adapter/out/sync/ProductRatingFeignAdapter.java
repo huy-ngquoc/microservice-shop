@@ -35,7 +35,7 @@ public class ProductRatingFeignAdapter
         do {
             final var pageResponse = feignClient.getUpdatedRatingInfos(
                     rangeStartTime,
-                    rangeStartTime,
+                    rangeEndTime,
                     pageNumber,
                     PAGE_SIZE);
             final var mappedItems = pageResponse.items().stream()
