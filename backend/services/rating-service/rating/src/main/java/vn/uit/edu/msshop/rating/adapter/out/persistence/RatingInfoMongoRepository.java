@@ -14,7 +14,7 @@ public interface RatingInfoMongoRepository extends MongoRepository<RatingInfoDoc
             Pageable pageable);
 
     Page<RatingInfoDocument> findAllByUpdateAtBetween(
-            Instant start,
-            Instant end,
+            Instant rangeStartUpdatedTime,
+            Instant rangeEndUpdatedTime,
             Pageable pageable);
 }
