@@ -37,8 +37,8 @@ public class RatingInfoPersistenceAdapter
                 RatingInfoDocument.Fields.productId);
 
         final var page = this.repository.findAllByUpdateAtBetween(
-                query.start(),
-                query.end(),
+                query.rangeStartUpdatedTime(),
+                query.rangeEndUpdatedTime(),
                 pageable);
         final var ratingInfos = page.getContent().stream()
                 .map(this.mapper::toDomain)
