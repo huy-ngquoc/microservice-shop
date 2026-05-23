@@ -8,6 +8,13 @@ import vn.uit.edu.msshop.rating.domain.model.valueobject.UserAvatar;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.UserId;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.Username;
 
-public record PostRatingCommand(RatingId id, Content content, ProductId productId, RatingPoint ratingPoint, UserAvatar userAvatar,UserId userId, Username username) {
+public record PostRatingCommand(
+        RatingId id,
+        Content content,
+        ProductId productId,
+        RatingPoint ratingPoint,
+        UserAvatar userAvatar,
+        UserId userId,
+        Username username) {
 
 }

@@ -9,13 +9,13 @@ import vn.uit.edu.msshop.rating.domain.model.valueobject.MediaPublicId;
 
 @Service
 @RequiredArgsConstructor
-public class DeleteImageService implements DeleteRatingImageUseCase{
+public class DeleteImageService implements DeleteRatingImageUseCase {
     private final DeleteRatingImagePort deletePort;
 
     @Override
-    public void delete(MediaPublicId id) {
+    public void delete(
+            MediaPublicId id) {
         deletePort.deleteRatingImage(id);
     }
 
-    
 }

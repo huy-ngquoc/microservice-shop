@@ -2,6 +2,7 @@ package vn.edu.uit.msshop.product.variant.application.service.command;
 
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.variant.application.dto.command.SetAllVariantSoldCountsCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVariantSoldCountsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantSoldCountsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.FetchAllOrderSoldCountsPort;
@@ -18,6 +19,8 @@ public class ReconcileVariantSoldCountsService implements ReconcileVariantSoldCo
         if (fetched.isEmpty()) {
             return;
         }
-        this.setAllUseCase.execute(fetched);
+
+        final var command = new SetAllVariantSoldCountsCommand(fetched);
+        this.setAllUseCase.execute(command);
     }
 }

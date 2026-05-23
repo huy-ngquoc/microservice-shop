@@ -14,8 +14,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCo
 
 @Component
 @KafkaListener(
-        topics = "inventory-variant",
-        groupId = "product-service")
+        topics = "inventory-variant")
 @RequiredArgsConstructor
 public class VariantInventoryEventListener {
     private final SetAllVariantStockCountsUseCase setAllUseCase;

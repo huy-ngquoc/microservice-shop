@@ -31,7 +31,7 @@ public class ProductViewMapper {
                 priceRange.maxPrice().value(),
                 soldCount.getValue().value(),
                 stockCount.getValue().value(),
-                rating.getAverage().value(),
+                rating.getTotal().value(),
                 rating.getAmount().value(),
                 product.getOptions().unwrap(),
                 this.toView(product.getVariants()),

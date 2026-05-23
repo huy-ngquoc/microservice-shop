@@ -1,8 +1,5 @@
 package vn.uit.edu.msshop.rating.application.service;
 
-import java.time.Instant;
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -17,10 +14,8 @@ import vn.uit.edu.msshop.rating.application.port.out.SaveRatingPort;
 import vn.uit.edu.msshop.rating.domain.event.RatingPosted;
 import vn.uit.edu.msshop.rating.domain.model.Rating;
 import vn.uit.edu.msshop.rating.domain.model.RatingInfo;
-import vn.uit.edu.msshop.rating.domain.model.valueobject.CreateAt;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.ProductId;
-import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingCount;
-import vn.uit.edu.msshop.rating.domain.model.valueobject.UpdateAt;
+import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingPoint;
 
 @Service
 @RequiredArgsConstructor
@@ -30,30 +25,53 @@ public class PostRatingService implements PostRatingUseCase {
     private final LoadRatingInfoPort loadRatingInfoPort;
     private final SaveRatingInfoPort saveRatingInfoPort;
     private final CheckProductPort checkProductPort;
+
     @Override
-    public void post(PostRatingCommand command) {
-        boolean isProductExist = checkProductPort.isProductExist(command.productId());
-        if(isProductExist==false) {
+    public void post(
+            PostRatingCommand command) {
+        final var productExisted = checkProductPort.isProductExist(command.productId());
+        if (!productExisted) {
             throw new ProductNotFoundException(command.productId());
         }
-        final var draft = Rating.Draft.builder().id(command.id()).content(command.content()).productId(command.productId())
-        .ratingPoint(command.ratingPoint()).userId(command.userId()).username(command.username()).userAvatar(command.userAvatar()).build();
-        final var rating = Rating.create(draft);
+
+        final var rating = new Rating(
+                command.id(),
+                command.content(),
+                null,
+                command.productId(),
+                command.ratingPoint(),
+                command.userAvatar(),
+                command.userId(),
+                command.username());
         final var saved = this.savePort.save(rating);
-        Optional<RatingInfo> ratingInfoOptional = loadRatingInfoPort.loadById(new ProductId(command.productId().value()));
-        if(ratingInfoOptional.isEmpty()) {
-            final var ratingInfoDraft = RatingInfo.Draft.builder().productId(command.productId()).ratingCount(new RatingCount(1)).totalPoint(command.ratingPoint())
-            .createAt(new CreateAt(Instant.now()))
-            .updateAt(new UpdateAt(null))
-            .build();
-            saveRatingInfoPort.save(RatingInfo.create(ratingInfoDraft));
-        }
-        else {
-            final var ratingInfo = ratingInfoOptional.get();
-            final var toSave = ratingInfo.increaseRatingPoint(command.ratingPoint());
-            saveRatingInfoPort.save(toSave);
-        }
-        this.publishEvent.publish(new RatingPosted(saved.getId()));
+
+        this.updateRatingInfo(
+                command.productId(),
+                command.ratingPoint());
+
+        final var event = new RatingPosted(
+                saved.getId(),
+                saved.getProductId(),
+                saved.getRatingPoint());
+        this.publishEvent.publish(event);
     }
 
+    private void updateRatingInfo(
+            final ProductId productId,
+            final RatingPoint ratingPoint) {
+        final var ratingInfoOptional = loadRatingInfoPort
+                .loadById(productId);
+
+        final RatingInfo toSave;
+        if (ratingInfoOptional.isEmpty()) {
+            toSave = RatingInfo.newRating(
+                    productId,
+                    ratingPoint);
+        } else {
+            final var ratingInfo = ratingInfoOptional.get();
+            toSave = ratingInfo.addRating(ratingPoint);
+        }
+
+        this.saveRatingInfoPort.save(toSave);
+    }
 }

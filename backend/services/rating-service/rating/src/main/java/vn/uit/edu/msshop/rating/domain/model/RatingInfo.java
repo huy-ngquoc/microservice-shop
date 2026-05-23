@@ -2,88 +2,147 @@ package vn.uit.edu.msshop.rating.domain.model;
 
 import java.time.Instant;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import vn.edu.uit.msshop.shared.domain.Domains;
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.CreateAt;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.ProductId;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingCount;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingPoint;
+import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingTotal;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.UpdateAt;
-
 
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder(access = AccessLevel.PRIVATE)
-public class RatingInfo {
-    private ProductId productId;
-    private RatingCount ratingCount;
-    private RatingPoint totalPoint;
-    private CreateAt createAt;
-    private UpdateAt updateAt;
-    
-    @Builder
-    public static record Draft(ProductId productId, RatingCount ratingCount, RatingPoint totalPoint, CreateAt createAt, UpdateAt updateAt) {
+public final class RatingInfo {
+    @EqualsAndHashCode.Include
+    private final ProductId productId;
 
-    }
-    @Builder
-    public static record Snapshot(ProductId productId, RatingCount ratingCount, RatingPoint totalPoint, CreateAt createAt, UpdateAt updateAt) {
+    private final RatingCount ratingCount;
 
-    }
-    @Builder
-    public static record UpdateInfo(ProductId productId, RatingCount ratingCount, RatingPoint totalPoint) {
+    private final RatingTotal ratingTotal;
 
+    private final CreateAt createAt;
+
+    private final UpdateAt updateAt;
+
+    public RatingInfo(
+            ProductId productId,
+            RatingCount ratingCount,
+            RatingTotal totalPoint,
+            CreateAt createAt,
+            UpdateAt updateAt) {
+        this.productId = Domains.requireNonNull(productId, "Product ID must not be null");
+        this.ratingCount = Domains.requireNonNull(ratingCount, "Rating count must not be null");
+        this.ratingTotal = Domains.requireNonNull(totalPoint, "Total point must not be null");
+        this.createAt = Domains.requireNonNull(createAt, "Creation time must not be null");
+        this.updateAt = Domains.requireNonNull(updateAt, "Update time must not be null");
+
+        RatingInfo.validate(totalPoint, ratingCount);
     }
 
-    public static RatingInfo create(Draft d) {
-        if(d.productId==null)  throw new IllegalArgumentException("Invalid id");
-        return RatingInfo.builder().productId(d.productId()).ratingCount(d.ratingCount()).totalPoint(d.totalPoint())
-        .createAt(d.createAt())
-        .updateAt(d.updateAt())
-        .build();
+    public static RatingInfo newRating(
+            final ProductId productId,
+            final RatingPoint ratingPoint) {
+        final var newCount = RatingCount.one();
+        final var newTotal = new RatingTotal(ratingPoint.value());
+
+        final var instantNow = Instant.now();
+        final var createAt = new CreateAt(instantNow);
+        final var updateAt = new UpdateAt(instantNow);
+
+        return new RatingInfo(
+                productId,
+                newCount,
+                newTotal,
+                createAt,
+                updateAt);
     }
-    public static RatingInfo reconstitue(Snapshot s) {
-        if(s.productId==null)  throw new IllegalArgumentException("Invalid id");
-        return RatingInfo.builder().productId(s.productId()).ratingCount(s.ratingCount()).totalPoint(s.totalPoint())
-        .createAt(s.createAt())
-        .updateAt(s.updateAt())
-        .build();
+
+    public RatingInfo addRating(
+            final RatingPoint ratingPoint) {
+        final var currentTotalValue = this.ratingTotal.value();
+        final var incrementPointValue = ratingPoint.value();
+
+        final var newTotalValue = currentTotalValue + incrementPointValue;
+        final var newCountValue = this.ratingCount.value() + 1;
+
+        final var newTotal = new RatingTotal(newTotalValue);
+        final var newCount = new RatingCount(newCountValue);
+
+        return new RatingInfo(
+                this.productId,
+                newCount,
+                newTotal,
+                createAt,
+                new UpdateAt(Instant.now()));
     }
-    public RatingInfo applyUpdateInfo(UpdateInfo updateInfo) {
-        if(updateInfo.productId==null) {
-            throw new IllegalArgumentException("Invalid id");
+
+    public RatingInfo changeRating(
+            final RatingPoint oldRatingPoint,
+            final RatingPoint newRatingPoint) {
+        final var currentTotalValue = this.ratingTotal.value();
+
+        final var oldPointValue = oldRatingPoint.value();
+        final var newPointValue = newRatingPoint.value();
+        final var deltaPointValue = newPointValue - oldPointValue;
+
+        final var newTotalValue = currentTotalValue + deltaPointValue;
+        final var newTotal = new RatingTotal(newTotalValue);
+
+        return new RatingInfo(
+                this.productId,
+                this.ratingCount,
+                newTotal,
+                createAt,
+                new UpdateAt(Instant.now()));
+    }
+
+    public RatingInfo removeRating(
+            final RatingPoint ratingPoint) {
+        final var currentCountValue = this.ratingCount.value();
+        if (currentCountValue <= 1) {
+            return new RatingInfo(
+                    this.productId,
+                    RatingCount.zero(),
+                    RatingTotal.zero(),
+                    this.createAt,
+                    new UpdateAt(Instant.now()));
         }
-        if(!updateInfo.productId.value().equals(this.productId.value())) {
-            throw new IllegalArgumentException("Invalid update info");
+
+        final var currentTotalValue = this.ratingTotal.value();
+        final var decrementPointValue = ratingPoint.value();
+
+        final var newTotalValue = currentTotalValue - decrementPointValue;
+        final var newCountValue = this.ratingCount.value() - 1;
+
+        final var newTotal = new RatingTotal(newTotalValue);
+        final var newCount = new RatingCount(newCountValue);
+
+        return new RatingInfo(
+                this.productId,
+                newCount,
+                newTotal,
+                createAt,
+                new UpdateAt(Instant.now()));
+    }
+
+    private static void validate(
+            final RatingTotal total,
+            final RatingCount count) {
+        final var totalValue = total.value();
+        final var countValue = count.value();
+
+        final var minValue = countValue * RatingPoint.MIN_VALUE;
+        if (totalValue < minValue) {
+            throw new DomainException("Rating total below min possible");
         }
-        return RatingInfo.builder().productId(this.productId).ratingCount(updateInfo.ratingCount).totalPoint(updateInfo.totalPoint())
-        .createAt(this.createAt)
-        .updateAt(new UpdateAt(Instant.now()))
-        .build();
-    }
-    public Snapshot snapshot() {
-        return RatingInfo.Snapshot.builder().productId(this.productId).ratingCount(this.ratingCount).totalPoint(this.totalPoint).build();
-    }
-    public RatingInfo increaseRatingPoint(RatingPoint ratingPoint) {
-        
-        float nextPoint = (this.totalPoint.value()+ratingPoint.value())/(this.ratingCount.value()+1);
-        return RatingInfo.builder().productId(this.productId).ratingCount(new RatingCount(this.ratingCount.value()+1)).totalPoint(new RatingPoint(nextPoint))
-        .createAt(this.createAt)
-        .updateAt(new UpdateAt(Instant.now()))
-        .build();
-    }
-    public RatingInfo decreaseRatingPoint(RatingPoint ratingPoint) {
-        if(this.ratingCount.value()<=1) {
-            return RatingInfo.builder().productId(this.productId).ratingCount(new RatingCount(0)).totalPoint(new RatingPoint(0)).build();
+
+        final var maxValue = countValue * RatingPoint.MAX_VALUE;
+        if (totalValue > maxValue) {
+            throw new DomainException("Rating total above max possible");
         }
-        float prevPoint = (this.totalPoint.value()-ratingPoint.value())/(this.ratingCount.value()-1);
-        return RatingInfo.builder().productId(this.productId).ratingCount(new RatingCount(this.ratingCount.value()+1)).totalPoint(new RatingPoint(prevPoint))
-        .createAt(this.createAt)
-        .updateAt(new UpdateAt(Instant.now()))
-        .build();
     }
- }
+}
