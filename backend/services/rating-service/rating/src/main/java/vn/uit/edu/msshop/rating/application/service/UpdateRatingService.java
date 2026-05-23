@@ -49,7 +49,13 @@ public class UpdateRatingService implements UpdateRatingUseCase {
         }
 
         final var saved = savePort.save(next);
-        eventPublisher.publish(new RatingUpdated(saved.getId()));
+
+        final var event = new RatingUpdated(
+                saved.getId(),
+                saved.getProductId(),
+                rating.getRatingPoint(),
+                saved.getRatingPoint());
+        eventPublisher.publish(event);
     }
 
     private @Nullable Rating applyChanges(
