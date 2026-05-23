@@ -49,7 +49,11 @@ public class PostRatingService implements PostRatingUseCase {
                 command.productId(),
                 command.ratingPoint());
 
-        this.publishEvent.publish(new RatingPosted(saved.getId()));
+        final var event = new RatingPosted(
+                saved.getId(),
+                saved.getProductId(),
+                saved.getRatingPoint());
+        this.publishEvent.publish(event);
     }
 
     private void updateRatingInfo(
