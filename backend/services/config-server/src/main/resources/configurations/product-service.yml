@@ -56,6 +56,9 @@ spring:
                     order-service:
                         connect-timeout: 3000
                         read-timeout: 10000
+                    rating-service:
+                        connect-timeout: 3000
+                        read-timeout: 10000
     task:
         scheduling:
             pool:

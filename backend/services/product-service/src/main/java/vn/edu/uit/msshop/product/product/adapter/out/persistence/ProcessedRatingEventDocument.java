@@ -1,6 +1,5 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 

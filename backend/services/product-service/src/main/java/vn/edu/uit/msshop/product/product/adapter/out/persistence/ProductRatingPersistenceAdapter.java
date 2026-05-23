@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -21,9 +23,11 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.Delete
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadAllProductRatingsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateAllProductRatingsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductRatingPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.variant.adapter.out.persistence.VariantSoldCountDocument;
 
 @Component
 @RequiredArgsConstructor
@@ -33,6 +37,7 @@ public class ProductRatingPersistenceAdapter
         LoadAllProductRatingsPort,
         InitializeProductRatingPort,
         UpdateProductRatingPort,
+        UpdateAllProductRatingsPort,
         DeleteProductRatingPort {
     private static final Collector<
             ProductRating,
@@ -96,6 +101,30 @@ public class ProductRatingPersistenceAdapter
                 .set(ProductRatingDocument.Fields.lastUpdatedTime, Instant.now());
 
         return this.upsertAndReturnDomain(query, update);
+    }
+
+    @Override
+    public void updateAll(
+            final Collection<ProductRating> ratings) {
+        if (ratings.isEmpty()) {
+            return;
+        }
+
+        final var ops = this.mongoTemplate.bulkOps(
+                BulkOperations.BulkMode.UNORDERED,
+                ProductRatingDocument.class);
+        final var instantNow = Instant.now();
+
+        for (final var rating : ratings) {
+            final var query = new Query(Criteria.where("_id").is(rating.getId().value()));
+            final var update = new Update()
+                    .set(ProductRatingDocument.Fields.total, rating.getTotal().value())
+                    .set(ProductRatingDocument.Fields.amount, rating.getAmount().value())
+                    .set(ProductRatingDocument.Fields.lastUpdatedTime, instantNow);
+            ops.upsert(query, update);
+        }
+
+        ops.execute();
     }
 
     @Override
