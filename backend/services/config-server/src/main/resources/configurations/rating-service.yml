@@ -1,11 +1,27 @@
 spring:
-  data:
-    mongodb:
-      uri: mongodb://alibou:alibou@${RATING_DB_URL:localhost:27018}/rating_db?authSource=admin&uuidRepresentation=STANDARD
+    data:
+        mongodb:
+            uri: mongodb://alibou:alibou@${RATING_DB_URL:localhost:27018}/rating_db?authSource=admin&uuidRepresentation=STANDARD
+    kafka:
+        bootstrap-servers: ${KAFKA_URL:localhost:9092}
+        consumer:
+            group-id: rating-service-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                "[spring.json.trusted.packages]": "*"
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                "[spring.json.type.mapping]": >-
+                    RatingCreatedIntegrationEvent:vn.uit.edu.msshop.rating.application.dto.integration.RatingCreatedIntegrationEvent,
+                    RatingUpdatedIntegrationEvent:vn.uit.edu.msshop.rating.application.dto.integration.RatingUpdatedIntegrationEvent,
+                    RatingDeletedIntegrationEvent:vn.uit.edu.msshop.rating.application.dto.integration.RatingDeletedIntegrationEvent
 cloudinary:
-  cloud-name: 
-  api-key: 
-  api-secret: 
+    cloud-name:
+    api-key:
+    api-secret:
 server:
     port: 8072
 eureka:
