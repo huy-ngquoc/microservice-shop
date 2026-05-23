@@ -9,7 +9,7 @@ import vn.uit.edu.msshop.rating.adapter.in.web.request.UpdateRatingRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.response.RatingResponse;
 import vn.uit.edu.msshop.rating.application.dto.command.PostRatingCommand;
 import vn.uit.edu.msshop.rating.application.dto.command.UpdateRatingCommand;
-import vn.uit.edu.msshop.rating.application.dto.query.RatingView;
+import vn.uit.edu.msshop.rating.application.dto.view.RatingView;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.Content;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.ProductId;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingId;

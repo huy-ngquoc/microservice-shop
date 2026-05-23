@@ -1,4 +1,4 @@
-package vn.uit.edu.msshop.rating.application.dto.query;
+package vn.uit.edu.msshop.rating.application.dto.view;
 
 import java.time.Instant;
 import java.util.UUID;
