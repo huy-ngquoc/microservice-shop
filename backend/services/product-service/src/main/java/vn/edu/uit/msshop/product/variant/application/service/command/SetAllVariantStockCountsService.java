@@ -82,7 +82,8 @@ public class SetAllVariantStockCountsService implements SetAllVariantStockCounts
     private void persistUpdates(
             final List<ResolvedStockCount> resolved) {
         final var updated = resolved.stream()
-                .map(ResolvedStockCount::toUpdated).toList();
+                .map(ResolvedStockCount::toUpdated)
+                .toList();
         this.updateAllPort.updateAll(updated);
     }
 
