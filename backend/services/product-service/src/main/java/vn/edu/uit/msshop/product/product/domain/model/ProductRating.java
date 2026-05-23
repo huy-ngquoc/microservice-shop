@@ -38,6 +38,76 @@ public final class ProductRating {
         return new ProductRating(id, total, amount);
     }
 
+    public ProductRating addRating(
+            int point) {
+        if ((point < MIN_POINT) || (point > MAX_POINT)) {
+            throw new DomainException("Point of rating to add is invalid");
+        }
+
+        final var oldTotalValue = this.total.value();
+        final var oldAmountValue = this.amount.value();
+
+        final var newTotalValue = oldTotalValue + point;
+        final var newAmountValue = oldAmountValue + 1;
+
+        final var newTotal = new ProductRatingTotal(newTotalValue);
+        final var newAmount = new ProductRatingAmount(newAmountValue);
+
+        return new ProductRating(
+                this.id,
+                newTotal,
+                newAmount);
+    }
+
+    public ProductRating removeRating(
+            int point) {
+        if ((point < MIN_POINT) || (point > MAX_POINT)) {
+            throw new DomainException("Point of rating to remove is invalid");
+        }
+
+        final var oldAmountValue = this.amount.value();
+        if (oldAmountValue <= 1) {
+            return new ProductRating(
+                    this.id,
+                    ProductRatingTotal.zero(),
+                    ProductRatingAmount.zero());
+        }
+
+        final var oldTotalValue = this.total.value();
+        final var newTotalValue = oldTotalValue - point;
+        final var newAmountValue = oldAmountValue - 1;
+
+        final var newTotal = new ProductRatingTotal(newTotalValue);
+        final var newAmount = new ProductRatingAmount(newAmountValue);
+
+        return new ProductRating(
+                id,
+                newTotal,
+                newAmount);
+    }
+
+    public ProductRating updateRating(
+            int oldPoint,
+            int newPoint) {
+        if ((oldPoint < MIN_POINT) || (oldPoint > MAX_POINT)) {
+            throw new DomainException("Point of rating to remove is invalid");
+        }
+        if ((newPoint < MIN_POINT) || (newPoint > MAX_POINT)) {
+            throw new DomainException("Point of rating to add is invalid");
+        }
+
+        final var oldTotalValue = this.total.value();
+        final var deltaTotalValue = newPoint - oldPoint;
+
+        final var newTotalValue = oldTotalValue + deltaTotalValue;
+        final var newTotal = new ProductRatingTotal(newTotalValue);
+
+        return new ProductRating(
+                this.id,
+                newTotal,
+                this.amount);
+    }
+
     public double getAverageValue() {
         final var amountValue = amount.value();
         if (amountValue <= 0) {
