@@ -7,8 +7,8 @@ import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 
 public record ListRatingInfosQuery(
         PageRequestDto pageRequest,
-        Instant start,
-        Instant end) {
+        Instant rangeStartUpdatedTime,
+        Instant rangeEndUpdatedTime) {
     public ListRatingInfosQuery {
         Objects.requireNonNull(pageRequest);
     }

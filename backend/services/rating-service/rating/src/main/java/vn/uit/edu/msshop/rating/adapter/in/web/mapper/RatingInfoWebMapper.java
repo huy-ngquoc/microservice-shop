@@ -32,9 +32,9 @@ public class RatingInfoWebMapper {
 
             final PageRequestDto.Direction direction,
 
-            final Instant start,
+            final Instant rangeStartUpdatedTime,
 
-            final Instant end) {
+            final Instant rangeEndUpdatedTime) {
         final var pageRequest = new PageRequestDto(
                 page,
                 size,
@@ -43,7 +43,7 @@ public class RatingInfoWebMapper {
 
         return new ListRatingInfosQuery(
                 pageRequest,
-                start,
-                end);
+                rangeStartUpdatedTime,
+                rangeEndUpdatedTime);
     }
 }
