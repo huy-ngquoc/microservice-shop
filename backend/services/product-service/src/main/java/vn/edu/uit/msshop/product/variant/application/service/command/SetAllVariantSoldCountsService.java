@@ -83,7 +83,8 @@ public class SetAllVariantSoldCountsService implements SetAllVariantSoldCountsUs
     private void persistUpdates(
             final List<ResolvedSoldCount> resolved) {
         final var updated = resolved.stream()
-                .map(ResolvedSoldCount::toUpdated).toList();
+                .map(ResolvedSoldCount::toUpdated)
+                .toList();
         this.updateAllSoldCountsPort.updateAll(updated);
     }
 

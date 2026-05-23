@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.variant.adapter.in.scheduled;
+package vn.edu.uit.msshop.product.product.adapter.in.scheduler;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -9,30 +9,30 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.variant.application.dto.command.ReconcileVariantStockCountsCommand;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVariantStockCountsUseCase;
+import vn.edu.uit.msshop.product.product.application.dto.command.ReconcileProductRatingsCommand;
+import vn.edu.uit.msshop.product.product.application.port.in.command.ReconcileProductRatingsUseCase;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ReconcileVariantStockCountsJob {
+public class ReconcileProductRatingsJob {
     private static final Duration WINDOW_DURATION = Duration.ofHours(24);
 
-    private final ReconcileVariantStockCountsUseCase reconcileUseCase;
+    private final ReconcileProductRatingsUseCase reconcileUseCase;
 
     @Scheduled(
             fixedRate = 2,
             timeUnit = TimeUnit.HOURS)
-    public void reconcile() {
+    public void run() {
         final var rangeEndTime = Instant.now();
         final var rangeStartTime = rangeEndTime.minus(WINDOW_DURATION);
 
-        final var command = new ReconcileVariantStockCountsCommand(rangeStartTime, rangeEndTime);
+        final var command = new ReconcileProductRatingsCommand(rangeStartTime, rangeEndTime);
 
         try {
-            this.reconcileUseCase.execute(command);
+            reconcileUseCase.execute(command);
         } catch (final RuntimeException e) {
-            log.warn("Stock count reconciliation skipped: {}", e.getMessage());
+            log.warn("Product rating reconciliation skipped: {}", e.getMessage());
         }
     }
 }

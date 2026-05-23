@@ -1,6 +1,5 @@
 package vn.edu.uit.msshop.product.bootstrap.config.cache;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
