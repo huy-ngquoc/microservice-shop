@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.msshop.rating.application.dto.query.RatingView;
+import vn.uit.edu.msshop.rating.application.dto.view.RatingView;
 import vn.uit.edu.msshop.rating.application.mapper.RatingViewMapper;
 import vn.uit.edu.msshop.rating.application.port.in.FindRatingUseCase;
 import vn.uit.edu.msshop.rating.application.port.out.LoadRatingPort;

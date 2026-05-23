@@ -2,7 +2,7 @@ package vn.uit.edu.msshop.rating.application.mapper;
 
 import org.springframework.stereotype.Component;
 
-import vn.uit.edu.msshop.rating.application.dto.query.RatingInfoView;
+import vn.uit.edu.msshop.rating.application.dto.view.RatingInfoView;
 import vn.uit.edu.msshop.rating.domain.model.RatingInfo;
 
 @Component
