@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 
 @Getter
 @Setter
@@ -23,6 +24,7 @@ import lombok.Setter;
 @CompoundIndex(
         name = "idx_times",
         def = "{'createAt': 1, 'updateAt': 1}")
+@FieldNameConstants
 public class RatingInfoDocument {
     @Id
     private UUID productId;
