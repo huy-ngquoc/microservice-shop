@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class SetAllVariantStockCountsService implements SetAllVariantStockCounts
     }
 
     private List<ResolvedStockCount> resolve(
-            final List<VariantInventoryStockCount> stockCounts) {
+            final Collection<VariantInventoryStockCount> stockCounts) {
         final var variantIds = stockCounts.stream()
                 .map(VariantInventoryStockCount::variantId)
                 .collect(Collectors.toUnmodifiableSet());
