@@ -14,30 +14,41 @@ import vn.uit.edu.msshop.rating.application.port.out.SaveRatingPort;
 import vn.uit.edu.msshop.rating.domain.model.Rating;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.ProductId;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingId;
+
 @Component
 @RequiredArgsConstructor
-public class RatingPersistenceAdapter implements LoadRatingPort,SaveRatingPort,DeleteRatingPort {
+public class RatingPersistenceAdapter
+        implements
+        LoadRatingPort,
+        SaveRatingPort,
+        DeleteRatingPort {
     private final RatingMongoRepository repository;
     private final RatingEntityMapper mapper;
 
     @Override
-    public Rating loadById(RatingId id) {
-        return mapper.toDomain(repository.findById(id.value()).orElseThrow(()->new RatingNotFoundException(id)));
+    public Rating loadById(
+            RatingId id) {
+        return mapper.toDomain(repository.findById(id.value()).orElseThrow(() -> new RatingNotFoundException(id)));
     }
 
     @Override
-    public Rating save(Rating rating) {
+    public Rating save(
+            Rating rating) {
         return mapper.toDomain(repository.save(mapper.toEntity(rating)));
     }
 
     @Override
-    public void deleteById(RatingId id) {
+    public void deleteById(
+            RatingId id) {
         repository.deleteById(id.value());
     }
 
     @Override
-    public Page<Rating> loadByProduct(ProductId id, int pageSize, int pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber,pageSize);
+    public Page<Rating> loadByProduct(
+            ProductId id,
+            int pageSize,
+            int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return repository.findByProductId(id.value(), pageable).map(mapper::toDomain);
     }
 

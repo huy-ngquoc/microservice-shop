@@ -1,18 +1,19 @@
 package vn.uit.edu.msshop.rating.application.port.in;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import vn.uit.edu.msshop.rating.application.dto.query.RatingInfoView;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
+import vn.uit.edu.msshop.rating.application.dto.view.RatingInfoView;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.ProductId;
 
 public interface LoadRatingInfoUseCase {
-    public Optional<RatingInfoView> loadById(ProductId id);
-    public List<RatingInfoView> loadAll();
-    public Page<RatingInfoView> loadAll(Pageable pageable);
-    public Page<RatingInfoView> loadUpdatedRatingInfo(Instant start, Instant end, Pageable pageable);
+    Optional<RatingInfoView> loadById(
+            ProductId id);
+
+    List<RatingInfoView> loadAll();
+
+    PageResponseDto<RatingInfoView> loadAll(
+            PageRequestDto pageRequest);
 }

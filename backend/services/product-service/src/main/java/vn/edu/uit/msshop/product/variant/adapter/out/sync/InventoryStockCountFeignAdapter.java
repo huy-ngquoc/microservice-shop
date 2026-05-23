@@ -42,7 +42,7 @@ public class InventoryStockCountFeignAdapter implements FetchInventoryStockCount
                     pageNumber,
                     PAGE_SIZE);
 
-            List<VariantInventoryStockCount> mappedItems = pageResponse.items().stream()
+            final var mappedItems = pageResponse.items().stream()
                     .map(InventoryStockCountFeignAdapter::toDomainDto)
                     .toList();
 
