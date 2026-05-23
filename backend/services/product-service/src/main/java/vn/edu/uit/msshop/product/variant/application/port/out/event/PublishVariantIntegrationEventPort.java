@@ -5,8 +5,8 @@ import vn.edu.uit.msshop.product.variant.application.dto.integration.VariantUpda
 
 public interface PublishVariantIntegrationEventPort {
     void publishUpdated(
-            VariantUpdatedIntegrationEvent event);
+            final VariantUpdatedIntegrationEvent event);
 
     void publishSoftDeleted(
-            VariantSoftDeletedIntegrationEvent event);
+            final VariantSoftDeletedIntegrationEvent event);
 }
