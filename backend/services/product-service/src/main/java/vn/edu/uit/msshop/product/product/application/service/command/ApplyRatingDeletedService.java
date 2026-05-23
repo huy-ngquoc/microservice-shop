@@ -3,6 +3,7 @@ package vn.edu.uit.msshop.product.product.application.service.command;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class ApplyRatingDeletedService
     private final CreateProcessedRatingEventPort createProcessedEventPort;
 
     @Override
+    @Transactional
     public void execute(
             final UUID eventId,
             final ProductId productId,
