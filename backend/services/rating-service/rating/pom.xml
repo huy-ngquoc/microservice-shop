@@ -35,6 +35,12 @@
 
         <dependency>
             <groupId>vn.edu.uit.msshop</groupId>
+            <artifactId>shared-spring-data</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>vn.edu.uit.msshop</groupId>
             <artifactId>shared-webmvc</artifactId>
         </dependency>
 

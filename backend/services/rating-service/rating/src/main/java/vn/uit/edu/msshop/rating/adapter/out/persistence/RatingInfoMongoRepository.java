@@ -10,13 +10,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RatingInfoMongoRepository extends MongoRepository<RatingInfoDocument, UUID> {
-    public Page<RatingInfoDocument> findAll(
+    Page<RatingInfoDocument> findAll(
             Pageable pageable);
 
-    public Page<RatingInfoDocument> findByCreateAtBetweenOrUpdateAtBetween(
-            Instant time1,
-            Instant time2,
-            Instant time3,
-            Instant time4,
+    Page<RatingInfoDocument> findAllByUpdateAtBetween(
+            Instant start,
+            Instant end,
             Pageable pageable);
 }

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 import vn.uit.edu.msshop.rating.adapter.in.web.mapper.RatingInfoWebMapper;
 import vn.uit.edu.msshop.rating.adapter.in.web.mapper.RatingWebMapper;
-import vn.uit.edu.msshop.rating.adapter.in.web.request.GetUpdatedRatingInfoRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.request.PostRatingRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.request.UpdateRatingRequest;
 import vn.uit.edu.msshop.rating.adapter.in.web.response.ImageViewResponse;
@@ -76,30 +75,16 @@ public class RatingController {
     }
 
     @GetMapping("/rating_info")
-    public ResponseEntity<Page<RatingInfoResponse>> findAllRatingInfoByPage(
+    public ResponseEntity<PageResponseDto<RatingInfoResponse>> findAllRatingInfoByPage(
             @RequestParam(
                     defaultValue = "0")
             int pageNumber,
             @RequestParam(
                     defaultValue = "7")
             int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        final var result = loadRatingInfoUseCase.loadAll(pageable);
-        return ResponseEntity.ok(result.map(ratingInfoWebMapper::toResponse));
-    }
+        final var pageRequest = new PageRequestDto(pageNumber, pageSize);
+        final var result = loadRatingInfoUseCase.loadAll(pageRequest);
 
-    @PostMapping("/updated_rating_info")
-    public ResponseEntity<Page<RatingInfoResponse>> findUpdatedRatingInfo(
-            @RequestParam(
-                    defaultValue = "0")
-            int pageNumber,
-            @RequestParam(
-                    defaultValue = "7")
-            int pageSize,
-            @RequestBody
-            GetUpdatedRatingInfoRequest request) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        final var result = loadRatingInfoUseCase.loadUpdatedRatingInfo(request.getStart(), request.getEnd(), pageable);
         return ResponseEntity.ok(result.map(ratingInfoWebMapper::toResponse));
     }
 
