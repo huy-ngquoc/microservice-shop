@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.rating.application.dto.command.UploadRatingImageCommand;
-import vn.uit.edu.msshop.rating.application.dto.query.ImageView;
+import vn.uit.edu.msshop.rating.application.dto.view.ImageView;
 import vn.uit.edu.msshop.rating.application.port.in.UploadRatingImageUseCase;
 import vn.uit.edu.msshop.rating.application.port.out.DeleteRatingImagePort;
 import vn.uit.edu.msshop.rating.application.port.out.LoadRatingPort;

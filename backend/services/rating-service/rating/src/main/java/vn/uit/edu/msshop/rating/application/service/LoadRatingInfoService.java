@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.uit.edu.msshop.rating.application.dto.query.RatingInfoView;
+import vn.uit.edu.msshop.rating.application.dto.view.RatingInfoView;
 import vn.uit.edu.msshop.rating.application.mapper.RatingInfoViewMapper;
 import vn.uit.edu.msshop.rating.application.port.in.LoadRatingInfoUseCase;
 import vn.uit.edu.msshop.rating.application.port.out.LoadRatingInfoPort;
