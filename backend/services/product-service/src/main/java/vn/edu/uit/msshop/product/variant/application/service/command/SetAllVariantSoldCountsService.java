@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.variant.application.dto.command.SetAllVariantSoldCountsCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantSoldCountsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantSoldCountsPort;
@@ -45,7 +46,8 @@ public class SetAllVariantSoldCountsService implements SetAllVariantSoldCountsUs
                             allEntries = true)
             })
     public void execute(
-            final Collection<VariantOrderSoldCount> orderSoldCounts) {
+            final SetAllVariantSoldCountsCommand command) {
+        final var orderSoldCounts = command.orderSoldCounts();
         if (orderSoldCounts.isEmpty()) {
             return;
         }

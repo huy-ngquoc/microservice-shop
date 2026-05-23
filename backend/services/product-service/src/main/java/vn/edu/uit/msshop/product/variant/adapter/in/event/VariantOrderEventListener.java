@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.in.event.payload.SetVariantSoldCountsEvent;
+import vn.edu.uit.msshop.product.variant.application.dto.command.SetAllVariantSoldCountsCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantSoldCountsUseCase;
 import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantOrderSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -25,7 +26,8 @@ public class VariantOrderEventListener {
                 .map(VariantOrderEventListener::toOrderSoldCount)
                 .toList();
 
-        this.setAllUseCase.execute(orderSoldCounts);
+        final var command = new SetAllVariantSoldCountsCommand(orderSoldCounts);
+        this.setAllUseCase.execute(command);
     }
 
     private static VariantOrderSoldCount toOrderSoldCount(
