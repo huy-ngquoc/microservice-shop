@@ -19,13 +19,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductResponseWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.HardDeleteProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RestoreProductUseCase;
@@ -50,7 +47,6 @@ public class ProductController {
     private final FindSoftDeletedProductUseCase findSoftDeletedUseCase;
     private final CreateProductUseCase createUseCase;
     private final RestoreProductUseCase restoreUseCase;
-    private final AddProductVariantsUseCase addVariantsUseCase;
     private final UpdateProductInfoUseCase updateInfoUseCase;
     private final SoftDeleteProductUseCase softDeleteUseCase;
     private final HardDeleteProductUseCase hardDeleteUseCase;
@@ -179,31 +175,6 @@ public class ProductController {
         this.restoreUseCase.restore(command);
 
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{id}/variants")
-    public ResponseEntity<ProductResponse> addVariant(
-            @PathVariable
-            final UUID id,
-
-            @RequestBody
-            @Valid
-            final AddProductVariantRequest request) {
-        final var command = this.mapper.toAddVariantsCommand(id, request);
-        final var view = this.addVariantsUseCase.addVariants(command);
-        return ResponseEntity.ok(this.responseMapper.toResponse(view));
-    }
-
-    @PostMapping("/{id}/variants/batch")
-    public ResponseEntity<ProductResponse> addAllVariants(
-            @PathVariable
-            final UUID id,
-            @RequestBody
-            @Valid
-            final AddProductVariantsRequest request) {
-        final var command = this.mapper.toAddVariantsCommand(id, request);
-        final var view = this.addVariantsUseCase.addVariants(command);
-        return ResponseEntity.ok(this.responseMapper.toResponse(view));
     }
 
     @PatchMapping("/{id}")
