@@ -46,6 +46,11 @@ import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
 @Component
 public class ProductWebMapper {
+    public ProductId toProductId(
+            final UUID id) {
+        return new ProductId(id);
+    }
+
     public CreateProductCommand toCreateCommand(
             final CreateProductRequest request) {
         final var name = new ProductName(request.name());
@@ -208,42 +213,6 @@ public class ProductWebMapper {
         final var version = new ProductVersion(expectedVersion);
 
         return new HardDeleteProductCommand(productId, version);
-    }
-
-    public ProductId toProductId(
-            final UUID id) {
-        return new ProductId(id);
-    }
-
-    public ProductResponse toResponse(
-            final ProductView view) {
-        final var variantsList = view.variants().stream()
-                .map(this::toVariantResponse)
-                .toList();
-
-        return new ProductResponse(
-                view.id(),
-                view.name(),
-                view.categoryId(),
-                view.brandId(),
-                view.minPrice(),
-                view.maxPrice(),
-                view.soldCount(),
-                view.stockCount(),
-                view.ratingTotal(),
-                view.ratingCount(),
-                view.options(),
-                variantsList,
-                view.imageKeys(),
-                view.version());
-    }
-
-    public ProductVariantResponse toVariantResponse(
-            final ProductVariantView view) {
-        return new ProductVariantResponse(
-                view.id(),
-                view.price(),
-                view.traits());
     }
 
     private static NewProductVariant toNewVariant(
