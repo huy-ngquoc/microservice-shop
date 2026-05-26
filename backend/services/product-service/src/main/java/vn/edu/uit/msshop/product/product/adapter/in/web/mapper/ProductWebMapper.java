@@ -5,28 +5,18 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.RemoveProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductOptionRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductVariantResponse;
-import vn.edu.uit.msshop.product.product.application.dto.command.AddProductOptionCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.HardDeleteProductCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductOptionCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.RestoreProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.SoftDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductOptionCommand;
-import vn.edu.uit.msshop.product.product.application.dto.view.ProductVariantView;
-import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
@@ -35,11 +25,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
@@ -99,21 +86,6 @@ public class ProductWebMapper {
         return new RestoreProductCommand(productId, version);
     }
 
-    public AddProductOptionCommand toAddOptionCommand(
-            final UUID id,
-            final AddProductOptionRequest request) {
-        final var productId = new ProductId(id);
-        final var option = new ProductOption(request.option());
-        final var defaultTrait = new ProductVariantTrait(request.defaultTrait());
-        final var version = new ProductVersion(request.expectedVersion());
-
-        return new AddProductOptionCommand(
-                productId,
-                option,
-                defaultTrait,
-                version);
-    }
-
     public AddProductVariantsCommand toAddVariantsCommand(
             final UUID id,
             final AddProductVariantRequest request) {
@@ -164,36 +136,6 @@ public class ProductWebMapper {
                 name,
                 categoryId,
                 brandId,
-                version);
-    }
-
-    public UpdateProductOptionCommand toUpdateOptionCommand(
-            final UUID id,
-            final int index,
-            final UpdateProductOptionRequest request) {
-        final var productId = new ProductId(id);
-        final var option = new ProductOption(request.option());
-        final var version = new ProductVersion(request.expectedVersion());
-
-        return new UpdateProductOptionCommand(
-                productId,
-                index,
-                option,
-                version);
-    }
-
-    public RemoveProductOptionCommand toRemoveOptionCommand(
-            final UUID id,
-            final int index,
-            final RemoveProductOptionRequest request) {
-        final var productId = new ProductId(id);
-        final var defaultPrice = ProductPrice.ofNullable(request.defaultPrice());
-        final var version = new ProductVersion(request.expectedVersion());
-
-        return new RemoveProductOptionCommand(
-                productId,
-                index,
-                defaultPrice,
                 version);
     }
 
