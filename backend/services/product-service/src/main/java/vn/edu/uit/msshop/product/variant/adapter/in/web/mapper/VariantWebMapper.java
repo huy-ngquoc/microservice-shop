@@ -12,21 +12,15 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.FindVariantsByIdsRequest;
-import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
-import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
-import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.query.ListVariantsQuery;
-import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTarget;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
@@ -99,28 +93,6 @@ public class VariantWebMapper {
                 version);
     }
 
-    public UpdateVariantImageCommand toUpdateImageCommand(
-            final UUID id,
-            final UpdateVariantImageRequest request) {
-        final var variantId = new VariantId(id);
-        final var imageKey = new VariantImageKey(request.newImageKey());
-        final var version = new VariantVersion(request.version());
-
-        return new UpdateVariantImageCommand(
-                variantId,
-                imageKey,
-                version);
-    }
-
-    public DeleteVariantImageCommand toDeleteImageCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var variantId = new VariantId(id);
-        final var version = new VariantVersion(expectedVersion);
-
-        return new DeleteVariantImageCommand(variantId, version);
-    }
-
     public SoftDeleteVariantCommand toSoftDeleteCommand(
             final UUID id,
             final long expectedVersion) {
@@ -168,13 +140,5 @@ public class VariantWebMapper {
         return views.stream()
                 .map(this::toResponse)
                 .toList();
-    }
-
-    public VariantImageResponse toImageResponse(
-            final VariantImageView view) {
-        return new VariantImageResponse(
-                view.id(),
-                view.imageKey(),
-                view.version());
     }
 }

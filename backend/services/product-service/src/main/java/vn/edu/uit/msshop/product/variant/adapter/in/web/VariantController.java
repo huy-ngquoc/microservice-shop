@@ -10,18 +10,13 @@ import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.mapper.VariantWebMapper;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.FindVariantsByIdsRequest;
-import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
-import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.DeleteVariantImageUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantImageUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantInfoUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindSoftDeletedVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantImageUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindAllVariantsByIdsUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.ListVariantsUseCase;
@@ -45,12 +40,9 @@ public class VariantController {
     private final ListVariantsUseCase listUseCase;
     private final FindAllVariantsByIdsUseCase findAllByIdsUseCase;
     private final FindVariantUseCase findUseCase;
-    private final FindVariantImageUseCase findImageUseCase;
     private final FindSoftDeletedVariantUseCase findSoftDeletedUseCase;
     private final RestoreVariantUseCase restoreUseCase;
     private final UpdateVariantInfoUseCase updateInfoUseCase;
-    private final UpdateVariantImageUseCase updateImageUseCase;
-    private final DeleteVariantImageUseCase deleteImageUseCase;
     private final SoftDeleteVariantUseCase softDeleteUseCase;
     private final HardDeleteVariantUseCase hardDeleteUseCase;
     private final VariantWebMapper mapper;
@@ -117,17 +109,6 @@ public class VariantController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}/image")
-    public ResponseEntity<VariantImageResponse> findImageById(
-            @PathVariable
-            final UUID id) {
-        final var view = this.findImageUseCase
-                .findImageById(this.mapper.toVariantId(id));
-
-        final var response = this.mapper.toImageResponse(view);
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/deleted/{id}")
     public ResponseEntity<VariantResponse> findSoftDeletedById(
             @PathVariable
@@ -164,35 +145,6 @@ public class VariantController {
         final var view = this.updateInfoUseCase.updateInfo(command);
 
         final var response = this.mapper.toResponse(view);
-        return ResponseEntity.ok(response);
-    }
-
-    @PatchMapping("/{id}/image")
-    public ResponseEntity<VariantImageResponse> updateImage(
-            @PathVariable
-            final UUID id,
-
-            @RequestBody
-            @Valid
-            final UpdateVariantImageRequest request) {
-        final var command = this.mapper.toUpdateImageCommand(id, request);
-        final var view = this.updateImageUseCase.updateImage(command);
-
-        final var response = this.mapper.toImageResponse(view);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{id}/image")
-    public ResponseEntity<VariantImageResponse> deleteImageById(
-            @PathVariable
-            final UUID id,
-
-            @RequestParam
-            final long version) {
-        final var command = this.mapper.toDeleteImageCommand(id, version);
-        final var view = this.deleteImageUseCase.deleteImage(command);
-
-        final var response = this.mapper.toImageResponse(view);
         return ResponseEntity.ok(response);
     }
 
