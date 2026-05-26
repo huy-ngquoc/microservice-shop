@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductResponseWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
@@ -63,6 +64,7 @@ public class ProductController {
     private final SoftDeleteProductUseCase softDeleteUseCase;
     private final HardDeleteProductUseCase hardDeleteUseCase;
     private final ProductWebMapper mapper;
+    private final ProductResponseWebMapper responseMapper;
 
     // TODO: product response has too much info.
     @GetMapping
@@ -86,7 +88,7 @@ public class ProductController {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = this.listUseCase.list(request);
 
-        final var response = views.map(this.mapper::toResponse);
+        final var response = views.map(this.responseMapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -111,7 +113,7 @@ public class ProductController {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = this.listSoftDeletedUseCase.listSoftDeleted(request);
 
-        final var response = views.map(this.mapper::toResponse);
+        final var response = views.map(this.responseMapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -121,7 +123,7 @@ public class ProductController {
             final UUID id) {
         final var view = this.findUseCase.findById(this.mapper.toProductId(id));
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -143,7 +145,7 @@ public class ProductController {
             final UUID id) {
         final var view = this.findSoftDeletedUseCase.findSoftDeletedById(this.mapper.toProductId(id));
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -154,7 +156,7 @@ public class ProductController {
             final CreateProductRequest request) {
         final var view = this.createUseCase.create(this.mapper.toCreateCommand(request));
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         final var location = WebMvcLinkBuilder
                 .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
 
@@ -168,7 +170,7 @@ public class ProductController {
             final CreateSimpleProductRequest request) {
         final var view = this.createUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         final var location = WebMvcLinkBuilder
                 .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
 
@@ -198,7 +200,7 @@ public class ProductController {
             final AddProductOptionRequest request) {
         final var command = this.mapper.toAddOptionCommand(id, request);
         final var view = this.addOptionUseCase.addOption(command);
-        return ResponseEntity.ok(this.mapper.toResponse(view));
+        return ResponseEntity.ok(this.responseMapper.toResponse(view));
     }
 
     @PostMapping("/{id}/variants")
@@ -211,7 +213,7 @@ public class ProductController {
             final AddProductVariantRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
         final var view = this.addVariantsUseCase.addVariants(command);
-        return ResponseEntity.ok(this.mapper.toResponse(view));
+        return ResponseEntity.ok(this.responseMapper.toResponse(view));
     }
 
     @PostMapping("/{id}/variants/batch")
@@ -223,7 +225,7 @@ public class ProductController {
             final AddProductVariantsRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
         final var view = this.addVariantsUseCase.addVariants(command);
-        return ResponseEntity.ok(this.mapper.toResponse(view));
+        return ResponseEntity.ok(this.responseMapper.toResponse(view));
     }
 
     @PatchMapping("/{id}")
@@ -237,7 +239,7 @@ public class ProductController {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
         final var view = this.updateInfoUseCase.updateInfo(command);
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -252,7 +254,7 @@ public class ProductController {
             final UpdateProductOptionRequest request) {
         final var command = this.mapper.toUpdateOptionCommand(id, index, request);
         final var view = this.updateOptionUseCase.updateOption(command);
-        return ResponseEntity.ok(this.mapper.toResponse(view));
+        return ResponseEntity.ok(this.responseMapper.toResponse(view));
     }
 
     @DeleteMapping("/{id}/options/{index}")
@@ -268,7 +270,7 @@ public class ProductController {
             final RemoveProductOptionRequest request) {
         final var command = this.mapper.toRemoveOptionCommand(id, index, request);
         final var view = this.removeOptionUseCase.removeOption(command);
-        return ResponseEntity.ok(this.mapper.toResponse(view));
+        return ResponseEntity.ok(this.responseMapper.toResponse(view));
     }
 
     @DeleteMapping("/{id}")
