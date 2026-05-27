@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductOptionWebMapper;
-import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductResponseWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.RemoveProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductOptionRequest;
@@ -31,7 +31,7 @@ public class ProductOptionController {
     private final UpdateProductOptionUseCase updateOptionUseCase;
     private final RemoveProductOptionUseCase removeOptionUseCase;
     private final ProductOptionWebMapper mapper;
-    private final ProductResponseWebMapper responseMapper;
+    private final ProductSharedWebMapper sharedMapper;
 
     @PostMapping("/{id}/options")
     public ResponseEntity<ProductResponse> addOption(
@@ -43,7 +43,7 @@ public class ProductOptionController {
             final AddProductOptionRequest request) {
         final var command = this.mapper.toAddOptionCommand(id, request);
         final var view = this.addOptionUseCase.addOption(command);
-        return ResponseEntity.ok(this.responseMapper.toResponse(view));
+        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 
     @PatchMapping("/{id}/options/{index}")
@@ -59,7 +59,7 @@ public class ProductOptionController {
             final UpdateProductOptionRequest request) {
         final var command = this.mapper.toUpdateOptionCommand(id, index, request);
         final var view = this.updateOptionUseCase.updateOption(command);
-        return ResponseEntity.ok(this.responseMapper.toResponse(view));
+        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 
     @DeleteMapping("/{id}/options/{index}")
@@ -75,6 +75,6 @@ public class ProductOptionController {
             final RemoveProductOptionRequest request) {
         final var command = this.mapper.toRemoveOptionCommand(id, index, request);
         final var view = this.removeOptionUseCase.removeOption(command);
-        return ResponseEntity.ok(this.responseMapper.toResponse(view));
+        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 }

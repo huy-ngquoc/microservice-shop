@@ -28,11 +28,6 @@ import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
 @Component
 public class ProductWebMapper {
-    public ProductId toProductId(
-            final UUID id) {
-        return new ProductId(id);
-    }
-
     public CreateProductCommand toCreateCommand(
             final CreateProductRequest request) {
         final var name = new ProductName(request.name());

@@ -1,14 +1,22 @@
 package vn.edu.uit.msshop.product.product.adapter.in.web.mapper;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductVariantResponse;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductVariantView;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Component
-public class ProductResponseWebMapper {
+public class ProductSharedWebMapper {
+    public ProductId toProductId(
+            final UUID id) {
+        return new ProductId(id);
+    }
+
     public ProductResponse toResponse(
             final ProductView view) {
         final var variantsList = view.variants().stream()
