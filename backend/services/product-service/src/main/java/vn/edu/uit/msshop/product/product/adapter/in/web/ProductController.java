@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductResponseWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
@@ -49,7 +49,7 @@ public class ProductController {
     private final SoftDeleteProductUseCase softDeleteUseCase;
     private final HardDeleteProductUseCase hardDeleteUseCase;
     private final ProductWebMapper mapper;
-    private final ProductResponseWebMapper responseMapper;
+    private final ProductSharedWebMapper sharedMapper;
 
     @GetMapping
     public ResponseEntity<PageResponseDto<ProductResponse>> list(
@@ -72,7 +72,7 @@ public class ProductController {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = this.listUseCase.list(request);
 
-        final var response = views.map(this.responseMapper::toResponse);
+        final var response = views.map(this.sharedMapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -97,7 +97,7 @@ public class ProductController {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = this.listSoftDeletedUseCase.listSoftDeleted(request);
 
-        final var response = views.map(this.responseMapper::toResponse);
+        final var response = views.map(this.sharedMapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -105,9 +105,9 @@ public class ProductController {
     public ResponseEntity<ProductResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findUseCase.findById(this.mapper.toProductId(id));
+        final var view = this.findUseCase.findById(this.sharedMapper.toProductId(id));
 
-        final var response = this.responseMapper.toResponse(view);
+        final var response = this.sharedMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -115,9 +115,10 @@ public class ProductController {
     public ResponseEntity<ProductResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
-        final var view = this.findSoftDeletedUseCase.findSoftDeletedById(this.mapper.toProductId(id));
+        final var view = this.findSoftDeletedUseCase.findSoftDeletedById(
+                this.sharedMapper.toProductId(id));
 
-        final var response = this.responseMapper.toResponse(view);
+        final var response = this.sharedMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -128,7 +129,7 @@ public class ProductController {
             final CreateProductRequest request) {
         final var view = this.createUseCase.create(this.mapper.toCreateCommand(request));
 
-        final var response = this.responseMapper.toResponse(view);
+        final var response = this.sharedMapper.toResponse(view);
         final var location = WebMvcLinkBuilder
                 .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
 
@@ -142,7 +143,7 @@ public class ProductController {
             final CreateSimpleProductRequest request) {
         final var view = this.createUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
 
-        final var response = this.responseMapper.toResponse(view);
+        final var response = this.sharedMapper.toResponse(view);
         final var location = WebMvcLinkBuilder
                 .linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).findById(response.id())).toUri();
 
@@ -173,7 +174,7 @@ public class ProductController {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
         final var view = this.updateInfoUseCase.updateInfo(command);
 
-        final var response = this.responseMapper.toResponse(view);
+        final var response = this.sharedMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
