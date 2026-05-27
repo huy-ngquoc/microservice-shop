@@ -89,7 +89,7 @@ public class OrderOutboxProcessor {
         if (outbox.getRetryCount() >= 5) {
             outbox.setOutboxStatus("COMPLETED");
             final var isInsufficient = e.status() == 400;
-            String newOrderStatus = isInsufficient ? "INSUFFICIENT_STOCK" : "CANCELLED_BEFORE_PROCESS";
+            String newOrderStatus = isInsufficient ? "INSUFFICIENT_STOCK" : "ERROR";
             final var toSave = order.updateStatus(new OrderStatus(newOrderStatus));
             savePort.save(toSave);
             final var savedEvent = orderUpdatedRepo.save(getOrderUpdatedEvent(order));
