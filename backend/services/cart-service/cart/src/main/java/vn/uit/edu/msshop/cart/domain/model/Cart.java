@@ -1,7 +1,10 @@
 package vn.uit.edu.msshop.cart.domain.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
@@ -89,22 +92,35 @@ public class Cart {
                 .build();
     }
 
-    public Cart applyUpdateInfo(
-            Cart.UpdateInfo u) {
-        if (u == null)
-            throw new IllegalArgumentException("Invalid update info");
-        if (!u.userId.value().equals(this.userId.value()))
-            throw new IllegalArgumentException("Invalid update info, user id does not match");
-        List<CartDetail> updatedCartDetails= new ArrayList<>();
-        for (CartDetail.UpdateInfo cUpdateInfo : u.detailUpdateInfos()) {
-            final var detail = findByVariantId(cUpdateInfo.variantId());
-            if (detail != null) {
-                updatedCartDetails.add(detail.applyUpdateInfo(cUpdateInfo));
-
-            }
+    public Cart applyUpdateInfo(Cart.UpdateInfo u) {
+    if (u == null)
+        throw new IllegalArgumentException("Invalid update info");
+    if (!u.userId.value().equals(this.userId.value()))
+        throw new IllegalArgumentException("Invalid update info, user id does not match");
+        
+    List<CartDetail> updatedCartDetails = new ArrayList<>();
+    
+    // Duyệt qua tất cả các item hiện có trong giỏ hàng để đảm bảo không mất item nào
+    for (CartDetail currentDetail : this.details) {
+        // Tìm xem item hiện tại có nằm trong danh sách cần update không
+        CartDetail.UpdateInfo matchUpdate = u.detailUpdateInfos().stream()
+                .filter(info -> info.variantId().value().equals(currentDetail.getVariantId().value()))
+                .findFirst()
+                .orElse(null);
+                
+        if (matchUpdate != null) {
+            // Nếu có update, apply thông tin mới
+            updatedCartDetails.add(currentDetail.applyUpdateInfo(matchUpdate));
+        } else {
+            // Nếu không, giữ nguyên item cũ
+            updatedCartDetails.add(currentDetail);
         }
-        return Cart.builder().userId(this.userId).details(updatedCartDetails).build();
     }
+    
+    return Cart.builder().userId(this.userId).details(updatedCartDetails).build();
+}
+    
+    
 
     public static Cart createEmpty(
             UserId userId) {
