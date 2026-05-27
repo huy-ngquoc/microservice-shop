@@ -28,7 +28,6 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.HardDeleteP
 import vn.edu.uit.msshop.product.product.application.port.in.command.RestoreProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.SoftDeleteProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductInfoUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.FindProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.FindSoftDeletedProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.ListProductsUseCase;
@@ -43,7 +42,6 @@ public class ProductController {
     private final ListProductsUseCase listUseCase;
     private final ListSoftDeletedProductsUseCase listSoftDeletedUseCase;
     private final FindProductUseCase findUseCase;
-    private final CheckProductExistsUseCase checkExistsUseCase;
     private final FindSoftDeletedProductUseCase findSoftDeletedUseCase;
     private final CreateProductUseCase createUseCase;
     private final RestoreProductUseCase restoreUseCase;
@@ -53,7 +51,6 @@ public class ProductController {
     private final ProductWebMapper mapper;
     private final ProductResponseWebMapper responseMapper;
 
-    // TODO: product response has too much info.
     @GetMapping
     public ResponseEntity<PageResponseDto<ProductResponse>> list(
             @RequestParam(
@@ -112,18 +109,6 @@ public class ProductController {
 
         final var response = this.responseMapper.toResponse(view);
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{id}/exists")
-    public ResponseEntity<Void> existsById(
-            @PathVariable
-            final UUID id) {
-        final var existed = this.checkExistsUseCase.existsById(this.mapper.toProductId(id));
-        if (!existed) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/deleted/{id}")
