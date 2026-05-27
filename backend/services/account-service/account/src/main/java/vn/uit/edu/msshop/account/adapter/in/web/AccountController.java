@@ -57,7 +57,7 @@ public class AccountController {
         return ResponseEntity.ok(response);  
     }
     @GetMapping("/keycloak/{id}")
-    public ResponseEntity<AccountResponse> findByKeycloakId(@PathVariable UUID id, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Role") String userRole) {
+    public ResponseEntity<AccountResponse> findByKeycloakId(@PathVariable UUID id, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") String userRole) {
         final var view = this.findUseCase.findByKeycloakId(new KeyCloakId(id));
         if(!"Client_Admin".equals(userRole)) {
             if(view.keyCloakId()==null||!view.keyCloakId().equals(userId)) {
