@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductResponseWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductVariantWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
@@ -24,7 +24,7 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductV
 public class ProductVariantController {
     private final AddProductVariantsUseCase addVariantsUseCase;
     private final ProductVariantWebMapper mapper;
-    private final ProductResponseWebMapper responseMapper;
+    private final ProductSharedWebMapper sharedMapper;
 
     @PostMapping("/{id}/variants")
     public ResponseEntity<ProductResponse> addVariant(
@@ -36,7 +36,7 @@ public class ProductVariantController {
             final AddProductVariantRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
         final var view = this.addVariantsUseCase.addVariants(command);
-        return ResponseEntity.ok(this.responseMapper.toResponse(view));
+        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 
     @PostMapping("/{id}/variants/batch")
@@ -48,6 +48,6 @@ public class ProductVariantController {
             final AddProductVariantsRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
         final var view = this.addVariantsUseCase.addVariants(command);
-        return ResponseEntity.ok(this.responseMapper.toResponse(view));
+        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 }
