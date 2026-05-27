@@ -1,16 +1,12 @@
 package vn.edu.uit.msshop.product.product.adapter.in.web.mapper;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
-import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.HardDeleteProductCommand;
@@ -27,7 +23,6 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
@@ -86,41 +81,6 @@ public class ProductWebMapper {
         return new RestoreProductCommand(productId, version);
     }
 
-    public AddProductVariantsCommand toAddVariantsCommand(
-            final UUID id,
-            final AddProductVariantRequest request) {
-        final var productId = new ProductId(id);
-        final var version = new ProductVersion(request.expectedVersion());
-
-        final var variantPrice = new ProductVariantPrice(request.price());
-        final var variantTraits = ProductVariantTraits.of(request.traits());
-        final var variantTargets = ProductVariantTargets.of(request.targets());
-        final var newVariant = new NewProductVariant(variantPrice, variantTraits, variantTargets);
-        final var newVariants = new NewProductVariants(List.of(newVariant));
-
-        return new AddProductVariantsCommand(
-                productId,
-                newVariants,
-                version);
-    }
-
-    public AddProductVariantsCommand toAddVariantsCommand(
-            final UUID id,
-            final AddProductVariantsRequest request) {
-        final var productId = new ProductId(id);
-        final var version = new ProductVersion(request.expectedVersion());
-
-        final var newVariantsList = request.variants().stream()
-                .map(ProductWebMapper::toNewVariant)
-                .toList();
-        final var newVariants = new NewProductVariants(newVariantsList);
-
-        return new AddProductVariantsCommand(
-                productId,
-                newVariants,
-                version);
-    }
-
     public UpdateProductInfoCommand toUpdateInfoCommand(
             final UUID id,
             final UpdateProductInfoRequest request) {
@@ -155,17 +115,5 @@ public class ProductWebMapper {
         final var version = new ProductVersion(expectedVersion);
 
         return new HardDeleteProductCommand(productId, version);
-    }
-
-    private static NewProductVariant toNewVariant(
-            final AddProductVariantsRequest.ProductVariantRequest request) {
-        final var variantPrice = new ProductVariantPrice(request.price());
-        final var variantTraits = ProductVariantTraits.of(request.traits());
-        final var variantTargets = ProductVariantTargets.of(request.targets());
-
-        return new NewProductVariant(
-                variantPrice,
-                variantTraits,
-                variantTargets);
     }
 }
