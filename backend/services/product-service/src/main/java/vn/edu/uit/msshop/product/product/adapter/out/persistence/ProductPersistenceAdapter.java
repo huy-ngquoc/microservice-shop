@@ -10,12 +10,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductPersistenceMapper;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByBrandPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByCategoryPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByVariantPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckSoftDeletedProductExistsByBrandPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckSoftDeletedProductExistsByCategoryPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListProductsPort;
@@ -27,10 +21,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.Update
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
@@ -45,12 +36,6 @@ public class ProductPersistenceAdapter
         LoadProductPort,
         LoadAllProductsPort,
         LoadSoftDeletedProductPort,
-        CheckProductExistsPort,
-        CheckProductExistsByBrandPort,
-        CheckProductExistsByCategoryPort,
-        CheckSoftDeletedProductExistsByBrandPort,
-        CheckSoftDeletedProductExistsByCategoryPort,
-        CheckProductExistsByVariantPort,
         CreateProductPort,
         UpdateProductPort,
         UpdateAllProductsPort,
@@ -113,48 +98,6 @@ public class ProductPersistenceAdapter
         final var jpaId = id.value();
         return this.repository.findByIdAndDeletionTimeIsNotNull(jpaId)
                 .map(this.mapper::toDomain);
-    }
-
-    @Override
-    public boolean existsById(
-            final ProductId id) {
-        final var jpaId = id.value();
-        return this.repository.existsByIdAndDeletionTimeIsNull(jpaId);
-    }
-
-    @Override
-    public boolean existsByBrandId(
-            final ProductBrandId brandId) {
-        final var jpaBrandId = brandId.value();
-        return this.repository.existsByBrandIdAndDeletionTimeIsNull(jpaBrandId);
-    }
-
-    @Override
-    public boolean existsByCategoryId(
-            final ProductCategoryId categoryId) {
-        final var jpaCategoryId = categoryId.value();
-        return this.repository.existsByCategoryIdAndDeletionTimeIsNull(jpaCategoryId);
-    }
-
-    @Override
-    public boolean existsSoftDeletedByBrandId(
-            final ProductBrandId brandId) {
-        final var jpaBrandId = brandId.value();
-        return this.repository.existsByBrandIdAndDeletionTimeIsNotNull(jpaBrandId);
-    }
-
-    @Override
-    public boolean existsSoftDeletedByCategoryId(
-            final ProductCategoryId categoryId) {
-        final var jpaCategoryId = categoryId.value();
-        return this.repository.existsByCategoryIdAndDeletionTimeIsNotNull(jpaCategoryId);
-    }
-
-    @Override
-    public boolean existsByVariantId(
-            final ProductVariantId variantId) {
-        final var jpaVariantId = variantId.value();
-        return this.repository.existsByVariants_Id(jpaVariantId);
     }
 
     @Override
