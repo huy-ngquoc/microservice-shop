@@ -1,31 +1,23 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductPersistenceMapper;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadAllProductsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateAllProductsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
-import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Component
 @RequiredArgsConstructor
@@ -35,11 +27,7 @@ public class ProductPersistenceAdapter
         ListSoftDeletedProductsPort,
         LoadProductPort,
         LoadAllProductsPort,
-        LoadSoftDeletedProductPort,
-        CreateProductPort,
-        UpdateProductPort,
-        UpdateAllProductsPort,
-        DeleteProductPort {
+        LoadSoftDeletedProductPort {
     private final ProductMongoRepository repository;
     private final ProductPersistenceMapper mapper;
 
@@ -98,70 +86,5 @@ public class ProductPersistenceAdapter
         final var jpaId = id.value();
         return this.repository.findByIdAndDeletionTimeIsNotNull(jpaId)
                 .map(this.mapper::toDomain);
-    }
-
-    @Override
-    public Product create(
-            final NewProduct newProduct) {
-        final var toSave = this.mapper.toPersistence(newProduct);
-        final var saved = this.repository.save(toSave);
-        return this.mapper.toDomain(saved);
-    }
-
-    @Override
-    public Product update(
-            final Product product) {
-        final var toSave = this.mapper.toPersistence(product);
-
-        final ProductDocument saved;
-        try {
-            saved = this.repository.save(toSave);
-        } catch (final OptimisticLockingFailureException _) {
-            final var expected = product.getVersion().value();
-            final var current = this.repository.findById(toSave.getId())
-                    .map(ProductDocument::getVersion)
-                    .orElse(-1L);
-            throw new OptimisticLockException(expected, current);
-        }
-
-        return this.mapper.toDomain(saved);
-    }
-
-    @Override
-    public List<Product> updateAll(
-            final Collection<Product> products) {
-        if (products.isEmpty()) {
-            return List.of();
-        }
-
-        final var toSaveAll = products.stream()
-                .map(this.mapper::toPersistence)
-                .toList();
-        final var savedAll = new ArrayList<ProductDocument>(toSaveAll.size());
-        for (final var toSave : toSaveAll) {
-            final ProductDocument saved;
-            try {
-                saved = this.repository.save(toSave);
-            } catch (final OptimisticLockingFailureException _) {
-                final var expected = toSave.getVersion();
-                final var current = this.repository.findById(toSave.getId())
-                        .map(ProductDocument::getVersion)
-                        .orElse(null);
-                throw new OptimisticLockException(expected, current);
-            }
-
-            savedAll.add(saved);
-        }
-
-        return savedAll.stream()
-                .map(this.mapper::toDomain)
-                .toList();
-    }
-
-    @Override
-    public void deleteById(
-            final ProductId id) {
-        final var jpaId = id.value();
-        this.repository.deleteById(jpaId);
     }
 }
