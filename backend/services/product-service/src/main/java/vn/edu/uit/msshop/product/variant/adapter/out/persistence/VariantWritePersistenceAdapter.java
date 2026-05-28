@@ -1,0 +1,104 @@
+package vn.edu.uit.msshop.product.variant.adapter.out.persistence;
+
+import java.util.Collection;
+import java.util.List;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Component;
+
+import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantPersistenceMapper;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantsForProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsProductNameForProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
+import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
+
+@Component
+@RequiredArgsConstructor
+public class VariantWritePersistenceAdapter
+        implements
+        CreateVariantPort,
+        CreateAllVariantsPort,
+        UpdateVariantPort,
+        UpdateAllVariantsPort,
+        UpdateAllVariantsProductNameForProductPort,
+        DeleteVariantPort,
+        DeleteVariantsForProductPort {
+    private final VariantMongoRepository repository;
+    private final VariantPersistenceMapper mapper;
+    private final MongoTemplate mongoTemplate;
+
+    @Override
+    public Variant create(
+            final NewVariant newVariant) {
+        final var toSave = this.mapper.toPersistence(newVariant);
+        final var saved = this.repository.save(toSave);
+        return this.mapper.toDomain(saved);
+    }
+
+    @Override
+    public List<Variant> createAll(
+            final Collection<NewVariant> newVariants) {
+        final var toSave = newVariants.stream()
+                .map(this.mapper::toPersistence)
+                .toList();
+        final var saved = this.repository.saveAll(toSave);
+        return saved.stream()
+                .map(this.mapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public Variant update(
+            final Variant variant) {
+        final var toSave = this.mapper.toPersistence(variant);
+        final var saved = this.repository.save(toSave);
+        return this.mapper.toDomain(saved);
+    }
+
+    @Override
+    public List<Variant> updateAll(
+            final Collection<Variant> variants) {
+        final var toSave = variants.stream()
+                .map(this.mapper::toPersistence)
+                .toList();
+        final var saved = this.repository.saveAll(toSave);
+        return saved.stream()
+                .map(this.mapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public void updateProductNameByProductId(
+            final VariantProductId productId,
+            final VariantProductName productName) {
+        final var query = Query.query(Criteria.where(VariantDocument.Fields.productId).is(productId.value()));
+        final var update = Update.update(VariantDocument.Fields.productName, productName.value());
+        this.mongoTemplate.updateMulti(query, update, VariantDocument.class);
+    }
+
+    @Override
+    public void deleteById(
+            final VariantId id) {
+        // TODO: variable name "jpaId" is suitable?
+        final var jpaId = id.value();
+        this.repository.deleteById(jpaId);
+    }
+
+    @Override
+    public void deleteByProductId(
+            final VariantProductId productId) {
+        final var jpaProductId = productId.value();
+        this.repository.deleteAllByProductId(jpaProductId);
+    }
+}

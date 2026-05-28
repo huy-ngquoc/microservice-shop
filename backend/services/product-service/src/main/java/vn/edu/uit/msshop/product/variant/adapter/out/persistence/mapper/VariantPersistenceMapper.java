@@ -1,6 +1,11 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -19,6 +24,16 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion
 
 @Component
 public class VariantPersistenceMapper {
+    private static final Collector<
+            Variant,
+            ?,
+            Map<VariantId, Variant>> INDEX_BY_ID = Collectors
+                    .toUnmodifiableMap(
+                            Variant::getId,
+                            Function.identity(), (
+                                    existing,
+                                    replacement) -> existing);
+
     public Variant toDomain(
             final VariantDocument entity) {
         final var id = new VariantId(entity.getId());
@@ -47,6 +62,13 @@ public class VariantPersistenceMapper {
                 imageKey,
                 version,
                 deletionTime);
+    }
+
+    public Map<VariantId, Variant> toDomainMap(
+            final Collection<VariantDocument> docs) {
+        return docs.stream()
+                .map(this::toDomain)
+                .collect(VariantPersistenceMapper.INDEX_BY_ID);
     }
 
     public VariantDocument toPersistence(
