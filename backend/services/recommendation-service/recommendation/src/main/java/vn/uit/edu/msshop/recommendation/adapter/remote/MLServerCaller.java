@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import vn.uit.edu.msshop.recommendation.adapter.in.web.response.AIServerResponse;
 
-@FeignClient(name="ML-Service", url="http://localhost:8082")
+@FeignClient(name="ML-Service", url="http://host.docker.internal:9090")
 public interface MLServerCaller {
 @PostMapping(
         value = "/", 
