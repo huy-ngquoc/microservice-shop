@@ -21,7 +21,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Component
 @RequiredArgsConstructor
-public class ProductPersistenceAdapter
+public class ProductWritePersistenceAdapter
         implements
         ListProductsPort,
         ListSoftDeletedProductsPort,
