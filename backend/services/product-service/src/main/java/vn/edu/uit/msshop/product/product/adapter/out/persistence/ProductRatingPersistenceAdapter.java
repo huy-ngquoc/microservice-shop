@@ -27,7 +27,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.Update
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductRatingPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.variant.adapter.out.persistence.VariantSoldCountDocument;
 
 @Component
 @RequiredArgsConstructor
