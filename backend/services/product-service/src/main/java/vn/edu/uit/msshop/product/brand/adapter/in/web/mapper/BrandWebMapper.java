@@ -12,13 +12,7 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoReq
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.adapter.out.logo.BrandLogoStorageAdapter;
-import vn.edu.uit.msshop.product.brand.application.dto.command.CreateBrandCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.command.DeleteBrandLogoCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.command.HardDeleteBrandCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.command.RestoreBrandCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.command.SoftDeleteBrandCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandInfoCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandLogoCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
@@ -34,23 +28,23 @@ import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryImageUrlResolve
 public class BrandWebMapper {
     private final CloudinaryImageUrlResolver urlResolver;
 
-    public CreateBrandCommand toCreateCommand(
+    public BrandLifecycleCommands.Create toCreateCommand(
             final CreateBrandRequest request) {
         final var name = new BrandName(request.name());
 
-        return new CreateBrandCommand(name);
+        return new BrandLifecycleCommands.Create(name);
     }
 
-    public RestoreBrandCommand toRestoreCommand(
+    public BrandLifecycleCommands.Restore toRestoreCommand(
             final UUID id,
             final long expectedVersion) {
         final var brandId = new BrandId(id);
         final var version = new BrandVersion(expectedVersion);
 
-        return new RestoreBrandCommand(brandId, version);
+        return new BrandLifecycleCommands.Restore(brandId, version);
     }
 
-    public UpdateBrandInfoCommand toUpdateInfoCommand(
+    public BrandLifecycleCommands.UpdateInfo toUpdateInfoCommand(
             final UUID id,
             final UpdateBrandInfoRequest request) {
         final var brandId = new BrandId(id);
@@ -58,44 +52,44 @@ public class BrandWebMapper {
 
         final var name = ChangeRequest.toChange(request.name(), BrandName::new);
 
-        return new UpdateBrandInfoCommand(brandId, name, version);
+        return new BrandLifecycleCommands.UpdateInfo(brandId, name, version);
     }
 
-    public UpdateBrandLogoCommand toUpdateLogoCommand(
+    public BrandLifecycleCommands.UpdateLogo toUpdateLogoCommand(
             final UUID id,
             final UpdateBrandLogoRequest request) {
         final var brandId = new BrandId(id);
         final var logoKey = BrandWebMapper.extractKeyFromTempPublicId(request.newLogoKey());
         final var version = new BrandVersion(request.version());
 
-        return new UpdateBrandLogoCommand(brandId, logoKey, version);
+        return new BrandLifecycleCommands.UpdateLogo(brandId, logoKey, version);
     }
 
-    public DeleteBrandLogoCommand toDeleteLogoCommand(
+    public BrandLifecycleCommands.DeleteLogo toDeleteLogoCommand(
             final UUID id,
             final long expectedVersion) {
         final var brandId = new BrandId(id);
         final var version = new BrandVersion(expectedVersion);
 
-        return new DeleteBrandLogoCommand(brandId, version);
+        return new BrandLifecycleCommands.DeleteLogo(brandId, version);
     }
 
-    public SoftDeleteBrandCommand toSoftDeleteCommand(
+    public BrandLifecycleCommands.SoftDelete toSoftDeleteCommand(
             final UUID id,
             final long expectedVersion) {
         final var brandId = new BrandId(id);
         final var version = new BrandVersion(expectedVersion);
 
-        return new SoftDeleteBrandCommand(brandId, version);
+        return new BrandLifecycleCommands.SoftDelete(brandId, version);
     }
 
-    public HardDeleteBrandCommand toHardDeleteCommand(
+    public BrandLifecycleCommands.HardDelete toHardDeleteCommand(
             final UUID id,
             final long expectedVersion) {
         final var brandId = new BrandId(id);
         final var version = new BrandVersion(expectedVersion);
 
-        return new HardDeleteBrandCommand(brandId, version);
+        return new BrandLifecycleCommands.HardDelete(brandId, version);
     }
 
     public BrandId toBrandId(

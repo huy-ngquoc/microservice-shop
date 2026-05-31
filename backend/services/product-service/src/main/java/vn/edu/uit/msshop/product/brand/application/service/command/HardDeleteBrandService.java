@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.brand.application.dto.command.HardDeleteBrandCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.HardDeleteBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
@@ -32,7 +32,7 @@ public class HardDeleteBrandService implements HardDeleteBrandUseCase {
     @Override
     @Transactional
     public void purge(
-            final HardDeleteBrandCommand command) {
+            final BrandLifecycleCommands.HardDelete command) {
         final var brandId = command.id();
         final var brand = this.loadSoftDeletedPort.loadSoftDeletedById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
