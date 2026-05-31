@@ -10,31 +10,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
-import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CreateBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.DeleteBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasProductsPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasSoftDeletedProductsPort;
-import vn.edu.uit.msshop.product.brand.domain.event.BrandCreated;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandPurged;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandRestored;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandSoftDeleted;
-import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
-import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandDeletionTime;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
-import vn.edu.uit.msshop.shared.application.dto.Change;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
@@ -43,14 +34,11 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Slf4j
 public class BrandLifecycleService
         implements
-        BrandLifecycleUseCases.Create,
-        BrandLifecycleUseCases.UpdateInfo,
         BrandLifecycleUseCases.SoftDelete,
         BrandLifecycleUseCases.Restore,
         BrandLifecycleUseCases.HardDelete {
     private final LoadBrandPort loadPort;
     private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
-    private final CreateBrandPort createPort;
     private final UpdateBrandPort updatePort;
     private final DeleteBrandPort deletePort;
 
@@ -59,67 +47,7 @@ public class BrandLifecycleService
     private final CheckBrandHasProductsPort checkHasProductsPort;
     private final CheckBrandHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
 
-    private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
-
-    @Override
-    @Transactional
-    @CacheEvict(
-            cacheNames = CacheNames.BRAND_LIST,
-            allEntries = true)
-    public BrandView create(
-            final BrandLifecycleCommands.Create cmd) {
-        final var brand = new NewBrand(
-                BrandId.newId(),
-                cmd.name());
-
-        final var saved = this.createPort.create(brand);
-        this.eventPort.publish(new BrandCreated(saved.getId()));
-
-        return this.mapper.toView(saved);
-    }
-
-    @Override
-    @Transactional
-    @Caching(
-            evict = {
-                    @CacheEvict(
-                            cacheNames = CacheNames.BRAND,
-                            key = "#command.id().value()",
-                            condition = "#command.name().getSet() != null"),
-                    @CacheEvict(
-                            cacheNames = CacheNames.BRAND_LIST,
-                            allEntries = true,
-                            condition = "#command.name().getSet() != null")
-            })
-    public BrandView updateInfo(
-            final BrandLifecycleCommands.UpdateInfo cmd) {
-        final var brand = this.loadPort.loadById(cmd.id())
-                .orElseThrow(() -> new BrandNotFoundException(cmd.id()));
-
-        final var nameSet = cmd.name().getSet();
-        if (nameSet == null) {
-            return this.mapper.toView(brand);
-        }
-
-        final var expectedVersion = cmd.expectedVersion();
-        final var currentVersion = brand.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
-
-        final var next = BrandLifecycleService.applyChanges(brand, nameSet);
-        if (next == null) {
-            return this.mapper.toView(brand);
-        }
-
-        final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new BrandUpdated(saved.getId()));
-
-        return this.mapper.toView(saved);
-    }
 
     @Override
     @Transactional
@@ -215,24 +143,6 @@ public class BrandLifecycleService
         this.eventPort.publish(new BrandPurged(brandId));
 
         this.deleteLogo(brand.getLogoKey());
-    }
-
-    private static @Nullable Brand applyChanges(
-            final Brand current,
-            final Change.Set<BrandName> nameSet) {
-        final var applyNameResult = Change.Set.applyChange(
-                nameSet,
-                current.getName());
-        if (!applyNameResult.changed()) {
-            return null;
-        }
-
-        return new Brand(
-                current.getId(),
-                applyNameResult.newValue(),
-                current.getLogoKey(),
-                current.getVersion(),
-                current.getDeletionTime());
     }
 
     private void deleteLogo(
