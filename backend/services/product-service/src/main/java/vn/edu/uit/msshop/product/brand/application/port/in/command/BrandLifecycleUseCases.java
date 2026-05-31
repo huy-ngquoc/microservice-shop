@@ -4,6 +4,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCom
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 
 public final class BrandLifecycleUseCases {
+
     private BrandLifecycleUseCases() {
     }
 

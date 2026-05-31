@@ -33,6 +33,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequestMapping("/brands")
 @RequiredArgsConstructor
 public class BrandController {
+
     private final BrandLookupUseCases.ListActive listUseCase;
     private final BrandLookupUseCases.ListSoftDeleted listSoftDeletedUseCase;
     private final BrandLookupUseCases.FindActiveById findUseCase;

@@ -31,6 +31,7 @@ public class BrandLogoLifecycleService
         implements
         BrandLogoLifecycleUseCases.Update,
         BrandLogoLifecycleUseCases.Delete {
+
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
 
