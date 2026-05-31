@@ -27,6 +27,7 @@ import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryImageUrlResolve
 @Component
 @RequiredArgsConstructor
 public class BrandWebMapper {
+
     private final CloudinaryImageUrlResolver urlResolver;
 
     public BrandLifecycleCommands.Create toCreateCommand(

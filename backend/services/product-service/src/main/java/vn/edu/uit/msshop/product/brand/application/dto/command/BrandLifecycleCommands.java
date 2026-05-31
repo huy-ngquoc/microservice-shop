@@ -6,6 +6,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.shared.application.dto.Change;
 
 public final class BrandLifecycleCommands {
+
     private BrandLifecycleCommands() {
     }
 
