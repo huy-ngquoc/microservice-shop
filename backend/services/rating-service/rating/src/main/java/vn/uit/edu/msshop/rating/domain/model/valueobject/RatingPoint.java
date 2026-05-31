@@ -1,8 +1,19 @@
 package vn.uit.edu.msshop.rating.domain.model.valueobject;
-public record RatingPoint(float value) {
+
+import vn.edu.uit.msshop.shared.domain.exception.DomainException;
+
+public record RatingPoint(
+        int value) {
+    public static final int MIN_VALUE = 1;
+    public static final int MAX_VALUE = 5;
+
     public RatingPoint {
-        if(value<0||value>5) {
-            throw new IllegalArgumentException("Invalid rating point");
+        if (value < MIN_VALUE) {
+            throw new DomainException("Rating point must be greater or equal to 1");
+        }
+
+        if (value > MAX_VALUE) {
+            throw new DomainException("Rating point must be less or equal to 5");
         }
     }
 }

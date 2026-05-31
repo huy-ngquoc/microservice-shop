@@ -14,8 +14,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RatingInfoResponse {
     private UUID productId;
-    private int ratingCount;
-    private float totalPoint;
+    private long ratingCount;
+    private long totalPoint;
     private Instant createAt;
     private Instant updateAt;
 }
