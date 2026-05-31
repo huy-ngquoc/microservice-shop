@@ -29,6 +29,7 @@ import vn.uit.edu.payment.adapter.out.persistence.PaybackPayments;
 import vn.uit.edu.payment.adapter.out.persistence.SpringDataOnlinePaymentInfoJpaRepository;
 import vn.uit.edu.payment.adapter.out.persistence.SpringDataPaymentJpaRepository;
 import vn.uit.edu.payment.application.dto.command.CreatePaymentCommand;
+import vn.uit.edu.payment.application.exception.PaymentAlreadyExistException;
 import vn.uit.edu.payment.application.port.in.CreatePaymentUseCase;
 import vn.uit.edu.payment.application.port.in.LoadOnlinePaymentUseCase;
 import vn.uit.edu.payment.application.port.in.LoadPaymentUseCase;
@@ -130,8 +131,13 @@ public class PaymentController {
     public ResponseEntity<Void> createPayment(@RequestBody OrderCreated orderCreated) {
         if(!eventDocumentRepo.existsById(orderCreated.eventId())) {
         CreatePaymentCommand command = mapper.toCommand(orderCreated);
+        try {
         createUseCase.create(command);
         eventDocumentRepo.save(new EventDocument(orderCreated.eventId(), Instant.now()));
+        }
+        catch(PaymentAlreadyExistException e) {
+            return ResponseEntity.noContent().build();
+        }
        
         }
          return ResponseEntity.noContent().build();

@@ -40,7 +40,7 @@ public class UpdateCartAmountService implements UpdateCartAmountUseCase {
             return null;
 
         if (detail.getAmount().value() == command.newAmount().apply(detail.getAmount()).value())
-            return null;
+            return mapper.toView(cart);
         final var update = CartDetail.UpdateAmount.builder().amount(command.newAmount().apply(detail.getAmount()))
                 .variantId(command.variantId()).build();
         List<CartDetail.UpdateAmount> updateAmounts = List.of(update);

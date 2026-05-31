@@ -2,6 +2,9 @@ package vn.uit.edu.msshop.order.adapter.out.event.publisher;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -20,13 +23,15 @@ public class OrderCreatedOutboxPublisher {
     private final OrderCreatedDocumentRepository orderCreatedDocumentRepo;
     private final CreatePaymentService createPaymentService;
     private final KafkaTemplate<String,OrderCreated> orderCreatedTemplate;
-    
-    @Scheduled(fixedDelay=10000)
+    @Value("${custom.call_payment_batch}")
+    private String paymentBatch;
+    @Scheduled(fixedRateString="${custom.call_payment_interval}")
     public void publishPendingEvents() {
-        List<OrderCreatedDocument> pendingEvents =orderCreatedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        Pageable pageable = PageRequest.of(0, Integer.parseInt(paymentBatch));
+        List<OrderCreatedDocument> pendingEvents =orderCreatedDocumentRepo.findByEventStatusOrderByCreatedAtAsc("PENDING", pageable).getContent();
         
         for (OrderCreatedDocument event : pendingEvents) {
-            if(event.getPaymentMethod().equals("ONLINE")) {
+            if("ONLINE".equals(event.getPaymentMethod())) {
            createPaymentService.createPayment(event);
             }
 
