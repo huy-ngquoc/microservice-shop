@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Component
 @RequiredArgsConstructor
-public class BrandPersistenceAdapter
+public class BrandWritePersistenceAdapter
         implements
         CreateBrandPort,
         UpdateBrandPort,
