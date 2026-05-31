@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.RestoreBrandCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.RestoreBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
@@ -29,7 +29,7 @@ public class RestoreBrandService implements RestoreBrandUseCase {
             cacheNames = CacheNames.BRAND_LIST,
             allEntries = true)
     public void restore(
-            final RestoreBrandCommand command) {
+            final BrandLifecycleCommands.Restore command) {
         final var brandId = command.id();
         final var brand = this.loadSoftDeletedPort.loadSoftDeletedById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
