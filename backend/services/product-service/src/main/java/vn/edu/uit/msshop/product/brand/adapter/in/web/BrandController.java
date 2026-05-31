@@ -24,6 +24,7 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoReq
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLogoLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
@@ -38,13 +39,13 @@ public class BrandController {
     private final BrandLookupUseCases.FindSoftDeletedById findSoftDeletedUseCase;
     private final BrandLookupUseCases.FindActiveLogoById findLogoUseCase;
     private final BrandLookupUseCases.CheckExistsById checkExistsUseCase;
-    private final BrandLifecycleUseCases.Create createUseCase;
-    private final BrandLifecycleUseCases.Restore restoreUseCase;
-    private final BrandLifecycleUseCases.UpdateInfo updateInfoUseCase;
-    private final BrandLifecycleUseCases.UpdateLogo updateLogoUseCase;
-    private final BrandLifecycleUseCases.DeleteLogo deleteLogoUseCase;
-    private final BrandLifecycleUseCases.SoftDelete softDeleteUseCase;
-    private final BrandLifecycleUseCases.HardDelete hardDeleteUseCase;
+    private final BrandLifecycleUseCases.Creation createUseCase;
+    private final BrandLifecycleUseCases.Restoration restoreUseCase;
+    private final BrandLifecycleUseCases.InfoUpdate updateInfoUseCase;
+    private final BrandLogoLifecycleUseCases.UpdateLogo updateLogoUseCase;
+    private final BrandLogoLifecycleUseCases.Deletion deleteLogoUseCase;
+    private final BrandLifecycleUseCases.SoftDeletion softDeleteUseCase;
+    private final BrandLifecycleUseCases.HardDeletion hardDeleteUseCase;
     private final BrandWebMapper mapper;
 
     @GetMapping
