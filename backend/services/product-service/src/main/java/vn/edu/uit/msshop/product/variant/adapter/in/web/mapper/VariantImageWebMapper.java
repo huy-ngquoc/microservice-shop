@@ -1,0 +1,52 @@
+package vn.edu.uit.msshop.product.variant.adapter.in.web.mapper;
+
+import java.util.UUID;
+
+import org.springframework.stereotype.Component;
+
+import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
+import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
+import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantImageCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
+
+@Component
+public class VariantImageWebMapper {
+    public VariantId toVariantId(
+            final UUID id) {
+        return new VariantId(id);
+    }
+
+    public VariantImageResponse toImageResponse(
+            final VariantImageView view) {
+        return new VariantImageResponse(
+                view.id(),
+                view.imageKey(),
+                view.version());
+    }
+
+    public UpdateVariantImageCommand toUpdateImageCommand(
+            final UUID id,
+            final UpdateVariantImageRequest request) {
+        final var variantId = new VariantId(id);
+        final var imageKey = new VariantImageKey(request.newImageKey());
+        final var version = new VariantVersion(request.version());
+
+        return new UpdateVariantImageCommand(
+                variantId,
+                imageKey,
+                version);
+    }
+
+    public DeleteVariantImageCommand toDeleteImageCommand(
+            final UUID id,
+            final long expectedVersion) {
+        final var variantId = new VariantId(id);
+        final var version = new VariantVersion(expectedVersion);
+
+        return new DeleteVariantImageCommand(variantId, version);
+    }
+}
