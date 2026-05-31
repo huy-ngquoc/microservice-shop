@@ -25,7 +25,7 @@ import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycl
 @RestController
 @RequestMapping("/brands")
 @RequiredArgsConstructor
-public class BrandController {
+public class BrandLifecycleController {
 
     private final BrandLifecycleUseCases.Create createUseCase;
     private final BrandLifecycleUseCases.Restore restoreUseCase;
