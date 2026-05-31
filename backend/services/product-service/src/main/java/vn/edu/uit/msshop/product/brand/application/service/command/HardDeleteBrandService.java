@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.HardDeleteBrandUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.DeleteBrandPort;
@@ -22,7 +22,9 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class HardDeleteBrandService implements HardDeleteBrandUseCase {
+public class HardDeleteBrandService
+        implements
+        BrandLifecycleUseCases.HardDelete {
     private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
     private final DeleteBrandPort deletePort;
     private final BrandLogoStoragePort logoStoragePort;
@@ -31,13 +33,13 @@ public class HardDeleteBrandService implements HardDeleteBrandUseCase {
 
     @Override
     @Transactional
-    public void purge(
-            final BrandLifecycleCommands.HardDelete command) {
-        final var brandId = command.id();
+    public void hardDelete(
+            final BrandLifecycleCommands.HardDelete cmd) {
+        final var brandId = cmd.id();
         final var brand = this.loadSoftDeletedPort.loadSoftDeletedById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = brand.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(
