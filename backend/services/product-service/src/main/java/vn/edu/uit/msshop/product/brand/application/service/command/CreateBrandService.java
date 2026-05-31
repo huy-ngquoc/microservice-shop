@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.CreateBrandUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CreateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandCreated;
@@ -20,7 +20,9 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CreateBrandService implements CreateBrandUseCase {
+public class CreateBrandService
+        implements
+        BrandLifecycleUseCases.Create {
     private final CreateBrandPort createPort;
     private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
@@ -31,10 +33,10 @@ public class CreateBrandService implements CreateBrandUseCase {
             cacheNames = CacheNames.BRAND_LIST,
             allEntries = true)
     public BrandView create(
-            final BrandLifecycleCommands.Create command) {
+            final BrandLifecycleCommands.Create cmd) {
         final var brand = new NewBrand(
                 BrandId.newId(),
-                command.name());
+                cmd.name());
 
         final var saved = this.createPort.create(brand);
         this.eventPort.publish(new BrandCreated(saved.getId()));

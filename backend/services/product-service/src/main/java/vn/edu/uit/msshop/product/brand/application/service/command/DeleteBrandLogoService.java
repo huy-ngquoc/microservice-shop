@@ -9,10 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
-import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.DeleteBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
@@ -25,11 +23,12 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
+public class DeleteBrandLogoService
+        implements
+        BrandLifecycleUseCases.DeleteLogo {
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
     private final BrandLogoStoragePort logoStoragePort;
-    private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
 
     @Override
@@ -43,18 +42,18 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
             })
-    public BrandLogoView deleteLogo(
-            final BrandLifecycleCommands.DeleteLogo command) {
-        final var brandId = command.id();
+    public void deleteLogo(
+            final BrandLifecycleCommands.DeleteLogo cmd) {
+        final var brandId = cmd.id();
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
         final var oldKey = brand.getLogoKey();
         if (oldKey == null) {
-            return this.mapper.toLogoView(brand);
+            return;
         }
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = brand.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(
@@ -77,8 +76,6 @@ public class DeleteBrandLogoService implements DeleteBrandLogoUseCase {
         this.eventPort.publish(event);
 
         this.deleteOldLogo(oldKey);
-
-        return this.mapper.toLogoView(saved);
     }
 
     private void deleteOldLogo(
