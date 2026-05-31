@@ -21,7 +21,7 @@ import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedD
 import vn.uit.edu.msshop.inventory.adapter.out.event.repositories.InventoryUpdatedDocumentRepository;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderCancelledCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.OrderDetailCommand;
-import vn.uit.edu.msshop.inventory.application.dto.command.OrderShippedCommand;
+import vn.uit.edu.msshop.inventory.application.dto.command.OrderReceivedCommand;
 import vn.uit.edu.msshop.inventory.application.dto.command.UpdateInventoryCommand;
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 import vn.uit.edu.msshop.inventory.application.exception.InventoryNotFoundException;
@@ -103,7 +103,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         for (Inventory i : inventories) {
             inventoryMap.put(i.getVariantId().value(), i);
         }
-        boolean isShipping = commands.getOrderStatus().value().equals("SHIPPING");
+        
 
         for (OrderDetailCommand detailCommand : commands.getDetailCommands()) {
             Inventory inventory = inventoryMap.get(detailCommand.getVariantId().value());
@@ -112,8 +112,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
 
             int newQuantity = inventory.getQuantity().value() + detailCommand.getQuantity().value();
             int newReservedQuantity = inventory.getReservedQuantity().value() - detailCommand.getQuantity().value();
-            if (isShipping)
-                newReservedQuantity = inventory.getReservedQuantity().value();
+            
             if (newReservedQuantity < 0)
                 throw new RuntimeException("Invalid info");
             final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId())
@@ -162,8 +161,8 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
                             cacheNames = CacheNames.INVENTORY_LIST,
                             allEntries = true)
             })
-    public List<InventoryView> updateWhenOrderShipped(
-            OrderShippedCommand commands) {
+    public List<InventoryView> updateWhenOrderReceived(
+            OrderReceivedCommand commands) {
         List<Inventory> inventories = loadPort.findAllByListVariantId(
                 commands.getDetailCommands().stream().map(item -> item.getVariantId()).toList());
         Map<UUID, Inventory> inventoryMap = new HashMap<>();

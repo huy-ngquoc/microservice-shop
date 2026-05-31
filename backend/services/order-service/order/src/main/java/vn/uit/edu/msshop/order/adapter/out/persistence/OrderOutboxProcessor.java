@@ -2,6 +2,8 @@ package vn.uit.edu.msshop.order.adapter.out.persistence;
 
 import java.time.Instant;
 import java.util.List;
+
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderUpdatedReposi
 import vn.uit.edu.msshop.order.adapter.remote.InventoryChecker;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
+import vn.uit.edu.msshop.order.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
@@ -36,6 +39,7 @@ public class OrderOutboxProcessor {
     private final OrderUpdatedRepository orderUpdatedRepo;
 
     @Transactional
+    
     public void confirmOrderAndCreateEvent(
             OrderOutbox outbox,
             Order order) {
@@ -49,7 +53,9 @@ public class OrderOutboxProcessor {
 
         orderCreatedSuccessDocumentRepo.save(createOrderCreatedSuccessDocument(order));
     }
-
+    @CacheEvict(
+            cacheNames = CacheNames.ORDERS,
+            key = "#outbox.getOrderId()")
     public void updateStatus(
             OrderOutbox outbox) {
         Order order = loadPort.loadById(new OrderId(outbox.getOrderId())).orElse(null);
@@ -83,7 +89,7 @@ public class OrderOutboxProcessor {
         if (outbox.getRetryCount() >= 5) {
             outbox.setOutboxStatus("COMPLETED");
             final var isInsufficient = e.status() == 400;
-            String newOrderStatus = isInsufficient ? "INSUFFICIENT_STOCK" : "CANCELLED_BEFORE_PROCESS";
+            String newOrderStatus = isInsufficient ? "INSUFFICIENT_STOCK" : "ERROR";
             final var toSave = order.updateStatus(new OrderStatus(newOrderStatus));
             savePort.save(toSave);
             final var savedEvent = orderUpdatedRepo.save(getOrderUpdatedEvent(order));

@@ -147,3 +147,8 @@ resilience4j:
                     - com.mongodb.MongoSocketException
                     - com.mongodb.MongoTimeoutException
                     - org.springframework.dao.DataAccessResourceFailureException
+custom:
+    call_inventory_interval: 10000
+    call_inventory_batch: 50
+    call_payment_interval: 5000
+    call_payment_batch: 50
