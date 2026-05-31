@@ -3,6 +3,7 @@ package vn.uit.edu.msshop.order.adapter.in.web;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import vn.uit.edu.msshop.order.application.exception.OrderNotFoundException;
 import vn.uit.edu.msshop.order.application.port.out.LoadOrderPort;
 import vn.uit.edu.msshop.order.application.port.out.PublishOrderEventPort;
 import vn.uit.edu.msshop.order.application.port.out.SaveOrderPort;
+import vn.uit.edu.msshop.order.bootstrap.config.cache.CacheNames;
 import vn.uit.edu.msshop.order.domain.event.OnlinePaymentExpired;
 import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 import vn.uit.edu.msshop.order.domain.event.PaymentSuccess;
@@ -68,6 +70,9 @@ public class OrderEventListener {
      */
     @KafkaHandler
     @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.ORDERS,
+            key = "#event.orderId()")
     public void onPaymentExpired(
             OnlinePaymentExpired event) {
         if (event.eventId() == null || event.orderId() == null) {
@@ -117,6 +122,9 @@ public class OrderEventListener {
     }
 
     @KafkaHandler
+    @CacheEvict(
+            cacheNames = CacheNames.ORDERS,
+            key = "#event.getOrderId()")
     public void onOnlinePaymentSuccess(
             PaymentSuccess event) {
         

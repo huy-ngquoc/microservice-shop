@@ -52,35 +52,9 @@ public class OrderEventListener {
     private final PublishPaymentEventPort publishEventPort;
     private final PaymentCreatedFailService paymentCreatedFailService;
 
-    @KafkaHandler
+   
 
-    public void handleOrderCreated(
-            OrderCreated event) {
-        // Random rand = new Random();
-        // if(rand.nextLong(200)<=20) throw new RuntimeException("Runtime exception");
-        // System.out.println("Listen to event");
-        if (!eventDocumentRepo.existsById(event.eventId())) {
-            CreatePaymentCommand command = mapper.toCommand(event);
-            createUseCase.create(command);
-            eventDocumentRepo.save(new EventDocument(event.eventId(), Instant.now()));
-        }
-    }
-
-    @DltHandler
-    public void paymentCreatedFail(
-            OrderCreated event) {
-        PaymentCreatedFailDocument document = PaymentCreatedFailDocument.builder()
-                .eventId(UUIDs.newId())
-                .orderId(event.orderId())
-                .userId(event.userId())
-                .userEmail(event.userEmail())
-                .retryCount(0)
-                .createdAt(Instant.now())
-                .updatedAt(null)
-                .lastError(null).build();
-        paymentCreatedFailService.saveAndSendPaymentCreatedFail(document);
-
-    }
+    
 
     @KafkaHandler
     @Transactional

@@ -34,7 +34,7 @@ public class SyncKeycloakService implements SyncKeycloakUseCase {
 
     @Override
     //@Transactional
-    @Scheduled(fixedRate=5000)
+    @Scheduled(fixedRate=10000)
     public void syncKeyCloak() {
         List<AccountOutboxEntity> pendingAccountOutboxEntities = accountOutboxRepo.findTop50ByIsCheckOrderByCreatedAtAsc(false);
         List<AccountOutboxEntity> toDelete= new ArrayList<>();

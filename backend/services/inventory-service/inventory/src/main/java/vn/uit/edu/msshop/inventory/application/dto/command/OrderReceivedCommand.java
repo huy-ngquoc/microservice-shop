@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderShippedCommand {
+public class OrderReceivedCommand {
     private List<OrderDetailCommand> detailCommands;
     private UUID orderId;
 }

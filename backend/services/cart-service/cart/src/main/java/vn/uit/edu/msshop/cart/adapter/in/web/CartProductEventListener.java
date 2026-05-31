@@ -43,7 +43,7 @@ public class CartProductEventListener {
         if (!eventDocumentRepo.existsById(event.getEventId())) {
             Set<String> userIds = variantToUserPort.getByVariantId(new VariantId(event.getVariantId()));
             List<UpdateCartInfoCommand> commands = userIds.stream().map(item -> mapper.toCommand(event, item)).toList();
-            updateCartInfoUseCase.updateInfo(commands);
+            updateCartInfoUseCase.updateMany(commands);
             eventDocumentRepo
                     .save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
         }
@@ -68,11 +68,13 @@ public class CartProductEventListener {
     @KafkaHandler
     public void onVariantUpdate(VariantUpdatedIntegrationEvent event) {
         System.out.println("Nhan event");
+        System.out.println("=======> KAFKA: NHAN EVENT QUAN TRONG <=======");
          if (!eventDocumentRepo.existsById(event.eventId())) {
                 System.out.println("Update new price "+event.unitPrice());
             Set<String> userIds = variantToUserPort.getByVariantId(new VariantId(event.variantId()));
             List<UpdateCartInfoCommand> commands = userIds.stream().map(item -> mapper.toCommand(event, item)).toList();
-            updateCartInfoUseCase.updateInfo(commands);
+            updateCartInfoUseCase.updateMany(commands);
+            System.out.println(userIds.size());
             eventDocumentRepo
                     .save(EventDocument.builder().eventId(event.eventId()).receiveAt(Instant.now()).build());
         }

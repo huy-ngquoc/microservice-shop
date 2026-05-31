@@ -12,7 +12,7 @@ import vn.uit.edu.msshop.rating.application.dto.integration.RatingIntegrationEve
 
 @Configuration
 public class KafkaRatingConfig {
-    public static final String TOPIC_NAME = "rating-topic";
+    public static final String TOPIC_NAME = "rating-product";
 
     private static final int RATING_TOPIC_PARTITION_COUNT = 3;
     private static final int RATING_TOPIC_REPLICATION_FACTOR = 1;
