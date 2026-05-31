@@ -24,12 +24,7 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoReq
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.CheckBrandExistsUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandLogoUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.FindSoftDeletedBrandUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.ListBrandsUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.ListSoftDeletedBrandsUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
@@ -37,12 +32,12 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequestMapping("/brands")
 @RequiredArgsConstructor
 public class BrandController {
-    private final ListBrandsUseCase listUseCase;
-    private final ListSoftDeletedBrandsUseCase listSoftDeletedUseCase;
-    private final FindBrandUseCase findUseCase;
-    private final FindSoftDeletedBrandUseCase findSoftDeletedUseCase;
-    private final FindBrandLogoUseCase findLogoUseCase;
-    private final CheckBrandExistsUseCase checkExistsUseCase;
+    private final BrandLookupUseCases.ListActive listUseCase;
+    private final BrandLookupUseCases.ListSoftDeleted listSoftDeletedUseCase;
+    private final BrandLookupUseCases.FindActiveById findUseCase;
+    private final BrandLookupUseCases.FindSoftDeletedById findSoftDeletedUseCase;
+    private final BrandLookupUseCases.FindActiveLogoById findLogoUseCase;
+    private final BrandLookupUseCases.CheckExistsById checkExistsUseCase;
     private final BrandLifecycleUseCases.Create createUseCase;
     private final BrandLifecycleUseCases.Restore restoreUseCase;
     private final BrandLifecycleUseCases.UpdateInfo updateInfoUseCase;
@@ -71,7 +66,7 @@ public class BrandController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = listUseCase.list(request);
+        final var views = listUseCase.listActive(request);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
@@ -106,7 +101,7 @@ public class BrandController {
     public ResponseEntity<BrandResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findUseCase.findById(this.mapper.toBrandId(id));
+        final var view = this.findUseCase.findActiveById(this.mapper.toBrandId(id));
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -126,7 +121,7 @@ public class BrandController {
     public ResponseEntity<BrandLogoResponse> findLogoById(
             @PathVariable
             final UUID id) {
-        final var view = this.findLogoUseCase.findLogoById(this.mapper.toBrandId(id));
+        final var view = this.findLogoUseCase.findActiveLogoById(this.mapper.toBrandId(id));
 
         final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);

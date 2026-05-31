@@ -8,14 +8,16 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.ListBrandsUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListBrandsPort;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class ListBrandsService implements ListBrandsUseCase {
+public class ListBrandsService
+        implements
+        BrandLookupUseCases.ListActive {
     private final ListBrandsPort listPort;
     private final BrandViewMapper viewMapper;
 
@@ -24,7 +26,7 @@ public class ListBrandsService implements ListBrandsUseCase {
             readOnly = true)
     @Cacheable(
             cacheNames = CacheNames.BRAND_LIST)
-    public PageResponseDto<BrandView> list(
+    public PageResponseDto<BrandView> listActive(
             PageRequestDto pageRequest) {
         final var page = listPort.list(pageRequest);
         return page.map(this.viewMapper::toView);

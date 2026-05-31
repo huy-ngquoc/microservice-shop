@@ -7,13 +7,15 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.FindSoftDeletedBrandUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
 @RequiredArgsConstructor
-public class FindSoftDeletedBrandService implements FindSoftDeletedBrandUseCase {
+public class FindSoftDeletedBrandService
+        implements
+        BrandLookupUseCases.FindSoftDeletedById {
     private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
     private final BrandViewMapper mapper;
 
@@ -22,7 +24,8 @@ public class FindSoftDeletedBrandService implements FindSoftDeletedBrandUseCase 
             readOnly = true)
     public BrandView findSoftDeletedById(
             final BrandId id) {
-        return this.loadSoftDeletedPort.loadSoftDeletedById(id).map(this.mapper::toView)
+        return this.loadSoftDeletedPort.loadSoftDeletedById(id)
+                .map(this.mapper::toView)
                 .orElseThrow(() -> new BrandNotFoundException(id));
     }
 }
