@@ -4,13 +4,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.CheckBrandExistsUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBrandExistsPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
 @RequiredArgsConstructor
-public class CheckBrandExistsService implements CheckBrandExistsUseCase {
+public class CheckBrandExistsService
+        implements
+        BrandLookupUseCases.CheckExistsById {
     private final CheckBrandExistsPort checkExistsPort;
 
     @Override
