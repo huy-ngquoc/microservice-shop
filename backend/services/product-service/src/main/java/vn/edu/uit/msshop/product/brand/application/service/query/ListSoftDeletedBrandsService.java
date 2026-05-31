@@ -6,14 +6,16 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.ListSoftDeletedBrandsUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListSoftDeletedBrandsPort;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class ListSoftDeletedBrandsService implements ListSoftDeletedBrandsUseCase {
+public class ListSoftDeletedBrandsService
+        implements
+        BrandLookupUseCases.ListSoftDeleted {
     private final ListSoftDeletedBrandsPort listSoftDeletedPort;
     private final BrandViewMapper viewMapper;
 
