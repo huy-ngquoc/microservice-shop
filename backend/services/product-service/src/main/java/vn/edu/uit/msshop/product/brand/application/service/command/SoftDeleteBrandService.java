@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.SoftDeleteBrandCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.SoftDeleteBrandUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
@@ -40,7 +40,7 @@ public class SoftDeleteBrandService implements SoftDeleteBrandUseCase {
                             allEntries = true)
             })
     public void delete(
-            SoftDeleteBrandCommand command) {
+            final BrandLifecycleCommands.SoftDelete command) {
         final var brandId = command.id();
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
