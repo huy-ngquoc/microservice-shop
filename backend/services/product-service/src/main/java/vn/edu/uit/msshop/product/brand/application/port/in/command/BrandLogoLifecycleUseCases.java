@@ -4,6 +4,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLogoLifecycl
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 
 public final class BrandLogoLifecycleUseCases {
+
     private BrandLogoLifecycleUseCases() {
     }
 

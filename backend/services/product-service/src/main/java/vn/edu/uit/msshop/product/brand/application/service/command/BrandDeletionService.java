@@ -37,6 +37,7 @@ public class BrandDeletionService
         BrandLifecycleUseCases.SoftDelete,
         BrandLifecycleUseCases.Restore,
         BrandLifecycleUseCases.HardDelete {
+
     private final LoadBrandPort loadPort;
     private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
     private final UpdateBrandPort updatePort;
