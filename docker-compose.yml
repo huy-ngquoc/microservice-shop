@@ -235,6 +235,7 @@ services:
         environment:
             - CONFIG_SERVER_URL=${CONFIG_SERVER_URL}
             - DISCOVERY_SERVER_URL=${DISCOVERY_SERVER_URL}
+            - KAFKA_URL=${KAFKA_URL}
             - RATING_DB_URL=${RATING_DB_URL}
             - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
         deploy:

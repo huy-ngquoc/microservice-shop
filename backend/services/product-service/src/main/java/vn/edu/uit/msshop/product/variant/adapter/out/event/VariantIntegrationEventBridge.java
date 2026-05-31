@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.event;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;

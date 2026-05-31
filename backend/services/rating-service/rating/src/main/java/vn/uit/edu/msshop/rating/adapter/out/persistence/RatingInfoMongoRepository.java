@@ -9,7 +9,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RatingInfoMongoRepository extends MongoRepository<RatingInfoDocument, UUID> {
-    public Page<RatingInfoDocument> findAll(Pageable pageable);
-    public Page<RatingInfoDocument> findByCreateAtBetweenOrUpdateAtBetween(Instant time1, Instant time2, Instant time3, Instant time4,Pageable pageable);
+public interface RatingInfoMongoRepository
+        extends MongoRepository<RatingInfoDocument, UUID> {
+    Page<RatingInfoDocument> findAllByUpdateAtBetween(
+            Instant rangeStartUpdatedTime,
+            Instant rangeEndUpdatedTime,
+            Pageable pageable);
 }

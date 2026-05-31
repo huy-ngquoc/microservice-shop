@@ -116,37 +116,19 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
             final Change.@Nullable Set<VariantPrice> priceSet,
             final Change.@Nullable Set<VariantTraits> traitsSet,
             final Change.@Nullable Set<VariantTargets> targetsSet) {
-        final VariantPrice newPrice;
-        final boolean priceUnchanged;
-        if ((priceSet != null) && !priceSet.value().equals(current.getPrice())) {
-            newPrice = priceSet.value();
-            priceUnchanged = false;
-        } else {
-            newPrice = current.getPrice();
-            priceUnchanged = true;
-        }
+        final var applyPriceResult = Change.Set.applyChange(
+                priceSet,
+                current.getPrice());
+        final var applyTraitsResult = Change.Set.applyChange(
+                traitsSet,
+                current.getTraits());
+        final var applyTargetsResult = Change.Set.applyChange(
+                targetsSet,
+                current.getTargets());
 
-        final VariantTraits newTraits;
-        final boolean traitsUnchanged;
-        if ((traitsSet != null) && !traitsSet.value().equals(current.getTraits())) {
-            newTraits = traitsSet.value();
-            traitsUnchanged = false;
-        } else {
-            newTraits = current.getTraits();
-            traitsUnchanged = true;
-        }
-
-        final VariantTargets newTargets;
-        final boolean targetsUnchanged;
-        if ((targetsSet != null) && !targetsSet.value().equals(current.getTargets())) {
-            newTargets = targetsSet.value();
-            targetsUnchanged = false;
-        } else {
-            newTargets = current.getTargets();
-            targetsUnchanged = true;
-        }
-
-        if (priceUnchanged && traitsUnchanged && targetsUnchanged) {
+        if (!applyPriceResult.changed()
+                && !applyTraitsResult.changed()
+                && !applyTargetsResult.changed()) {
             return null;
         }
 
@@ -154,9 +136,9 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
                 current.getId(),
                 current.getProductId(),
                 current.getProductName(),
-                newPrice,
-                newTraits,
-                newTargets,
+                applyPriceResult.newValue(),
+                applyTraitsResult.newValue(),
+                applyTargetsResult.newValue(),
                 current.getImageKey(),
                 current.getVersion(),
                 current.getDeletionTime());

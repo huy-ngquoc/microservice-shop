@@ -11,22 +11,27 @@ import vn.uit.edu.msshop.rating.domain.event.RatingUpdated;
 @Component
 public class RatingEventPublisherAdapter implements PublishRatingEvent {
     private final ApplicationEventPublisher publisher;
-    public RatingEventPublisherAdapter(ApplicationEventPublisher publisher) {
+
+    public RatingEventPublisherAdapter(
+            ApplicationEventPublisher publisher) {
         this.publisher = publisher;
     }
 
     @Override
-    public void publish(RatingPosted ratingPosted) {
+    public void publish(
+            RatingPosted ratingPosted) {
         this.publisher.publishEvent(ratingPosted);
     }
 
     @Override
-    public void publish(RatingUpdated ratingUpdated) {
+    public void publish(
+            RatingUpdated ratingUpdated) {
         this.publisher.publishEvent(ratingUpdated);
     }
 
     @Override
-    public void publish(RatingDeleted ratingDeleted) {
+    public void publish(
+            RatingDeleted ratingDeleted) {
         this.publisher.publishEvent(ratingDeleted);
     }
 

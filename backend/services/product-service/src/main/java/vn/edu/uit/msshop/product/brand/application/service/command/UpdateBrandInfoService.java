@@ -75,13 +75,16 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
     private static @Nullable Brand applyChanges(
             final Brand current,
             final Change.Set<BrandName> nameSet) {
-        if (nameSet.value().equals(current.getName())) {
+        final var applyNameResult = Change.Set.applyChange(
+                nameSet,
+                current.getName());
+        if (!applyNameResult.changed()) {
             return null;
         }
 
         return new Brand(
                 current.getId(),
-                nameSet.value(),
+                applyNameResult.newValue(),
                 current.getLogoKey(),
                 current.getVersion(),
                 current.getDeletionTime());

@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVa
 @RequiredArgsConstructor
 @Slf4j
 public class ReconcileVariantStockCountsJob {
-    private static final int RATE_IN_HOURS = 24;
+    private static final Duration WINDOW_DURATION = Duration.ofHours(24);
 
     private final ReconcileVariantStockCountsUseCase reconcileUseCase;
 
@@ -25,7 +25,7 @@ public class ReconcileVariantStockCountsJob {
             timeUnit = TimeUnit.HOURS)
     public void reconcile() {
         final var rangeEndTime = Instant.now();
-        final var rangeStartTime = rangeEndTime.minus(Duration.ofHours(RATE_IN_HOURS));
+        final var rangeStartTime = rangeEndTime.minus(WINDOW_DURATION);
 
         final var command = new ReconcileVariantStockCountsCommand(rangeStartTime, rangeEndTime);
 
