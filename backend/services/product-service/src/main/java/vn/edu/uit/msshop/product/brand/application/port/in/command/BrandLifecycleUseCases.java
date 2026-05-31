@@ -18,16 +18,6 @@ public final class BrandLifecycleUseCases {
                 final BrandLifecycleCommands.UpdateInfo cmd);
     }
 
-    public interface UpdateLogo {
-        BrandLogoView updateLogo(
-                final BrandLifecycleCommands.UpdateLogo cmd);
-    }
-
-    public interface DeleteLogo {
-        void deleteLogo(
-                final BrandLifecycleCommands.DeleteLogo cmd);
-    }
-
     public interface SoftDelete {
         void softDelete(
                 final BrandLifecycleCommands.SoftDelete cmd);
