@@ -22,7 +22,13 @@ public class OrderOutboxWorker {
     private String inventoryBatch;
    @Scheduled(fixedDelayString="${custom.call_inventory_interval}")
     public void proccessPendingOrder() {
-        Pageable pageable = PageRequest.of(0,Integer.parseInt(inventoryBatch));
+        int batchSize;
+        try {
+            batchSize = Integer.parseInt(inventoryBatch);
+        } catch (NumberFormatException e) {
+            return;
+        }
+        Pageable pageable = PageRequest.of(0, batchSize);
         List<OrderOutbox> outboxes = orderOutboxRepo.findByOutboxStatusOrderByCreatedAtAsc("PENDING", pageable).getContent();
         //System.out.println(outboxes.size());
         for(OrderOutbox outbox: outboxes) {
