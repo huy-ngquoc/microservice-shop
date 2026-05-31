@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCom
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandInfoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -24,7 +24,9 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
+public class UpdateBrandInfoService
+        implements
+        BrandLifecycleUseCases.UpdateInfo {
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
     private final BrandViewMapper mapper;
@@ -44,16 +46,16 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
                             condition = "#command.name().getSet() != null")
             })
     public BrandView updateInfo(
-            final BrandLifecycleCommands.UpdateInfo command) {
-        final var brand = this.loadPort.loadById(command.id())
-                .orElseThrow(() -> new BrandNotFoundException(command.id()));
+            final BrandLifecycleCommands.UpdateInfo cmd) {
+        final var brand = this.loadPort.loadById(cmd.id())
+                .orElseThrow(() -> new BrandNotFoundException(cmd.id()));
 
-        final var nameSet = command.name().getSet();
+        final var nameSet = cmd.name().getSet();
         if (nameSet == null) {
             return this.mapper.toView(brand);
         }
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = brand.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(
