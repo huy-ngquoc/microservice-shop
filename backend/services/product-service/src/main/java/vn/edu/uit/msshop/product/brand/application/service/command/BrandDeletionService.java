@@ -32,7 +32,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BrandLifecycleService
+public class BrandDeletionService
         implements
         BrandLifecycleUseCases.SoftDelete,
         BrandLifecycleUseCases.Restore,
