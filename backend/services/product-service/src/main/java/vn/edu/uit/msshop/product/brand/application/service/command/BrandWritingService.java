@@ -34,6 +34,7 @@ public class BrandWritingService
         implements
         BrandLifecycleUseCases.Create,
         BrandLifecycleUseCases.UpdateInfo {
+
     private final LoadBrandPort loadPort;
     private final CreateBrandPort createPort;
     private final UpdateBrandPort updatePort;

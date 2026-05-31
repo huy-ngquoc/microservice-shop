@@ -4,6 +4,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.shared.application.exception.NotFoundException;
 
 public final class BrandLogoKeyNotFoundException extends NotFoundException {
+
     public BrandLogoKeyNotFoundException(
             final BrandLogoKey logoKey,
             final Throwable cause) {
