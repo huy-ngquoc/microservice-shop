@@ -39,13 +39,13 @@ public class BrandController {
     private final BrandLookupUseCases.FindSoftDeletedById findSoftDeletedUseCase;
     private final BrandLookupUseCases.FindActiveLogoById findLogoUseCase;
     private final BrandLookupUseCases.CheckExistsById checkExistsUseCase;
-    private final BrandLifecycleUseCases.Creation createUseCase;
-    private final BrandLifecycleUseCases.Restoration restoreUseCase;
-    private final BrandLifecycleUseCases.InfoUpdate updateInfoUseCase;
-    private final BrandLogoLifecycleUseCases.UpdateLogo updateLogoUseCase;
-    private final BrandLogoLifecycleUseCases.Deletion deleteLogoUseCase;
-    private final BrandLifecycleUseCases.SoftDeletion softDeleteUseCase;
-    private final BrandLifecycleUseCases.HardDeletion hardDeleteUseCase;
+    private final BrandLifecycleUseCases.Create createUseCase;
+    private final BrandLifecycleUseCases.Restore restoreUseCase;
+    private final BrandLifecycleUseCases.UpdateInfo updateInfoUseCase;
+    private final BrandLogoLifecycleUseCases.Update updateLogoUseCase;
+    private final BrandLogoLifecycleUseCases.Delete deleteLogoUseCase;
+    private final BrandLifecycleUseCases.SoftDelete softDeleteUseCase;
+    private final BrandLifecycleUseCases.HardDelete hardDeleteUseCase;
     private final BrandWebMapper mapper;
 
     @GetMapping
@@ -192,7 +192,7 @@ public class BrandController {
             @Valid
             final UpdateBrandLogoRequest request) {
         final var command = this.mapper.toUpdateLogoCommand(id, request);
-        final var view = this.updateLogoUseCase.updateLogo(command);
+        final var view = this.updateLogoUseCase.update(command);
 
         final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);
@@ -206,7 +206,7 @@ public class BrandController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toDeleteLogoCommand(id, version);
-        this.deleteLogoUseCase.deleteLogo(command);
+        this.deleteLogoUseCase.delete(command);
 
         return ResponseEntity.ok().build();
     }
