@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.RestoreBrandUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -18,7 +18,9 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
-public class RestoreBrandService implements RestoreBrandUseCase {
+public class RestoreBrandService
+        implements
+        BrandLifecycleUseCases.Restore {
     private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
     private final UpdateBrandPort updatePort;
     private final PublishBrandEventPort eventPort;

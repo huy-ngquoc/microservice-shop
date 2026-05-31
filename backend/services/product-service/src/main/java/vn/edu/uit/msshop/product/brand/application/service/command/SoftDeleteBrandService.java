@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.SoftDeleteBrandUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -22,7 +22,9 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
-public class SoftDeleteBrandService implements SoftDeleteBrandUseCase {
+public class SoftDeleteBrandService
+        implements
+        BrandLifecycleUseCases.SoftDelete {
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
     private final CheckBrandHasProductsPort checkHasProductsPort;
@@ -39,13 +41,13 @@ public class SoftDeleteBrandService implements SoftDeleteBrandUseCase {
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
             })
-    public void delete(
-            final BrandLifecycleCommands.SoftDelete command) {
-        final var brandId = command.id();
+    public void softDelete(
+            final BrandLifecycleCommands.SoftDelete cmd) {
+        final var brandId = cmd.id();
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = brand.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(

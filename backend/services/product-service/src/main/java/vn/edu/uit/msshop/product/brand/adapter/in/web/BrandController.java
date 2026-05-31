@@ -23,13 +23,7 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoReq
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.CreateBrandUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.DeleteBrandLogoUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.HardDeleteBrandUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.RestoreBrandUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.SoftDeleteBrandUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandInfoUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.CheckBrandExistsUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandLogoUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.FindBrandUseCase;
@@ -49,13 +43,13 @@ public class BrandController {
     private final FindSoftDeletedBrandUseCase findSoftDeletedUseCase;
     private final FindBrandLogoUseCase findLogoUseCase;
     private final CheckBrandExistsUseCase checkExistsUseCase;
-    private final CreateBrandUseCase createUseCase;
-    private final RestoreBrandUseCase restoreUseCase;
-    private final UpdateBrandInfoUseCase updateInfoUseCase;
-    private final UpdateBrandLogoUseCase updateLogoUseCase;
-    private final DeleteBrandLogoUseCase deleteLogoUseCase;
-    private final SoftDeleteBrandUseCase softDeleteUseCase;
-    private final HardDeleteBrandUseCase hardDeleteUseCase;
+    private final BrandLifecycleUseCases.Create createUseCase;
+    private final BrandLifecycleUseCases.Restore restoreUseCase;
+    private final BrandLifecycleUseCases.UpdateInfo updateInfoUseCase;
+    private final BrandLifecycleUseCases.UpdateLogo updateLogoUseCase;
+    private final BrandLifecycleUseCases.DeleteLogo deleteLogoUseCase;
+    private final BrandLifecycleUseCases.SoftDelete softDeleteUseCase;
+    private final BrandLifecycleUseCases.HardDelete hardDeleteUseCase;
     private final BrandWebMapper mapper;
 
     @GetMapping
@@ -209,17 +203,16 @@ public class BrandController {
     }
 
     @DeleteMapping("/{id}/logo")
-    public ResponseEntity<BrandLogoResponse> deleteLogoById(
+    public ResponseEntity<Void> deleteLogoById(
             @PathVariable
             final UUID id,
 
             @RequestParam
             final long version) {
         final var command = this.mapper.toDeleteLogoCommand(id, version);
-        final var view = this.deleteLogoUseCase.deleteLogo(command);
+        this.deleteLogoUseCase.deleteLogo(command);
 
-        final var response = this.mapper.toLogoResponse(view);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
@@ -230,7 +223,7 @@ public class BrandController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
-        this.softDeleteUseCase.delete(command);
+        this.softDeleteUseCase.softDelete(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -243,7 +236,7 @@ public class BrandController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toHardDeleteCommand(id, version);
-        this.hardDeleteUseCase.purge(command);
+        this.hardDeleteUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();
     }

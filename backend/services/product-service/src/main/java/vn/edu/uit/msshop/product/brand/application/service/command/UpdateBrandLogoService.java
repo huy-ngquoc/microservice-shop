@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandLogoKeyNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.UpdateBrandLogoUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
@@ -27,7 +27,9 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UpdateBrandLogoService implements UpdateBrandLogoUseCase {
+public class UpdateBrandLogoService
+        implements
+        BrandLifecycleUseCases.UpdateLogo {
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
     private final BrandLogoStoragePort logoStoragePort;
