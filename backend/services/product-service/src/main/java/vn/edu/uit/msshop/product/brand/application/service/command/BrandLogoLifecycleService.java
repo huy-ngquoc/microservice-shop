@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLogoLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandLogoKeyNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
@@ -29,8 +29,8 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Slf4j
 public class BrandLogoLifecycleService
         implements
-        BrandLogoLifecycleUseCases.UpdateLogo,
-        BrandLogoLifecycleUseCases.DeleteLogo {
+        BrandLogoLifecycleUseCases.Update,
+        BrandLogoLifecycleUseCases.Delete {
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
 
@@ -50,8 +50,8 @@ public class BrandLogoLifecycleService
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
             })
-    public BrandLogoView updateLogo(
-            BrandLifecycleCommands.UpdateLogo command) {
+    public BrandLogoView update(
+            BrandLogoLifecycleCommands.Update command) {
         final var brandId = command.id();
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
@@ -91,8 +91,8 @@ public class BrandLogoLifecycleService
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
             })
-    public void deleteLogo(
-            final BrandLifecycleCommands.DeleteLogo cmd) {
+    public void delete(
+            final BrandLogoLifecycleCommands.Delete cmd) {
         final var brandId = cmd.id();
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));

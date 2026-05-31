@@ -13,6 +13,7 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.adapter.out.logo.BrandLogoStorageAdapter;
 import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLogoLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
@@ -55,23 +56,23 @@ public class BrandWebMapper {
         return new BrandLifecycleCommands.UpdateInfo(brandId, name, version);
     }
 
-    public BrandLifecycleCommands.UpdateLogo toUpdateLogoCommand(
+    public BrandLogoLifecycleCommands.Update toUpdateLogoCommand(
             final UUID id,
             final UpdateBrandLogoRequest request) {
         final var brandId = new BrandId(id);
         final var logoKey = BrandWebMapper.extractKeyFromTempPublicId(request.newLogoKey());
         final var version = new BrandVersion(request.version());
 
-        return new BrandLifecycleCommands.UpdateLogo(brandId, logoKey, version);
+        return new BrandLogoLifecycleCommands.Update(brandId, logoKey, version);
     }
 
-    public BrandLifecycleCommands.DeleteLogo toDeleteLogoCommand(
+    public BrandLogoLifecycleCommands.Delete toDeleteLogoCommand(
             final UUID id,
             final long expectedVersion) {
         final var brandId = new BrandId(id);
         final var version = new BrandVersion(expectedVersion);
 
-        return new BrandLifecycleCommands.DeleteLogo(brandId, version);
+        return new BrandLogoLifecycleCommands.Delete(brandId, version);
     }
 
     public BrandLifecycleCommands.SoftDelete toSoftDeleteCommand(
