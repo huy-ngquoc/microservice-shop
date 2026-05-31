@@ -1,8 +1,8 @@
 package vn.edu.uit.msshop.product.brand.application.port.in.command;
 
-import vn.edu.uit.msshop.product.brand.application.dto.command.HardDeleteBrandCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
 
 public interface HardDeleteBrandUseCase {
     void purge(
-            final HardDeleteBrandCommand command);
+            final BrandLifecycleCommands.HardDelete command);
 }

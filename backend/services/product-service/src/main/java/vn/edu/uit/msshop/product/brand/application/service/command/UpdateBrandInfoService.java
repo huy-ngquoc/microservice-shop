@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.UpdateBrandInfoCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
@@ -44,7 +44,7 @@ public class UpdateBrandInfoService implements UpdateBrandInfoUseCase {
                             condition = "#command.name().getSet() != null")
             })
     public BrandView updateInfo(
-            final UpdateBrandInfoCommand command) {
+            final BrandLifecycleCommands.UpdateInfo command) {
         final var brand = this.loadPort.loadById(command.id())
                 .orElseThrow(() -> new BrandNotFoundException(command.id()));
 
