@@ -14,7 +14,8 @@ import vn.uit.edu.msshop.order.application.port.out.CheckUserPort;
 public class CheckUserService implements CheckUserPort {
 
     @Override
-    public boolean isUserAvailable(UUID userId) {
+    public boolean isUserAvailable(
+            UUID userId) {
         return true;
     }
 

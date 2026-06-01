@@ -35,30 +35,32 @@ import vn.uit.edu.payment.domain.event.PaymentUpdated;
 @Slf4j
 public class PaymentEventPublisher implements PublishPaymentEventPort {
     private final ApplicationEventPublisher publisher;
-    private final KafkaTemplate<String,OnlinePaymentCancelled> paymentCancelledTemplate;
+    private final KafkaTemplate<String, OnlinePaymentCancelled> paymentCancelledTemplate;
     private final KafkaTemplate<String, PaymentCreatedFail> paymentCreatedFailTemplate;
-    private final KafkaTemplate<String,OnlinePaymentExpired> paymentExpiredTemplate;
+    private final KafkaTemplate<String, OnlinePaymentExpired> paymentExpiredTemplate;
     private final KafkaTemplate<String, CodPaymentCreated> codPaymentCreatedTemplate;
-    private final KafkaTemplate<String,PaymentSuccess> paymentSuccessTemplate;
-    private final KafkaTemplate<String,PaymentLinkCreated> paymentLinkCreatedTemplate;
-    private final KafkaTemplate<String,OnlinePaymentSuccess> onlinePaymentSuccessTemplate;
+    private final KafkaTemplate<String, PaymentSuccess> paymentSuccessTemplate;
+    private final KafkaTemplate<String, PaymentLinkCreated> paymentLinkCreatedTemplate;
+    private final KafkaTemplate<String, OnlinePaymentSuccess> onlinePaymentSuccessTemplate;
     private final OnlinePaymentSuccessOutboxPublisher onlinePaymentSuccessOutboxPublisher;
     private final PaymentLinkCreatedOutboxPublisher paymentLinkCreatedOutboxPublisher;
-   
+
     private final OnlinePaymentExpiredOutboxPublisher onlinePaymentExpiredOutboxPublisher;
-    
+
     private final PaymentSuccessOutboxPublisher paymentSuccessOutboxPublisher;
     private final PaymentCreatedFailOutboxPublisher paymentCreatedFailOutboxPublisher;
-    private static final String PAYMENT_ONLINE_TOPIC="payment-online-topic";
-    private static final String PAYMENT_TOPIC="payment-topic";
-    
+    private static final String PAYMENT_ONLINE_TOPIC = "payment-online-topic";
+    private static final String PAYMENT_TOPIC = "payment-topic";
+
     @Override
-    public void publish(PaymentCreated event) {
+    public void publish(
+            PaymentCreated event) {
         publisher.publishEvent(event);
     }
 
     @Override
-    public void publish(PaymentUpdated event) {
+    public void publish(
+            PaymentUpdated event) {
         publisher.publishEvent(event);
     }
 
@@ -72,103 +74,114 @@ public class PaymentEventPublisher implements PublishPaymentEventPort {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    
-
     @Override
-    public void publishPaymentExpired(OnlinePaymentExpiredDocument outboxEvent) {
-        OnlinePaymentExpired event = new OnlinePaymentExpired(outboxEvent.getOrderId(), outboxEvent.getEventId(), outboxEvent.getUserEmail(), outboxEvent.getUserId());
-        Message<OnlinePaymentExpired> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC,PAYMENT_ONLINE_TOPIC).build();
+    public void publishPaymentExpired(
+            OnlinePaymentExpiredDocument outboxEvent) {
+        OnlinePaymentExpired event = new OnlinePaymentExpired(outboxEvent.getOrderId(), outboxEvent.getEventId(),
+                outboxEvent.getUserEmail(), outboxEvent.getUserId());
+        Message<OnlinePaymentExpired> message = MessageBuilder.withPayload(event)
+                .setHeader(KafkaHeaders.TOPIC, PAYMENT_ONLINE_TOPIC).build();
         try {
-        paymentExpiredTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                onlinePaymentExpiredOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
-    }catch(Exception e) {
-        log.error("Error sending event");
+            paymentExpiredTemplate.send(message).whenComplete((
+                    result,
+                    ex) -> {
+                if (ex == null) {
+                    onlinePaymentExpiredOutboxPublisher.markAsSent(outboxEvent);
+                } else {
+                    System.out.println("Send fail");
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error sending event");
+        }
     }
-    }
-
-   
 
     @Override
-    public void publishPaymentSuccess(PaymentSuccessDocument outboxEvent) {
+    public void publishPaymentSuccess(
+            PaymentSuccessDocument outboxEvent) {
         PaymentSuccess event = new PaymentSuccess(outboxEvent.getEventId(), outboxEvent.getOrderId());
-        Message<PaymentSuccess> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC,PAYMENT_ONLINE_TOPIC).build();
+        Message<PaymentSuccess> message = MessageBuilder.withPayload(event)
+                .setHeader(KafkaHeaders.TOPIC, PAYMENT_ONLINE_TOPIC).build();
         try {
-        paymentSuccessTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                paymentSuccessOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
-    }
-    catch(Exception e) {
-        log.error("Error sending event");
-    }
+            paymentSuccessTemplate.send(message).whenComplete((
+                    result,
+                    ex) -> {
+                if (ex == null) {
+                    paymentSuccessOutboxPublisher.markAsSent(outboxEvent);
+                } else {
+                    System.out.println("Send fail");
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error sending event");
+        }
     }
 
     @Override
-    public void publishPaymentLinkCreated(PaymentLinkCreatedDocument outboxEvent) {
-        PaymentLinkCreated event = new PaymentLinkCreated(outboxEvent.getEventId(), outboxEvent.getPaymentLink(), outboxEvent.getOrderId(),outboxEvent.getUserEmail(), outboxEvent.getUserId());
-        Message<PaymentLinkCreated> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC,PAYMENT_ONLINE_TOPIC).build();
+    public void publishPaymentLinkCreated(
+            PaymentLinkCreatedDocument outboxEvent) {
+        PaymentLinkCreated event = new PaymentLinkCreated(outboxEvent.getEventId(), outboxEvent.getPaymentLink(),
+                outboxEvent.getOrderId(), outboxEvent.getUserEmail(), outboxEvent.getUserId());
+        Message<PaymentLinkCreated> message = MessageBuilder.withPayload(event)
+                .setHeader(KafkaHeaders.TOPIC, PAYMENT_ONLINE_TOPIC).build();
         try {
-        paymentLinkCreatedTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                paymentLinkCreatedOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
-    }
-    catch(Exception e) {
-        log.error("Error sending event");
-    }
+            paymentLinkCreatedTemplate.send(message).whenComplete((
+                    result,
+                    ex) -> {
+                if (ex == null) {
+                    paymentLinkCreatedOutboxPublisher.markAsSent(outboxEvent);
+                } else {
+                    System.out.println("Send fail");
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error sending event");
+        }
     }
 
     @Override
-    public void publishOnlinePaymentSuccess(OnlinePaymentSuccessDocument outboxEvent) {
-        OnlinePaymentSuccess event = new OnlinePaymentSuccess(outboxEvent.getEventId(),  outboxEvent.getOrderId(),outboxEvent.getUserEmail(), outboxEvent.getUserId());
+    public void publishOnlinePaymentSuccess(
+            OnlinePaymentSuccessDocument outboxEvent) {
+        OnlinePaymentSuccess event = new OnlinePaymentSuccess(outboxEvent.getEventId(), outboxEvent.getOrderId(),
+                outboxEvent.getUserEmail(), outboxEvent.getUserId());
         System.out.println("Send online payment success event");
-        Message<OnlinePaymentSuccess> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC,PAYMENT_ONLINE_TOPIC).build();
+        Message<OnlinePaymentSuccess> message = MessageBuilder.withPayload(event)
+                .setHeader(KafkaHeaders.TOPIC, PAYMENT_ONLINE_TOPIC).build();
         try {
-        onlinePaymentSuccessTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                onlinePaymentSuccessOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
+            onlinePaymentSuccessTemplate.send(message).whenComplete((
+                    result,
+                    ex) -> {
+                if (ex == null) {
+                    onlinePaymentSuccessOutboxPublisher.markAsSent(outboxEvent);
+                } else {
+                    System.out.println("Send fail");
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error sending event");
+        }
     }
-    catch(Exception e) {
-        log.error("Error sending event");
-    }
-}
 
     @Override
-    public void publishPaymentCreatedFail(PaymentCreatedFailDocument outboxEvent) {
-        PaymentCreatedFail event = new PaymentCreatedFail(outboxEvent.getEventId(), outboxEvent.getOrderId(), outboxEvent.getUserId(), outboxEvent.getUserEmail());
-        Message<PaymentCreatedFail> message = MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC,PAYMENT_TOPIC).build();
+    public void publishPaymentCreatedFail(
+            PaymentCreatedFailDocument outboxEvent) {
+        PaymentCreatedFail event = new PaymentCreatedFail(outboxEvent.getEventId(), outboxEvent.getOrderId(),
+                outboxEvent.getUserId(), outboxEvent.getUserEmail());
+        Message<PaymentCreatedFail> message = MessageBuilder.withPayload(event)
+                .setHeader(KafkaHeaders.TOPIC, PAYMENT_TOPIC).build();
         try {
-        paymentCreatedFailTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                paymentCreatedFailOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                System.out.println("Send fail");
-            }
-        });
-    }
-    catch(Exception e) {
-        log.error("Error sending event");
-    }
+            paymentCreatedFailTemplate.send(message).whenComplete((
+                    result,
+                    ex) -> {
+                if (ex == null) {
+                    paymentCreatedFailOutboxPublisher.markAsSent(outboxEvent);
+                } else {
+                    System.out.println("Send fail");
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error sending event");
+        }
     }
 
 }

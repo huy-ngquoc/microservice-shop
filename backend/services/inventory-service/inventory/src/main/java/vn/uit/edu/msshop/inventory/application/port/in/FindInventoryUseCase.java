@@ -11,10 +11,24 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.InventoryId;
 import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 
 public interface FindInventoryUseCase {
-    public InventoryView findById(InventoryId id);
-    public InventoryView findByVariantId(VariantId id);
-    public Page<InventoryView> findAll(int pageNumber, int pageSize);
-    public List<InventoryView> findByListVariantId(List<VariantId> listVariantIds);
-    public Page<InventoryView> findAllUpdatedInventory(Instant startFirst, Instant endFirst, Instant startSecond, Instant endSecond, Pageable pageable);
-   
+    public InventoryView findById(
+            InventoryId id);
+
+    public InventoryView findByVariantId(
+            VariantId id);
+
+    public Page<InventoryView> findAll(
+            int pageNumber,
+            int pageSize);
+
+    public List<InventoryView> findByListVariantId(
+            List<VariantId> listVariantIds);
+
+    public Page<InventoryView> findAllUpdatedInventory(
+            Instant startFirst,
+            Instant endFirst,
+            Instant startSecond,
+            Instant endSecond,
+            Pageable pageable);
+
 }

@@ -19,7 +19,9 @@ import vn.uit.edu.msshop.inventory.application.port.in.UpdateInventoryUseCase;
 import vn.uit.edu.msshop.inventory.domain.event.OrderUpdatedEvent;
 
 @Component
-@KafkaListener(topics="order-topic", groupId="inventory-group")
+@KafkaListener(
+        topics = "order-topic",
+        groupId = "inventory-group")
 @RequiredArgsConstructor
 public class InventoryOrderListener {
     private final UpdateInventoryUseCase updateUseCase;
@@ -29,34 +31,42 @@ public class InventoryOrderListener {
     private final OrderCancelledRepository orderCancelledRepo;
 
     @KafkaHandler
-    public void onOrderUpdated(OrderUpdatedEvent event) {
+    public void onOrderUpdated(
+            OrderUpdatedEvent event) {
         processOrderUpdated(event);
     }
+
     @Transactional
-    public void processOrderUpdated(OrderUpdatedEvent event) {
-        if(eventDocumentRepo.existsById(event.getEventId())) return;
+    public void processOrderUpdated(
+            OrderUpdatedEvent event) {
+        if (eventDocumentRepo.existsById(event.getEventId()))
+            return;
         eventDocumentRepo.save(EventDocument.builder().eventId(event.getEventId()).receiveAt(Instant.now()).build());
-        if(event.getStatus().equals("RECEIVED")) {
-            if(orderReceivedRepo.existsById(event.getOrderId())) return;
-            //System.out.println("Shipping");
+        if (event.getStatus().equals("RECEIVED")) {
+            if (orderReceivedRepo.existsById(event.getOrderId()))
+                return;
+            // System.out.println("Shipping");
             updateUseCase.updateWhenOrderReceived(webMapper.toReceivedCommand(event));
             orderReceivedRepo.save(new OrderReceived(event.getOrderId(), Instant.now()));
-        }
-        else if(event.getStatus().equals("CANCELLED")&&!event.getOldStatus().equals("PENDING")) {
-            if(orderCancelledRepo.existsById(event.getOrderId())) return;
+        } else if (event.getStatus().equals("CANCELLED") && !event.getOldStatus().equals("PENDING")) {
+            if (orderCancelledRepo.existsById(event.getOrderId()))
+                return;
             updateUseCase.updateWhenOrderCancelled(webMapper.toCancelledCommand(event));
-            orderCancelledRepo.save(new OrderCancelled(event.getOrderId(),Instant.now()));
-        }
-        else if(event.getStatus().equals("PAYMENT_ERROR")||event.getStatus().equals("PAYMENT_EXPIRED")) {
-            if(orderCancelledRepo.existsById(event.getOrderId())) return;
-            //System.out.println("Cancell order");
+            orderCancelledRepo.save(new OrderCancelled(event.getOrderId(), Instant.now()));
+        } else if (event.getStatus().equals("PAYMENT_ERROR") || event.getStatus().equals("PAYMENT_EXPIRED")) {
+            if (orderCancelledRepo.existsById(event.getOrderId()))
+                return;
+            // System.out.println("Cancell order");
             updateUseCase.updateWhenOrderCancelled(webMapper.toCancelledCommand(event));
-            orderCancelledRepo.save(new OrderCancelled(event.getOrderId(),Instant.now()));
+            orderCancelledRepo.save(new OrderCancelled(event.getOrderId(), Instant.now()));
         }
-        
+
     }
-    @KafkaHandler(isDefault=true)
-    public void onObjectReceived(Object event){
-        
+
+    @KafkaHandler(
+            isDefault = true)
+    public void onObjectReceived(
+            Object event) {
+
     }
 }

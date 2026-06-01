@@ -18,7 +18,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="Inventory")
+@Table(
+        name = "Inventory")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,10 +28,12 @@ import lombok.Setter;
 public class InventoryJpaEntity {
     @Id
     @EqualsAndHashCode.Include
-    @GeneratedValue(strategy=GenerationType.UUID)
+    @GeneratedValue(
+            strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique=true)
+    @Column(
+            unique = true)
     private UUID variantId;
     private int quantity;
     private int reservedQuantity;
@@ -43,11 +46,15 @@ public class InventoryJpaEntity {
             nullable = false)
     private long version;
 
-    public static InventoryJpaEntity of(UUID variantId, int quantity, int reservedQuantity, Instant lastUpdate, String status) {
-        return InventoryJpaEntity.builder().variantId(variantId).quantity(quantity).reservedQuantity(reservedQuantity).lastUpdate(lastUpdate).version(0L).status(status)
-        .createAt(Instant.now()).build();
+    public static InventoryJpaEntity of(
+            UUID variantId,
+            int quantity,
+            int reservedQuantity,
+            Instant lastUpdate,
+            String status) {
+        return InventoryJpaEntity.builder().variantId(variantId).quantity(quantity).reservedQuantity(reservedQuantity)
+                .lastUpdate(lastUpdate).version(0L).status(status)
+                .createAt(Instant.now()).build();
     }
-
-    
 
 }

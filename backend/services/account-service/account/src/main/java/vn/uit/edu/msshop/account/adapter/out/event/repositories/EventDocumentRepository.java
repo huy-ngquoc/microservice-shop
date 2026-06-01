@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import vn.uit.edu.msshop.account.adapter.out.event.documents.EventDocument;
 
 @Repository
-public interface EventDocumentRepository extends JpaRepository<EventDocument, UUID>{
-    public void deleteByReceiveAtBefore(Instant threshold);
+public interface EventDocumentRepository extends JpaRepository<EventDocument, UUID> {
+    public void deleteByReceiveAtBefore(
+            Instant threshold);
 }

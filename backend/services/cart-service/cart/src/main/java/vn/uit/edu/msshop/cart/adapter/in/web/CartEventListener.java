@@ -10,15 +10,11 @@ import vn.uit.edu.msshop.cart.application.dto.command.DeleteCartItemCommand;
 import vn.uit.edu.msshop.cart.application.port.in.DeleteCartItemUseCase;
 import vn.uit.edu.msshop.cart.domain.event.OrderCreatedSuccess;
 
-
-
-
 public class CartEventListener {
     private DeleteCartItemUseCase deleteItemUseCase;
     private CartWebMapper mapper;
     private EventDocumentRepository eventDocumentRepository;
 
-    
     public void onOrderCreated(
             OrderCreatedSuccess orderCreatedSuccess) {
         if (eventDocumentRepository.existsById(orderCreatedSuccess.eventId()))

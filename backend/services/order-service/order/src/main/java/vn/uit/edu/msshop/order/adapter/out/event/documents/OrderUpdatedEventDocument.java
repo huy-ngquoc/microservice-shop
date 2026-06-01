@@ -13,7 +13,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import vn.uit.edu.msshop.order.domain.event.OrderDetailEvent;
 
-@Document(collection="order_updated_event")
+@Document(
+        collection = "order_updated_event")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -25,9 +26,9 @@ public class OrderUpdatedEventDocument extends OutboxEvent {
     private UUID orderId;
 
     private List<OrderDetailEvent> details;
-    
+
     private String status;
-    
+
     private UUID userId;
 
     private long originPrice;

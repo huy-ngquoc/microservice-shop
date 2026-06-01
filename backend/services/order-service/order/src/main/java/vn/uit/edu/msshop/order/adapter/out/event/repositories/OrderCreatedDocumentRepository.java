@@ -13,10 +13,17 @@ import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedDocument;
 
 @Repository
 public interface OrderCreatedDocumentRepository extends MongoRepository<OrderCreatedDocument, UUID> {
-    public List<OrderCreatedDocument> findByEventStatus(String eventStatus);
+    public List<OrderCreatedDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<OrderCreatedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
-    public Page<OrderCreatedDocument> findByEventStatusOrderByCreatedAtAsc(String status, Pageable pageable);
+    public List<OrderCreatedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public Page<OrderCreatedDocument> findByEventStatusOrderByCreatedAtAsc(
+            String status,
+            Pageable pageable);
+
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 }

@@ -28,9 +28,9 @@ private UUID variantId;
     private int newQuantity;
     private int newReservedQuantity;
     private String eventStatus;
-    private Integer retryCount; 
+    private Integer retryCount;
     private Instant createdAt;
-    private Instant updatedAt; 
+    private Instant updatedAt;
     private String lastError; */
 @Service
 @RequiredArgsConstructor

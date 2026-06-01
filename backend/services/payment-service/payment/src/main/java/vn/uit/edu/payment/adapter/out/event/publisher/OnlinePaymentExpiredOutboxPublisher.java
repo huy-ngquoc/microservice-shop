@@ -20,56 +20,71 @@ import vn.uit.edu.payment.domain.event.OnlinePaymentExpired;
 @RequiredArgsConstructor
 public class OnlinePaymentExpiredOutboxPublisher {
     private final OnlinePaymentExpiredDocumentRepository onlinePaymentExpiredDocumentRepo;
-    private static final String PUBLISH_TOPIC="payment-online-topic";
+    private static final String PUBLISH_TOPIC = "payment-online-topic";
     private final KafkaTemplate<String, OnlinePaymentExpired> kafkaTemplate;
 
-     @Scheduled(fixedDelay=5000)
+    @Scheduled(
+            fixedDelay = 5000)
     public void publishPendingEvents() {
-        List<OnlinePaymentExpiredDocument> pendingEvents = onlinePaymentExpiredDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        List<OnlinePaymentExpiredDocument> pendingEvents = onlinePaymentExpiredDocumentRepo
+                .findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (OnlinePaymentExpiredDocument event : pendingEvents) {
             try {
-                OnlinePaymentExpired onlinePaymentExpired = new OnlinePaymentExpired(event.getOrderId(), event.getEventId(), event.getUserEmail(), event.getUserId());
+                OnlinePaymentExpired onlinePaymentExpired = new OnlinePaymentExpired(event.getOrderId(),
+                        event.getEventId(), event.getUserEmail(), event.getUserId());
                 kafkaTemplate.send(PUBLISH_TOPIC, onlinePaymentExpired)
-                    .whenComplete((result, ex) -> {
-                        if (ex == null) {
-                            
-                            updateStatus(event, "SENT", null);
-                        } else {
-                            
-                            handleFailure(event, ex.getMessage());
-                        }
-                    });
+                        .whenComplete((
+                                result,
+                                ex) -> {
+                            if (ex == null) {
+
+                                updateStatus(event, "SENT", null);
+                            } else {
+
+                                handleFailure(event, ex.getMessage());
+                            }
+                        });
             } catch (Exception e) {
                 handleFailure(event, e.getMessage());
             }
         }
     }
 
-    private void updateStatus(OnlinePaymentExpiredDocument event, String status, String error) {
+    private void updateStatus(
+            OnlinePaymentExpiredDocument event,
+            String status,
+            String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
         onlinePaymentExpiredDocumentRepo.save(event);
     }
+
     @Transactional
-    public void markAsSent(OnlinePaymentExpiredDocument event) {
+    public void markAsSent(
+            OnlinePaymentExpiredDocument event) {
         updateStatus(event, "SENT", null);
     }
-    private void handleFailure(OnlinePaymentExpiredDocument event, String error) {
+
+    private void handleFailure(
+            OnlinePaymentExpiredDocument event,
+            String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
         } else {
             event.setRetryCount(retries + 1);
-            updateStatus(event, "PENDING", error); 
+            updateStatus(event, "PENDING", error);
         }
     }
-    @Scheduled(cron = "0 0 0 * * ?") 
+
+    @Scheduled(
+            cron = "0 0 0 * * ?")
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
-    
-    onlinePaymentExpiredDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
-   
-}
+
+        onlinePaymentExpiredDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+
+    }
 }

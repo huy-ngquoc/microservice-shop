@@ -159,9 +159,10 @@ public class PaymentController {
     public ResponseEntity<?> fakeWebHook(
             @RequestBody
             UUID orderId) {
-                 Random rand = new Random();
+        Random rand = new Random();
         int randomNumber = rand.nextInt(20);
-        if(randomNumber>=12) return ResponseEntity.ok("That bai");
+        if (randomNumber >= 12)
+            return ResponseEntity.ok("That bai");
         webHookPort.fakeWebHook(orderId);
         return ResponseEntity.noContent().build();
     }
@@ -172,7 +173,8 @@ public class PaymentController {
             OrderCreated orderCreated) {
         Random rand = new Random();
         int randomNumber = rand.nextInt(20);
-        if(randomNumber>=12) return ResponseEntity.internalServerError().build();
+        if (randomNumber >= 12)
+            return ResponseEntity.internalServerError().build();
         if (!eventDocumentRepo.existsById(orderCreated.eventId())) {
             CreatePaymentCommand command = mapper.toCommand(orderCreated);
             createUseCase.create(command);

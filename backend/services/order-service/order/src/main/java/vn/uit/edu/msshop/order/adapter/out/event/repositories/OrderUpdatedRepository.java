@@ -11,9 +11,13 @@ import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderUpdatedEventDocu
 
 @Repository
 public interface OrderUpdatedRepository extends MongoRepository<OrderUpdatedEventDocument, UUID> {
-    public List<OrderUpdatedEventDocument> findByEventStatus(String eventStatus);
+    public List<OrderUpdatedEventDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<OrderUpdatedEventDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public List<OrderUpdatedEventDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 }

@@ -15,42 +15,64 @@ import vn.uit.edu.msshop.notification.application.service.SendNotificationServic
 import vn.uit.edu.msshop.notification.domain.event.OnlinePaymentExpired;
 import vn.uit.edu.msshop.notification.domain.event.OnlinePaymentSuccess;
 import vn.uit.edu.msshop.notification.domain.event.PaymentLinkCreated;
+
 @Component
-@KafkaListener(topics="payment-online-topic", groupId="notification-group")
+@KafkaListener(
+        topics = "payment-online-topic",
+        groupId = "notification-group")
 @RequiredArgsConstructor
 public class NotificationPaymentEventListener {
     private final EventDocumentRepository eventDocumentRepo;
     private final SendMailUseCase sendMailUseCase;
     private final EmailMessageConverter messageConverter;
     private final SendNotificationService sendNotificationService;
+
     @KafkaHandler
-    public void onPaymentLinkCreated(PaymentLinkCreated event) {
-        if(eventDocumentRepo.existsById(event.getEventId())) return;
-        CreateEmailCommand command = messageConverter.toCommand(messageConverter.getPaymentLinkCreatedContent(event.getOrderId(), event.getPaymentLink()), "Tạo đơn hàng thành công", "ORDER_CREATED", event.getOrderId(), event.getUserEmail(), event.getUserId());
-        final var email =sendMailUseCase.createEmail(command);
+    public void onPaymentLinkCreated(
+            PaymentLinkCreated event) {
+        if (eventDocumentRepo.existsById(event.getEventId()))
+            return;
+        CreateEmailCommand command = messageConverter.toCommand(
+                messageConverter.getPaymentLinkCreatedContent(event.getOrderId(), event.getPaymentLink()),
+                "Tạo đơn hàng thành công", "ORDER_CREATED", event.getOrderId(), event.getUserEmail(),
+                event.getUserId());
+        final var email = sendMailUseCase.createEmail(command);
         sendNotificationService.sendNotification(email);
-        eventDocumentRepo.save(new EventDocument(event.getEventId(),Instant.now()));
+        eventDocumentRepo.save(new EventDocument(event.getEventId(), Instant.now()));
     }
+
     @KafkaHandler
-    public void onPaymentLinkExpired(OnlinePaymentExpired event) {
-        if(eventDocumentRepo.existsById(event.eventId())) return;
-        CreateEmailCommand command = messageConverter.toCommand(messageConverter.getPaymentLinkExpiredContent(event.orderId()), "Đã hết hạn thanh toán", "PAYMENT_LINK_EXPIRED", event.orderId(), event.userEmail(),event.userId());
-        final var email =sendMailUseCase.createEmail(command);
+    public void onPaymentLinkExpired(
+            OnlinePaymentExpired event) {
+        if (eventDocumentRepo.existsById(event.eventId()))
+            return;
+        CreateEmailCommand command = messageConverter.toCommand(
+                messageConverter.getPaymentLinkExpiredContent(event.orderId()), "Đã hết hạn thanh toán",
+                "PAYMENT_LINK_EXPIRED", event.orderId(), event.userEmail(), event.userId());
+        final var email = sendMailUseCase.createEmail(command);
         sendNotificationService.sendNotification(email);
-        eventDocumentRepo.save(new EventDocument(event.eventId(),Instant.now()));
+        eventDocumentRepo.save(new EventDocument(event.eventId(), Instant.now()));
     }
+
     @KafkaHandler
-    public void onOnlinePaymentSuccess(OnlinePaymentSuccess event) {
+    public void onOnlinePaymentSuccess(
+            OnlinePaymentSuccess event) {
         System.out.println("Receive online payment success event");
-        if(eventDocumentRepo.existsById(event.getEventId())) return;
-        CreateEmailCommand command = messageConverter.toCommand(messageConverter.getPaymentLinkExpiredContent(event.getOrderId()), "Thanh toán online thành công", "ONLINE_PAYMENT_SUCCESS", event.getOrderId(), event.getUserEmail(), event.getUserId());
-        final var email =sendMailUseCase.createEmail(command);
+        if (eventDocumentRepo.existsById(event.getEventId()))
+            return;
+        CreateEmailCommand command = messageConverter.toCommand(
+                messageConverter.getPaymentLinkExpiredContent(event.getOrderId()), "Thanh toán online thành công",
+                "ONLINE_PAYMENT_SUCCESS", event.getOrderId(), event.getUserEmail(), event.getUserId());
+        final var email = sendMailUseCase.createEmail(command);
         sendNotificationService.sendNotification(email);
-        eventDocumentRepo.save(new EventDocument(event.getEventId(),Instant.now()));
+        eventDocumentRepo.save(new EventDocument(event.getEventId(), Instant.now()));
     }
-    @KafkaHandler(isDefault=true)
-    public void onObjectReceived(Object event) {
-        
+
+    @KafkaHandler(
+            isDefault = true)
+    public void onObjectReceived(
+            Object event) {
+
     }
 
 }

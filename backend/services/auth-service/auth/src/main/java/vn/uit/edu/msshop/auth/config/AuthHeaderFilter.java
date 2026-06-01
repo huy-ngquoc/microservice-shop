@@ -1,4 +1,5 @@
 package vn.uit.edu.msshop.auth.config;
+
 import java.util.stream.Collectors;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -16,34 +17,34 @@ import reactor.core.publisher.Mono;
 public class AuthHeaderFilter implements GlobalFilter, Ordered {
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public Mono<Void> filter(
+            ServerWebExchange exchange,
+            GatewayFilterChain chain) {
         return exchange.getPrincipal()
-            .filter(principal -> principal instanceof JwtAuthenticationToken)
-            .cast(JwtAuthenticationToken.class)
-            .map(jwtToken -> {
-                
-                String userId = (String) jwtToken.getTokenAttributes().get("sub");
+                .filter(principal -> principal instanceof JwtAuthenticationToken)
+                .cast(JwtAuthenticationToken.class)
+                .map(jwtToken -> {
 
-                
-                String roles = jwtToken.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.joining(","));
+                    String userId = (String) jwtToken.getTokenAttributes().get("sub");
 
-                
-                ServerHttpRequest request = exchange.getRequest().mutate()
-                        .header("X-User-Id", userId)
-                        .header("X-User-Roles", roles)
-                        .build();
+                    String roles = jwtToken.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.joining(","));
 
-                return exchange.mutate().request(request).build();
-            })
-            .defaultIfEmpty(exchange)
-            .flatMap(chain::filter);
+                    ServerHttpRequest request = exchange.getRequest().mutate()
+                            .header("X-User-Id", userId)
+                            .header("X-User-Roles", roles)
+                            .build();
+
+                    return exchange.mutate().request(request).build();
+                })
+                .defaultIfEmpty(exchange)
+                .flatMap(chain::filter);
     }
 
     @Override
     public int getOrder() {
-        
-        return 0; 
+
+        return 0;
     }
 }

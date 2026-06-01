@@ -76,7 +76,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
         return result;
         /*
          * String result = UUIDs.newId().toString();
-         * 
+         *
          * OnlinePaymentInfo info = new OnlinePaymentInfo(payment.getPaymentId(), new
          * PaymentLink(result), new OnlinePaymentNumber(System.currentTimeMillis()),new
          * TransactionId(null), new CreateAt(Instant.now()));
@@ -94,7 +94,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
          * .lastError(null).build();
          * publishEventPort.publishPaymentLinkCreated(paymentLinkCreatedRepo.save(
          * paymentLinkCreatedDocument));
-         * 
+         *
          * return result;
          */
 

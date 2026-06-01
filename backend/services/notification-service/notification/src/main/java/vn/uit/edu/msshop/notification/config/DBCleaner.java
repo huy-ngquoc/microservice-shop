@@ -8,8 +8,10 @@ import vn.uit.edu.msshop.notification.adapter.out.persistence.EmailRepository;
 
 public class DBCleaner {
     private EmailRepository emailRepo;
-    public DBCleaner(EmailRepository emailRepo) {
-        this.emailRepo=emailRepo;
+
+    public DBCleaner(
+            EmailRepository emailRepo) {
+        this.emailRepo = emailRepo;
         emailRepo.deleteAll();
     }
 }

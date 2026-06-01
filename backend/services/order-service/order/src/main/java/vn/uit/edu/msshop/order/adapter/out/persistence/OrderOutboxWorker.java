@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-
 @Component
 @RequiredArgsConstructor
 public class OrderOutboxWorker {
@@ -20,7 +19,9 @@ public class OrderOutboxWorker {
     private final TaskExecutor taskExecutor;
     @Value("${custom.call_inventory_batch}")
     private String inventoryBatch;
-   @Scheduled(fixedDelayString="${custom.call_inventory_interval}")
+
+    @Scheduled(
+            fixedDelayString = "${custom.call_inventory_interval}")
     public void proccessPendingOrder() {
         int batchSize;
         try {
@@ -29,17 +30,14 @@ public class OrderOutboxWorker {
             return;
         }
         Pageable pageable = PageRequest.of(0, batchSize);
-        List<OrderOutbox> outboxes = orderOutboxRepo.findByOutboxStatusOrderByCreatedAtAsc("PENDING", pageable).getContent();
-        //System.out.println(outboxes.size());
-        for(OrderOutbox outbox: outboxes) {
+        List<OrderOutbox> outboxes = orderOutboxRepo.findByOutboxStatusOrderByCreatedAtAsc("PENDING", pageable)
+                .getContent();
+        // System.out.println(outboxes.size());
+        for (OrderOutbox outbox : outboxes) {
             processor.updateStatus(outbox);
         }
-    //System.out.println("Kết thúc một lượt quét.");
+        // System.out.println("Kết thúc một lượt quét.");
 
-   
-   
-        
     }
-    
-    
+
 }

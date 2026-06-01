@@ -22,13 +22,15 @@ public class PayOSWorkerAdapter implements PayOSWorker {
     private final PayOSService payOSService;
 
     @Override
-    @Scheduled(fixedDelay=60000*5)
+    @Scheduled(
+            fixedDelay = 60000 * 5)
     public void checkExpiredPayments() {
         Instant timeOut = Instant.now().minus(1, ChronoUnit.MINUTES);
         List<Payment> payments = loadPaymentPort.loadExpiredPayment(timeOut);
-        for(Payment payment:payments) {
+        for (Payment payment : payments) {
             OnlinePaymentInfo onlinePaymentInfo = loadPaymentInfoPort.loadById(payment.getPaymentId());
-            if(onlinePaymentInfo==null) continue;
+            if (onlinePaymentInfo == null)
+                continue;
             payOSService.syncPaymentData(onlinePaymentInfo.getPaymentNumber().value());
 
         }

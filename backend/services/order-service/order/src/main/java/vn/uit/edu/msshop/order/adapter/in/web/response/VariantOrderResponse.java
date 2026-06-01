@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
 public record VariantOrderResponse(
-    UUID id,
+        UUID id,
 
         UUID productId,
 
@@ -18,7 +18,6 @@ public record VariantOrderResponse(
 
         @Nullable
         String imageKey,
-        String productName
-) {
+        String productName) {
 
 }

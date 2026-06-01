@@ -4,10 +4,13 @@ import vn.uit.edu.payment.domain.model.valueobject.OrderId;
 import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 
 public class PaymentNotFoundException extends RuntimeException {
-    public PaymentNotFoundException(PaymentId paymentId) {
-        super("Payment not found with id "+paymentId.value().toString());
+    public PaymentNotFoundException(
+            PaymentId paymentId) {
+        super("Payment not found with id " + paymentId.value().toString());
     }
-    public PaymentNotFoundException(OrderId orderId){
-        super("Payment not found with order id "+orderId.value().toString());
+
+    public PaymentNotFoundException(
+            OrderId orderId) {
+        super("Payment not found with order id " + orderId.value().toString());
     }
 }

@@ -11,9 +11,13 @@ import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderCreatedSuccessDo
 
 @Repository
 public interface OrderCreatedSuccessDocumentRepository extends MongoRepository<OrderCreatedSuccessDocument, UUID> {
-    public List<OrderCreatedSuccessDocument> findByEventStatus(String eventStatus);
+    public List<OrderCreatedSuccessDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<OrderCreatedSuccessDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public List<OrderCreatedSuccessDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 }

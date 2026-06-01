@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,5 +15,5 @@ public class ImageResponse {
     private String fileName;
     private int width;
     private int height;
-    
+
 }

@@ -8,8 +8,12 @@ import vn.uit.edu.msshop.inventory.application.dto.command.UpdateInventoryComman
 import vn.uit.edu.msshop.inventory.application.dto.query.InventoryView;
 
 public interface UpdateInventoryUseCase {
-    public InventoryView update(UpdateInventoryCommand command);
-    
-    public List<InventoryView> updateWhenOrderCancelled(OrderCancelledCommand command);
-    public List<InventoryView> updateWhenOrderReceived(OrderReceivedCommand command);
+    public InventoryView update(
+            UpdateInventoryCommand command);
+
+    public List<InventoryView> updateWhenOrderCancelled(
+            OrderCancelledCommand command);
+
+    public List<InventoryView> updateWhenOrderReceived(
+            OrderReceivedCommand command);
 }

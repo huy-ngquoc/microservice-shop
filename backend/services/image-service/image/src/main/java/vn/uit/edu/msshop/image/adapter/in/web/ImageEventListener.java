@@ -19,7 +19,8 @@ import vn.uit.edu.msshop.image.domain.event.DeleteOldImageEvent;
 import vn.uit.edu.msshop.image.domain.event.RollbackImageEvent;
 
 @Component
-@KafkaListener(topics="image-account-topic")
+@KafkaListener(
+        topics = "image-account-topic")
 @RequiredArgsConstructor
 @Slf4j
 public class ImageEventListener {
@@ -27,29 +28,29 @@ public class ImageEventListener {
     private final RemoveImageFolderUseCase removeUseCase;
     private final ImageWebMapper mapper;
     private final EventDocumentRepository eventDocumentRepo;
-    
+
     @KafkaHandler
     @Transactional
-    public void handleDeleteOldImage(DeleteOldImageEvent event) {
-        if(!eventDocumentRepo.existsById(event.eventId())) {
+    public void handleDeleteOldImage(
+            DeleteOldImageEvent event) {
+        if (!eventDocumentRepo.existsById(event.eventId())) {
             final var command = mapper.toCommand(event.oldImagePublicId());
             deleteUseCase.deleteImage(command);
             eventDocumentRepo.save(EventDocument.builder().eventId(event.eventId()).receiveAt(Instant.now()).build());
         }
-        
+
     }
 
     @KafkaHandler
     @Transactional
-    public void handleRollback(RollbackImageEvent event) throws IOException {
-        if(!eventDocumentRepo.existsById(event.eventId())) {
+    public void handleRollback(
+            RollbackImageEvent event) throws IOException {
+        if (!eventDocumentRepo.existsById(event.eventId())) {
             final var command = mapper.toCommand(event);
             removeUseCase.rollbackImageFolder(command);
             eventDocumentRepo.save(EventDocument.builder().eventId(event.eventId()).receiveAt(Instant.now()).build());
         }
-        
+
     }
-
-
 
 }

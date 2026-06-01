@@ -14,7 +14,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection="variant-to-user")
+@Document(
+        collection = "variant-to-user")
 public class VariantToUserRedisModel {
     @Id
     private String variantId;

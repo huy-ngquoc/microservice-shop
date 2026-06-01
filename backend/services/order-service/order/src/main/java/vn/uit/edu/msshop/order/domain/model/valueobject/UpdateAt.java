@@ -4,7 +4,8 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public record UpdateAt(Instant value) {
+public record UpdateAt(
+        Instant value) {
     @JsonValue
     public Instant getValue() {
         return this.value;

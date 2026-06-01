@@ -8,5 +8,7 @@ import vn.uit.edu.msshop.cart.application.dto.query.CartView;
 public interface UpdateCartInfoUseCase {
     public CartView updateInfo(
             List<UpdateCartInfoCommand> command);
-    public void updateMany(List<UpdateCartInfoCommand> commands);
+
+    public void updateMany(
+            List<UpdateCartInfoCommand> commands);
 }

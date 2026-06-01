@@ -38,13 +38,15 @@ public class CartWebMapper {
     private final LoadVariantPort loadPort;
 
     public CreateCartCommand toCommand(
-            CreateCartRequest request, String userFromHeader) {
+            CreateCartRequest request,
+            String userFromHeader) {
         List<CartDetail> listCartDetails = loadPort.loadCartDetails(request.getDetailRequests());
         return new CreateCartCommand(new UserId(UUID.fromString(userFromHeader)), listCartDetails);
     }
 
     public UpdateCartAmountCommand toCommand(
-            UpdateCartAmountReuest request, String userId) {
+            UpdateCartAmountReuest request,
+            String userId) {
         return new UpdateCartAmountCommand(new UserId(UUID.fromString(userId)), new VariantId(request.getVariantId()),
                 ChangeRequest.toChange(request.getAmount(), Amount::new));
     }
@@ -91,8 +93,11 @@ public class CartWebMapper {
 
         return new UpdateCartInfoCommand(new UserId(UUID.fromString(userId)), new VariantId(event.getVariantId()),
                 imageKey, name, traits, unitPrice);
-    } 
-    public UpdateCartInfoCommand toCommand(VariantUpdatedIntegrationEvent event, String userId) {
+    }
+
+    public UpdateCartInfoCommand toCommand(
+            VariantUpdatedIntegrationEvent event,
+            String userId) {
         final var imageKey = Change.set(new ImageKey(event.imageKey()));
         final var name = Change.set(new ProductName(event.name()));
         final var traits = Change.set(new VariantTraits(event.traits()));

@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="inventory_updated")
+@Table(
+        name = "inventory_updated")
 @Getter
 @Setter
 @Builder
@@ -26,12 +27,10 @@ public class InventoryUpdatedDocument {
     private int newQuantity;
     private int newReservedQuantity;
     private String eventStatus;
-    private Integer retryCount; 
+    private Integer retryCount;
     private Instant createdAt;
-    private Instant updatedAt; 
+    private Instant updatedAt;
     private String lastError;
     private boolean isRead;
-    
 
-    
 }

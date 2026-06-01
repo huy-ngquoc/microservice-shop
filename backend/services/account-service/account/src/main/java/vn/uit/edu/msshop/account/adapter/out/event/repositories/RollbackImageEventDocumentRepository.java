@@ -11,9 +11,13 @@ import vn.uit.edu.msshop.account.adapter.out.event.documents.RollbackImageEventD
 
 @Repository
 public interface RollbackImageEventDocumentRepository extends JpaRepository<RollbackImageEventDocument, UUID> {
-    public List<RollbackImageEventDocument> findByEventStatus(String eventStatus);
+    public List<RollbackImageEventDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<RollbackImageEventDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public List<RollbackImageEventDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 }

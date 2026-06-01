@@ -33,25 +33,29 @@ public class SyncKeycloakService implements SyncKeycloakUseCase {
     private String clientUuid;
 
     @Override
-    //@Transactional
-    @Scheduled(fixedRate=10000)
+    // @Transactional
+    @Scheduled(
+            fixedRate = 10000)
     public void syncKeyCloak() {
-        List<AccountOutboxEntity> pendingAccountOutboxEntities = accountOutboxRepo.findTop50ByIsCheckOrderByCreatedAtAsc(false);
-        List<AccountOutboxEntity> toDelete= new ArrayList<>();
+        List<AccountOutboxEntity> pendingAccountOutboxEntities = accountOutboxRepo
+                .findTop50ByIsCheckOrderByCreatedAtAsc(false);
+        List<AccountOutboxEntity> toDelete = new ArrayList<>();
         List<Account> toSaves = new ArrayList<>();
-        for(AccountOutboxEntity accountOutboxEntity: pendingAccountOutboxEntities) {
+        for (AccountOutboxEntity accountOutboxEntity : pendingAccountOutboxEntities) {
             syncService.sync(accountOutboxEntity, toSaves, toDelete);
         }
         saveAccountPort.saveAll(toSaves);
         accountOutboxRepo.deleteAll(toDelete);
     }
-     private UserRepresentation toUserRepresentation(AccountOutboxEntity outboxEntity) {
+
+    private UserRepresentation toUserRepresentation(
+            AccountOutboxEntity outboxEntity) {
         UserRepresentation user = new UserRepresentation();
         user.setUsername(outboxEntity.getUserName());
         user.setEmail(outboxEntity.getUserEmail());
         user.setEnabled(true);
         user.setId(outboxEntity.getUserId().toString());
-       
+
         CredentialRepresentation cred = new CredentialRepresentation();
         cred.setTemporary(false);
         cred.setType(CredentialRepresentation.PASSWORD);
@@ -60,8 +64,7 @@ public class SyncKeycloakService implements SyncKeycloakUseCase {
         user.setFirstName(outboxEntity.getFirstName());
         user.setLastName(outboxEntity.getLastName());
         Map<String, List<String>> clientRolesMap = new HashMap<>();
- 
-    
+
         clientRolesMap.put(clientUuid, Collections.singletonList(outboxEntity.getUserRole()));
         user.setClientRoles(clientRolesMap);
         return user;

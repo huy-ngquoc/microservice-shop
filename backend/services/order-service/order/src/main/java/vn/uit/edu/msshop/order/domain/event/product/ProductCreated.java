@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,5 +18,4 @@ public class ProductCreated {
     private String productName;
     private List<VariantCreated> variantCreateds;
 
-    
 }

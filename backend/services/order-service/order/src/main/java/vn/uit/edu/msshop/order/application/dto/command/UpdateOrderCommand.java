@@ -6,9 +6,8 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.ShippingInfo;
 
 public record UpdateOrderCommand(
-    OrderId id,
-    Change<ShippingInfo> shippingInfo,
-    Change<OrderStatus> status
-) {
+        OrderId id,
+        Change<ShippingInfo> shippingInfo,
+        Change<OrderStatus> status) {
 
 }

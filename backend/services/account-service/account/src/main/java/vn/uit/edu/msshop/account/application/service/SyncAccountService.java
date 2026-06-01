@@ -30,47 +30,53 @@ public class SyncAccountService {
     private final CreateKeyCloakAccountPort createKeyCloakPort;
     @Value("${app.keycloak.admin.client-uuid}")
     private String clientUuid;
+
     @Transactional
-    public void sync(AccountOutboxEntity accountOutboxEntity, List<Account> toSaves, List<AccountOutboxEntity> toDelete) {
-        if(accountOutboxEntity.getRetryCount()>=5) {
-                System.out.println(accountOutboxEntity.getLastError());
-                accountOutboxEntity.setCheck(true);
-                accountOutboxRepo.save(accountOutboxEntity);
-                accountOutboxEntity.getAccount().setStatus("CREATE_FAILED");
-                saveAccountPort.save(mapper.toDomain(accountOutboxEntity.getAccount()));
-                return;
+    public void sync(
+            AccountOutboxEntity accountOutboxEntity,
+            List<Account> toSaves,
+            List<AccountOutboxEntity> toDelete) {
+        if (accountOutboxEntity.getRetryCount() >= 5) {
+            System.out.println(accountOutboxEntity.getLastError());
+            accountOutboxEntity.setCheck(true);
+            accountOutboxRepo.save(accountOutboxEntity);
+            accountOutboxEntity.getAccount().setStatus("CREATE_FAILED");
+            saveAccountPort.save(mapper.toDomain(accountOutboxEntity.getAccount()));
+            return;
+        }
+        final var accountEntity = accountOutboxEntity.getAccount();
+        // System.out.println("Call create accountttttt");
+        try {
+            Response response = createKeyCloakPort.createAccount(toUserRepresentation(accountOutboxEntity),
+                    accountOutboxEntity.getUserRole());
+            if (response.getStatus() == 201) {
+                String keycloakId = CreatedResponseUtil.getCreatedId(response);
+                accountEntity.setKeycloakId(keycloakId);
+            } else {
+                // Xử lý logic khi tạo thất bại (ví dụ: Trùng email, trùng username...)
+                throw new RuntimeException("Tạo tài khoản Keycloak thất bại, mã lỗi: " + response.getStatus());
             }
-            final var accountEntity = accountOutboxEntity.getAccount();
-           // System.out.println("Call create accountttttt");
-            try {
-               Response response= createKeyCloakPort.createAccount(toUserRepresentation(accountOutboxEntity), accountOutboxEntity.getUserRole());
-               if (response.getStatus() == 201) {
-                   String keycloakId = CreatedResponseUtil.getCreatedId(response);
-                   accountEntity.setKeycloakId(keycloakId);
-                } else {
-    // Xử lý logic khi tạo thất bại (ví dụ: Trùng email, trùng username...)
-                    throw new RuntimeException("Tạo tài khoản Keycloak thất bại, mã lỗi: " + response.getStatus());
-                }
-            }
-            catch(RuntimeException e) {
-                e.printStackTrace();
-                accountOutboxEntity.handleFailure(e.getMessage());
-                accountOutboxRepo.save(accountOutboxEntity);
-                return;
-            }
-            accountOutboxEntity.handleSuccess();
-            
-            accountEntity.setStatus("ACTIVE");
-            toSaves.add(mapper.toDomain(accountEntity));
-            toDelete.add(accountOutboxEntity);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            accountOutboxEntity.handleFailure(e.getMessage());
+            accountOutboxRepo.save(accountOutboxEntity);
+            return;
+        }
+        accountOutboxEntity.handleSuccess();
+
+        accountEntity.setStatus("ACTIVE");
+        toSaves.add(mapper.toDomain(accountEntity));
+        toDelete.add(accountOutboxEntity);
     }
-    private UserRepresentation toUserRepresentation(AccountOutboxEntity outboxEntity) {
+
+    private UserRepresentation toUserRepresentation(
+            AccountOutboxEntity outboxEntity) {
         UserRepresentation user = new UserRepresentation();
         user.setUsername(outboxEntity.getUserName());
         user.setEmail(outboxEntity.getUserEmail());
         user.setEnabled(true);
         user.setId(outboxEntity.getUserId().toString());
-       
+
         CredentialRepresentation cred = new CredentialRepresentation();
         cred.setTemporary(false);
         cred.setType(CredentialRepresentation.PASSWORD);
@@ -79,8 +85,7 @@ public class SyncAccountService {
         user.setFirstName(outboxEntity.getFirstName());
         user.setLastName(outboxEntity.getLastName());
         Map<String, List<String>> clientRolesMap = new HashMap<>();
-        
-    
+
         clientRolesMap.put(clientUuid, Collections.singletonList(outboxEntity.getUserRole()));
         user.setClientRoles(clientRolesMap);
         return user;

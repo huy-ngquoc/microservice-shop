@@ -17,15 +17,18 @@ import vn.uit.edu.msshop.account.domain.event.kafka.ImageRemoveSuccess;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@KafkaListener(topics="image-topic",groupId="image-group")
+@KafkaListener(
+        topics = "image-topic",
+        groupId = "image-group")
 public class AccountAvatarImageEventConsumer {
     private final UpdateAvatarUseCase updateAvatarUseCase;
     private final AccountWebMapper mapper;
     private final EventDocumentRepository eventDocumentRepo;
 
     @KafkaHandler
-    public void handleRemoveAvatarFolderSuccess(ImageRemoveSuccess event) {
-        if(!eventDocumentRepo.existsById(event.getEventId())) {
+    public void handleRemoveAvatarFolderSuccess(
+            ImageRemoveSuccess event) {
+        if (!eventDocumentRepo.existsById(event.getEventId())) {
             final var command = mapper.toCommand(event);
             updateAvatarUseCase.updateAvatar(command);
             eventDocumentRepo.save(new EventDocument(event.getEventId(), Instant.now()));
