@@ -1,19 +1,19 @@
 server:
-  port: 8222
+    port: 8222
 spring:
-  cloud:
-    gateway:
-      routes:
-        - id: payment-service
-          uri: lb://PAYMENT-SERVICE
-          predicates:
-            - Path=/payment/**
-        - id: auth-service
-          uri: lb://AUTH-SERVICE
-          predicates:
-            - Path=/auth/**
-  
+    cloud:
+        gateway:
+            routes:
+                - id: payment-service
+                  uri: lb://PAYMENT-SERVICE
+                  predicates:
+                      - Path=/payment/**
+                - id: auth-service
+                  uri: lb://AUTH-SERVICE
+                  predicates:
+                      - Path=/auth/**
+    
 logging:
-  level:
-    org.springframework.cloud.gateway: WARN
-    org.springframework.http.server.reactive: WARN
+    level:
+        org.springframework.cloud.gateway: WARN
+        org.springframework.http.server.reactive: WARN
