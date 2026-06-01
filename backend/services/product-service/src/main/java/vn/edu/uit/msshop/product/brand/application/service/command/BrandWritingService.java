@@ -65,12 +65,12 @@ public class BrandWritingService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND,
-                            key = "#command.id().value()",
-                            condition = "#command.name().getSet() != null"),
+                            key = "#cmd.id().value()",
+                            condition = "#cmd.name().getSet() != null"),
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true,
-                            condition = "#command.name().getSet() != null")
+                            condition = "#cmd.name().getSet() != null")
             })
     public BrandView updateInfo(
             final BrandLifecycleCommands.UpdateInfo cmd) {
