@@ -2,11 +2,14 @@ package vn.edu.uit.msshop.product.product.application.service.command;
 
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.port.in.command.ApplyRatingDeletedUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProcessedRatingEventExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProcessedRatingEventPort;
@@ -27,6 +30,15 @@ public class ApplyRatingDeletedService
 
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT,
+                            key = "#productId.value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT_LIST,
+                            allEntries = true)
+            })
     public void execute(
             final UUID eventId,
             final ProductId productId,
