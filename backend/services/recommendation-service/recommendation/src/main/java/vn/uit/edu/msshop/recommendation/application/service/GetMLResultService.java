@@ -11,8 +11,10 @@ import vn.uit.edu.msshop.recommendation.application.port.in.GetMLResultUseCase;
 @RequiredArgsConstructor
 public class GetMLResultService implements GetMLResultUseCase {
     private final MLServerCaller caller;
+
     @Override
-    public AIServerResponse getResponse(byte[] imageData) {
+    public AIServerResponse getResponse(
+            byte[] imageData) {
         return caller.getPrediction(imageData).getBody();
     }
 

@@ -8,7 +8,12 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
 import vn.uit.edu.msshop.account.domain.model.valueobject.KeyCloakId;
 
 public interface LoadAccountPort {
-    public Optional<Account> loadById(AccountId id);
-    public Account loadByUsername(AccountName name);
-    public Optional<Account> loadByKeycloakId(KeyCloakId id);
+    public Optional<Account> loadById(
+            AccountId id);
+
+    public Account loadByUsername(
+            AccountName name);
+
+    public Optional<Account> loadByKeycloakId(
+            KeyCloakId id);
 }

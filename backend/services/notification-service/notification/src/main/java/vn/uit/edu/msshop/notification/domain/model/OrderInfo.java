@@ -26,5 +26,5 @@ public class OrderInfo {
     private OrderDiscount orderDiscount;
     private OrderTotalPrice orderTotalPrice;
     private OriginOrderValue originOrderValue;
-    
+
 }

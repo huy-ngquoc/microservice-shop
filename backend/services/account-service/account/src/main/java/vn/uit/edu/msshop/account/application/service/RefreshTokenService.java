@@ -30,25 +30,25 @@ public class RefreshTokenService implements RefreshTokenUseCase {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public LoginResponse refreshToken(String refreshToken) {
+    public LoginResponse refreshToken(
+            String refreshToken) {
         HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    map.add("grant_type", "refresh_token");
-    map.add("refresh_token", refreshToken);
-    map.add("client_id", clientId);
-    map.add("client_secret", clientSecret);
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("grant_type", "refresh_token");
+        map.add("refresh_token", refreshToken);
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
 
-    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-    try {
-        ResponseEntity<LoginResponse> response = restTemplate.postForEntity(tokenUri, request, LoginResponse.class);
-        return response.getBody();
-    } catch (HttpClientErrorException e) {
-        throw new RuntimeException("Refresh token không hợp lệ hoặc đã hết hạn");
+        try {
+            ResponseEntity<LoginResponse> response = restTemplate.postForEntity(tokenUri, request, LoginResponse.class);
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Refresh token không hợp lệ hoặc đã hết hạn");
+        }
     }
-    }
-    
 
 }

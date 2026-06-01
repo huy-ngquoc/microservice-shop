@@ -16,7 +16,7 @@ import lombok.Setter;
 @Builder
 public class OrderDetailDocument {
     private UUID variantId;
-    
+
     private String productName;
     private List<String> traits;
     private String imageKey;

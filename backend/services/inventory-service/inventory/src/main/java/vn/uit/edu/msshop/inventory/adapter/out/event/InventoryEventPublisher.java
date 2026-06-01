@@ -24,51 +24,59 @@ public class InventoryEventPublisher implements PublishInventoryEventPort {
     private final KafkaTemplate<String, InventoryUpdated> inventoryUpdateTemplate;
     private final KafkaTemplate<String, ForceCancellOrder> forceCancellOrderTemplate;
     private final KafkaTemplate<String, UpdateManyInventoriesEvent> updateManyTemplate;
-    private static final String INVENTORY_TOPIC="inventory-product";
-    private static final String ORDER_TOPIC="inventory-order";
+    private static final String INVENTORY_TOPIC = "inventory-product";
+    private static final String ORDER_TOPIC = "inventory-order";
     private final InventoryUpdatedOutboxPublisher inventoryUpdatedOutboxPublisher;
     private final ForceCancellOrderOutboxPublisher forceCancellOrderOutboxPublisher;
 
     @Override
-    public void publishInventoryUpdateEvent(InventoryUpdatedDocument outboxEvent) {
-        InventoryUpdated event = new InventoryUpdated(outboxEvent.getEventId(), outboxEvent.getNewQuantity(), outboxEvent.getNewReservedQuantity(), outboxEvent.getEventId());
-        Message<InventoryUpdated> message= MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
+    public void publishInventoryUpdateEvent(
+            InventoryUpdatedDocument outboxEvent) {
+        InventoryUpdated event = new InventoryUpdated(outboxEvent.getEventId(), outboxEvent.getNewQuantity(),
+                outboxEvent.getNewReservedQuantity(), outboxEvent.getEventId());
+        Message<InventoryUpdated> message = MessageBuilder.withPayload(event)
+                .setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
         try {
-        inventoryUpdateTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                inventoryUpdatedOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                //log.error("Error sending event");
-            }
-        })
-        ;
-    }catch(Exception e) {
-        //log.error("Error sending event");
-    }
+            inventoryUpdateTemplate.send(message).whenComplete((
+                    result,
+                    ex) -> {
+                if (ex == null) {
+                    inventoryUpdatedOutboxPublisher.markAsSent(outboxEvent);
+                } else {
+                    // log.error("Error sending event");
+                }
+            });
+        } catch (Exception e) {
+            // log.error("Error sending event");
+        }
     }
 
     @Override
-    public void publishForceCancellOrderEvent(ForceCancellOrderDocument outboxEvent) {
+    public void publishForceCancellOrderEvent(
+            ForceCancellOrderDocument outboxEvent) {
         final var event = new ForceCancellOrder(outboxEvent.getOrderId(), outboxEvent.getEventId());
-        Message<ForceCancellOrder> message= MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, ORDER_TOPIC).build();
+        Message<ForceCancellOrder> message = MessageBuilder.withPayload(event)
+                .setHeader(KafkaHeaders.TOPIC, ORDER_TOPIC).build();
         try {
-        forceCancellOrderTemplate.send(message).whenComplete((result,ex)->{
-            if(ex==null) {
-                forceCancellOrderOutboxPublisher.markAsSent(outboxEvent);
-            }
-            else {
-                //log.error("Error sending event");
-            }
-        });
-    }catch(Exception e) {
-        //log.error("Error sending event");
-    }
+            forceCancellOrderTemplate.send(message).whenComplete((
+                    result,
+                    ex) -> {
+                if (ex == null) {
+                    forceCancellOrderOutboxPublisher.markAsSent(outboxEvent);
+                } else {
+                    // log.error("Error sending event");
+                }
+            });
+        } catch (Exception e) {
+            // log.error("Error sending event");
+        }
     }
 
     @Override
-    public void publicUpdateManyInventoriesEvent(UpdateManyInventoriesEvent event) {
-        Message<UpdateManyInventoriesEvent> message= MessageBuilder.withPayload(event).setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
+    public void publicUpdateManyInventoriesEvent(
+            UpdateManyInventoriesEvent event) {
+        Message<UpdateManyInventoriesEvent> message = MessageBuilder.withPayload(event)
+                .setHeader(KafkaHeaders.TOPIC, INVENTORY_TOPIC).build();
         updateManyTemplate.send(message);
     }
 

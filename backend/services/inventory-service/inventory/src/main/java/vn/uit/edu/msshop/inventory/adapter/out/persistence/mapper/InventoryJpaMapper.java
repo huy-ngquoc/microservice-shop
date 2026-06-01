@@ -15,26 +15,36 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.Version;
 
 @Component
 public class InventoryJpaMapper {
-    public InventoryJpaEntity toEntity(Inventory domain) {
-        return new InventoryJpaEntity(domain.getId().value(), domain.getVariantId().value(), domain.getQuantity().value(), domain.getReservedQuantity().value(), domain.getLastUpdate().value(),domain.getStatus().value(),domain.getCreateAt().value(), domain.getVersion().value());
+    public InventoryJpaEntity toEntity(
+            Inventory domain) {
+        return new InventoryJpaEntity(domain.getId().value(), domain.getVariantId().value(),
+                domain.getQuantity().value(), domain.getReservedQuantity().value(), domain.getLastUpdate().value(),
+                domain.getStatus().value(), domain.getCreateAt().value(), domain.getVersion().value());
     }
-    public Inventory toDomain(InventoryJpaEntity entity) {
+
+    public Inventory toDomain(
+            InventoryJpaEntity entity) {
         final var snapshot = Inventory.Snapshot.builder().id(new InventoryId(entity.getId()))
-        .variantId(new VariantId(entity.getVariantId()))
-        .quantity(new Quantity(entity.getQuantity()))
-        .reservedQuantity(new ReservedQuantity(entity.getReservedQuantity()))
-        .lastUpdate(new LastUpdate(entity.getLastUpdate()))
-        .version(new Version(entity.getVersion()))
-        .status(new InventoryStatus(entity.getStatus()))
-        .createAt(new CreateAt(entity.getCreateAt()))
-        .build();
+                .variantId(new VariantId(entity.getVariantId()))
+                .quantity(new Quantity(entity.getQuantity()))
+                .reservedQuantity(new ReservedQuantity(entity.getReservedQuantity()))
+                .lastUpdate(new LastUpdate(entity.getLastUpdate()))
+                .version(new Version(entity.getVersion()))
+                .status(new InventoryStatus(entity.getStatus()))
+                .createAt(new CreateAt(entity.getCreateAt()))
+                .build();
         return Inventory.reconstitue(snapshot);
     }
-    public InventoryJpaEntity toNew(VariantId variantId) {
+
+    public InventoryJpaEntity toNew(
+            VariantId variantId) {
         return InventoryJpaEntity.of(variantId.value(), 0, 0, null, "ENABLE");
     }
-    public InventoryJpaEntity toNewFromCommand(VariantId variantId, Quantity quantity) {
-        return InventoryJpaEntity.of(variantId.value(), quantity.value(), 0, null,"ENABLE");
+
+    public InventoryJpaEntity toNewFromCommand(
+            VariantId variantId,
+            Quantity quantity) {
+        return InventoryJpaEntity.of(variantId.value(), quantity.value(), 0, null, "ENABLE");
     }
-    
+
 }

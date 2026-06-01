@@ -24,18 +24,17 @@ import vn.uit.edu.msshop.recommendation.application.port.in.GetVariantsByTargetU
 @RequiredArgsConstructor
 @RequestMapping("/recommendation")
 public class RecommendationController {
-    
-    
+
     private final GetMLResultUseCase getMLResultUseCase;
     private final GetVariantsByTargetUseCase getVariantsByTargetUseCase;
 
-    
     @PostMapping(
-        value = "/predict", 
-        consumes = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE},
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<AIServerResponse> getPrediction(@RequestBody byte[] imageBytes){
+            value = "/predict",
+            consumes = { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE },
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AIServerResponse> getPrediction(
+            @RequestBody
+            byte[] imageBytes) {
         return ResponseEntity.ok(getMLResultUseCase.getResponse(imageBytes));
     }
 
@@ -63,7 +62,8 @@ public class RecommendationController {
                     required = false)
             @Nullable
             final List<String> targets) {
-                return ResponseEntity.ok(getVariantsByTargetUseCase.getVariantResponseByTargets(targets, page, size, sortBy, direction));
-            }
+        return ResponseEntity
+                .ok(getVariantsByTargetUseCase.getVariantResponseByTargets(targets, page, size, sortBy, direction));
+    }
 
 }

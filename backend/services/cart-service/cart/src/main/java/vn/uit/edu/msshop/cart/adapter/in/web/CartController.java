@@ -44,8 +44,6 @@ public class CartController {
     private final CartWebMapper cartWebMapper;
     private final GetCartUseCase getCartUseCase;
     private final CheckPermissionUseCase checkPermission;
-    
-
 
     @GetMapping("/")
     public ResponseEntity<CartResponse> getCart(
@@ -59,11 +57,10 @@ public class CartController {
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
         try {
-        final var result = getCartUseCase.getByUserId(new UserId(UUID.fromString(userFromHeader)));
-        return ResponseEntity.ok(cartWebMapper.toResponse(result));
-        }
-        catch(CartNotFoundException e) {
-            return ResponseEntity.ok(new CartResponse(UUID.fromString(userFromHeader),new ArrayList<>()));
+            final var result = getCartUseCase.getByUserId(new UserId(UUID.fromString(userFromHeader)));
+            return ResponseEntity.ok(cartWebMapper.toResponse(result));
+        } catch (CartNotFoundException e) {
+            return ResponseEntity.ok(new CartResponse(UUID.fromString(userFromHeader), new ArrayList<>()));
         }
 
     }
@@ -109,8 +106,8 @@ public class CartController {
         if (!checkPermission.isUser(role)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        UpdateCartAmountCommand command = cartWebMapper.toCommand(request,userFromHeader);
-        
+        UpdateCartAmountCommand command = cartWebMapper.toCommand(request, userFromHeader);
+
         CartView view = updateAmountUseCase.update(command);
         return ResponseEntity.ok(cartWebMapper.toResponse(view));
     }
@@ -123,16 +120,17 @@ public class CartController {
             String role,
             @RequestBody
             CreateCartRequest request) {
-        /*if (!checkPermission.isUser(role)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }*/
+        /*
+         * if (!checkPermission.isUser(role)) {
+         * return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+         * }
+         */
         try {
-        CreateCartCommand command = cartWebMapper.toCommand(request, userFromHeader);
-        CartView view = createUseCase.create(command);
-        return ResponseEntity.ok(cartWebMapper.toResponse(view));
-        }
-        catch(Exception e) {
-e.printStackTrace();
+            CreateCartCommand command = cartWebMapper.toCommand(request, userFromHeader);
+            CartView view = createUseCase.create(command);
+            return ResponseEntity.ok(cartWebMapper.toResponse(view));
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

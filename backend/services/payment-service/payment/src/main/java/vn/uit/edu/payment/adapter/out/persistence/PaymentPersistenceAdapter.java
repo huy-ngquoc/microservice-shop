@@ -19,36 +19,43 @@ import vn.uit.edu.payment.domain.model.valueobject.PaymentId;
 public class PaymentPersistenceAdapter implements LoadPaymentPort, SavePaymentPort {
     private final PaymentEntityMapper mapper;
     private final SpringDataPaymentJpaRepository repository;
+
     @Override
-    public Optional<Payment> loadPaymentById(PaymentId paymentId) {
+    public Optional<Payment> loadPaymentById(
+            PaymentId paymentId) {
         Optional<PaymentJpaEntity> paymentJpaEntity = repository.findById(paymentId.value());
         return paymentJpaEntity.map(mapper::toDomain);
     }
 
     @Override
-    public Payment loadPaymentByOrderId(OrderId orderId) {
+    public Payment loadPaymentByOrderId(
+            OrderId orderId) {
         Optional<PaymentJpaEntity> paymentJpaEntity = repository.findFirstByOrderId(orderId.value());
-        if(paymentJpaEntity.isEmpty()) return null;
+        if (paymentJpaEntity.isEmpty())
+            return null;
         return mapper.toDomain(paymentJpaEntity.get());
     }
 
     @Override
-    public Payment save(Payment payment) {
+    public Payment save(
+            Payment payment) {
         PaymentJpaEntity paymentJpaEntity = mapper.toEntity(payment);
         PaymentJpaEntity result = repository.saveAndFlush(paymentJpaEntity);
         return mapper.toDomain(result);
     }
 
     @Override
-    public List<Payment> loadExpiredPayment(Instant timeout) {
+    public List<Payment> loadExpiredPayment(
+            Instant timeout) {
         List<PaymentJpaEntity> result = repository.findExpiredPayments(timeout);
-        return result.stream().map(item->mapper.toDomain(item)).toList();
-        
+        return result.stream().map(item -> mapper.toDomain(item)).toList();
+
     }
 
     @Override
-    public List<Payment> saveAll(List<Payment> payments) {
-        this.repository.saveAll(payments.stream().map(item->mapper.toEntity(item)).toList());
+    public List<Payment> saveAll(
+            List<Payment> payments) {
+        this.repository.saveAll(payments.stream().map(item -> mapper.toEntity(item)).toList());
         return payments;
     }
 

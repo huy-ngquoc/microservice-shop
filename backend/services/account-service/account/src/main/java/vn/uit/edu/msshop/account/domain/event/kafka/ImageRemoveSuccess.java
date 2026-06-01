@@ -1,4 +1,5 @@
 package vn.uit.edu.msshop.account.domain.event.kafka;
+
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;

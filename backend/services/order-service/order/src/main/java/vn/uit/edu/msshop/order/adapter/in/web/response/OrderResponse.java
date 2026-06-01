@@ -5,21 +5,20 @@ import java.util.List;
 import java.util.UUID;
 
 public record OrderResponse(
-    String orderId,
-    String fullName,
-    String address,
-    String email,
-    String phone,
-    List<OrderDetailResponse> detailResponses,
-    long shippingFee,
-    long discount,
-    String status,
-    Instant createAt,
-    Instant updateAt,
-    String currency,
-    String paymentMethod,
-    String paymentStatus, 
-    UUID userId
-) {
+        String orderId,
+        String fullName,
+        String address,
+        String email,
+        String phone,
+        List<OrderDetailResponse> detailResponses,
+        long shippingFee,
+        long discount,
+        String status,
+        Instant createAt,
+        Instant updateAt,
+        String currency,
+        String paymentMethod,
+        String paymentStatus,
+        UUID userId) {
 
 }

@@ -4,17 +4,20 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public record OrderStatus(String value) {
-    private static final Set<String> VALID_STATUS = Set.of("PENDING","CONFIRMED","SHIPPING","RECEIVED","CANCELLED","INSUFFICIENT_STOCK","ERROR","PAYMENT_ERROR","PAYMENT_EXPIRED","WAITING_PAYMENT","PENDING_PAYMENT");
+public record OrderStatus(
+        String value) {
+    private static final Set<String> VALID_STATUS = Set.of("PENDING", "CONFIRMED", "SHIPPING", "RECEIVED", "CANCELLED",
+            "INSUFFICIENT_STOCK", "ERROR", "PAYMENT_ERROR", "PAYMENT_EXPIRED", "WAITING_PAYMENT", "PENDING_PAYMENT");
+
     public OrderStatus {
-        if(!VALID_STATUS.contains(value)) {
+        if (!VALID_STATUS.contains(value)) {
             throw new IllegalArgumentException("Invalid status");
         }
     }
+
     @JsonValue
     public String getValue() {
         return this.value;
     }
-
 
 }

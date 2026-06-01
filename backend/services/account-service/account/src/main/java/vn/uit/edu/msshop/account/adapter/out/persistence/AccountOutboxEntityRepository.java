@@ -8,10 +8,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AccountOutboxEntityRepository extends JpaRepository<AccountOutboxEntity,UUID> {
-    public List<AccountOutboxEntity> findByIsCheck(boolean isCheck);
+public interface AccountOutboxEntityRepository extends JpaRepository<AccountOutboxEntity, UUID> {
+    public List<AccountOutboxEntity> findByIsCheck(
+            boolean isCheck);
 
-    public List<AccountOutboxEntity> findTop50ByIsCheckOrderByCreatedAtAsc(boolean isCheck);
+    public List<AccountOutboxEntity> findTop50ByIsCheckOrderByCreatedAtAsc(
+            boolean isCheck);
 
-    public void deleteByIsCheckAndUpdatedAtBefore(boolean isCheck, Instant threshold);
+    public void deleteByIsCheckAndUpdatedAtBefore(
+            boolean isCheck,
+            Instant threshold);
 }

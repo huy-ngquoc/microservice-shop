@@ -5,6 +5,9 @@ import java.util.List;
 import vn.uit.edu.msshop.notification.domain.model.Email;
 
 public interface SaveEmailPort {
-    public Email save(Email email);
-    public List<Email> saveAll(List<Email> emails);
+    public Email save(
+            Email email);
+
+    public List<Email> saveAll(
+            List<Email> emails);
 }

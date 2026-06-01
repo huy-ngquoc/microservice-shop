@@ -18,25 +18,25 @@ import vn.uit.edu.msshop.cart.domain.model.valueobject.UserId;
 @Component
 @RequiredArgsConstructor
 public class CartPersistenceAdapter implements LoadCartPort, SaveCartPort, DeleteCartPort {
-    
+
     private final CartDocumentMapper mapper;
-    
 
     private final CartRepository cartRepo;
 
     @Override
-    
+
     public Cart loadByUserId(
             UserId userId) {
 
         CartDocument document = cartRepo.findById(userId.value()).orElse(null);
-        if(document==null) return null;
+        if (document == null)
+            return null;
         return mapper.toDomain(document);
 
     }
 
     @Override
-    
+
     public Cart save(
             Cart cart) {
         CartDocument document = cartRepo.save(mapper.toDocument(cart));
@@ -54,7 +54,7 @@ public class CartPersistenceAdapter implements LoadCartPort, SaveCartPort, Delet
     }
 
     @Override
-    
+
     public void clearCart(
             ClearCartCommand command) {
         Cart cart = loadByUserId(command.userId());

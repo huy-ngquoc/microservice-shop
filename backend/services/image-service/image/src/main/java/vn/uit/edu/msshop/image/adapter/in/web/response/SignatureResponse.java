@@ -11,10 +11,15 @@ public class SignatureResponse {
     private long timeStamp;
     private final String apiKey;
     private final String cloudName;
-    public SignatureResponse(String signature, long timeStamp, String apiKey, String cloudName) {
-        this.signature=signature;
-        this.timeStamp= timeStamp;
+
+    public SignatureResponse(
+            String signature,
+            long timeStamp,
+            String apiKey,
+            String cloudName) {
+        this.signature = signature;
+        this.timeStamp = timeStamp;
         this.apiKey = apiKey;
-        this.cloudName= cloudName;
+        this.cloudName = cloudName;
     }
 }

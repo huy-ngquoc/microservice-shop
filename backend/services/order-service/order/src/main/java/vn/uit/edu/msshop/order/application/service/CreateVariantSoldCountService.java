@@ -1,4 +1,5 @@
 package vn.uit.edu.msshop.order.application.service;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,10 @@ public class CreateVariantSoldCountService implements CreateVariantSoldCountUseC
     private final CreateVariantSoldCountPort createPort;
 
     @Override
-    public VariantSoldCountView create(CreateVariantSoldCountCommand command) {
-        if(findPort.findById(command.id()).isPresent()) throw new RuntimeException("Document already exist");
+    public VariantSoldCountView create(
+            CreateVariantSoldCountCommand command) {
+        if (findPort.findById(command.id()).isPresent())
+            throw new RuntimeException("Document already exist");
         final var draft = VariantSoldCount.Draft.builder().id(command.id()).soldCount(command.soldCount()).build();
         final var result = createPort.create(VariantSoldCount.create(draft));
         return mapper.toView(result);

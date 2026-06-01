@@ -22,7 +22,7 @@ public class GetCartService implements GetCartUseCase {
     @Override
     @Transactional(
             readOnly = true)
-    
+
     public CartView getByUserId(
             UserId userId) {
         final var cart = loadPort.loadByUserId(userId);

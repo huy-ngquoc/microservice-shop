@@ -11,9 +11,13 @@ import vn.uit.edu.msshop.image.adapter.out.event.documents.ImageRemoveSuccessDoc
 
 @Repository
 public interface ImageRemoveSuccessDocumentRepository extends MongoRepository<ImageRemoveSuccessDocument, UUID> {
-    public List<ImageRemoveSuccessDocument> findByEventStatus(String eventStatus);
+    public List<ImageRemoveSuccessDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<ImageRemoveSuccessDocument> findTop50ByStatusOrderByCreatedAtAsc(String pending);
+    public List<ImageRemoveSuccessDocument> findTop50ByStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 }

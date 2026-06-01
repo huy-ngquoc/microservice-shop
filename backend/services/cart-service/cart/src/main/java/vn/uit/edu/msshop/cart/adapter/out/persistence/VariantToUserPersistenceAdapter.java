@@ -21,14 +21,16 @@ public class VariantToUserPersistenceAdapter implements VariantToUserPort {
     public void addMapping(
             VariantId variantId,
             UserId userId) {
-        VariantToUserRedisModel variantToUserRedisModel = variantToUserRepo.findById(variantId.value().toString()).orElse(null);
-        if(variantToUserRedisModel==null) {
+        VariantToUserRedisModel variantToUserRedisModel = variantToUserRepo.findById(variantId.value().toString())
+                .orElse(null);
+        if (variantToUserRedisModel == null) {
             List<String> userIds = new ArrayList<>();
             userIds.add(userId.value().toString());
-            variantToUserRepo.save(new VariantToUserRedisModel(variantId.value().toString(),userIds));
+            variantToUserRepo.save(new VariantToUserRedisModel(variantId.value().toString(), userIds));
             return;
         }
-        if(variantToUserRedisModel.getUserIds().contains(userId.value().toString())) return;
+        if (variantToUserRedisModel.getUserIds().contains(userId.value().toString()))
+            return;
         variantToUserRedisModel.getUserIds().add(userId.value().toString());
         variantToUserRepo.save(variantToUserRedisModel);
     }
@@ -37,17 +39,21 @@ public class VariantToUserPersistenceAdapter implements VariantToUserPort {
     public void removeMapping(
             VariantId variantId,
             UserId userId) {
-         VariantToUserRedisModel variantToUserRedisModel = variantToUserRepo.findById(variantId.value().toString()).orElse(null);
-         if(variantToUserRedisModel==null) return;
-         variantToUserRedisModel.getUserIds().remove(userId.value().toString());
-         variantToUserRepo.save(variantToUserRedisModel);
+        VariantToUserRedisModel variantToUserRedisModel = variantToUserRepo.findById(variantId.value().toString())
+                .orElse(null);
+        if (variantToUserRedisModel == null)
+            return;
+        variantToUserRedisModel.getUserIds().remove(userId.value().toString());
+        variantToUserRepo.save(variantToUserRedisModel);
     }
 
     @Override
     public Set<String> getByVariantId(
             VariantId id) {
-        VariantToUserRedisModel variantToUserRedisModel = variantToUserRepo.findById(id.value().toString()).orElse(null);
-        if(variantToUserRedisModel==null) return new HashSet<>();
+        VariantToUserRedisModel variantToUserRedisModel = variantToUserRepo.findById(id.value().toString())
+                .orElse(null);
+        if (variantToUserRedisModel == null)
+            return new HashSet<>();
         return new HashSet<>(variantToUserRedisModel.getUserIds());
     }
 

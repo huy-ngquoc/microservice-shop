@@ -11,8 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,6 +22,6 @@ public class OrderOutbox {
     private String type;
     private List<OrderDetailRequest> requests;
     private String orderStatus;
-    private String outboxStatus;//PENDING, COMPLETED
+    private String outboxStatus;// PENDING, COMPLETED
     private Instant createdAt;
 }

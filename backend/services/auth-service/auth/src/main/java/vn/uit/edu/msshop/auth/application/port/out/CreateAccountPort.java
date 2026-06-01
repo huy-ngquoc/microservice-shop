@@ -4,7 +4,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 
 import jakarta.ws.rs.core.Response;
 
-
 public interface CreateAccountPort {
-    public Response createAccount(UserRepresentation user);
+    public Response createAccount(
+            UserRepresentation user);
 }

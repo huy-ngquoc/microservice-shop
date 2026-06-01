@@ -13,10 +13,17 @@ import vn.uit.edu.msshop.inventory.adapter.out.event.documents.InventoryUpdatedD
 
 @Repository
 public interface InventoryUpdatedDocumentRepository extends JpaRepository<InventoryUpdatedDocument, UUID> {
-    public List<InventoryUpdatedDocument> findByEventStatus(String eventStatus);
+    public List<InventoryUpdatedDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<InventoryUpdatedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public List<InventoryUpdatedDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
-    public Page<InventoryUpdatedDocument> findByIsReadOrderByCreatedAtAsc(boolean isRead,Pageable pageable );
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
+
+    public Page<InventoryUpdatedDocument> findByIsReadOrderByCreatedAtAsc(
+            boolean isRead,
+            Pageable pageable);
 }

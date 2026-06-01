@@ -65,17 +65,17 @@ public class RedisConfig {
      * .builder()
      * .pollTimeout(Duration.ofSeconds(1))
      * .build(); // Không cần targetType, không cần objectMapper
-     * 
+     *
      * var container = StreamMessageListenerContainer.create(factory, options);
-     * 
-     * 
+     *
+     *
      * var subscription=container.receive(
      * Consumer.from("order-group", "worker-1"),
      * StreamOffset.create("order_stream", ReadOffset.lastConsumed()),
      * consumer // Consumer lúc này nhận Map thô
      * );
      * container.start();
-     * 
+     *
      * return subscription;
      * }
      */

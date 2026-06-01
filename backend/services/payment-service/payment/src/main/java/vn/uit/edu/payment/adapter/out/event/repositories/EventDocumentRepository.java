@@ -10,5 +10,6 @@ import vn.uit.edu.payment.adapter.out.event.documents.EventDocument;
 
 @Repository
 public interface EventDocumentRepository extends JpaRepository<EventDocument, UUID> {
-    public void deleteByReceiveAtBefore(Instant threshold);
+    public void deleteByReceiveAtBefore(
+            Instant threshold);
 }

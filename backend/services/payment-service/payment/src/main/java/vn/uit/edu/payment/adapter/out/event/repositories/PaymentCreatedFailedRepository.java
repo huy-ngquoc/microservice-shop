@@ -11,9 +11,13 @@ import vn.uit.edu.payment.adapter.out.event.documents.PaymentCreatedFailDocument
 
 @Repository
 public interface PaymentCreatedFailedRepository extends JpaRepository<PaymentCreatedFailDocument, UUID> {
-    public List<PaymentCreatedFailDocument> findByEventStatus(String eventStatus);
+    public List<PaymentCreatedFailDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<PaymentCreatedFailDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public List<PaymentCreatedFailDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 }

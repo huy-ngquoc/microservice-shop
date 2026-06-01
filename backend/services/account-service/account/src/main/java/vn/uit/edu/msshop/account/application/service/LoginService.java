@@ -33,10 +33,10 @@ public class LoginService implements LoginUseCase {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final LoadAccountPort loadPort;
-    
 
     @Override
-    public LoginResponse login(LoginRequest request){
+    public LoginResponse login(
+            LoginRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
@@ -48,24 +48,25 @@ public class LoginService implements LoginUseCase {
         map.add("scope", "openid");
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(map, headers);
         try {
-            
-            ResponseEntity<LoginResponse> response = restTemplate.postForEntity(tokenUri,httpEntity, LoginResponse.class);
+
+            ResponseEntity<
+                    LoginResponse> response = restTemplate.postForEntity(tokenUri, httpEntity, LoginResponse.class);
             return response.getBody();
         } catch (HttpClientErrorException e) {
             e.printStackTrace();
             Account account = loadPort.loadByUsername(new AccountName(request.getUsername()));
-            if(account==null) {
+            if (account == null) {
                 throw new RuntimeException("Tên đăng nhập hoặc mật khẩu không chính xác");
             }
-            
-            if(account.getStatus().value().equals("PENDING")){
+
+            if (account.getStatus().value().equals("PENDING")) {
                 throw new RuntimeException("Tài khoản của bạn đang được xử lý, vui lòng đợi một lúc và thử lại");
             }
 
             throw new RuntimeException("Tên đăng nhập hoặc mật khẩu không chính xác");
-            
+
         }
 
     }
-    
+
 }

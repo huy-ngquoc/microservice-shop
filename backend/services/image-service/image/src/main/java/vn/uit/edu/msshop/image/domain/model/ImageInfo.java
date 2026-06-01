@@ -24,5 +24,5 @@ public class ImageInfo {
     private ImageWidth width;
     private ImageHeight height;
     private ImageSize size;
-    
+
 }

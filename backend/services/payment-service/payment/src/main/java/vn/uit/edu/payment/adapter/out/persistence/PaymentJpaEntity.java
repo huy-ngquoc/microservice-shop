@@ -16,6 +16,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Entity
 @Table(
         name = "payments")
@@ -42,24 +43,25 @@ public class PaymentJpaEntity {
     private UUID userId;
     private String userEmail;
 
-     @Version
+    @Version
     @Column(
             nullable = false)
     private long version;
 
-    public static @NonNull PaymentJpaEntity of(UUID id,
+    public static @NonNull PaymentJpaEntity of(
+            UUID id,
 
-    Instant createAt,
-    Instant updateAt,
-    String currency,
-    UUID orderId,
-    String paymentMethod,
-    String paymentStatus,
-    long paymentValue,
-    UUID userId,
-    String userEmail
-   ) {
-    return new PaymentJpaEntity(id, createAt, updateAt, currency, orderId, paymentMethod, paymentStatus, paymentValue,userId,userEmail, 0L);
-   }
+            Instant createAt,
+            Instant updateAt,
+            String currency,
+            UUID orderId,
+            String paymentMethod,
+            String paymentStatus,
+            long paymentValue,
+            UUID userId,
+            String userEmail) {
+        return new PaymentJpaEntity(id, createAt, updateAt, currency, orderId, paymentMethod, paymentStatus,
+                paymentValue, userId, userEmail, 0L);
+    }
 
 }

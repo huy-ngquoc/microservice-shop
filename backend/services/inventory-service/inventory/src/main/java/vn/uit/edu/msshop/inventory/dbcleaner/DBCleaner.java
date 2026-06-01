@@ -7,9 +7,11 @@ import vn.uit.edu.msshop.inventory.adapter.out.persistence.SpringDataInventoryJp
 //@Component
 public class DBCleaner {
     private SpringDataInventoryJpaRepository repository;
-    public DBCleaner(SpringDataInventoryJpaRepository repository) {
+
+    public DBCleaner(
+            SpringDataInventoryJpaRepository repository) {
         System.out.println("Cleared databaseeeeeeeeeeee");
-        this.repository= repository;
+        this.repository = repository;
         repository.deleteAll();
     }
 }

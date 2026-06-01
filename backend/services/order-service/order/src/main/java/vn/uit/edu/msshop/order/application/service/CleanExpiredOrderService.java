@@ -18,20 +18,19 @@ public class CleanExpiredOrderService implements CleanExpiredOrderPort {
     private final OrderRepository orderRepo;
     private final OrderDataMapper mapper;
     private final CheckOrderService checkOrderService;
-    
+
     @Override
-    //@Scheduled(fixedRate=6000)
+    // @Scheduled(fixedRate=6000)
     public void clean() {
-        Instant threshold=Instant.now().minus(15, ChronoUnit.MINUTES);
-        //System.out.println("Call schedule clean order");
-        List<Order> orders = orderRepo.findTop50ByStatusAndPaymentMethodAndUpdateAtBefore("WAITING_PAYMENT","ONLINE", threshold).stream().map(mapper::toDomain).toList();
-        for(Order order:orders) {
+        Instant threshold = Instant.now().minus(15, ChronoUnit.MINUTES);
+        // System.out.println("Call schedule clean order");
+        List<Order> orders = orderRepo
+                .findTop50ByStatusAndPaymentMethodAndUpdateAtBefore("WAITING_PAYMENT", "ONLINE", threshold).stream()
+                .map(mapper::toDomain).toList();
+        for (Order order : orders) {
             checkOrderService.checkAndUpdate(order);
         }
-   
-    
 
     }
-    
 
 }

@@ -11,7 +11,8 @@ public class MongoCheck implements CommandLineRunner {
     private Environment env;
 
     @Override
-    public void run(String... args) {
+    public void run(
+            String... args) {
         // Đây mới là cách lấy giá trị từ application.yml
         System.err.println(">>>> URI THỰC TẾ: " + env.getProperty("spring.mongodb.uri"));
     }

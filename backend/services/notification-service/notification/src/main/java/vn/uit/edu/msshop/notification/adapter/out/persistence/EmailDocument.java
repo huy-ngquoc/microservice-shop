@@ -12,11 +12,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection="email_document")
+@Document(
+        collection = "email_document")
 public class EmailDocument {
     @Id
     private UUID emailId;
@@ -26,12 +28,12 @@ public class EmailDocument {
     private String emailType;
     private UUID orderId;
     private String userEmail;
-    @Indexed(expireAfter="2592000")
+    @Indexed(
+            expireAfter = "2592000")
     private Instant creationTime;
     private Instant sendTime;
     @LastModifiedDate
     private Instant updateTime;
     private UUID userId;
 
-   
 }

@@ -4,9 +4,10 @@ import java.util.UUID;
 
 import vn.payos.model.webhooks.Webhook;
 
-
-
 public interface PayOsWebHookPort {
-    public void handlePayOSWebHook(Webhook body);
-    public void fakeWebHook(UUID orderId);
+    public void handlePayOSWebHook(
+            Webhook body);
+
+    public void fakeWebHook(
+            UUID orderId);
 }

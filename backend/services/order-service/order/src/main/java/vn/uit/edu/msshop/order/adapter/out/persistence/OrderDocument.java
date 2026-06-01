@@ -19,7 +19,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collection="Orders")
+@Document(
+        collection = "Orders")
 public class OrderDocument {
     @Id
     private UUID id;
@@ -27,9 +28,9 @@ public class OrderDocument {
     private ShippingInfoDocument shippingInfo;
 
     private List<OrderDetailDocument> details;
-    
+
     private String status;
-    
+
     private UUID userId;
 
     private long originPrice;
@@ -50,6 +51,5 @@ public class OrderDocument {
     private String currency;
     private String paymentMethod;
     private String paymentStatus;
-
 
 }

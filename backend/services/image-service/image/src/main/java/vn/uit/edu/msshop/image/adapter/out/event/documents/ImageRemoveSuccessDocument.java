@@ -10,7 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Document(collection="outbox_events_image_remove_success")
+@Document(
+        collection = "outbox_events_image_remove_success")
 @Getter
 @Setter
 @Builder
@@ -25,8 +26,8 @@ public class ImageRemoveSuccessDocument {
     private long size;
     private UUID objectId;
     private String eventStatus;
-    private Integer retryCount; 
+    private Integer retryCount;
     private Instant createdAt;
-    private Instant updatedAt; 
+    private Instant updatedAt;
     private String lastError;
 }

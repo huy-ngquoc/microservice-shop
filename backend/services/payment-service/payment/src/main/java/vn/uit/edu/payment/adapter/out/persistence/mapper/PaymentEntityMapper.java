@@ -25,21 +25,28 @@ import vn.uit.edu.payment.domain.model.valueobject.UserId;
 
 @Component
 public class PaymentEntityMapper {
-    public Payment toDomain(PaymentJpaEntity e) {
-        final var snapshot= Payment.Snapshot.builder().paymentId(new PaymentId(e.getId())).createAt(new CreateAt(e.getCreateAt()))
-        .currency(new Currency(e.getCurrency()))
-        .orderId(new OrderId(e.getOrderId()))
-        .paymentMethod(new PaymentMethod(e.getPaymentMethod()))
-        .paymentValue(new PaymentValue(e.getPaymentValue()))
-        .paymentStatus(new PaymentStatus(e.getPaymentStatus()))
-        .updateAt(new UpdateAt(e.getUpdateAt()))
-        .userId(new UserId(e.getUserId()))
-        .userEmail(new UserEmail(e.getUserEmail()))
-        .build();
+    public Payment toDomain(
+            PaymentJpaEntity e) {
+        final var snapshot = Payment.Snapshot.builder().paymentId(new PaymentId(e.getId()))
+                .createAt(new CreateAt(e.getCreateAt()))
+                .currency(new Currency(e.getCurrency()))
+                .orderId(new OrderId(e.getOrderId()))
+                .paymentMethod(new PaymentMethod(e.getPaymentMethod()))
+                .paymentValue(new PaymentValue(e.getPaymentValue()))
+                .paymentStatus(new PaymentStatus(e.getPaymentStatus()))
+                .updateAt(new UpdateAt(e.getUpdateAt()))
+                .userId(new UserId(e.getUserId()))
+                .userEmail(new UserEmail(e.getUserEmail()))
+                .build();
         return Payment.reconstitue(snapshot);
     }
-    public PaymentJpaEntity toEntity(Payment p) {
+
+    public PaymentJpaEntity toEntity(
+            Payment p) {
         final var snapshot = p.snapshot();
-        return PaymentJpaEntity.of(snapshot.paymentId().value(), snapshot.createAt().value(), snapshot.updateAt().value(), snapshot.currency().value(), snapshot.orderId().value(), snapshot.paymentMethod().value(), snapshot.paymentStatus().value(), snapshot.paymentValue().value(), snapshot.userId().value(), snapshot.userEmail().value());
+        return PaymentJpaEntity.of(snapshot.paymentId().value(), snapshot.createAt().value(),
+                snapshot.updateAt().value(), snapshot.currency().value(), snapshot.orderId().value(),
+                snapshot.paymentMethod().value(), snapshot.paymentStatus().value(), snapshot.paymentValue().value(),
+                snapshot.userId().value(), snapshot.userEmail().value());
     }
 }

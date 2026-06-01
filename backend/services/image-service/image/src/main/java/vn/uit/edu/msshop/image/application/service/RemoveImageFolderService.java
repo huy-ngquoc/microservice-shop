@@ -16,6 +16,7 @@ import vn.uit.edu.msshop.image.application.port.in.RemoveImageFolderUseCase;
 import vn.uit.edu.msshop.image.application.port.out.PublishImageEventPort;
 import vn.uit.edu.msshop.image.application.port.out.RemoveImageFolderPort;
 import vn.uit.edu.msshop.image.domain.model.ImageInfo;
+
 /*
 private UUID eventId;
     private String url;
@@ -26,9 +27,9 @@ private UUID eventId;
     private long size;
     private UUID objectId;
     private String eventStatus;
-    private Integer retryCount; 
+    private Integer retryCount;
     private Instant createdAt;
-    private Instant updatedAt; 
+    private Instant updatedAt;
     private String lastError; */
 @Service
 @RequiredArgsConstructor
@@ -36,39 +37,39 @@ private UUID eventId;
 public class RemoveImageFolderService implements RemoveImageFolderUseCase {
     private final RemoveImageFolderPort removePort;
     private final PublishImageEventPort publishEventPort;
-    //private final ImageEventMapper mapper;
+    // private final ImageEventMapper mapper;
     private final ImageWebMapper webMapper;
     private final ImageRemoveSuccessDocumentRepository imageRemoveSuccessDocumentRepo;
 
     @Override
-    public void removeImageFolder(RemoveImageFolderCommand command) throws IOException {
+    public void removeImageFolder(
+            RemoveImageFolderCommand command) throws IOException {
         ImageInfo info = removePort.remove(command);
-        //ImageRemoveSuccess event = mapper.toEvent(info,command.getObjectId().value());
-        //publishEventPort.publishImageRemoveSuccess(event);
+        // ImageRemoveSuccess event =
+        // mapper.toEvent(info,command.getObjectId().value());
+        // publishEventPort.publishImageRemoveSuccess(event);
         imageRemoveSuccessDocumentRepo.save(
-            ImageRemoveSuccessDocument.builder()
-            .url(info.getUrl().value())
-            .publicId(info.getPublicId().value())
-            .fileName(info.getFileName().value())
-            .width(info.getWidth().value())
-            .height(info.getHeight().value())
-            .size(info.getSize().value())
-            .objectId(command.getObjectId().value())
-            .eventStatus("PENDING")
-            .createdAt(Instant.now())
-            .retryCount(0)
-            .updatedAt(null)
-            .lastError(null).build()
-        );
+                ImageRemoveSuccessDocument.builder()
+                        .url(info.getUrl().value())
+                        .publicId(info.getPublicId().value())
+                        .fileName(info.getFileName().value())
+                        .width(info.getWidth().value())
+                        .height(info.getHeight().value())
+                        .size(info.getSize().value())
+                        .objectId(command.getObjectId().value())
+                        .eventStatus("PENDING")
+                        .createdAt(Instant.now())
+                        .retryCount(0)
+                        .updatedAt(null)
+                        .lastError(null).build());
 
     }
 
     @Override
-    public void rollbackImageFolder(RollbackImageFolderCommand command) throws IOException {
+    public void rollbackImageFolder(
+            RollbackImageFolderCommand command) throws IOException {
         RemoveImageFolderCommand c = webMapper.toCommand(command);
         removePort.remove(c);
     }
-    
-    
 
 }

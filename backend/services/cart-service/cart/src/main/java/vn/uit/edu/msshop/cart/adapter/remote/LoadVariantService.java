@@ -30,20 +30,24 @@ import vn.uit.edu.msshop.cart.domain.model.valueobject.VariantTraits;
 @Slf4j
 public class LoadVariantService implements LoadVariantPort {
     private final ProductCaller productCaller;
+
     @Override
-    @CircuitBreaker(name="loadCartDetails")
+    @CircuitBreaker(
+            name = "loadCartDetails")
     public List<CartDetail> loadCartDetails(
             List<CreateCartItemRequest> detailRequest) {
         List<CartDetail> result = new ArrayList<>();
-        FindVariantsByIdsRequest requests = new FindVariantsByIdsRequest(new HashSet(detailRequest.stream().map(item->item.getVariantId()).toList()));
+        FindVariantsByIdsRequest requests = new FindVariantsByIdsRequest(
+                new HashSet(detailRequest.stream().map(item -> item.getVariantId()).toList()));
         List<VariantResponse> responses = productCaller.findAllByIds(requests).getBody();
-        Map<UUID,VariantResponse> variantResponseMap = new HashMap<>(); 
-        for(VariantResponse response:responses) {
+        Map<UUID, VariantResponse> variantResponseMap = new HashMap<>();
+        for (VariantResponse response : responses) {
             variantResponseMap.put(response.id(), response);
         }
         for (CreateCartItemRequest req : detailRequest) {
             VariantResponse response = variantResponseMap.get(req.getVariantId());
-            if(response==null) throw new RuntimeException("Variant not exist");
+            if (response == null)
+                throw new RuntimeException("Variant not exist");
             final var d = CartDetail.Draft.builder().variantId(new VariantId(req.getVariantId()))
                     .imageKey(new ImageKey(response.imageKey()))
                     .name(new ProductName(response.productName()))
@@ -56,7 +60,10 @@ public class LoadVariantService implements LoadVariantPort {
         }
         return result;
     }
-    public List<CartDetail> callDetailFail(List<CreateCartItemRequest> detailRequest, Throwable t) {
+
+    public List<CartDetail> callDetailFail(
+            List<CreateCartItemRequest> detailRequest,
+            Throwable t) {
         log.error(t.getMessage());
         throw new ServiceUnavailableException(t.getMessage());
     }

@@ -8,6 +8,9 @@ import vn.uit.edu.msshop.notification.domain.model.valueobject.EmailId;
 import vn.uit.edu.msshop.notification.domain.model.valueobject.EmailStatus;
 
 public interface LoadEmailPort {
-    public Optional<Email> loadByEmailId(EmailId emailId);
-    public List<Email> loadByEmailStatus(EmailStatus emailStatus);
+    public Optional<Email> loadByEmailId(
+            EmailId emailId);
+
+    public List<Email> loadByEmailStatus(
+            EmailStatus emailStatus);
 }

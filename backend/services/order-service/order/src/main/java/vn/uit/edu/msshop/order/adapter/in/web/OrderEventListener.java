@@ -46,7 +46,7 @@ public class OrderEventListener {
 
     /*
      * @KafkaHandler
-     * 
+     *
      * @Transactional
      * public void onPaymentCancelled(OnlinePaymentCancelled event) {
      * if(event.eventId()==null||event.orderId()==null) {
@@ -127,9 +127,9 @@ public class OrderEventListener {
             key = "#event.getOrderId()")
     public void onOnlinePaymentSuccess(
             PaymentSuccess event) {
-        
+
         if (event.getEventId() == null || event.getOrderId() == null) {
-            
+
             return;
         }
         if (!eventDocumentRepo.existsById(event.getEventId())) {
