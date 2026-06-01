@@ -46,18 +46,18 @@ public class BrandLogoLifecycleService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND,
-                            key = "#command.id().value()"),
+                            key = "#cmd.id().value()"),
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
             })
     public BrandLogoView update(
-            BrandLogoLifecycleCommands.Update command) {
-        final var brandId = command.id();
+            BrandLogoLifecycleCommands.Update cmd) {
+        final var brandId = cmd.id();
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = brand.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(
@@ -65,7 +65,7 @@ public class BrandLogoLifecycleService
                     currentVersion.value());
         }
 
-        final var saved = this.commitImageChange(brand, command.newLogoKey());
+        final var saved = this.commitImageChange(brand, cmd.newLogoKey());
         if (saved == null) {
             return this.mapper.toLogoView(brand);
         }
@@ -87,7 +87,7 @@ public class BrandLogoLifecycleService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND,
-                            key = "#command.id().value()"),
+                            key = "#cmd.id().value()"),
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
