@@ -67,6 +67,6 @@ public class BrandLogoController {
         final var command = this.mapper.toDeleteLogoCommand(id, version);
         this.deleteUseCase.delete(command);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
