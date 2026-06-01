@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandLogoWebMapper;
-import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandSharedWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLogoLifecycleUseCases;
@@ -31,16 +30,15 @@ public class BrandLogoController {
     private final BrandLogoLifecycleUseCases.Delete deleteUseCase;
 
     private final BrandLogoWebMapper mapper;
-    private final BrandSharedWebMapper sharedMapper;
 
     @GetMapping("/{id}/logo")
     public ResponseEntity<BrandLogoResponse> findLogoById(
             @PathVariable
             final UUID id) {
         final var view = this.findLogoUseCase.findActiveLogoById(
-                this.sharedMapper.toBrandId(id));
+                this.mapper.toBrandId(id));
 
-        final var response = this.sharedMapper.toLogoResponse(view);
+        final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -55,7 +53,7 @@ public class BrandLogoController {
         final var command = this.mapper.toUpdateLogoCommand(id, request);
         final var view = this.updateUseCase.update(command);
 
-        final var response = this.sharedMapper.toLogoResponse(view);
+        final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);
     }
 

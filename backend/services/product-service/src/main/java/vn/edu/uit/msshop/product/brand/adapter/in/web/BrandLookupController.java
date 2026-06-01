@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandSharedWebMapper;
+import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
@@ -28,7 +28,7 @@ public class BrandLookupController {
     private final BrandLookupUseCases.FindSoftDeletedById findSoftDeletedByIdUseCase;
     private final BrandLookupUseCases.CheckExistsById checkExistsByIdUseCase;
 
-    private final BrandSharedWebMapper sharedMapper;
+    private final BrandWebMapper mapper;
 
     @GetMapping
     public ResponseEntity<PageResponseDto<BrandResponse>> list(
@@ -51,7 +51,7 @@ public class BrandLookupController {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = listUseCase.listActive(request);
 
-        final var response = views.map(this.sharedMapper::toResponse);
+        final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -76,7 +76,7 @@ public class BrandLookupController {
         final var request = new PageRequestDto(page, size, sortBy, direction);
         final var views = listSoftDeletedUseCase.listSoftDeleted(request);
 
-        final var response = views.map(this.sharedMapper::toResponse);
+        final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -85,9 +85,9 @@ public class BrandLookupController {
             @PathVariable
             final UUID id) {
         final var view = this.findActiveByIdUseCase.findActiveById(
-                this.sharedMapper.toBrandId(id));
+                this.mapper.toBrandId(id));
 
-        final var response = this.sharedMapper.toResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -96,9 +96,9 @@ public class BrandLookupController {
             @PathVariable
             final UUID id) {
         final var view = this.findSoftDeletedByIdUseCase.findSoftDeletedById(
-                this.sharedMapper.toBrandId(id));
+                this.mapper.toBrandId(id));
 
-        final var response = this.sharedMapper.toResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -107,7 +107,7 @@ public class BrandLookupController {
             @PathVariable
             final UUID id) {
         final var existed = this.checkExistsByIdUseCase.existsById(
-                this.sharedMapper.toBrandId(id));
+                this.mapper.toBrandId(id));
         if (!existed) {
             return ResponseEntity.notFound().build();
         }

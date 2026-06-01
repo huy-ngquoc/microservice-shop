@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoRequest;
+import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLogoLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
@@ -15,6 +17,13 @@ import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryFolders;
 @Component
 @RequiredArgsConstructor
 public class BrandLogoWebMapper {
+
+    private final BrandLogoUrlResolver urlResolver;
+
+    public BrandId toBrandId(
+            final UUID id) {
+        return new BrandId(id);
+    }
 
     public BrandLogoLifecycleCommands.Update toUpdateLogoCommand(
             final UUID id,
@@ -43,5 +52,12 @@ public class BrandLogoWebMapper {
         }
 
         return new BrandLogoKey(publicId.substring(prefix.length()));
+    }
+
+    public BrandLogoResponse toLogoResponse(
+            final BrandLogoView view) {
+        return new BrandLogoResponse(view.id(),
+                this.urlResolver.toLogoUrlString(view.logoKey()),
+                view.version());
     }
 }
