@@ -1,0 +1,168 @@
+package vn.edu.uit.msshop.product.category.application.service.command;
+
+import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.category.application.dto.command.HardDeleteCategoryCommand;
+import vn.edu.uit.msshop.product.category.application.dto.command.RestoreCategoryCommand;
+import vn.edu.uit.msshop.product.category.application.dto.command.SoftDeleteCategoryCommand;
+import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
+import vn.edu.uit.msshop.product.category.application.port.in.command.HardDeleteCategoryUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.RestoreCategoryUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.SoftDeleteCategoryUseCase;
+import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCategoryEventPort;
+import vn.edu.uit.msshop.product.category.application.port.out.image.CategoryImageStoragePort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.DeleteCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasProductsPort;
+import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasSoftDeletedProductsPort;
+import vn.edu.uit.msshop.product.category.domain.event.CategoryPurged;
+import vn.edu.uit.msshop.product.category.domain.event.CategoryRestored;
+import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeleted;
+import vn.edu.uit.msshop.product.category.domain.model.Category;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryDeletionTime;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class CategoryDeletionService
+        implements
+        SoftDeleteCategoryUseCase,
+        RestoreCategoryUseCase,
+        HardDeleteCategoryUseCase {
+
+    private final LoadCategoryPort loadPort;
+    private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
+    private final UpdateCategoryPort updatePort;
+    private final DeleteCategoryPort deletePort;
+
+    private final CheckCategoryHasProductsPort checkHasProductsPort;
+    private final CheckCategoryHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
+
+    private final CategoryImageStoragePort imageStoragePort;
+
+    private final PublishCategoryEventPort eventPort;
+
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.CATEGORY,
+                            key = "#command.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.CATEGORY_LIST,
+                            allEntries = true)
+            })
+    public void delete(
+            final SoftDeleteCategoryCommand command) {
+        final var categoryId = command.id();
+        final var category = this.loadPort.loadById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = category.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        if (this.checkHasProductsPort.hasProduct(categoryId)) {
+            throw new BusinessRuleException(
+                    "Cannot delete category with existing products");
+        }
+
+        final var next = new Category(
+                category.getId(),
+                category.getName(),
+                category.getImageKey(),
+                category.getVersion(),
+                CategoryDeletionTime.now());
+
+        final var saved = this.updatePort.update(next);
+        this.eventPort.publish(new CategorySoftDeleted(saved.getId()));
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.CATEGORY_LIST,
+            allEntries = true)
+    public void restore(
+            final RestoreCategoryCommand command) {
+        final var categoryId = command.id();
+        final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = category.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        final var next = new Category(
+                category.getId(),
+                category.getName(),
+                category.getImageKey(),
+                category.getVersion(),
+                null);
+
+        final var saved = this.updatePort.update(next);
+        this.eventPort.publish(new CategoryRestored(saved.getId()));
+    }
+
+    @Override
+    @Transactional
+    public void purge(
+            final HardDeleteCategoryCommand command) {
+        final var categoryId = command.id();
+        final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+
+        final var expectedVersion = command.expectedVersion();
+        final var currentVersion = category.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(categoryId)) {
+            throw new BusinessRuleException("Cannot delete category with existing products");
+        }
+
+        this.deletePort.deleteById(categoryId);
+        this.eventPort.publish(new CategoryPurged(categoryId));
+
+        this.deleteLogo(category.getImageKey());
+    }
+
+    private void deleteLogo(
+            @Nullable
+            final CategoryImageKey key) {
+        if (key == null) {
+            return;
+        }
+
+        try {
+            this.imageStoragePort.deleteImage(key);
+        } catch (final RuntimeException e) {
+            log.warn("Hard delete: failed to delete image '{}', manual cleanup required",
+                    key.value(),
+                    e);
+        }
+    }
+}
