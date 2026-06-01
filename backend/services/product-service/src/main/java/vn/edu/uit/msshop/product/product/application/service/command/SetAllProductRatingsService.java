@@ -27,10 +27,12 @@ public class SetAllProductRatingsService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT,
-                            allEntries = true),
+                            allEntries = true,
+                            condition = "!#command.ratings().isEmpty()"),
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT_LIST,
-                            allEntries = true),
+                            allEntries = true,
+                            condition = "!#command.ratings().isEmpty()"),
             })
     public void execute(
             final SetAllProductRatingsCommand command) {
