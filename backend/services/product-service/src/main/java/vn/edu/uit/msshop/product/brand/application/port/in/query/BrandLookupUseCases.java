@@ -8,6 +8,9 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 public final class BrandLookupUseCases {
 
+    private BrandLookupUseCases() {
+    }
+
     public interface ListActive {
         PageResponseDto<BrandView> listActive(
                 final PageRequestDto pageRequest);
