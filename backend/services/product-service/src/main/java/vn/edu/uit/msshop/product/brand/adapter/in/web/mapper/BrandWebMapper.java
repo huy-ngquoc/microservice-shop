@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
+import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
@@ -16,6 +18,13 @@ import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 @Component
 @RequiredArgsConstructor
 public class BrandWebMapper {
+
+    private final BrandLogoUrlResolver urlResolver;
+
+    public BrandId toBrandId(
+            final UUID id) {
+        return new BrandId(id);
+    }
 
     public BrandLifecycleCommands.Create toCreateCommand(
             final CreateBrandRequest request) {
@@ -60,5 +69,14 @@ public class BrandWebMapper {
         final var version = new BrandVersion(expectedVersion);
 
         return new BrandLifecycleCommands.HardDelete(brandId, version);
+    }
+
+    public BrandResponse toResponse(
+            final BrandView view) {
+        return new BrandResponse(
+                view.id(),
+                view.name(),
+                this.urlResolver.toLogoUrlString(view.logoKey()),
+                view.version());
     }
 }

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandSharedWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
@@ -34,7 +33,6 @@ public class BrandLifecycleController {
     private final BrandLifecycleUseCases.HardDelete hardDeleteUseCase;
 
     private final BrandWebMapper mapper;
-    private final BrandSharedWebMapper sharedMapper;
 
     @PostMapping
     public ResponseEntity<BrandResponse> create(
@@ -44,7 +42,7 @@ public class BrandLifecycleController {
         final var command = this.mapper.toCreateCommand(request);
         final var view = this.createUseCase.create(command);
 
-        final var response = this.sharedMapper.toResponse(view);
+        final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
                 .methodOn(BrandLookupController.class)
                 .findById(response.id());
@@ -79,7 +77,7 @@ public class BrandLifecycleController {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
         final var view = this.updateInfoUseCase.updateInfo(command);
 
-        final var response = this.sharedMapper.toResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
