@@ -6,6 +6,9 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 
 public final class BrandLogoLifecycleCommands {
 
+    private BrandLogoLifecycleCommands() {
+    }
+
     public record Update(
             BrandId id,
             BrandLogoKey newLogoKey,
