@@ -1,14 +1,11 @@
 package vn.edu.uit.msshop.product.product.adapter.in.event;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingCreatedIntegrationEvent;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingDeletedIntegrationEvent;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingUpdatedIntegrationEvent;
@@ -28,18 +25,6 @@ public class ProductRatingEventListener {
     private final ApplyRatingDeletedUseCase deletedUseCase;
 
     @KafkaHandler
-    @Caching(
-        evict={
-            @CacheEvict(
-        cacheNames=CacheNames.PRODUCT,
-        key="#event.productId"
-    ),
-    @CacheEvict(
-        cacheNames=CacheNames.PRODUCT_LIST,
-        allEntries=true
-    )
-        }
-    )
     public void onCreated(
             final RatingCreatedIntegrationEvent event) {
         this.createdUseCase.execute(
@@ -49,18 +34,6 @@ public class ProductRatingEventListener {
     }
 
     @KafkaHandler
-    @Caching(
-        evict={
-            @CacheEvict(
-        cacheNames=CacheNames.PRODUCT,
-        key="#event.productId"
-    ),
-    @CacheEvict(
-        cacheNames=CacheNames.PRODUCT_LIST,
-        allEntries=true
-    )
-        }
-    )
     public void onUpdate(
             final RatingUpdatedIntegrationEvent event) {
         this.updatedUseCase.execute(
