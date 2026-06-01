@@ -1,0 +1,5 @@
+# Line endings
+* text=auto eol=lf
+
+*.jar binary
+*.class binary
