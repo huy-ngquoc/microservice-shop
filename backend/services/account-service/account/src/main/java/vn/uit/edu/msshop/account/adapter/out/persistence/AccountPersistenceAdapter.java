@@ -19,50 +19,53 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.KeyCloakId;
 public class AccountPersistenceAdapter implements LoadAccountPort, SaveAccountPort {
     private final SpringDataAccountJpaRepository repository;
     private final AccountEntityMapper mapper;
-    
 
     @Override
-    public Account save(Account account) {
-        
+    public Account save(
+            Account account) {
+
         final var toSave = this.mapper.toEntity(account);
         final var saved = this.repository.save(toSave);
         return this.mapper.toDomain(saved);
-        
-        
+
     }
 
     @Override
-    public Optional<Account> loadById(AccountId id) {
-       final var jpaId = id.value();
-       return this.repository.findById(jpaId).map(this.mapper::toDomain);
+    public Optional<Account> loadById(
+            AccountId id) {
+        final var jpaId = id.value();
+        return this.repository.findById(jpaId).map(this.mapper::toDomain);
     }
 
     @Override
-    public List<Account> saveAll(List<Account> accounts) {
+    public List<Account> saveAll(
+            List<Account> accounts) {
         final var result = this.repository.saveAll(accounts.stream().map(mapper::toEntity).toList());
         return result.stream().map(mapper::toDomain).toList();
     }
 
     @Override
-    public AccountJpaEntity saveAndReturnJpa(Account account) {
+    public AccountJpaEntity saveAndReturnJpa(
+            Account account) {
         return repository.save(mapper.toEntity(account));
     }
 
     @Override
-    public Account loadByUsername(AccountName name) {
+    public Account loadByUsername(
+            AccountName name) {
         final var result = repository.findByName(name.value());
-        if(result==null) return null;
+        if (result == null)
+            return null;
         return mapper.toDomain(result);
     }
 
     @Override
     public Optional<Account> loadByKeycloakId(
             KeyCloakId id) {
-       final var result = repository.findByKeycloakId(id.value().toString());
-       if(result.isEmpty()) return Optional.empty();
-       return Optional.of(mapper.toDomain(result.get()));
+        final var result = repository.findByKeycloakId(id.value().toString());
+        if (result.isEmpty())
+            return Optional.empty();
+        return Optional.of(mapper.toDomain(result.get()));
     }
-
-   
 
 }

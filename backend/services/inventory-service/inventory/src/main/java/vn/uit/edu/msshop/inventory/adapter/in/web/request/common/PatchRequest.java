@@ -1,11 +1,10 @@
 package vn.uit.edu.msshop.inventory.adapter.in.web.request.common;
+
 import java.util.function.Function;
 
 import org.jspecify.annotations.NonNull;
 
 import vn.uit.edu.msshop.inventory.application.common.Patch;
-
-
 
 public record PatchRequest<T>(
         @NonNull

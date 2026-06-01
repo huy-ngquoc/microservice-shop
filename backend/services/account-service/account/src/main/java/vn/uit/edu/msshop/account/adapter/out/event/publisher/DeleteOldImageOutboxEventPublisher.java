@@ -20,56 +20,71 @@ import vn.uit.edu.msshop.account.domain.event.kafka.DeleteOldImageEvent;
 @RequiredArgsConstructor
 public class DeleteOldImageOutboxEventPublisher {
     private final DeleteOldImageEventDocumentRepository deleteOldImageRepo;
-    private static final String PUBLISH_TOPIC="image-account-topic";
+    private static final String PUBLISH_TOPIC = "image-account-topic";
     private final KafkaTemplate<String, DeleteOldImageEvent> kafkaTemplate;
 
-     @Scheduled(fixedDelay=5000)
+    @Scheduled(
+            fixedDelay = 5000)
     public void publishPendingEvents() {
-        List<DeleteOldImageEventDocument> pendingEvents = deleteOldImageRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        List<DeleteOldImageEventDocument> pendingEvents = deleteOldImageRepo
+                .findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (DeleteOldImageEventDocument event : pendingEvents) {
             try {
-                DeleteOldImageEvent deleteOldImageEvent = new DeleteOldImageEvent(event.getOldImagePublicId(), event.getEventId());
+                DeleteOldImageEvent deleteOldImageEvent = new DeleteOldImageEvent(event.getOldImagePublicId(),
+                        event.getEventId());
                 kafkaTemplate.send(PUBLISH_TOPIC, deleteOldImageEvent)
-                    .whenComplete((result, ex) -> {
-                        if (ex == null) {
-                            
-                            updateStatus(event, "SENT", null);
-                        } else {
-                            
-                            handleFailure(event, ex.getMessage());
-                        }
-                    });
+                        .whenComplete((
+                                result,
+                                ex) -> {
+                            if (ex == null) {
+
+                                updateStatus(event, "SENT", null);
+                            } else {
+
+                                handleFailure(event, ex.getMessage());
+                            }
+                        });
             } catch (Exception e) {
                 handleFailure(event, e.getMessage());
             }
         }
     }
 
-    private void updateStatus(DeleteOldImageEventDocument event, String status, String error) {
+    private void updateStatus(
+            DeleteOldImageEventDocument event,
+            String status,
+            String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
         deleteOldImageRepo.save(event);
     }
+
     @Transactional
-    public void markAsSent(DeleteOldImageEventDocument event) {
+    public void markAsSent(
+            DeleteOldImageEventDocument event) {
         updateStatus(event, "SENT", null);
     }
-    private void handleFailure(DeleteOldImageEventDocument event, String error) {
+
+    private void handleFailure(
+            DeleteOldImageEventDocument event,
+            String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
         } else {
             event.setRetryCount(retries + 1);
-            updateStatus(event, "PENDING", error); 
+            updateStatus(event, "PENDING", error);
         }
     }
-    @Scheduled(cron = "0 0 0 * * ?") 
+
+    @Scheduled(
+            cron = "0 0 0 * * ?")
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
-    
-    deleteOldImageRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
-   
-}
+
+        deleteOldImageRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+
+    }
 }

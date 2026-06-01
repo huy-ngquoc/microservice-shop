@@ -42,9 +42,6 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
     private final LoadInventoryPort loadPort;
 
     private final InventoryViewMapper mapper;
-    
-
-    
 
     @Override
     @Transactional
@@ -74,7 +71,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         // publishEventPort.publishInventoryUpdateEvent(new
         // InventoryUpdated(saved.getVariantId().value(), saved.getQuantity().value(),
         // saved.getReservedQuantity().value()));
-        
+
         return mapper.toView(saved);
     }
 
@@ -97,13 +94,11 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         List<Inventory> inventories = loadPort.findAllByListVariantId(
                 commands.getDetailCommands().stream().map(item -> item.getVariantId()).toList());
 
-       
         Map<UUID, Inventory> inventoryMap = new HashMap<>();
         List<Inventory> toSaves = new ArrayList<>();
         for (Inventory i : inventories) {
             inventoryMap.put(i.getVariantId().value(), i);
         }
-        
 
         for (OrderDetailCommand detailCommand : commands.getDetailCommands()) {
             Inventory inventory = inventoryMap.get(detailCommand.getVariantId().value());
@@ -112,7 +107,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
 
             int newQuantity = inventory.getQuantity().value() + detailCommand.getQuantity().value();
             int newReservedQuantity = inventory.getReservedQuantity().value() - detailCommand.getQuantity().value();
-            
+
             if (newReservedQuantity < 0)
                 throw new RuntimeException("Invalid info");
             final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(inventory.getId())
@@ -121,7 +116,6 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
                     .build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
             toSaves.add(toSave);
-            
 
         }
 
@@ -141,7 +135,6 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
          * }
          */
         savePort.saveAll(toSaves);
-        
 
         return inventories.stream().map(mapper::toView).toList();
 
@@ -170,7 +163,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
         for (Inventory i : inventories) {
             inventoryMap.put(i.getVariantId().value(), i);
         }
-        
+
         for (OrderDetailCommand detailCommand : commands.getDetailCommands()) {
             Inventory inventory = inventoryMap.get(detailCommand.getVariantId().value());
             if (inventory == null)
@@ -184,7 +177,7 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
                     .status(inventory.getStatus())
                     .build();
             final var toSave = inventory.applyUpdateInfo(updateInfo);
-            
+
             toSaves.add(toSave);
 
         }
@@ -194,13 +187,12 @@ public class UpdateInventoryService implements UpdateInventoryUseCase {
 
         /*
          * for(OrderDetailCommand command: commands.getDetailCommands()) {
-         * 
+         *
          * processScript(command.getVariantId().value(), command.getQuantity().value(),
          * redisConfig.getReleaseStockScript());
          * }
          */
         savePort.saveAll(toSaves);
-        
 
         return inventories.stream().map(mapper::toView).toList();
 

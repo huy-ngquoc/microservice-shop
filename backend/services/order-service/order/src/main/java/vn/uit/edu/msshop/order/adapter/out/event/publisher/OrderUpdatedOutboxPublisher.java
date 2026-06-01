@@ -13,14 +13,15 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.order.adapter.out.event.documents.OrderUpdatedEventDocument;
 import vn.uit.edu.msshop.order.adapter.out.event.repositories.OrderUpdatedRepository;
 import vn.uit.edu.msshop.order.domain.event.OrderUpdatedEvent;
+
 /*
 private UUID eventId;
     private UUID orderId;
 
     private List<OrderDetailEvent> details;
-    
+
     private String status;
-    
+
     private UUID userId;
 
     private long originPrice;
@@ -31,9 +32,9 @@ private UUID eventId;
 
     private long totalPrice;
 
-    
 
-    
+
+
 
     private String currency;
     private String paymentMethod;
@@ -44,28 +45,36 @@ private UUID eventId;
 public class OrderUpdatedOutboxPublisher {
     private final OrderUpdatedRepository orderUpdatedRepo;
     private final KafkaTemplate<String, OrderUpdatedEvent> kafkaTemplate;
-    private static final String PUBLISH_TOPIC="order-topic";
-    @Scheduled(fixedDelay=5000)
-    
+    private static final String PUBLISH_TOPIC = "order-topic";
+
+    @Scheduled(
+            fixedDelay = 5000)
+
     public void publishPendingEvents() {
-        List<OrderUpdatedEventDocument> pendingEvents =orderUpdatedRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        List<OrderUpdatedEventDocument> pendingEvents = orderUpdatedRepo
+                .findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (OrderUpdatedEventDocument event : pendingEvents) {
             try {
-                
-                OrderUpdatedEvent orderUpdatedEvent= new OrderUpdatedEvent(event.getEventId(), event.getOrderId(), event.getDetails(), event.getStatus(), event.getUserId(), event.getOriginPrice(), event.getShippingFee(), event.getDiscount(), event.getTotalPrice(), event.getCurrency(), event.getPaymentMethod(), event.getPaymentStatus(),event.getEmail(),event.getOldStatus());
+
+                OrderUpdatedEvent orderUpdatedEvent = new OrderUpdatedEvent(event.getEventId(), event.getOrderId(),
+                        event.getDetails(), event.getStatus(), event.getUserId(), event.getOriginPrice(),
+                        event.getShippingFee(), event.getDiscount(), event.getTotalPrice(), event.getCurrency(),
+                        event.getPaymentMethod(), event.getPaymentStatus(), event.getEmail(), event.getOldStatus());
                 kafkaTemplate.send(PUBLISH_TOPIC, orderUpdatedEvent)
-                    .whenComplete((result, ex) -> {
-                        if (ex == null) {
-                            
-                            updateStatus(event, "SENT", null);
-                            System.out.println("Sent event");
-                        } else {
-                            System.out.println("Error");
-                            System.out.println(ex.getMessage());
-                            handleFailure(event, ex.getMessage());
-                        }
-                    });
+                        .whenComplete((
+                                result,
+                                ex) -> {
+                            if (ex == null) {
+
+                                updateStatus(event, "SENT", null);
+                                System.out.println("Sent event");
+                            } else {
+                                System.out.println("Error");
+                                System.out.println(ex.getMessage());
+                                handleFailure(event, ex.getMessage());
+                            }
+                        });
             } catch (Exception e) {
                 System.out.println("Error");
                 e.printStackTrace();
@@ -74,31 +83,41 @@ public class OrderUpdatedOutboxPublisher {
         }
     }
 
-    private void updateStatus(OrderUpdatedEventDocument event, String status, String error) {
+    private void updateStatus(
+            OrderUpdatedEventDocument event,
+            String status,
+            String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
         orderUpdatedRepo.save(event);
-        
+
     }
-    private void handleFailure(OrderUpdatedEventDocument event, String error) {
+
+    private void handleFailure(
+            OrderUpdatedEventDocument event,
+            String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
         } else {
             event.setRetryCount(retries + 1);
-            updateStatus(event, "PENDING", error); 
+            updateStatus(event, "PENDING", error);
         }
     }
+
     @Transactional
-    public void markAsSent(OrderUpdatedEventDocument event) {
+    public void markAsSent(
+            OrderUpdatedEventDocument event) {
         updateStatus(event, "SENT", null);
     }
-    @Scheduled(cron = "0 0 0 * * ?") 
+
+    @Scheduled(
+            cron = "0 0 0 * * ?")
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
-    
-    orderUpdatedRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
-   
-}
+
+        orderUpdatedRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+
+    }
 }

@@ -35,7 +35,6 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.AccountId;
 import vn.uit.edu.msshop.account.domain.model.valueobject.AccountName;
 import vn.uit.edu.msshop.account.domain.model.valueobject.KeyCloakId;
 
-
 @RestController
 @RequestMapping("/account")
 @RequiredArgsConstructor
@@ -49,86 +48,114 @@ public class AccountController {
     private final LogoutUseCase logoutUseCase;
     private final AccountOutboxEntityRepository accountOutboxRepo;
     private final SpringDataAccountJpaRepository springDataAccountRepo;
-    
+
     @GetMapping("/{id}")
-    public ResponseEntity<AccountResponse> findById(@PathVariable UUID id) {
+    public ResponseEntity<AccountResponse> findById(
+            @PathVariable
+            UUID id) {
         final var view = this.findUseCase.findAccountById(new AccountId(id));
         final var response = this.webMapper.toResponse(view);
-        return ResponseEntity.ok(response);  
+        return ResponseEntity.ok(response);
     }
+
     @GetMapping("/keycloak/{id}")
-    public ResponseEntity<AccountResponse> findByKeycloakId(@PathVariable UUID id, @RequestHeader("X-User-Id") String userId, @RequestHeader("X-User-Roles") String userRole) {
+    public ResponseEntity<AccountResponse> findByKeycloakId(
+            @PathVariable
+            UUID id,
+            @RequestHeader("X-User-Id")
+            String userId,
+            @RequestHeader("X-User-Roles")
+            String userRole) {
         final var view = this.findUseCase.findByKeycloakId(new KeyCloakId(id));
-        if(!"Client_Admin".equals(userRole)) {
-            if(view.keyCloakId()==null||!view.keyCloakId().equals(userId)) {
+        if (!"Client_Admin".equals(userRole)) {
+            if (view.keyCloakId() == null || !view.keyCloakId().equals(userId)) {
                 return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).build();
             }
         }
         final var response = this.webMapper.toResponse(view);
-        return ResponseEntity.ok(response);  
+        return ResponseEntity.ok(response);
     }
-    @PostMapping("/create") 
-    public ResponseEntity<?> create(@RequestBody CreateAccountRequest request) {
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(
+            @RequestBody
+            CreateAccountRequest request) {
         try {
-        final var createAccountCommand = webMapper.toCommand(request);
-        final var view= this.createUseCase.create(createAccountCommand);
-        return ResponseEntity.ok(webMapper.toResponse(view));
-        }
-        catch(RuntimeException e) {
+            final var createAccountCommand = webMapper.toCommand(request);
+            final var view = this.createUseCase.create(createAccountCommand);
+            return ResponseEntity.ok(webMapper.toResponse(view));
+        } catch (RuntimeException e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-    } 
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(
+            @RequestBody
+            LoginRequest request) {
         try {
             return ResponseEntity.ok(loginUseCase.login(request));
-        }
-        catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(e.getMessage());
         }
     }
+
     @PostMapping("/refresh_token")
-    public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) {
+    public ResponseEntity<?> refreshToken(
+            @RequestBody
+            String refreshToken) {
         try {
             return ResponseEntity.ok(refreshTokenUseCase.refreshToken(refreshToken));
-        }
-        catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(e.getMessage());
         }
     }
+
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody String refreshToken) {
+    public ResponseEntity<?> logout(
+            @RequestBody
+            String refreshToken) {
         try {
             logoutUseCase.logout(refreshToken);
             return ResponseEntity.noContent().build();
-        }
-        catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(e.getMessage());
         }
     }
+
     @PutMapping("/update")
-    public ResponseEntity<Void> update(@RequestBody UpdateAccountRequest request,@RequestHeader("X-User-Id") String userId) {
+    public ResponseEntity<Void> update(
+            @RequestBody
+            UpdateAccountRequest request,
+            @RequestHeader("X-User-Id")
+            String userId) {
         final var updateAccountCommand = webMapper.toCommand(request);
-        try{
-        this.updateUseCase.update(updateAccountCommand, userId);
-        }
-        catch(UnauthorizedException e) {
-           return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).build();
+        try {
+            this.updateUseCase.update(updateAccountCommand, userId);
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).build();
         }
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/find_by_name")
-    public ResponseEntity<?> getAccountByName(@RequestParam String name) {
+    public ResponseEntity<?> getAccountByName(
+            @RequestParam
+            String name) {
         final var result = this.findUseCase.findByAccountName(new AccountName(name));
-        if(result==null) return ResponseEntity.badRequest().body("Account not found");
+        if (result == null)
+            return ResponseEntity.badRequest().body("Account not found");
         return ResponseEntity.ok(this.webMapper.toResponse(result));
     }
 
-    @PutMapping("/update_avatar") 
-    public ResponseEntity<Void> updateAvatar(@RequestBody UpdateAvatarRequest request) {
+    @PutMapping("/update_avatar")
+    public ResponseEntity<Void> updateAvatar(
+            @RequestBody
+            UpdateAvatarRequest request) {
         return ResponseEntity.noContent().build();
     }
+
     @DeleteMapping("/clear")
     public ResponseEntity<Void> clearDB() {
         accountOutboxRepo.deleteAll();

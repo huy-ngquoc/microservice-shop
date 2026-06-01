@@ -12,12 +12,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @Builder
 @Entity
-@Table(name="force_cancell_order")
+@Table(
+        name = "force_cancell_order")
 @AllArgsConstructor
 @NoArgsConstructor
 public class ForceCancellOrderDocument {
@@ -25,9 +25,9 @@ public class ForceCancellOrderDocument {
     private UUID eventId;
     private UUID orderId;
     private String eventStatus;
-    private Integer retryCount; 
+    private Integer retryCount;
     private Instant createdAt;
-    private Instant updatedAt; 
+    private Instant updatedAt;
     private String lastError;
 
 }

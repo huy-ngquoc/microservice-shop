@@ -20,56 +20,70 @@ import vn.uit.edu.payment.domain.event.PaymentSuccess;
 @Slf4j
 public class PaymentSuccessOutboxPublisher {
     private final PaymentSuccessDocumentRepository paymentSuccessDocumentRepo;
-    private static final String PUBLISH_TOPIC="payment-online-topic";
+    private static final String PUBLISH_TOPIC = "payment-online-topic";
     private final KafkaTemplate<String, PaymentSuccess> kafkaTemplate;
 
-     @Scheduled(fixedDelay=5000)
+    @Scheduled(
+            fixedDelay = 5000)
     public void publishPendingEvents() {
-        List<PaymentSuccessDocument> pendingEvents = paymentSuccessDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        List<PaymentSuccessDocument> pendingEvents = paymentSuccessDocumentRepo
+                .findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (PaymentSuccessDocument event : pendingEvents) {
             try {
                 PaymentSuccess paymentSuccess = new PaymentSuccess(event.getEventId(), event.getOrderId());
                 kafkaTemplate.send(PUBLISH_TOPIC, paymentSuccess)
-                    .whenComplete((result, ex) -> {
-                        if (ex == null) {
-                            
-                            updateStatus(event, "SENT", null);
-                        } else {
-                            
-                            handleFailure(event, ex.getMessage());
-                        }
-                    });
+                        .whenComplete((
+                                result,
+                                ex) -> {
+                            if (ex == null) {
+
+                                updateStatus(event, "SENT", null);
+                            } else {
+
+                                handleFailure(event, ex.getMessage());
+                            }
+                        });
             } catch (Exception e) {
                 handleFailure(event, e.getMessage());
             }
         }
     }
 
-    private void updateStatus(PaymentSuccessDocument event, String status, String error) {
+    private void updateStatus(
+            PaymentSuccessDocument event,
+            String status,
+            String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
         paymentSuccessDocumentRepo.save(event);
     }
+
     @Transactional
-    public void markAsSent(PaymentSuccessDocument event) {
+    public void markAsSent(
+            PaymentSuccessDocument event) {
         updateStatus(event, "SENT", null);
     }
-    private void handleFailure(PaymentSuccessDocument event, String error) {
+
+    private void handleFailure(
+            PaymentSuccessDocument event,
+            String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
         } else {
             event.setRetryCount(retries + 1);
-            updateStatus(event, "PENDING", error); 
+            updateStatus(event, "PENDING", error);
         }
     }
-    @Scheduled(cron = "0 0 0 * * ?") 
+
+    @Scheduled(
+            cron = "0 0 0 * * ?")
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
-    
-    paymentSuccessDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
-   
-}
+
+        paymentSuccessDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+
+    }
 }

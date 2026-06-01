@@ -16,7 +16,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="account_outbox")
+@Table(
+        name = "account_outbox")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,7 +28,8 @@ public class AccountOutboxEntity {
     private UUID userId;
     @OneToOne
     @MapsId
-    @JoinColumn(name="user_id")
+    @JoinColumn(
+            name = "user_id")
     private AccountJpaEntity account;
     private String userName;
     private String password;
@@ -42,12 +44,13 @@ public class AccountOutboxEntity {
     private String lastError;
 
     public void handleSuccess() {
-        this.isCheck=true;
+        this.isCheck = true;
     }
-    public void handleFailure(String error) {
-        this.lastError=error;
+
+    public void handleFailure(
+            String error) {
+        this.lastError = error;
         this.retryCount++;
     }
 
-    
 }

@@ -1,4 +1,5 @@
 package vn.uit.edu.msshop.account.adapter.out.event.documents;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -17,14 +18,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name="account_id")
+@Table(
+        name = "account_id")
 public class AccountIdDocument {
     @Id
     private UUID eventId;
     private UUID accontId;
     private String eventStatus;
-    private Integer retryCount; 
+    private Integer retryCount;
     private Instant createdAt;
-    private Instant updatedAt; 
+    private Instant updatedAt;
     private String lastError;
 }

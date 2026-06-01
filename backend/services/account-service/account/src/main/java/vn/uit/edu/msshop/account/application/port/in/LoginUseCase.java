@@ -4,5 +4,6 @@ import vn.uit.edu.msshop.account.adapter.in.web.request.LoginRequest;
 import vn.uit.edu.msshop.account.adapter.in.web.response.LoginResponse;
 
 public interface LoginUseCase {
-    public LoginResponse login(LoginRequest request);
+    public LoginResponse login(
+            LoginRequest request);
 }

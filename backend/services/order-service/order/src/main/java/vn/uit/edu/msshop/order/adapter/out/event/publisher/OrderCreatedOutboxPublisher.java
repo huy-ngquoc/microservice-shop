@@ -22,23 +22,26 @@ public class OrderCreatedOutboxPublisher {
 
     private final OrderCreatedDocumentRepository orderCreatedDocumentRepo;
     private final CreatePaymentService createPaymentService;
-    private final KafkaTemplate<String,OrderCreated> orderCreatedTemplate;
+    private final KafkaTemplate<String, OrderCreated> orderCreatedTemplate;
     @Value("${custom.call_payment_batch}")
     private String paymentBatch;
-    @Scheduled(fixedRateString="${custom.call_payment_interval}")
+
+    @Scheduled(
+            fixedRateString = "${custom.call_payment_interval}")
     public void publishPendingEvents() {
         Pageable pageable = PageRequest.of(0, Integer.parseInt(paymentBatch));
-        List<OrderCreatedDocument> pendingEvents =orderCreatedDocumentRepo.findByEventStatusOrderByCreatedAtAsc("PENDING", pageable).getContent();
-        
+        List<OrderCreatedDocument> pendingEvents = orderCreatedDocumentRepo
+                .findByEventStatusOrderByCreatedAtAsc("PENDING", pageable).getContent();
+
         for (OrderCreatedDocument event : pendingEvents) {
-            if("ONLINE".equals(event.getPaymentMethod())) {
-           createPaymentService.createPayment(event);
+            if ("ONLINE".equals(event.getPaymentMethod())) {
+                createPaymentService.createPayment(event);
             }
 
-           OrderCreated orderCreated = new OrderCreated(event.getEventId(),event.getCurrency(), event.getOrderId(), event.getPaymentMethod(), event.getPaymentValue(), event.getUserId(), event.getUserEmail());
-        orderCreatedTemplate.send("order-topic",orderCreated);
+            OrderCreated orderCreated = new OrderCreated(event.getEventId(), event.getCurrency(), event.getOrderId(),
+                    event.getPaymentMethod(), event.getPaymentValue(), event.getUserId(), event.getUserEmail());
+            orderCreatedTemplate.send("order-topic", orderCreated);
         }
     }
 
-    
 }

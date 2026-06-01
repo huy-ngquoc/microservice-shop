@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@Document(collection="outbox_events_order_created_document")
+@Document(
+        collection = "outbox_events_order_created_document")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -26,8 +27,5 @@ public class OrderCreatedDocument extends OutboxEvent {
     private long paymentValue;
     private UUID userId;
     private String userEmail;
-
-   
-    
 
 }

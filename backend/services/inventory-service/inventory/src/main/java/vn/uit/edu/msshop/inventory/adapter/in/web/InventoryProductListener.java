@@ -44,7 +44,7 @@ public class InventoryProductListener {
 
     /*
      * @KafkaHandler
-     * 
+     *
      * @Transactional
      * public void onProductCreated(ProductCreated productCreated) {
      * System.out.println("Received event from product service");

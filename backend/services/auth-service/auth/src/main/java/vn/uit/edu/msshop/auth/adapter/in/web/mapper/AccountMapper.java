@@ -10,14 +10,13 @@ import vn.uit.edu.msshop.auth.adapter.in.web.request.CreateAccountRequest;
 
 @Component
 public class AccountMapper {
-    public UserRepresentation toUserRepresentation(CreateAccountRequest request) {
+    public UserRepresentation toUserRepresentation(
+            CreateAccountRequest request) {
         UserRepresentation user = new UserRepresentation();
         user.setUsername(request.name());
         user.setEmail(request.email());
-        user.setEnabled(true); 
-        
+        user.setEnabled(true);
 
-       
         CredentialRepresentation cred = new CredentialRepresentation();
         cred.setTemporary(false);
         cred.setType(CredentialRepresentation.PASSWORD);

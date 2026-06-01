@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-@Document(collection="outbox_events_order_created_success_document")
+@Document(
+        collection = "outbox_events_order_created_success_document")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

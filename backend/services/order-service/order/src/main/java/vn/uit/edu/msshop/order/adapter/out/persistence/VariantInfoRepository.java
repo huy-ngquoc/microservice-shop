@@ -7,9 +7,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
+
 @Repository
 public interface VariantInfoRepository extends MongoRepository<VariantInfo, UUID> {
-    public List<VariantInfo> findByProductId(UUID productId);
-    public List<VariantInfo> findByVariantIdIn(List<UUID> variantIds);
-    public Page<VariantInfo> findAll(Pageable pageable);
+    public List<VariantInfo> findByProductId(
+            UUID productId);
+
+    public List<VariantInfo> findByVariantIdIn(
+            List<UUID> variantIds);
+
+    public Page<VariantInfo> findAll(
+            Pageable pageable);
 }

@@ -31,16 +31,17 @@ import vn.uit.edu.msshop.image.application.port.in.RemoveImageFolderUseCase;
 @RequiredArgsConstructor
 @RequestMapping("/image")
 public class ImageController {
-    
+
     private final DeleteImageUseCase deleteUseCase;
     private final ImageWebMapper mapper;
     private final GetSignatureUseCase getSignatureUseCase;
     private final RemoveImageFolderUseCase removeUseCase;
 
-    
-
     @DeleteMapping()
-    public ResponseEntity<Void> deleteImage( @RequestParam(required=true) String imagePublicId) {
+    public ResponseEntity<Void> deleteImage(
+            @RequestParam(
+                    required = true)
+            String imagePublicId) {
         final var deleteCommand = mapper.toCommand(imagePublicId);
         deleteUseCase.deleteImage(deleteCommand);
         return ResponseEntity.noContent().build();
@@ -49,15 +50,17 @@ public class ImageController {
     @GetMapping("/signature")
     public ResponseEntity<SignatureResponse> getSignature() {
         final var getSignatureCommand = mapper.toCommand();
-        final var result= getSignatureUseCase.getSignature(getSignatureCommand);
+        final var result = getSignatureUseCase.getSignature(getSignatureCommand);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/remove")
-    public ResponseEntity<Void> removeImage(@RequestBody RemoveImageRequest request) throws IOException{
+    public ResponseEntity<Void> removeImage(
+            @RequestBody
+            RemoveImageRequest request) throws IOException {
         RemoveImageFolderCommand command = mapper.toCommand(request);
         this.removeUseCase.removeImageFolder(command);
         return ResponseEntity.noContent().build();
 
-    } 
+    }
 }

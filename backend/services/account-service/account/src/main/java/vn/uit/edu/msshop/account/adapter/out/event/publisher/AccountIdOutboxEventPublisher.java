@@ -20,9 +20,11 @@ import vn.uit.edu.msshop.account.domain.event.kafka.AccountId;
 @RequiredArgsConstructor
 public class AccountIdOutboxEventPublisher {
     private final AccountIdDocumentRepository accountIdDocumentRepo;
-    private static final String PUBLISH_TOPIC="account-topic-fail";
+    private static final String PUBLISH_TOPIC = "account-topic-fail";
     private final KafkaTemplate<String, AccountId> kafkaTemplate;
-     @Scheduled(fixedDelay=5000)
+
+    @Scheduled(
+            fixedDelay = 5000)
     public void publishPendingEvents() {
         List<AccountIdDocument> pendingEvents;
         pendingEvents = accountIdDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
@@ -31,45 +33,57 @@ public class AccountIdOutboxEventPublisher {
             try {
                 AccountId accountId = new AccountId(event.getAccontId(), event.getEventId());
                 kafkaTemplate.send(PUBLISH_TOPIC, accountId)
-                    .whenComplete((result, ex) -> {
-                        if (ex == null) {
-                            
-                            updateStatus(event, "SENT", null);
-                        } else {
-                            
-                            handleFailure(event, ex.getMessage());
-                        }
-                    });
+                        .whenComplete((
+                                result,
+                                ex) -> {
+                            if (ex == null) {
+
+                                updateStatus(event, "SENT", null);
+                            } else {
+
+                                handleFailure(event, ex.getMessage());
+                            }
+                        });
             } catch (Exception e) {
                 handleFailure(event, e.getMessage());
             }
         }
     }
 
-    private void updateStatus(AccountIdDocument event, String status, String error) {
+    private void updateStatus(
+            AccountIdDocument event,
+            String status,
+            String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
         accountIdDocumentRepo.save(event);
     }
+
     @Transactional
-    public void markAsSent(AccountIdDocument event) {
+    public void markAsSent(
+            AccountIdDocument event) {
         updateStatus(event, "SENT", null);
     }
-    private void handleFailure(AccountIdDocument event, String error) {
+
+    private void handleFailure(
+            AccountIdDocument event,
+            String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
         } else {
             event.setRetryCount(retries + 1);
-            updateStatus(event, "PENDING", error); 
+            updateStatus(event, "PENDING", error);
         }
     }
-    @Scheduled(cron = "0 0 0 * * ?") 
+
+    @Scheduled(
+            cron = "0 0 0 * * ?")
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
-    
-    accountIdDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
-   
-}
+
+        accountIdDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+
+    }
 }

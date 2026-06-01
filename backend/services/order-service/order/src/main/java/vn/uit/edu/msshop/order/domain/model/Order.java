@@ -77,105 +77,104 @@ public final class Order {
 
     @Builder
     public static record UpdateInfo(
-        @NonNull
-        OrderId  id,
-        ShippingInfo shippingInfo,
-        OrderStatus orderStatus
-    ) {
+            @NonNull
+            OrderId id,
+            ShippingInfo shippingInfo,
+            OrderStatus orderStatus) {
 
     }
 
-    @Builder 
+    @Builder
     public static record Draft(
-    @NonNull
-    OrderId id,
+            @NonNull
+            OrderId id,
 
-    @NonNull
-    ShippingInfo shippingInfo,
+            @NonNull
+            ShippingInfo shippingInfo,
 
-    @NonNull
-    List<OrderDetail> details,
+            @NonNull
+            List<OrderDetail> details,
 
-    @NonNull
-    OrderStatus status,
+            @NonNull
+            OrderStatus status,
 
-    @NonNull
-    UserId userId,
+            @NonNull
+            UserId userId,
 
-    @NonNull
-    OriginPrice originPrice,
+            @NonNull
+            OriginPrice originPrice,
 
-    @NonNull
-    ShippingFee shippingFee,
+            @NonNull
+            ShippingFee shippingFee,
 
-    @NonNull
-    Discount discount,
+            @NonNull
+            Discount discount,
 
-    @NonNull
-    TotalPrice totalPrice,
+            @NonNull
+            TotalPrice totalPrice,
 
-    @NonNull
-    CreateAt createAt,
+            @NonNull
+            CreateAt createAt,
 
-    @NonNull
-    UpdateAt updateAt,
-    @NonNull
-    Currency currency,
-    @NonNull
-    PaymentMethod paymentMethod,
-    @NonNull
-    PaymentStatus paymentStatus
-    ) {
+            @NonNull
+            UpdateAt updateAt,
+            @NonNull
+            Currency currency,
+            @NonNull
+            PaymentMethod paymentMethod,
+            @NonNull
+            PaymentStatus paymentStatus) {
 
     }
 
     @Builder
     public static record SnapShot(
-         @NonNull
-    OrderId id,
+            @NonNull
+            OrderId id,
 
-    @NonNull
-    ShippingInfo shippingInfo,
+            @NonNull
+            ShippingInfo shippingInfo,
 
-    @NonNull
-    List<OrderDetail> details,
+            @NonNull
+            List<OrderDetail> details,
 
-    @NonNull
-    OrderStatus status,
+            @NonNull
+            OrderStatus status,
 
-    @NonNull
-    UserId userId,
+            @NonNull
+            UserId userId,
 
-    @NonNull
-    OriginPrice originPrice,
+            @NonNull
+            OriginPrice originPrice,
 
-    @NonNull
-    ShippingFee shippingFee,
+            @NonNull
+            ShippingFee shippingFee,
 
-    @NonNull
-    Discount discount,
+            @NonNull
+            Discount discount,
 
-    @NonNull
-    TotalPrice totalPrice,
+            @NonNull
+            TotalPrice totalPrice,
 
-    @NonNull
-    CreateAt createAt,
+            @NonNull
+            CreateAt createAt,
 
-    @NonNull
-    UpdateAt updateAt,
-    @NonNull
-    Version version,
-    @NonNull
-    Currency currency,
-    @NonNull
-    PaymentMethod paymentMethod,
-    @NonNull
-    PaymentStatus paymentStatus
-    ) {
+            @NonNull
+            UpdateAt updateAt,
+            @NonNull
+            Version version,
+            @NonNull
+            Currency currency,
+            @NonNull
+            PaymentMethod paymentMethod,
+            @NonNull
+            PaymentStatus paymentStatus) {
 
     }
+
     @NullMarked
-    public static Order create(final Draft d) {
+    public static Order create(
+            final Draft d) {
         if (d == null) {
             throw new IllegalArgumentException("Draft must NOT be null");
         }
@@ -183,16 +182,20 @@ public final class Order {
         if (d.id() == null) {
             throw new IllegalArgumentException("Id must NOT be null");
         }
-        if(d.currency()==null) {
+        if (d.currency() == null) {
             throw new IllegalArgumentException("currency must not be null");
         }
 
-        return Order.builder().id(d.id()).shippingInfo(d.shippingInfo()).details(d.details()).status(d.status()).userId(d.userId())
-        .originPrice(d.originPrice()).shippingFee(d.shippingFee()).discount(d.discount()).totalPrice(d.totalPrice()).createAt(d.createAt()).updateAt(d.updateAt()).version(null).
-        currency(d.currency()).paymentMethod(d.paymentMethod()).paymentStatus(d.paymentStatus()).build();
+        return Order.builder().id(d.id()).shippingInfo(d.shippingInfo()).details(d.details()).status(d.status())
+                .userId(d.userId())
+                .originPrice(d.originPrice()).shippingFee(d.shippingFee()).discount(d.discount())
+                .totalPrice(d.totalPrice()).createAt(d.createAt()).updateAt(d.updateAt()).version(null)
+                .currency(d.currency()).paymentMethod(d.paymentMethod()).paymentStatus(d.paymentStatus()).build();
     }
+
     @NullMarked
-    public static Order reconstitue(final SnapShot s) {
+    public static Order reconstitue(
+            final SnapShot s) {
         if (s == null) {
             throw new IllegalArgumentException("Draft must NOT be null");
         }
@@ -201,16 +204,20 @@ public final class Order {
             throw new IllegalArgumentException("Id must NOT be null");
         }
 
-        return Order.builder().id(s.id()).shippingInfo(s.shippingInfo()).details(s.details()).status(s.status()).userId(s.userId())
-        .originPrice(s.originPrice()).shippingFee(s.shippingFee()).discount(s.discount()).totalPrice(s.totalPrice()).createAt(s.createAt()).updateAt(s.updateAt()).version(s.version())
-        .currency(s.currency())
-        .paymentMethod(s.paymentMethod())
-        .paymentStatus(s.paymentStatus())
-        .build();
-    
+        return Order.builder().id(s.id()).shippingInfo(s.shippingInfo()).details(s.details()).status(s.status())
+                .userId(s.userId())
+                .originPrice(s.originPrice()).shippingFee(s.shippingFee()).discount(s.discount())
+                .totalPrice(s.totalPrice()).createAt(s.createAt()).updateAt(s.updateAt()).version(s.version())
+                .currency(s.currency())
+                .paymentMethod(s.paymentMethod())
+                .paymentStatus(s.paymentStatus())
+                .build();
+
     }
+
     @NullMarked
-    public Order applyUpdateInfo(final UpdateInfo u) {
+    public Order applyUpdateInfo(
+            final UpdateInfo u) {
         if (u == null) {
             throw new IllegalArgumentException("Update must NOT be null");
         }
@@ -219,39 +226,58 @@ public final class Order {
             return this;
         }
 
-        OrderStatus newStatus = u.orderStatus()!=null?u.orderStatus():this.status;
-        ShippingInfo newShippingInfo = u.shippingInfo()!=null?u.shippingInfo():this.shippingInfo;
-        Instant updateTime = (u.orderStatus()==null&&u.shippingInfo()==null)?this.updateAt.value():Instant.now();
-        return Order.builder().id(this.id).shippingInfo(newShippingInfo).details(this.details).status(newStatus).userId(this.userId)
-        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(updateTime)).version(this.version)
-        .currency(this.currency).paymentMethod(this.paymentMethod).paymentStatus(this.paymentStatus).build();
+        OrderStatus newStatus = u.orderStatus() != null ? u.orderStatus() : this.status;
+        ShippingInfo newShippingInfo = u.shippingInfo() != null ? u.shippingInfo() : this.shippingInfo;
+        Instant updateTime = (u.orderStatus() == null && u.shippingInfo() == null) ? this.updateAt.value()
+                : Instant.now();
+        return Order.builder().id(this.id).shippingInfo(newShippingInfo).details(this.details).status(newStatus)
+                .userId(this.userId)
+                .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount)
+                .totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(updateTime))
+                .version(this.version)
+                .currency(this.currency).paymentMethod(this.paymentMethod).paymentStatus(this.paymentStatus).build();
     }
 
     @NullMarked
     public SnapShot snapShot() {
-        return SnapShot.builder().id(this.id).shippingInfo(this.shippingInfo).details(this.details).status(this.status).userId(this.userId)
-        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(this.updateAt).version(this.version)
-        .paymentStatus(this.paymentStatus)
-        .build();
+        return SnapShot.builder().id(this.id).shippingInfo(this.shippingInfo).details(this.details).status(this.status)
+                .userId(this.userId)
+                .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount)
+                .totalPrice(this.totalPrice).createAt(this.createAt).updateAt(this.updateAt).version(this.version)
+                .paymentStatus(this.paymentStatus)
+                .build();
     }
+
     @NullMarked
     @SuppressWarnings("java:S1067")
     private boolean isSameInfoWithUpdateInfo(
             final UpdateInfo u) {
-        return u.orderStatus().value().equals(this.status.value())&&isShippingInfoSame(u.shippingInfo());
+        return u.orderStatus().value().equals(this.status.value()) && isShippingInfoSame(u.shippingInfo());
     }
-    private boolean isShippingInfoSame(final ShippingInfo s) {
-        return (s.address().equals(this.shippingInfo.address()))&&(s.email().equals(this.shippingInfo.email()))
-        &&(s.fullName().equals(this.shippingInfo.fullName()))&&(s.phone().equals(this.shippingInfo.phone()));
+
+    private boolean isShippingInfoSame(
+            final ShippingInfo s) {
+        return (s.address().equals(this.shippingInfo.address())) && (s.email().equals(this.shippingInfo.email()))
+                && (s.fullName().equals(this.shippingInfo.fullName())) && (s.phone().equals(this.shippingInfo.phone()));
     }
-    public Order updatePaymentStatus(PaymentStatus paymentStatus) {
-        return Order.builder().id(this.id).shippingInfo(this.shippingInfo).details(this.details).status(this.status).userId(this.userId)
-        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(Instant.now())).version(this.version)
-        .currency(this.currency).paymentMethod(this.paymentMethod).paymentStatus(paymentStatus).build();
+
+    public Order updatePaymentStatus(
+            PaymentStatus paymentStatus) {
+        return Order.builder().id(this.id).shippingInfo(this.shippingInfo).details(this.details).status(this.status)
+                .userId(this.userId)
+                .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount)
+                .totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(Instant.now()))
+                .version(this.version)
+                .currency(this.currency).paymentMethod(this.paymentMethod).paymentStatus(paymentStatus).build();
     }
-    public Order updateStatus(OrderStatus status) {
-        return Order.builder().id(this.id).shippingInfo(this.shippingInfo).details(this.details).status(status).userId(this.userId)
-        .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount).totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(Instant.now())).version(this.version)
-        .currency(this.currency).paymentMethod(this.paymentMethod).paymentStatus(this.paymentStatus).build();
+
+    public Order updateStatus(
+            OrderStatus status) {
+        return Order.builder().id(this.id).shippingInfo(this.shippingInfo).details(this.details).status(status)
+                .userId(this.userId)
+                .originPrice(this.originPrice).shippingFee(this.shippingFee).discount(this.discount)
+                .totalPrice(this.totalPrice).createAt(this.createAt).updateAt(new UpdateAt(Instant.now()))
+                .version(this.version)
+                .currency(this.currency).paymentMethod(this.paymentMethod).paymentStatus(this.paymentStatus).build();
     }
 }

@@ -18,20 +18,19 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.UpdateAt;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
 
 public record OrderView(
-    OrderId orderId,
-    ShippingInfo shippingInfo,
-    List<OrderDetail> details,
-    OrderStatus status,
-    UserId userId,
-    OriginPrice originPrice,
-    ShippingFee shippingFee,
-    Discount discount,
-    TotalPrice totalPrice,
-    CreateAt createAt,
-    UpdateAt updateAt,
-    PaymentMethod paymentMethod,
-    Currency currency,
-    PaymentStatus paymentStatus
-) {
+        OrderId orderId,
+        ShippingInfo shippingInfo,
+        List<OrderDetail> details,
+        OrderStatus status,
+        UserId userId,
+        OriginPrice originPrice,
+        ShippingFee shippingFee,
+        Discount discount,
+        TotalPrice totalPrice,
+        CreateAt createAt,
+        UpdateAt updateAt,
+        PaymentMethod paymentMethod,
+        Currency currency,
+        PaymentStatus paymentStatus) {
 
 }

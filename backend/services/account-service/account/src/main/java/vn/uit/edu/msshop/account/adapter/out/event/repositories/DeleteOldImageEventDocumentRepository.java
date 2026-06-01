@@ -12,9 +12,13 @@ import vn.uit.edu.msshop.account.adapter.out.event.documents.DeleteOldImageEvent
 
 @Repository
 public interface DeleteOldImageEventDocumentRepository extends JpaRepository<DeleteOldImageEventDocument, UUID> {
-    public List<DeleteOldImageEventDocument> findByEventStatus(String eventStatus);
+    public List<DeleteOldImageEventDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<DeleteOldImageEventDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public List<DeleteOldImageEventDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 }

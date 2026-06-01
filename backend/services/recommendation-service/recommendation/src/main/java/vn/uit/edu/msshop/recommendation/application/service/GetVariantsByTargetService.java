@@ -17,7 +17,12 @@ public class GetVariantsByTargetService implements GetVariantsByTargetUseCase {
     private final ProductCaller productCaller;
 
     @Override
-    public PageResponseDto<VariantResponse> getVariantResponseByTargets(List<String> targets, int pageNumber, int pageSize, String sortBy, PageRequestDto.Direction direction) {
+    public PageResponseDto<VariantResponse> getVariantResponseByTargets(
+            List<String> targets,
+            int pageNumber,
+            int pageSize,
+            String sortBy,
+            PageRequestDto.Direction direction) {
         return productCaller.list(pageNumber, pageSize, sortBy, direction, targets).getBody();
     }
 

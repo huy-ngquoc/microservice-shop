@@ -7,7 +7,8 @@ import vn.uit.edu.msshop.order.domain.model.VariantSoldCount;
 
 @Component
 public class VariantSoldCountViewMapper {
-    public VariantSoldCountView toView(VariantSoldCount domain) {
+    public VariantSoldCountView toView(
+            VariantSoldCount domain) {
         return new VariantSoldCountView(domain.getId().value(), domain.getSoldCount().value());
     }
 }

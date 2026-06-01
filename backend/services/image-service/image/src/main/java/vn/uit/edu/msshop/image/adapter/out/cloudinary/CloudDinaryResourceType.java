@@ -1,4 +1,5 @@
 package vn.uit.edu.msshop.image.adapter.out.cloudinary;
+
 public enum CloudDinaryResourceType {
     IMAGE("image"),
     VIDEO("video"),

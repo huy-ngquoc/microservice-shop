@@ -11,9 +11,13 @@ import vn.uit.edu.payment.adapter.out.event.documents.OnlinePaymentExpiredDocume
 
 @Repository
 public interface OnlinePaymentExpiredDocumentRepository extends JpaRepository<OnlinePaymentExpiredDocument, UUID> {
-    public List<OnlinePaymentExpiredDocument> findByEventStatus(String eventStatus);
+    public List<OnlinePaymentExpiredDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<OnlinePaymentExpiredDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public List<OnlinePaymentExpiredDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 }

@@ -11,11 +11,12 @@ import vn.uit.edu.payment.adapter.out.persistence.SpringDataPaymentJpaRepository
 @RequiredArgsConstructor
 public class PaymentTestController {
     private final SpringDataPaymentJpaRepository repo;
+
     @GetMapping("/test")
     public ResponseEntity<PaymentTestResponse> getResponse() {
-        long success=repo.countByPaymentStatus("SUCCESS");
-        long pending=repo.countByPaymentStatus("PENDING");
-        long expired=repo.countByPaymentStatus("EXPIRED");
+        long success = repo.countByPaymentStatus("SUCCESS");
+        long pending = repo.countByPaymentStatus("PENDING");
+        long expired = repo.countByPaymentStatus("EXPIRED");
         return ResponseEntity.ok(new PaymentTestResponse(pending, expired, success));
     }
 }

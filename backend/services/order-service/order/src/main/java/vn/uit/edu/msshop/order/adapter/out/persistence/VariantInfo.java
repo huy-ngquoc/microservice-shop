@@ -10,25 +10,24 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection="variant_info")
+@Document(
+        collection = "variant_info")
 public class VariantInfo {
-        @Id
-        private UUID variantId;
+    @Id
+    private UUID variantId;
 
-        private UUID productId;
+    private UUID productId;
 
-        private String productName;
+    private String productName;
 
-        private long price;
+    private long price;
 
-        
+    private List<String> traits;
 
-        private List<String> traits;
-
-        
-        private String imageKey;
+    private String imageKey;
 }

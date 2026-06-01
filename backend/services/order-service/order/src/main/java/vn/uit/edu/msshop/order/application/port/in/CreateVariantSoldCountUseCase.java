@@ -4,5 +4,6 @@ import vn.uit.edu.msshop.order.application.dto.command.CreateVariantSoldCountCom
 import vn.uit.edu.msshop.order.application.dto.query.VariantSoldCountView;
 
 public interface CreateVariantSoldCountUseCase {
-    public VariantSoldCountView create(CreateVariantSoldCountCommand command);
+    public VariantSoldCountView create(
+            CreateVariantSoldCountCommand command);
 }

@@ -8,9 +8,12 @@ import vn.uit.edu.msshop.notification.adapter.out.persistence.EmailRepository;
 public class DBcleaner {
     private EmailRepository emailRepo;
     private EventDocumentRepository eventDocumentRepo;
-    public DBcleaner(EmailRepository emailRepo, EventDocumentRepository eventDocumentRepo) {
-        this.emailRepo=emailRepo;
-        this.eventDocumentRepo=eventDocumentRepo;
+
+    public DBcleaner(
+            EmailRepository emailRepo,
+            EventDocumentRepository eventDocumentRepo) {
+        this.emailRepo = emailRepo;
+        this.eventDocumentRepo = eventDocumentRepo;
         eventDocumentRepo.deleteAll();
         emailRepo.deleteAll();
     }

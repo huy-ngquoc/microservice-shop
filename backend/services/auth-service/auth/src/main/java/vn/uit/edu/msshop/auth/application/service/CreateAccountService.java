@@ -11,7 +11,7 @@ import vn.uit.edu.msshop.auth.application.port.in.CreateAccountUseCase;
 import vn.uit.edu.msshop.auth.application.port.out.CreateAccountPort;
 
 /*
-String name, 
+String name,
     String email,
     String password,
     String role,
@@ -23,27 +23,31 @@ String name,
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CreateAccountService implements CreateAccountUseCase  {
-    
+public class CreateAccountService implements CreateAccountUseCase {
+
     private final CreateAccountPort createPort;
 
     @Override
-    public void createAccount(UserRepresentation user, String role, String shippingAddress, String phoneNumber ) {
+    public void createAccount(
+            UserRepresentation user,
+            String role,
+            String shippingAddress,
+            String phoneNumber) {
         Response response = createPort.createAccount(user);
 
         if (response.getStatus() == 201) {
-            
+
             String userId = CreatedResponseUtil.getCreatedId(response);
-            //AccountCreated event = new AccountCreated(userId, user.getUsername(), user.getEmail(),"", role, "ACTIVE", shippingAddress,phoneNumber);
-           
-            //eventProducer.sendAccountCreateEvent(event);
+            // AccountCreated event = new AccountCreated(userId, user.getUsername(),
+            // user.getEmail(),"", role, "ACTIVE", shippingAddress,phoneNumber);
+
+            // eventProducer.sendAccountCreateEvent(event);
         } else {
             System.out.println("Lỗi từ Keycloak: " + response.getStatus());
-            System.out.println("Chi tiết: " + response.readEntity(String.class)); 
+            System.out.println("Chi tiết: " + response.readEntity(String.class));
             throw new RuntimeException("Không thể tạo user trên Keycloak, lỗi: " + response.getStatus());
-            
-    
-}
+
+        }
     }
 
 }

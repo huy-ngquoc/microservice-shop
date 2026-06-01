@@ -4,12 +4,14 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public record CreateAt(Instant value) {
+public record CreateAt(
+        Instant value) {
     public CreateAt {
-        if(value==null) {
+        if (value == null) {
             throw new IllegalArgumentException("Invalid creation time");
         }
     }
+
     @JsonValue
     public Instant getValue() {
         return this.value;

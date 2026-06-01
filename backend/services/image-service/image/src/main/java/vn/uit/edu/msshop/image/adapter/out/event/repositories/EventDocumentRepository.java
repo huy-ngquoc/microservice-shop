@@ -7,7 +7,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import vn.uit.edu.msshop.image.adapter.out.event.documents.EventDocument;
+
 @Repository
 public interface EventDocumentRepository extends MongoRepository<EventDocument, UUID> {
-    public void deleteByReceiveAtBefore(Instant threshold);
+    public void deleteByReceiveAtBefore(
+            Instant threshold);
 }
