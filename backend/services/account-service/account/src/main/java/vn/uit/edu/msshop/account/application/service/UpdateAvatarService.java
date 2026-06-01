@@ -34,56 +34,55 @@ public class UpdateAvatarService implements UpdateAvatarUseCase {
 
     @Override
     @Transactional
-    public void updateAvatar(UpdateAvatarCommand command) {
+    public void updateAvatar(
+            UpdateAvatarCommand command) {
         try {
-        
-            final Account account = this.loadAccountPort.loadById(command.id()).orElseThrow(()->new AccountNotFoundException(command.id()));
-            if(account.getAvatar()!=null) {
+
+            final Account account = this.loadAccountPort.loadById(command.id())
+                    .orElseThrow(() -> new AccountNotFoundException(command.id()));
+            if (account.getAvatar() != null) {
                 final var savedOutboxEvent = deleteOldImageEventDocumentRepo.save(
-                    DeleteOldImageEventDocument.builder().oldImagePublicId(account.getAvatar().publicId().value())
-                    .eventStatus("PENDING")
-            .retryCount(0)
-            .createdAt(Instant.now())
-            .updatedAt(null)
-            .lastError(null)
-            .build()
-                );
+                        DeleteOldImageEventDocument.builder().oldImagePublicId(account.getAvatar().publicId().value())
+                                .eventStatus("PENDING")
+                                .retryCount(0)
+                                .createdAt(Instant.now())
+                                .updatedAt(null)
+                                .lastError(null)
+                                .build());
                 TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishPort.sendDeleteOldImageEvent(savedOutboxEvent);
+                    @Override
+                    public void afterCommit() {
+                        publishPort.sendDeleteOldImageEvent(savedOutboxEvent);
+                    }
+                });
+                // publishPort.sendDeleteOldImageEvent(new
+                // DeleteOldImageEvent(account.getAvatar().publicId().value()));
             }
-        });
-                //publishPort.sendDeleteOldImageEvent(new DeleteOldImageEvent(account.getAvatar().publicId().value()));
-            }
-            Avatar avatar = new Avatar(command.publicId(),command.url(),command.imageSize());
+            Avatar avatar = new Avatar(command.publicId(), command.url(), command.imageSize());
             account.setAvatar(avatar);
-            
+
             saveAccountPort.save(account);
-    }
-    catch(Exception e) {
-        e.printStackTrace();
-        final var savedOutboxEvent = rollbackImageEventDocumentRepo.save(
-            RollbackImageEventDocument.builder()
-            .imagePublicId(command.publicId().value())
-            .eventStatus("PENDING")
-            .retryCount(0)
-            .createdAt(Instant.now())
-            .updatedAt(null)
-            .lastError(null)
-            .build()
-        );
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                publishPort.sendRollbackImageEvent(savedOutboxEvent);
-            }
-        });
-        //publishPort.sendRollbackImageEvent(new RollbackImageEvent(command.publicId().value()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            final var savedOutboxEvent = rollbackImageEventDocumentRepo.save(
+                    RollbackImageEventDocument.builder()
+                            .imagePublicId(command.publicId().value())
+                            .eventStatus("PENDING")
+                            .retryCount(0)
+                            .createdAt(Instant.now())
+                            .updatedAt(null)
+                            .lastError(null)
+                            .build());
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    publishPort.sendRollbackImageEvent(savedOutboxEvent);
+                }
+            });
+            // publishPort.sendRollbackImageEvent(new
+            // RollbackImageEvent(command.publicId().value()));
 
-    }
-
-
+        }
 
     }
 

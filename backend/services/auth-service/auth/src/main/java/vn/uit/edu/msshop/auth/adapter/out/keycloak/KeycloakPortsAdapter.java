@@ -9,19 +9,23 @@ import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.auth.application.port.out.CreateAccountPort;
 import vn.uit.edu.msshop.auth.application.port.out.DeleteAccountPort;
 import vn.uit.edu.msshop.auth.domain.event.AccountId;
+
 @Component
 @RequiredArgsConstructor
-public class KeycloakPortsAdapter implements CreateAccountPort,DeleteAccountPort {
+public class KeycloakPortsAdapter implements CreateAccountPort, DeleteAccountPort {
     private final Keycloak keycloak;
-    private static final String REALM="ms_shop";
+    private static final String REALM = "ms_shop";
+
     @Override
-    public Response createAccount(UserRepresentation user) {
+    public Response createAccount(
+            UserRepresentation user) {
         Response response = keycloak.realm(REALM).users().create(user);
         return response;
     }
 
     @Override
-    public void deleteAccount(AccountId accountId) {
+    public void deleteAccount(
+            AccountId accountId) {
         keycloak.realm(REALM).users().get(accountId.value().toString()).remove();
     }
 

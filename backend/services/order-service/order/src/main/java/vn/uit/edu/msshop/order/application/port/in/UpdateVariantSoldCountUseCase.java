@@ -7,6 +7,9 @@ import vn.uit.edu.msshop.order.application.dto.command.UpdateVariantSoldCountCom
 import vn.uit.edu.msshop.order.application.dto.query.VariantSoldCountView;
 
 public interface UpdateVariantSoldCountUseCase {
-    public VariantSoldCountView update(UpdateVariantSoldCountCommand command);
-    public List<VariantSoldCountView> updateMany(List<IncreaseVariantSoldCountCommand> commands);
+    public VariantSoldCountView update(
+            UpdateVariantSoldCountCommand command);
+
+    public List<VariantSoldCountView> updateMany(
+            List<IncreaseVariantSoldCountCommand> commands);
 }

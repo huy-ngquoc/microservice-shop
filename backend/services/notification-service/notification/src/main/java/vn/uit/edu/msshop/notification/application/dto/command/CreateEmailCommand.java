@@ -17,7 +17,7 @@ import vn.uit.edu.msshop.notification.domain.model.valueobject.UserId;
 @NoArgsConstructor
 public class CreateEmailCommand {
     private EmailContent emailContent;
-    
+
     private EmailTitle emailTitle;
     private EmailType emailType;
     private OrderId orderId;

@@ -11,8 +11,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Entity
-@Table(name="payment_link_created")
+@Table(
+        name = "payment_link_created")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,9 +28,9 @@ public class PaymentLinkCreatedDocument {
     private UUID userId;
     private String userEmail;
     private String eventStatus;
-    private Integer retryCount; 
+    private Integer retryCount;
     private Instant createdAt;
-    private Instant updatedAt; 
+    private Instant updatedAt;
     private String lastError;
 
 }

@@ -1,4 +1,5 @@
 package vn.uit.edu.msshop.account.adapter.in.web;
+
 import java.time.Instant;
 
 import org.springframework.kafka.annotation.KafkaHandler;
@@ -23,43 +24,45 @@ import vn.uit.edu.msshop.account.domain.event.kafka.AccountCreated;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@KafkaListener(topics="account-topic", groupId="account-group")
+@KafkaListener(
+        topics = "account-topic",
+        groupId = "account-group")
 public class AccountEventConsumer {
     private final CreateAccountUseCase createUseCase;
     private final AccountWebMapper mapper;
     private final PublishAccountEventPort producer;
     private final AccountIdDocumentRepository accountIdDocumentRepo;
     private final EventDocumentRepository eventDocumentRepo;
+
     @KafkaHandler
     @Transactional
-    public void handleCreateAccount(AccountCreated accountCreated) {
-        if(eventDocumentRepo.existsById(accountCreated.eventId())) {
+    public void handleCreateAccount(
+            AccountCreated accountCreated) {
+        if (eventDocumentRepo.existsById(accountCreated.eventId())) {
             return;
         }
         try {
             CreateAccountCommand command = mapper.toCommand(accountCreated);
             createUseCase.create(command);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             AccountIdDocument accountIdDocument = AccountIdDocument.builder().accontId(accountCreated.id())
-            .eventStatus("PENDING")
-            .retryCount(0)
-            .createdAt(Instant.now())
-            .updatedAt(null)
-            .lastError(null)
-            .build();
-            final var savedEvent=accountIdDocumentRepo.save(accountIdDocument);
+                    .eventStatus("PENDING")
+                    .retryCount(0)
+                    .createdAt(Instant.now())
+                    .updatedAt(null)
+                    .lastError(null)
+                    .build();
+            final var savedEvent = accountIdDocumentRepo.save(accountIdDocument);
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                producer.sendAccountCreationFailEvent(savedEvent);
-            }
-        
-        });
+                @Override
+                public void afterCommit() {
+                    producer.sendAccountCreationFailEvent(savedEvent);
+                }
+
+            });
+        } finally {
+            eventDocumentRepo.save(new EventDocument(accountCreated.eventId(), Instant.now()));
+        }
     }
-    finally {
-        eventDocumentRepo.save(new EventDocument(accountCreated.eventId(), Instant.now()));
-    }
-}
 }

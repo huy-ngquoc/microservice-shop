@@ -7,7 +7,8 @@ import vn.uit.edu.msshop.order.application.dto.query.VariantSoldCountView;
 
 @Component
 public class VariantSoldCountWebMapper {
-    public VariantSoldCountResponse toResponse(VariantSoldCountView view) {
+    public VariantSoldCountResponse toResponse(
+            VariantSoldCountView view) {
         return new VariantSoldCountResponse(view.getVariantId(), view.getSoldCount());
     }
 

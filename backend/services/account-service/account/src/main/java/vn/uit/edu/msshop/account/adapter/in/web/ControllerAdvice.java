@@ -11,7 +11,9 @@ import org.springframework.web.context.request.WebRequest;
 @RestControllerAdvice
 public class ControllerAdvice {
     @ExceptionHandler(AccountNotFoundException.class)
-    public ResponseEntity<String> onAccountNotFound(AccountNotFoundException ex, WebRequest webRequest) {
+    public ResponseEntity<String> onAccountNotFound(
+            AccountNotFoundException ex,
+            WebRequest webRequest) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

@@ -27,24 +27,25 @@ public class LogoutService implements LogoutUseCase {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public void logout(String refreshToken) {
-        String logoutUri = tokenUri.replace("/token", "/logout"); 
+    public void logout(
+            String refreshToken) {
+        String logoutUri = tokenUri.replace("/token", "/logout");
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    map.add("client_id", clientId);
-    map.add("client_secret", clientSecret);
-    map.add("refresh_token", refreshToken);
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("client_id", clientId);
+        map.add("client_secret", clientSecret);
+        map.add("refresh_token", refreshToken);
 
-    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-    try {
-        restTemplate.postForEntity(logoutUri, request, String.class);
-        
-    } catch (Exception e) {
-        throw new RuntimeException("Đăng xuất thất bại");
-    }
+        try {
+            restTemplate.postForEntity(logoutUri, request, String.class);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Đăng xuất thất bại");
+        }
     }
 }

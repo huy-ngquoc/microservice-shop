@@ -1,4 +1,5 @@
 package vn.uit.edu.msshop.order.application.common;
+
 import java.util.Objects;
 
 import org.jspecify.annotations.NonNull;

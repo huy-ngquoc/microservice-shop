@@ -42,10 +42,18 @@ import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
 @RequiredArgsConstructor
 public class OrderWebMapper {
     private final CalculateShippingFeeUseCase calculateShippingFeeUseCase;
-    public CreateOrderCommand toCommand(CreateOrderRequest request, String userFromHeader) {
-        ShippingInfo shippingInfo = new ShippingInfo(request.fullName(), request.address(), request.phone(), request.email());
+
+    public CreateOrderCommand toCommand(
+            CreateOrderRequest request,
+            String userFromHeader) {
+        ShippingInfo shippingInfo = new ShippingInfo(request.fullName(), request.address(), request.phone(),
+                request.email());
         List<OrderDetailCommand> details = request.detailRequests().stream().map(this::toOrderDetailCommand).toList();
-        return new CreateOrderCommand(new OrderId(UUID.randomUUID()), shippingInfo, details, new UserId(UUID.fromString(userFromHeader)), new ShippingFee(calculateShippingFeeUseCase.calculateShippingFee(request)), new Discount(request.discount()), new Currency(request.currency()), new PaymentMethod(request.paymentMethod()));
+        return new CreateOrderCommand(new OrderId(UUID.randomUUID()), shippingInfo, details,
+                new UserId(UUID.fromString(userFromHeader)),
+                new ShippingFee(calculateShippingFeeUseCase.calculateShippingFee(request)),
+                new Discount(request.discount()), new Currency(request.currency()),
+                new PaymentMethod(request.paymentMethod()));
     }
 
     public OrderDetailCommand toOrderDetailCommand(
@@ -71,10 +79,15 @@ public class OrderWebMapper {
                 orderDetail.productName(), orderDetail.traits(), orderDetail.amount(), orderDetail.unitPrice());
     }
 
-    public OrderResponse toResponse(OrderView orderView) {
-        final var updateAt = orderView.updateAt()==null?null:orderView.updateAt().value();
-        List<OrderDetailResponse> detailResponses = orderView.details().stream().map(item->toResponse(item)).toList();
-        return new OrderResponse(orderView.orderId().toString(),orderView.shippingInfo().fullName(),orderView.shippingInfo().address(),orderView.shippingInfo().email(),orderView.shippingInfo().phone(),detailResponses,orderView.shippingFee().value(),orderView.discount().value(),orderView.status().value(),orderView.createAt().value(),updateAt,orderView.currency().value(), orderView.paymentMethod().value(), orderView.paymentStatus().value(), orderView.userId().value());
+    public OrderResponse toResponse(
+            OrderView orderView) {
+        final var updateAt = orderView.updateAt() == null ? null : orderView.updateAt().value();
+        List<OrderDetailResponse> detailResponses = orderView.details().stream().map(item -> toResponse(item)).toList();
+        return new OrderResponse(orderView.orderId().toString(), orderView.shippingInfo().fullName(),
+                orderView.shippingInfo().address(), orderView.shippingInfo().email(), orderView.shippingInfo().phone(),
+                detailResponses, orderView.shippingFee().value(), orderView.discount().value(),
+                orderView.status().value(), orderView.createAt().value(), updateAt, orderView.currency().value(),
+                orderView.paymentMethod().value(), orderView.paymentStatus().value(), orderView.userId().value());
     }
     /*
      * public OrderCreatedSuccess toEvent(CreateOrderRequest request) {

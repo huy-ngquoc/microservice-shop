@@ -39,7 +39,7 @@ public class OrderOutboxProcessor {
     private final OrderUpdatedRepository orderUpdatedRepo;
 
     @Transactional
-    
+
     public void confirmOrderAndCreateEvent(
             OrderOutbox outbox,
             Order order) {
@@ -53,6 +53,7 @@ public class OrderOutboxProcessor {
 
         orderCreatedSuccessDocumentRepo.save(createOrderCreatedSuccessDocument(order));
     }
+
     @CacheEvict(
             cacheNames = CacheNames.ORDERS,
             key = "#outbox.getOrderId()")

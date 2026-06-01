@@ -21,18 +21,27 @@ public class UpdateAccountService implements UpdateAccountUseCase {
     private final AccountEventPublisherAdapter eventPublisherAdapter;
 
     @Override
-    public void update(UpdateAccountCommand updateAccountCommand, String userId) {
-        final var account = this.loadAccountPort.loadById(updateAccountCommand.accountId()).orElseThrow(()->new AccountNotFoundException(updateAccountCommand.accountId()));
-        if(userId==null||!userId.equals(account.getKeyCloakId().value())) throw new UnauthorizedException("Unauthorized");
-        final var update = Account.UpdateInfo.builder().id(account.getId()).name(updateAccountCommand.accountName().apply(account.getName()))
-        .email(updateAccountCommand.email().apply(account.getEmail())).password(updateAccountCommand.password().apply(account.getPassword())).role(updateAccountCommand.role().apply(account.getRole())).status(updateAccountCommand.status().apply(account.getStatus()))
-        .shippingAddress(updateAccountCommand.shippingAddress().apply(account.getShippingAddress())).phoneNumber(updateAccountCommand.phoneNumber().apply(account.getPhoneNumber())).build();
+    public void update(
+            UpdateAccountCommand updateAccountCommand,
+            String userId) {
+        final var account = this.loadAccountPort.loadById(updateAccountCommand.accountId())
+                .orElseThrow(() -> new AccountNotFoundException(updateAccountCommand.accountId()));
+        if (userId == null || !userId.equals(account.getKeyCloakId().value()))
+            throw new UnauthorizedException("Unauthorized");
+        final var update = Account.UpdateInfo.builder().id(account.getId())
+                .name(updateAccountCommand.accountName().apply(account.getName()))
+                .email(updateAccountCommand.email().apply(account.getEmail()))
+                .password(updateAccountCommand.password().apply(account.getPassword()))
+                .role(updateAccountCommand.role().apply(account.getRole()))
+                .status(updateAccountCommand.status().apply(account.getStatus()))
+                .shippingAddress(updateAccountCommand.shippingAddress().apply(account.getShippingAddress()))
+                .phoneNumber(updateAccountCommand.phoneNumber().apply(account.getPhoneNumber())).build();
         final var next = account.applyUpdateInfo(update);
-        
+
         final var saved = this.saveAccountPort.save(next);
-        System.out.println(saved.getName()+"ewrifghewfhew");
+        System.out.println(saved.getName() + "ewrifghewfhew");
         this.eventPublisherAdapter.publish(new AccountUpdate(saved.getId()));
 
     }
-    
+
 }

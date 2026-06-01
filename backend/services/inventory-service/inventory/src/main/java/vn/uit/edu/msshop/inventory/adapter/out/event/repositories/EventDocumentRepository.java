@@ -11,6 +11,7 @@ import vn.uit.edu.msshop.inventory.adapter.out.event.documents.EventDocument;
 @Repository
 public interface EventDocumentRepository extends JpaRepository<EventDocument, UUID> {
 
-    public void deleteByReceiveAtBefore(Instant threshold);
+    public void deleteByReceiveAtBefore(
+            Instant threshold);
 
 }

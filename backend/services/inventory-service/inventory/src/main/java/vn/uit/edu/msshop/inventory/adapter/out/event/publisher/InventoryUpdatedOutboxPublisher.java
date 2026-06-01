@@ -20,55 +20,70 @@ import vn.uit.edu.msshop.inventory.domain.event.InventoryUpdated;
 @Slf4j
 public class InventoryUpdatedOutboxPublisher {
     private final InventoryUpdatedDocumentRepository inventoryUpdatedDocumentRepo;
-    private static final String PUBLISH_TOPIC="inventory-product";
+    private static final String PUBLISH_TOPIC = "inventory-product";
     private final KafkaTemplate<String, InventoryUpdated> kafkaTemplate;
-    //@Scheduled(fixedDelay=5000)
+
+    // @Scheduled(fixedDelay=5000)
     public void publishPendingEvents() {
-        List<InventoryUpdatedDocument> pendingEvents = inventoryUpdatedDocumentRepo.findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
+        List<InventoryUpdatedDocument> pendingEvents = inventoryUpdatedDocumentRepo
+                .findTop50ByEventStatusOrderByCreatedAtAsc("PENDING");
 
         for (InventoryUpdatedDocument event : pendingEvents) {
             try {
-                InventoryUpdated inventoryUpdated = new InventoryUpdated(event.getVariantId(), event.getNewQuantity(), event.getNewReservedQuantity(), event.getEventId());
+                InventoryUpdated inventoryUpdated = new InventoryUpdated(event.getVariantId(), event.getNewQuantity(),
+                        event.getNewReservedQuantity(), event.getEventId());
                 kafkaTemplate.send(PUBLISH_TOPIC, inventoryUpdated)
-                    .whenComplete((result, ex) -> {
-                        if (ex == null) {
-                            
-                            updateStatus(event, "SENT", null);
-                        } else {
-                            
-                            handleFailure(event, ex.getMessage());
-                        }
-                    });
+                        .whenComplete((
+                                result,
+                                ex) -> {
+                            if (ex == null) {
+
+                                updateStatus(event, "SENT", null);
+                            } else {
+
+                                handleFailure(event, ex.getMessage());
+                            }
+                        });
             } catch (Exception e) {
                 handleFailure(event, e.getMessage());
             }
         }
     }
 
-    private void updateStatus(InventoryUpdatedDocument event, String status, String error) {
+    private void updateStatus(
+            InventoryUpdatedDocument event,
+            String status,
+            String error) {
         event.setEventStatus(status);
         event.setUpdatedAt(Instant.now());
         event.setLastError(error);
         inventoryUpdatedDocumentRepo.save(event);
     }
+
     @Transactional
-    public void markAsSent(InventoryUpdatedDocument outboxEvent) {
-        updateStatus(outboxEvent,"SENT", null);
+    public void markAsSent(
+            InventoryUpdatedDocument outboxEvent) {
+        updateStatus(outboxEvent, "SENT", null);
     }
-    private void handleFailure(InventoryUpdatedDocument event, String error) {
+
+    private void handleFailure(
+            InventoryUpdatedDocument event,
+            String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
         if (retries >= 3) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
         } else {
             event.setRetryCount(retries + 1);
-            updateStatus(event, "PENDING", error); 
+            updateStatus(event, "PENDING", error);
         }
     }
-    @Scheduled(cron = "0 0 0 * * ?") 
+
+    @Scheduled(
+            cron = "0 0 0 * * ?")
     public void cleanupOldEvents() {
         Instant threshold = Instant.now().minus(30, ChronoUnit.DAYS);
-    
-    inventoryUpdatedDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
-   
-}
+
+        inventoryUpdatedDocumentRepo.deleteByEventStatusAndUpdatedAtBefore("SENT", threshold);
+
+    }
 }

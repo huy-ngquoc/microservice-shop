@@ -11,9 +11,11 @@ public class EventDBCleanerNew {
     private InventoryUpdatedDocumentRepository inventoryUpdatedRepo;
     private ForceCancellOrderDocumentRepository forceCancellOrderRepo;
     private EventDocumentRepository eventDocumentRepo;
-    
 
-    public EventDBCleanerNew(EventDocumentRepository eventDocumentRepo, ForceCancellOrderDocumentRepository forceCancellOrderRepo, InventoryUpdatedDocumentRepository inventoryUpdatedRepo) {
+    public EventDBCleanerNew(
+            EventDocumentRepository eventDocumentRepo,
+            ForceCancellOrderDocumentRepository forceCancellOrderRepo,
+            InventoryUpdatedDocumentRepository inventoryUpdatedRepo) {
         System.out.println("Clearedddd event");
         this.eventDocumentRepo = eventDocumentRepo;
         this.forceCancellOrderRepo = forceCancellOrderRepo;

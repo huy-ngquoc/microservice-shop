@@ -53,7 +53,7 @@ public class InventoryController {
     private final UpdateInventoryUseCase updateUseCase;
     private final CheckPermissionUseCase checkPermission;
     private final CreateInventoryUseCase createUseCase;
-   
+
     private final ProcessOrderUseCase processOrderUseCase;
     private final SpringDataInventoryJpaRepository inventoryRepo;
 
@@ -62,10 +62,20 @@ public class InventoryController {
         inventoryRepo.deleteAll();
         return ResponseEntity.noContent().build();
     }
-    
+
     @GetMapping("/")
-    public ResponseEntity<Page<InventoryResponse>> getAll(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestParam(defaultValue="7") int pageSize, @RequestParam(defaultValue="0") int pageNumber) {
-        if(!checkPermission.isAdmin(role)) {
+    public ResponseEntity<Page<InventoryResponse>> getAll(
+            @RequestHeader("X-User-Id")
+            String userFromHeader,
+            @RequestHeader("X-User-Roles")
+            String role,
+            @RequestParam(
+                    defaultValue = "7")
+            int pageSize,
+            @RequestParam(
+                    defaultValue = "0")
+            int pageNumber) {
+        if (!checkPermission.isAdmin(role)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         Page<InventoryView> result = findUseCase.findAll(pageNumber, pageSize);
@@ -73,131 +83,186 @@ public class InventoryController {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping("/{id}")
-    public ResponseEntity<InventoryResponse> getById(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @PathVariable UUID id) {
-        if(!checkPermission.isAdmin(role)) {
+    public ResponseEntity<InventoryResponse> getById(
+            @RequestHeader("X-User-Id")
+            String userFromHeader,
+            @RequestHeader("X-User-Roles")
+            String role,
+            @PathVariable
+            UUID id) {
+        if (!checkPermission.isAdmin(role)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         InventoryView view = findUseCase.findById(new InventoryId(id));
         return ResponseEntity.ok(mapper.toResponse(view));
     }
+
     @GetMapping("/variant/{id}")
-    public ResponseEntity<InventoryResponse> getByVariantId(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @PathVariable UUID id) {
-        if(!checkPermission.isAdmin(role)) {
+    public ResponseEntity<InventoryResponse> getByVariantId(
+            @RequestHeader("X-User-Id")
+            String userFromHeader,
+            @RequestHeader("X-User-Roles")
+            String role,
+            @PathVariable
+            UUID id) {
+        if (!checkPermission.isAdmin(role)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        try{
-        InventoryView view = findUseCase.findByVariantId(new VariantId(id));
-        return ResponseEntity.ok(mapper.toResponse(view));
-        }
-        catch(RuntimeException e) {
-            if(e instanceof InventoryNotFoundException ex) {
+        try {
+            InventoryView view = findUseCase.findByVariantId(new VariantId(id));
+            return ResponseEntity.ok(mapper.toResponse(view));
+        } catch (RuntimeException e) {
+            if (e instanceof InventoryNotFoundException ex) {
                 return ResponseEntity.notFound().build();
             }
             return ResponseEntity.internalServerError().build();
         }
     }
+
     @GetMapping("/public/variant/{id}")
-    public ResponseEntity<InventoryResponse> getByVariantId(@PathVariable UUID id) {
+    public ResponseEntity<InventoryResponse> getByVariantId(
+            @PathVariable
+            UUID id) {
         InventoryView view = findUseCase.findByVariantId(new VariantId(id));
         return ResponseEntity.ok(mapper.toResponse(view));
     }
+
     @PostMapping("/public/process_order")
-    public ResponseEntity<?> processOrder(@RequestBody List<OrderDetailRequest> requests) {
+    public ResponseEntity<?> processOrder(
+            @RequestBody
+            List<OrderDetailRequest> requests) {
         try {
-            List<OrderDetail> details = requests.stream().map(item->new OrderDetail(new VariantId(item.getVariantId()), new Quantity(item.getQuantity()))).toList();
+            List<OrderDetail> details = requests.stream()
+                    .map(item -> new OrderDetail(new VariantId(item.getVariantId()), new Quantity(item.getQuantity())))
+                    .toList();
             processOrderUseCase.processOrder(details);
             return ResponseEntity.ok().build();
-        }
-        catch(Exception e) {
-            if(e instanceof InventoryNotFoundException) {
+        } catch (Exception e) {
+            if (e instanceof InventoryNotFoundException) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
             }
-            if(e instanceof InsufficientStockException) {
+            if (e instanceof InsufficientStockException) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
     @GetMapping("/reset")
     public ResponseEntity<Void> reset() {
-        List<InventoryJpaEntity> inventoryJpaEntities= inventoryRepo.findAll();
-        for(InventoryJpaEntity i: inventoryJpaEntities) {
+        List<InventoryJpaEntity> inventoryJpaEntities = inventoryRepo.findAll();
+        for (InventoryJpaEntity i : inventoryJpaEntities) {
             i.setQuantity(1000000);
             i.setReservedQuantity(0);
         }
         inventoryRepo.saveAll(inventoryJpaEntities);
         return ResponseEntity.noContent().build();
     }
+
     @PostMapping("/public/variants")
-    public ResponseEntity<List<InventoryResponse>> getByVariantIds(@RequestBody List<UUID> variantIds) {
-        
-        List<VariantId> listIds = variantIds.stream().map(item->new VariantId(item)).toList();
+    public ResponseEntity<List<InventoryResponse>> getByVariantIds(
+            @RequestBody
+            List<UUID> variantIds) {
+
+        List<VariantId> listIds = variantIds.stream().map(item -> new VariantId(item)).toList();
         List<InventoryView> views = findUseCase.findByListVariantId(listIds);
         return ResponseEntity.ok(views.stream().map(mapper::toResponse).toList());
     }
-   
+
     @PutMapping("/")
-    public ResponseEntity<InventoryResponse> update(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestBody UpdateInventoryRequest request) {
-        if(!checkPermission.isAdmin(role)) {
+    public ResponseEntity<InventoryResponse> update(
+            @RequestHeader("X-User-Id")
+            String userFromHeader,
+            @RequestHeader("X-User-Roles")
+            String role,
+            @RequestBody
+            UpdateInventoryRequest request) {
+        if (!checkPermission.isAdmin(role)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         final var command = mapper.toCommand(request);
         InventoryView result = updateUseCase.update(command);
         return ResponseEntity.ok(mapper.toResponse(result));
     }
+
     @PutMapping("/update_from_order")
-    public ResponseEntity<Void> updateFromOrderService(@RequestBody UpdateInventoryFromOrderServiceRequest request) {
-        if(request.getStatus().equals("SHIPPING")) {
+    public ResponseEntity<Void> updateFromOrderService(
+            @RequestBody
+            UpdateInventoryFromOrderServiceRequest request) {
+        if (request.getStatus().equals("SHIPPING")) {
             updateUseCase.updateWhenOrderReceived(mapper.toOrderReceivedCommand(request));
         }
-        if(request.getStatus().equals("CANCELLED")) {
+        if (request.getStatus().equals("CANCELLED")) {
             updateUseCase.updateWhenOrderCancelled(mapper.toOrderCancelledCommand(request));
         }
         return ResponseEntity.ok().build();
 
     }
+
     @PostMapping("/")
-    public ResponseEntity<InventoryResponse> create(@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role, @RequestBody CreateInventoryRequest request) {
-        System.out.println("Roleeee " +role);
-         if(!checkPermission.isAdmin(role)) {
+    public ResponseEntity<InventoryResponse> create(
+            @RequestHeader("X-User-Id")
+            String userFromHeader,
+            @RequestHeader("X-User-Roles")
+            String role,
+            @RequestBody
+            CreateInventoryRequest request) {
+        System.out.println("Roleeee " + role);
+        if (!checkPermission.isAdmin(role)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         final var command = mapper.toCommand(request);
         InventoryView result = createUseCase.create(command);
         return ResponseEntity.ok(mapper.toResponse(result));
     }
-    @PostMapping("/public/create") 
-    public ResponseEntity<Void> create( @RequestBody List<CreateInventoryRequest> requests) {
+
+    @PostMapping("/public/create")
+    public ResponseEntity<Void> create(
+            @RequestBody
+            List<CreateInventoryRequest> requests) {
         createUseCase.createMany(requests.stream().map(mapper::toCommand).toList());
         return ResponseEntity.ok().build();
     }
+
     @PostMapping("/public/updated_inventory")
-    public ResponseEntity<PageResponseDto<InventoryResponse>> getUpdatedInventory(@RequestBody GetUpdatedInventoryRequest request, @RequestParam(defaultValue="0") int pageNumber, @RequestParam(defaultValue="7") int pageSize) {
+    public ResponseEntity<PageResponseDto<InventoryResponse>> getUpdatedInventory(
+            @RequestBody
+            GetUpdatedInventoryRequest request,
+            @RequestParam(
+                    defaultValue = "0")
+            int pageNumber,
+            @RequestParam(
+                    defaultValue = "7")
+            int pageSize) {
         System.out.println("Product service goi");
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        final var result = findUseCase.findAllUpdatedInventory(request.getStartFirst(), request.getEndFirst(), request.getStartSecond(), request.getEndSecond(), pageable);
-        final var responseResult=result.map(mapper::toResponse);
-        System.out.println("Kich thuoc "+responseResult.getTotalElements());
-        final var response = new PageResponseDto(responseResult.getContent(),responseResult.getNumber(), responseResult.getSize(), responseResult.getTotalElements());
+        final var result = findUseCase.findAllUpdatedInventory(request.getStartFirst(), request.getEndFirst(),
+                request.getStartSecond(), request.getEndSecond(), pageable);
+        final var responseResult = result.map(mapper::toResponse);
+        System.out.println("Kich thuoc " + responseResult.getTotalElements());
+        final var response = new PageResponseDto(responseResult.getContent(), responseResult.getNumber(),
+                responseResult.getSize(), responseResult.getTotalElements());
         return ResponseEntity.ok(response);
     }
+
     @PostMapping("/public/process_order_outbox")
-    public ResponseEntity<String> process(@RequestBody OrderOutbox request) {
-        //System.out.println("Bat dau");
+    public ResponseEntity<String> process(
+            @RequestBody
+            OrderOutbox request) {
+        // System.out.println("Bat dau");
         try {
             processOrderUseCase.processOrderOutbox(request);
-            //System.out.println("Xong");
+            // System.out.println("Xong");
             return ResponseEntity.ok("Thanh cong");
         } catch (RuntimeException e) {
-            if(e.getMessage().equals("Trung du lieu")) return ResponseEntity.ok("Trung du lieu");
-            if(e instanceof InsufficientStockException) return ResponseEntity.badRequest().build();
+            if (e.getMessage().equals("Trung du lieu"))
+                return ResponseEntity.ok("Trung du lieu");
+            if (e instanceof InsufficientStockException)
+                return ResponseEntity.badRequest().build();
             throw e;
         }
-        
+
     }
-
-
 
 }

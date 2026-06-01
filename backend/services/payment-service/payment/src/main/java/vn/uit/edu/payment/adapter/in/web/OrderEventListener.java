@@ -52,10 +52,6 @@ public class OrderEventListener {
     private final PublishPaymentEventPort publishEventPort;
     private final PaymentCreatedFailService paymentCreatedFailService;
 
-   
-
-    
-
     @KafkaHandler
     @Transactional
     public void handleOrderUpdated(

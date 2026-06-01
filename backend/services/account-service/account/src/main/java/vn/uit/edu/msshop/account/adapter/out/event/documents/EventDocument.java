@@ -11,13 +11,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @Entity
-@Table(name="event_document")
+@Table(
+        name = "event_document")
 public class EventDocument {
     @Id
     private UUID eventId;

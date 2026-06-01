@@ -11,7 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document(collection="variant_sold_count_document")
+@Document(
+        collection = "variant_sold_count_document")
 @Getter
 @Setter
 @AllArgsConstructor

@@ -1,6 +1,5 @@
 package vn.uit.edu.msshop.order.adapter.out.persistence;
 
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,46 +37,52 @@ import vn.uit.edu.msshop.order.domain.model.Order;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderId;
 import vn.uit.edu.msshop.order.domain.model.valueobject.OrderStatus;
 import vn.uit.edu.msshop.order.domain.model.valueobject.UserId;
+
 @Component
 @RequiredArgsConstructor
-public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort, DeleteOrderPort, SaveRedisStreamPort {
+public class OrderPersistenceAdapter implements LoadOrderPort, SaveOrderPort, DeleteOrderPort, SaveRedisStreamPort {
 
     private final OrderRepository orderRepo;
     private final OrderDataMapper orderDataMapper;
     private final MongoTemplate mongoTemplate;
     private final RedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
+
     @PostConstruct
     public void setup() {
         objectMapper.registerModule(new JavaTimeModule());
         // Quan trọng: Để Instant trả về dạng chuỗi ISO thay vì mảng số
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
+
     @Override
-    public Optional<Order> loadById(OrderId orderId) {
+    public Optional<Order> loadById(
+            OrderId orderId) {
         Optional<OrderDocument> document = orderRepo.findById(orderId.value());
         return document.map(orderDataMapper::toDomain);
     }
 
     @Override
-    public Page<Order> filterOrder(Optional<UUID> variantId, Optional<OrderStatus> status, Optional<Integer> minPrice, Optional<Integer> maxPrice, Optional<UserId> userId, Optional<Instant> createFrom, Optional<Instant> createTo, int pageNumber, int pageSize) {
+    public Page<Order> filterOrder(
+            Optional<UUID> variantId,
+            Optional<OrderStatus> status,
+            Optional<Integer> minPrice,
+            Optional<Integer> maxPrice,
+            Optional<UserId> userId,
+            Optional<Instant> createFrom,
+            Optional<Instant> createTo,
+            int pageNumber,
+            int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Query query = new Query().with(pageable);
         List<Criteria> criteriaList = new ArrayList<>();
 
-        
-        variantId.ifPresent(id -> 
-            criteriaList.add(Criteria.where("details.variantId").is(id)));
+        variantId.ifPresent(id -> criteriaList.add(Criteria.where("details.variantId").is(id)));
 
-        
-        status.ifPresent(s -> 
-            criteriaList.add(Criteria.where("status").is(s.value())));
+        status.ifPresent(s -> criteriaList.add(Criteria.where("status").is(s.value())));
 
-        
-        userId.ifPresent(id -> 
-            criteriaList.add(Criteria.where("userId").is(id.value())));
+        userId.ifPresent(id -> criteriaList.add(Criteria.where("userId").is(id.value())));
 
-        
         if (minPrice.isPresent() || maxPrice.isPresent()) {
             Criteria priceCriteria = Criteria.where("totalPrice");
             minPrice.ifPresent(priceCriteria::gte);
@@ -85,7 +90,6 @@ public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort, Del
             criteriaList.add(priceCriteria);
         }
 
-        
         if (createFrom.isPresent() || createTo.isPresent()) {
             Criteria dateCriteria = Criteria.where("createAt");
             createFrom.ifPresent(dateCriteria::gte);
@@ -93,19 +97,14 @@ public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort, Del
             criteriaList.add(dateCriteria);
         }
 
-        
         if (!criteriaList.isEmpty()) {
             query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
         }
 
-        
-        
         List<OrderDocument> entities = mongoTemplate.find(query, OrderDocument.class);
-        
-        
+
         long total = mongoTemplate.count(Query.of(query).limit(-1).skip(-1), OrderDocument.class);
 
-        
         List<Order> orders = entities.stream()
                 .map(orderDataMapper::toDomain)
                 .toList();
@@ -115,15 +114,18 @@ public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort, Del
     }
 
     @Override
-    @Observed(name = "mongodb.save.order")
-    public Order save(Order order) {
+    @Observed(
+            name = "mongodb.save.order")
+    public Order save(
+            Order order) {
         OrderDocument orderDocument = this.orderDataMapper.toDocument(order);
         orderRepo.save(orderDocument);
         return order;
     }
 
     @Override
-    public void deleteById(OrderId orderId) {
+    public void deleteById(
+            OrderId orderId) {
         orderRepo.deleteById(orderId.value());
     }
 
@@ -138,25 +140,26 @@ public class OrderPersistenceAdapter implements LoadOrderPort,SaveOrderPort, Del
     }
 
     @Override
-    public void saveToStream(Order order) {
+    public void saveToStream(
+            Order order) {
         final OrderDocument document = orderDataMapper.toDocument(order);
-       try {
-        // 1. Biến cả cái OrderDocument (bao gồm list, object lồng) thành 1 chuỗi JSON duy nhất
-        String jsonPayload = objectMapper.writeValueAsString(document);
+        try {
+            // 1. Biến cả cái OrderDocument (bao gồm list, object lồng) thành 1 chuỗi JSON
+            // duy nhất
+            String jsonPayload = objectMapper.writeValueAsString(document);
 
-        // 2. Lưu vào Redis dưới dạng một Map đơn giản có 1 key là "payload"
-        Map<String, String> map = Map.of("payload", jsonPayload);
+            // 2. Lưu vào Redis dưới dạng một Map đơn giản có 1 key là "payload"
+            Map<String, String> map = Map.of("payload", jsonPayload);
 
-        MapRecord<String, String, String> record = StreamRecords.newRecord()
-                .in("order_stream")
-                .ofMap(map);
+            MapRecord<String, String, String> record = StreamRecords.newRecord()
+                    .in("order_stream")
+                    .ofMap(map);
 
-        redisTemplate.opsForStream().add(record);
-    } catch (JsonProcessingException e) {
-        throw new RuntimeException("Lỗi đóng gói JSON", e);
+            redisTemplate.opsForStream().add(record);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Lỗi đóng gói JSON", e);
+        }
+
     }
-
-    }
-
 
 }

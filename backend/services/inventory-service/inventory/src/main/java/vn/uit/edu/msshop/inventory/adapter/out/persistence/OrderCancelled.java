@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="order-cancelled")
+@Table(
+        name = "order-cancelled")
 @Getter
 @Setter
 @AllArgsConstructor

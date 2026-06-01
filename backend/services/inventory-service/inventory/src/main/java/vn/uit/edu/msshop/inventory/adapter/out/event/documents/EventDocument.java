@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="event_document")
+@Table(
+        name = "event_document")
 @Getter
 @Setter
 @Builder

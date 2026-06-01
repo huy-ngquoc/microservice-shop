@@ -1,9 +1,5 @@
 package vn.uit.edu.msshop.account.application.service;
 
-
-
-
-
 import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -20,28 +16,33 @@ import vn.uit.edu.msshop.account.domain.model.valueobject.KeyCloakId;
 
 @Service
 @RequiredArgsConstructor
-public class FindAccountService implements FindAccountUseCase{
+public class FindAccountService implements FindAccountUseCase {
     private final LoadAccountPort loadPort;
     private final AccountViewMapper accountViewMapper;
 
     @Override
     @Transactional
-    public AccountView findAccountById(@NotNull AccountId accountId) {
+    public AccountView findAccountById(
+            @NotNull
+            AccountId accountId) {
         return this.loadPort.loadById(accountId).map(this.accountViewMapper::toView).orElseThrow(
-            ()->new AccountNotFoundException(accountId));
+                () -> new AccountNotFoundException(accountId));
     }
 
     @Override
-    public AccountView findByAccountName(AccountName name) {
+    public AccountView findByAccountName(
+            AccountName name) {
         final var result = loadPort.loadByUsername(name);
-        if(result==null) return null;
+        if (result == null)
+            return null;
         return accountViewMapper.toView(result);
     }
 
     @Override
     public AccountView findByKeycloakId(
             KeyCloakId keycloakId) {
-        final var result = loadPort.loadByKeycloakId(keycloakId).orElseThrow(()->new AccountNotFoundException(keycloakId));
+        final var result = loadPort.loadByKeycloakId(keycloakId)
+                .orElseThrow(() -> new AccountNotFoundException(keycloakId));
         return accountViewMapper.toView(result);
     }
 

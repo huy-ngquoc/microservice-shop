@@ -16,10 +16,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection="event_document")
+@Document(
+        collection = "event_document")
 public class EventDocument {
     @Id
     private UUID eventId;
-    @Indexed(expireAfter="86400000")
+    @Indexed(
+            expireAfter = "86400000")
     private Instant receiveAt;
 }

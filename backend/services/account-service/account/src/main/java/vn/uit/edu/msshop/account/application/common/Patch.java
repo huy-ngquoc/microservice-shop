@@ -1,11 +1,10 @@
 package vn.uit.edu.msshop.account.application.common;
+
 import java.util.Objects;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
-
-
 
 @NullUnmarked
 public sealed interface Patch<T> permits Patch.Unchanged, Patch.Set, Patch.Clear {

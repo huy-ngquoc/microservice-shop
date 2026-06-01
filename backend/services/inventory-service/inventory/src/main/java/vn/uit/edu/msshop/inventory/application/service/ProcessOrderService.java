@@ -35,8 +35,7 @@ import vn.uit.edu.msshop.inventory.domain.model.valueobject.VariantId;
 @Service
 @RequiredArgsConstructor
 public class ProcessOrderService implements ProcessOrderUseCase {
-    
-    
+
     private final LoadInventoryPort loadPort;
     private final SaveInventoryPort savePort;
     private final ProcessedOrderRepository processedOrderRepo;
@@ -69,23 +68,25 @@ public class ProcessOrderService implements ProcessOrderUseCase {
 
         for (OrderDetail o : orderDetails) {
             Inventory i = inventoryMap.get(o.getVariantId().value());
-            if(i==null) throw new InventoryNotFoundException(o.getVariantId());
-            if(i.getQuantity().value()<o.getQuantity().value()) throw new InsufficientStockException(o.getVariantId());
-            
-            int newQuantity = i.getQuantity().value()-o.getQuantity().value();
-            int newReservedQuantity = i.getReservedQuantity().value()+o.getQuantity().value();
-            if(newQuantity<0) throw new InsufficientStockException(o.getVariantId());
+            if (i == null)
+                throw new InventoryNotFoundException(o.getVariantId());
+            if (i.getQuantity().value() < o.getQuantity().value())
+                throw new InsufficientStockException(o.getVariantId());
 
-            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(i.getId()).quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity))
-            .status(i.getStatus())
-            .build();
+            int newQuantity = i.getQuantity().value() - o.getQuantity().value();
+            int newReservedQuantity = i.getReservedQuantity().value() + o.getQuantity().value();
+            if (newQuantity < 0)
+                throw new InsufficientStockException(o.getVariantId());
+
+            final var updateInfo = Inventory.UpdateInfo.builder().inventoryId(i.getId())
+                    .quantity(new Quantity(newQuantity)).reservedQuantity(new ReservedQuantity(newReservedQuantity))
+                    .status(i.getStatus())
+                    .build();
             final var toSave = i.applyUpdateInfo(updateInfo);
 
-            
             toSaves.add(toSave);
         }
 
-        
         savePort.saveAll(toSaves);
         // System.out.println("Tao don hang thanh cong");
 

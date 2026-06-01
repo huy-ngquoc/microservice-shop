@@ -6,8 +6,6 @@ import org.jspecify.annotations.NonNull;
 
 import vn.uit.edu.msshop.inventory.application.common.Change;
 
-
-
 public record ChangeRequest<T>(
         T value) {
     public static <T, V> Change<V> toChange(

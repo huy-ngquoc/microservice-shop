@@ -65,140 +65,192 @@ public class OrderController {
     private final VariantSoldCountWebMapper variantSoldCountWebMapper;
     private final VariantInfoRepository variantInfoRepo;
     private final OrderOutboxRepository orderOutboxRepo;
+
     @GetMapping("/test-trace")
     public String test() {
-        
+
         var currentSpan = tracer.currentSpan();
 
-    // 2. Nếu null (chưa có span tự động), hãy tự tạo một span "mồi"
-    if (currentSpan == null) {
-        // Tạo một span mới, đặt tên là "manual-test"
-        var newSpan = tracer.nextSpan().name("manual-test-span").start();
-        
-        // Dùng try-with-resources để đưa span này vào ngữ cảnh (Scope)
-        try (var ws = tracer.withSpan(newSpan)) {
-            String traceId = newSpan.context().traceId();
-            return "New Trace ID (Manual): " + traceId;
-        } finally {
-            newSpan.end(); // Kết thúc span để nó gửi dữ liệu sang Zipkin
+        // 2. Nếu null (chưa có span tự động), hãy tự tạo một span "mồi"
+        if (currentSpan == null) {
+            // Tạo một span mới, đặt tên là "manual-test"
+            var newSpan = tracer.nextSpan().name("manual-test-span").start();
+
+            // Dùng try-with-resources để đưa span này vào ngữ cảnh (Scope)
+            try (var ws = tracer.withSpan(newSpan)) {
+                String traceId = newSpan.context().traceId();
+                return "New Trace ID (Manual): " + traceId;
+            } finally {
+                newSpan.end(); // Kết thúc span để nó gửi dữ liệu sang Zipkin
+            }
         }
+
+        // 3. Nếu đã có span tự động (thông thường là vậy)
+        return "Current Trace ID: " + currentSpan.context().traceId();
     }
 
-    // 3. Nếu đã có span tự động (thông thường là vậy)
-    return "Current Trace ID: " + currentSpan.context().traceId();
-    }
     @GetMapping("/variant_info")
     public List<VariantInfo> getVariantInfos() {
         return variantInfoRepo.findAll();
     }
+
     @GetMapping("/page/variant_info")
-    public Page<VariantInfo> getVariantInfosByPage(@RequestParam(defaultValue="7") int pageSize, @RequestParam(defaultValue="0") int pageNumber) {
-        return variantInfoRepo.findAll(PageRequest.of(pageNumber,pageSize));
+    public Page<VariantInfo> getVariantInfosByPage(
+            @RequestParam(
+                    defaultValue = "7")
+            int pageSize,
+            @RequestParam(
+                    defaultValue = "0")
+            int pageNumber) {
+        return variantInfoRepo.findAll(PageRequest.of(pageNumber, pageSize));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getById(@PathVariable UUID id,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
+    public ResponseEntity<OrderResponse> getById(
+            @PathVariable
+            UUID id,
+            @RequestHeader("X-User-Id")
+            String userFromHeader,
+            @RequestHeader("X-User-Roles")
+            String role) {
         try {
-        final var view = findService.findOrderById(new OrderId(id));
-        if(!checkPermission.isAdmin(role)&&!checkPermission.isSameUser(userFromHeader,view.userId().value().toString() )) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            final var view = findService.findOrderById(new OrderId(id));
+            if (!checkPermission.isAdmin(role)
+                    && !checkPermission.isSameUser(userFromHeader, view.userId().value().toString())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            return ResponseEntity.ok(this.mapper.toResponse(view));
+        } catch (RuntimeException e) {
+            if (e instanceof OrderNotFoundException ex) {
+                return ResponseEntity.notFound().build();
+            }
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
-       
-        return ResponseEntity.ok(this.mapper.toResponse(view));
     }
-    catch(RuntimeException e) {
-        if(e instanceof OrderNotFoundException ex) {
-            return ResponseEntity.notFound().build();
-        }
-        e.printStackTrace();
-        return ResponseEntity.internalServerError().build();
-    }
-    }
+
     @GetMapping("/public/{id}")
-    public ResponseEntity<OrderResponse> getById(@PathVariable UUID id) {
+    public ResponseEntity<OrderResponse> getById(
+            @PathVariable
+            UUID id) {
         try {
-        final var view = findService.findOrderById(new OrderId(id));
-        return ResponseEntity.ok(this.mapper.toResponse(view));
-        }
-        catch(OrderNotFoundException e) {
+            final var view = findService.findOrderById(new OrderId(id));
+            return ResponseEntity.ok(this.mapper.toResponse(view));
+        } catch (OrderNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping()
-    public ResponseEntity<Page<OrderResponse>> filter(@RequestParam Optional<UUID> variantId,@RequestParam Optional<OrderStatus> status,@RequestParam Optional<Integer> minPrice,
-        @RequestParam Optional<Integer> maxPrice,@RequestParam Optional<UserId> userId,@RequestParam Optional<Instant> createFrom,
-        @RequestParam Optional<Instant> createTo,@RequestParam int pageNumber,@RequestParam int pageSize,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
-        if(!checkPermission.isAdmin(role)) {
+    public ResponseEntity<Page<OrderResponse>> filter(
+            @RequestParam
+            Optional<UUID> variantId,
+            @RequestParam
+            Optional<OrderStatus> status,
+            @RequestParam
+            Optional<Integer> minPrice,
+            @RequestParam
+            Optional<Integer> maxPrice,
+            @RequestParam
+            Optional<UserId> userId,
+            @RequestParam
+            Optional<Instant> createFrom,
+            @RequestParam
+            Optional<Instant> createTo,
+            @RequestParam
+            int pageNumber,
+            @RequestParam
+            int pageSize,
+            @RequestHeader("X-User-Id")
+            String userFromHeader,
+            @RequestHeader("X-User-Roles")
+            String role) {
+        if (!checkPermission.isAdmin(role)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        final var view = findService.filterOrder(variantId, status, minPrice, maxPrice, userId, createFrom, createTo, pageNumber, pageSize);
+        final var view = findService.filterOrder(variantId, status, minPrice, maxPrice, userId, createFrom, createTo,
+                pageNumber, pageSize);
 
         return ResponseEntity.ok(view.map(this.mapper::toResponse));
     }
- 
-    @PostMapping("/create") 
-    public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest request,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
-        /*if(!checkPermission.isUser(role)&&!checkPermission.isSameUser(userFromHeader,request.userId().toString())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }*/
-        final var command = this.mapper.toCommand(request,userFromHeader);
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createOrder(
+            @RequestBody
+            CreateOrderRequest request,
+            @RequestHeader("X-User-Id")
+            String userFromHeader,
+            @RequestHeader("X-User-Roles")
+            String role) {
+        /*
+         * if(!checkPermission.isUser(role)&&!checkPermission.isSameUser(userFromHeader,
+         * request.userId().toString())) {
+         * return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+         * }
+         */
+        final var command = this.mapper.toCommand(request, userFromHeader);
         try {
-        final var result= this.createService.create(command);
-        //eventPublisher.publishOrderCreatedEvent(new OrderCreated(request.currency(),result,request.paymentMethod(),request.totalPrice()));
-        //eventPublisher.publishClearCartEvent(mapper.toEvent(request));
-        return ResponseEntity.ok(result);}
-        catch(VariantNotFoundException | InventoryNotFoundException e) {
+            final var result = this.createService.create(command);
+            // eventPublisher.publishOrderCreatedEvent(new
+            // OrderCreated(request.currency(),result,request.paymentMethod(),request.totalPrice()));
+            // eventPublisher.publishClearCartEvent(mapper.toEvent(request));
+            return ResponseEntity.ok(result);
+        } catch (VariantNotFoundException | InventoryNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-        catch(VariantNotEnoughException| InsufficientStockException e) {
+        } catch (VariantNotEnoughException | InsufficientStockException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-        catch(FeignException e) {
-            if(e.status()==404) {
+        } catch (FeignException e) {
+            if (e.status() == 404) {
                 throw new VariantNotFoundException(e.getMessage());
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-    } 
+    }
 
-    @GetMapping("/public/sold_counts") 
+    @GetMapping("/public/sold_counts")
     public ResponseEntity<List<VariantSoldCountResponse>> getAllVariantSoldCount() {
         System.out.println("Product service goi");
         final var result = findVariantSoldCountUseCase.findAll();
-        System.out.println("Kich thuoc "+result.size());
+        System.out.println("Kich thuoc " + result.size());
         return ResponseEntity.ok(result.stream().map(variantSoldCountWebMapper::toResponse).toList());
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateOrder(@RequestBody UpdateOrderRequest request,@RequestHeader("X-User-Id") String userFromHeader, @RequestHeader("X-User-Roles") String role) {
+    public ResponseEntity<?> updateOrder(
+            @RequestBody
+            UpdateOrderRequest request,
+            @RequestHeader("X-User-Id")
+            String userFromHeader,
+            @RequestHeader("X-User-Roles")
+            String role) {
         final var command = this.mapper.toCommand(request);
-        
+
         try {
-        this.updateService.update(command,userFromHeader,role);}
-        
-        catch(RuntimeException e) {
-            if(e instanceof WrongUpdateInfoException) {
+            this.updateService.update(command, userFromHeader, role);
+        }
+
+        catch (RuntimeException e) {
+            if (e instanceof WrongUpdateInfoException) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
             }
             e.printStackTrace();
-             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         return ResponseEntity.noContent().build();
     }
 
-    
     @DeleteMapping("/clear")
     public ResponseEntity<Void> clearDatabase() {
         deleteOrderUseCase.deleteAll();
         orderOutboxRepo.deleteAll();
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/all")
     public ResponseEntity<List<OrderResponse>> getAll() {
         var result = findService.findAll();
         return ResponseEntity.ok(result.stream().map(mapper::toResponse).toList());
     }
-
 
 }

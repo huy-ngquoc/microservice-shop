@@ -12,9 +12,13 @@ import vn.uit.edu.msshop.account.adapter.out.event.documents.AccountIdDocument;
 
 @Repository
 public interface AccountIdDocumentRepository extends JpaRepository<AccountIdDocument, UUID> {
-    public List<AccountIdDocument> findByEventStatus(String eventStatus);
+    public List<AccountIdDocument> findByEventStatus(
+            String eventStatus);
 
-    public List<AccountIdDocument> findTop50ByEventStatusOrderByCreatedAtAsc(String pending);
+    public List<AccountIdDocument> findTop50ByEventStatusOrderByCreatedAtAsc(
+            String pending);
 
-    public void deleteByEventStatusAndUpdatedAtBefore(String sent, Instant threshold);
+    public void deleteByEventStatusAndUpdatedAtBefore(
+            String sent,
+            Instant threshold);
 }

@@ -16,8 +16,8 @@ import lombok.experimental.SuperBuilder;
 
 public class OutboxEvent {
     protected String eventStatus;
-    protected Integer retryCount; 
+    protected Integer retryCount;
     protected Instant createdAt;
-    protected Instant updatedAt; 
+    protected Instant updatedAt;
     protected String lastError;
 }

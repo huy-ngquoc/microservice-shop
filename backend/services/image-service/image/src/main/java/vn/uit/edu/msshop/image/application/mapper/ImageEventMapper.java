@@ -9,8 +9,13 @@ import vn.uit.edu.msshop.image.domain.model.ImageInfo;
 
 //@Component
 public class ImageEventMapper {
-    /*public ImageRemoveSuccess toEvent(ImageInfo info, UUID objectId) {
-        return new ImageRemoveSuccess(info.getUrl().value(), info.getPublicId().value(), info.getFileName().value(), info.getWidth().value(), info.getHeight().value(), info.getSize().value(), objectId);
-    }*/
+    /*
+     * public ImageRemoveSuccess toEvent(ImageInfo info, UUID objectId) {
+     * return new ImageRemoveSuccess(info.getUrl().value(),
+     * info.getPublicId().value(), info.getFileName().value(),
+     * info.getWidth().value(), info.getHeight().value(), info.getSize().value(),
+     * objectId);
+     * }
+     */
 
 }

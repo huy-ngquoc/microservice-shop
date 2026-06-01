@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import vn.uit.edu.msshop.recommendation.adapter.in.web.response.AIServerResponse;
 
-@FeignClient(name="ML-Service", url="http://host.docker.internal:9090")
+@FeignClient(
+        name = "ML-Service",
+        url = "http://host.docker.internal:9090")
 public interface MLServerCaller {
-@PostMapping(
-        value = "/", 
-        consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    ResponseEntity<AIServerResponse> getPrediction(@RequestBody byte[] imageBytes);
+    @PostMapping(
+            value = "/",
+            consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<AIServerResponse> getPrediction(
+            @RequestBody
+            byte[] imageBytes);
 }

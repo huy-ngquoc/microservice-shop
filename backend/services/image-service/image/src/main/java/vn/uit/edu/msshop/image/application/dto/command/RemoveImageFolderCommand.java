@@ -7,11 +7,12 @@ import lombok.Setter;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImageFolder;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ImagePublicId;
 import vn.uit.edu.msshop.image.domain.model.valueobject.ObjectId;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RemoveImageFolderCommand{
+public class RemoveImageFolderCommand {
     private ImagePublicId publicId;
     private ImageFolder destination;
     private ObjectId objectId;

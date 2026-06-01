@@ -37,7 +37,7 @@ public class CartProductEventListener {
     private final DeleteCartItemUseCase deleteItemUseCase;
     private final EventDocumentRepository eventDocumentRepo;
 
-    //@KafkaHandler
+    // @KafkaHandler
     public void updateCartItem(
             ProductUpdated event) {
         if (!eventDocumentRepo.existsById(event.getEventId())) {
@@ -49,7 +49,7 @@ public class CartProductEventListener {
         }
     }
 
-    //@KafkaHandler
+    // @KafkaHandler
     public void onVariantDelete(
             ProductDeleted event) {
         if (!eventDocumentRepo.existsById(event.getEventId())) {
@@ -66,11 +66,12 @@ public class CartProductEventListener {
     }
 
     @KafkaHandler
-    public void onVariantUpdate(VariantUpdatedIntegrationEvent event) {
+    public void onVariantUpdate(
+            VariantUpdatedIntegrationEvent event) {
         System.out.println("Nhan event");
         System.out.println("=======> KAFKA: NHAN EVENT QUAN TRONG <=======");
-         if (!eventDocumentRepo.existsById(event.eventId())) {
-                System.out.println("Update new price "+event.unitPrice());
+        if (!eventDocumentRepo.existsById(event.eventId())) {
+            System.out.println("Update new price " + event.unitPrice());
             Set<String> userIds = variantToUserPort.getByVariantId(new VariantId(event.variantId()));
             List<UpdateCartInfoCommand> commands = userIds.stream().map(item -> mapper.toCommand(event, item)).toList();
             updateCartInfoUseCase.updateMany(commands);
@@ -79,8 +80,10 @@ public class CartProductEventListener {
                     .save(EventDocument.builder().eventId(event.eventId()).receiveAt(Instant.now()).build());
         }
     }
+
     @KafkaHandler
-    public void onVariantSoftDelete(VariantSoftDeletedIntegrationEvent event) {
+    public void onVariantSoftDelete(
+            VariantSoftDeletedIntegrationEvent event) {
         System.out.println("Nhan event delete");
         if (!eventDocumentRepo.existsById(event.eventId())) {
             Set<String> userIds = variantToUserPort.getByVariantId(new VariantId(event.variantId()));

@@ -29,30 +29,40 @@ import vn.uit.edu.msshop.image.domain.model.valueobject.TimeStamp;
 @RequiredArgsConstructor
 public class ImageWebMapper {
     private final Cloudinary cloudinary;
-    public UploadImageCommand toCommand(MultipartFile file, UUID objectId, String dataType) throws IOException {
+
+    public UploadImageCommand toCommand(
+            MultipartFile file,
+            UUID objectId,
+            String dataType) throws IOException {
         byte[] bytes = file.getBytes();
         String fileName = file.getOriginalFilename();
-        return new UploadImageCommand(new ImageFileName(fileName), new ObjectId(objectId), new DataType(dataType), bytes);
+        return new UploadImageCommand(new ImageFileName(fileName), new ObjectId(objectId), new DataType(dataType),
+                bytes);
     }
 
-    public DeleteImageCommand toCommand(String publicId) {
+    public DeleteImageCommand toCommand(
+            String publicId) {
         return new DeleteImageCommand(new ImagePublicId(publicId));
     }
-    public RollbackImageFolderCommand toCommand(RollbackImageEvent event) {
+
+    public RollbackImageFolderCommand toCommand(
+            RollbackImageEvent event) {
         return new RollbackImageFolderCommand(new ImagePublicId(event.imagePublicId()));
     }
-    public RemoveImageFolderCommand toCommand(RollbackImageFolderCommand command) {
-        return new RemoveImageFolderCommand(command.getPublicId(),new ImageFolder("temp"),null);
-    }
-    
 
-    public ImageResponse toResponse(String url,
-    String publicId,
-    String fileName,
-    int width,
-    int height,
-    UUID objectId,
-    String dataType) {
+    public RemoveImageFolderCommand toCommand(
+            RollbackImageFolderCommand command) {
+        return new RemoveImageFolderCommand(command.getPublicId(), new ImageFolder("temp"), null);
+    }
+
+    public ImageResponse toResponse(
+            String url,
+            String publicId,
+            String fileName,
+            int width,
+            int height,
+            UUID objectId,
+            String dataType) {
         return new ImageResponse(url, publicId, fileName, width, height);
     }
 
@@ -61,10 +71,16 @@ public class ImageWebMapper {
         TimeStamp ts = new TimeStamp(timestamp);
         return new GetSignatureCommand(ts);
     }
-    public SignatureResponse toResponse(String signature, long timeStamp) {
-        return new SignatureResponse(signature,timeStamp,cloudinary.config.apiKey,cloudinary.config.cloudName);
-    } 
-    public RemoveImageFolderCommand toCommand(RemoveImageRequest request) {
-        return new RemoveImageFolderCommand(new ImagePublicId(request.getImagePublicId()),new ImageFolder(request.getDestination()), new ObjectId(request.getObjectId()));
+
+    public SignatureResponse toResponse(
+            String signature,
+            long timeStamp) {
+        return new SignatureResponse(signature, timeStamp, cloudinary.config.apiKey, cloudinary.config.cloudName);
+    }
+
+    public RemoveImageFolderCommand toCommand(
+            RemoveImageRequest request) {
+        return new RemoveImageFolderCommand(new ImagePublicId(request.getImagePublicId()),
+                new ImageFolder(request.getDestination()), new ObjectId(request.getObjectId()));
     }
 }

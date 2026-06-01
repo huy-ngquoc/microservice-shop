@@ -1,4 +1,5 @@
 package vn.uit.edu.msshop.order.adapter.out.event.repositories;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -9,5 +10,6 @@ import vn.uit.edu.msshop.order.adapter.out.event.documents.EventDocument;
 
 @Repository
 public interface EventDocumentRepository extends MongoRepository<EventDocument, UUID> {
-    public void deleteByReceiveAtBefore(Instant threshold);
+    public void deleteByReceiveAtBefore(
+            Instant threshold);
 }

@@ -20,16 +20,17 @@ import vn.uit.edu.msshop.auth.application.port.in.CreateAccountUseCase;
 public class AuthController {
     private final CreateAccountUseCase createUseCase;
     private final AccountMapper mapper;
+
     @GetMapping
     @PreAuthorize("hasRole('Client User')")
-    public String hello(){
+    public String hello() {
         return "Hello from spring boot key cloak";
     }
+
     @GetMapping("/admin")
     @PreAuthorize("hasRole('Client Admin')")
     public String helloAdmin() {
         return "Hello from admin";
     }
 
-    
 }

@@ -7,5 +7,10 @@ import vn.uit.edu.msshop.recommendation.adapter.in.web.response.PageResponseDto;
 import vn.uit.edu.msshop.recommendation.adapter.in.web.response.VariantResponse;
 
 public interface GetVariantsByTargetUseCase {
-    public PageResponseDto<VariantResponse> getVariantResponseByTargets(List<String> targets, int pageNumber, int pageSize, String sortBy, PageRequestDto.Direction direction);
+    public PageResponseDto<VariantResponse> getVariantResponseByTargets(
+            List<String> targets,
+            int pageNumber,
+            int pageSize,
+            String sortBy,
+            PageRequestDto.Direction direction);
 }
