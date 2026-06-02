@@ -25,12 +25,7 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageR
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
 import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryImageLifecycleUseCases;
 import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
-import vn.edu.uit.msshop.product.category.application.port.in.query.CheckCategoryExistsUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryImageUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.FindSoftDeletedCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.ListCategoriesUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.ListSoftDeletedCategoriesUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
@@ -38,12 +33,13 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequestMapping("/categories")
 @RequiredArgsConstructor
 public class CategoryController {
-    private final ListCategoriesUseCase listUseCase;
-    private final ListSoftDeletedCategoriesUseCase listSoftDeletedUseCase;
-    private final FindCategoryUseCase findUseCase;
-    private final FindCategoryImageUseCase findImageUseCase;
-    private final CheckCategoryExistsUseCase checkExistsUseCase;
-    private final FindSoftDeletedCategoryUseCase findSoftDeletedUseCase;
+
+    private final CategoryLookupUseCases.ListActive listUseCase;
+    private final CategoryLookupUseCases.ListSoftDeleted listSoftDeletedUseCase;
+    private final CategoryLookupUseCases.FindActiveById findUseCase;
+    private final CategoryLookupUseCases.FindActiveImageById findImageUseCase;
+    private final CategoryLookupUseCases.CheckExistsById checkExistsUseCase;
+    private final CategoryLookupUseCases.FindSoftDeletedById findSoftDeletedUseCase;
     private final CategoryLifecycleUseCases.Create createUseCase;
     private final CategoryLifecycleUseCases.Restore restoreUseCase;
     private final CategoryLifecycleUseCases.UpdateInfo updateInfoUseCase;
@@ -51,6 +47,7 @@ public class CategoryController {
     private final CategoryImageLifecycleUseCases.Delete deleteImageUseCase;
     private final CategoryLifecycleUseCases.SoftDelete softDeleteUseCase;
     private final CategoryLifecycleUseCases.HardDelete hardDeleteUseCase;
+
     private final CategoryWebMapper mapper;
 
     @GetMapping
@@ -72,7 +69,7 @@ public class CategoryController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = listUseCase.list(request);
+        final var views = listUseCase.listActive(request);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
@@ -107,7 +104,7 @@ public class CategoryController {
     public ResponseEntity<CategoryResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findUseCase.findById(this.mapper.toCategoryId(id));
+        final var view = this.findUseCase.findActiveById(this.mapper.toCategoryId(id));
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -117,7 +114,7 @@ public class CategoryController {
     public ResponseEntity<CategoryImageResponse> findImageById(
             @PathVariable
             final UUID id) {
-        final var view = this.findImageUseCase.findImageById(this.mapper.toCategoryId(id));
+        final var view = this.findImageUseCase.findActiveImageById(this.mapper.toCategoryId(id));
 
         final var response = this.mapper.toImageResponse(view);
         return ResponseEntity.ok(response);

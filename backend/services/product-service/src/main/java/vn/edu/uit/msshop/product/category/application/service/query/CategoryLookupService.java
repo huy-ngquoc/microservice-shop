@@ -10,12 +10,7 @@ import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
-import vn.edu.uit.msshop.product.category.application.port.in.query.CheckCategoryExistsUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryImageUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.FindSoftDeletedCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.ListCategoriesUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.ListSoftDeletedCategoriesUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CheckCategoryExistsPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListCategoriesPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListSoftDeletedCategoriesPort;
@@ -29,12 +24,12 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequiredArgsConstructor
 public class CategoryLookupService
         implements
-        ListCategoriesUseCase,
-        ListSoftDeletedCategoriesUseCase,
-        CheckCategoryExistsUseCase,
-        FindCategoryUseCase,
-        FindCategoryImageUseCase,
-        FindSoftDeletedCategoryUseCase {
+        CategoryLookupUseCases.ListActive,
+        CategoryLookupUseCases.ListSoftDeleted,
+        CategoryLookupUseCases.CheckExistsById,
+        CategoryLookupUseCases.FindActiveById,
+        CategoryLookupUseCases.FindActiveImageById,
+        CategoryLookupUseCases.FindSoftDeletedById {
 
     private final ListCategoriesPort listPort;
     private final ListSoftDeletedCategoriesPort listSoftDeletedPort;
@@ -49,7 +44,7 @@ public class CategoryLookupService
             readOnly = true)
     @Cacheable(
             cacheNames = CacheNames.CATEGORY_LIST)
-    public PageResponseDto<CategoryView> list(
+    public PageResponseDto<CategoryView> listActive(
             final PageRequestDto pageRequest) {
         final var page = this.listPort.list(pageRequest);
         return page.map(this.mapper::toView);
@@ -78,7 +73,7 @@ public class CategoryLookupService
     @Cacheable(
             cacheNames = CacheNames.CATEGORY,
             key = "#id.value()")
-    public CategoryView findById(
+    public CategoryView findActiveById(
             final CategoryId id) {
         return this.loadPort.loadById(id)
                 .map(this.mapper::toView)
@@ -88,7 +83,7 @@ public class CategoryLookupService
     @Override
     @Transactional(
             readOnly = true)
-    public CategoryImageView findImageById(
+    public CategoryImageView findActiveImageById(
             final CategoryId id) {
         return this.loadPort.loadById(id).map(this.mapper::toImageView)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
