@@ -13,8 +13,7 @@ import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecy
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CreateCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.command.UpdateCategoryInfoUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
 import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCategoryEventPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
@@ -33,8 +32,8 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Slf4j
 public class CategoryWritingService
         implements
-        CreateCategoryUseCase,
-        UpdateCategoryInfoUseCase {
+        CategoryLifecycleUseCases.Create,
+        CategoryLifecycleUseCases.UpdateInfo {
 
     private final LoadCategoryPort loadPort;
     private final CreateCategoryPort createPort;
