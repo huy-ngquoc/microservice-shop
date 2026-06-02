@@ -19,11 +19,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryWebMapper;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.CreateCategoryRequest;
-import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryImageRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryInfoRequest;
-import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryImageLifecycleUseCases;
 import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
 import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
@@ -37,14 +34,11 @@ public class CategoryController {
     private final CategoryLookupUseCases.ListActive listUseCase;
     private final CategoryLookupUseCases.ListSoftDeleted listSoftDeletedUseCase;
     private final CategoryLookupUseCases.FindActiveById findUseCase;
-    private final CategoryLookupUseCases.FindActiveImageById findImageUseCase;
     private final CategoryLookupUseCases.CheckExistsById checkExistsUseCase;
     private final CategoryLookupUseCases.FindSoftDeletedById findSoftDeletedUseCase;
     private final CategoryLifecycleUseCases.Create createUseCase;
     private final CategoryLifecycleUseCases.Restore restoreUseCase;
     private final CategoryLifecycleUseCases.UpdateInfo updateInfoUseCase;
-    private final CategoryImageLifecycleUseCases.Update updateImageUseCase;
-    private final CategoryImageLifecycleUseCases.Delete deleteImageUseCase;
     private final CategoryLifecycleUseCases.SoftDelete softDeleteUseCase;
     private final CategoryLifecycleUseCases.HardDelete hardDeleteUseCase;
 
@@ -107,16 +101,6 @@ public class CategoryController {
         final var view = this.findUseCase.findActiveById(this.mapper.toCategoryId(id));
 
         final var response = this.mapper.toResponse(view);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{id}/image")
-    public ResponseEntity<CategoryImageResponse> findImageById(
-            @PathVariable
-            final UUID id) {
-        final var view = this.findImageUseCase.findActiveImageById(this.mapper.toCategoryId(id));
-
-        final var response = this.mapper.toImageResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -183,34 +167,6 @@ public class CategoryController {
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
-    }
-
-    @PatchMapping("/{id}/image")
-    public ResponseEntity<CategoryImageResponse> updateImage(
-            @PathVariable
-            final UUID id,
-
-            @RequestBody
-            @Valid
-            final UpdateCategoryImageRequest request) {
-        final var command = this.mapper.toUpdateImageCommand(id, request);
-        final var view = this.updateImageUseCase.update(command);
-
-        final var response = this.mapper.toImageResponse(view);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{id}/image")
-    public ResponseEntity<Void> deleteImageById(
-            @PathVariable
-            final UUID id,
-
-            @RequestParam
-            final long version) {
-        final var command = this.mapper.toDeleteImageCommand(id, version);
-        this.deleteImageUseCase.delete(command);
-
-        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
