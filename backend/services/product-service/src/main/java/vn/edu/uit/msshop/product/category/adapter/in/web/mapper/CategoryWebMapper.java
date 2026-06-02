@@ -12,13 +12,8 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryI
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
 import vn.edu.uit.msshop.product.category.adapter.out.image.CategoryImageStorageAdapter;
-import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategoryCommand;
-import vn.edu.uit.msshop.product.category.application.dto.command.DeleteCategoryImageCommand;
-import vn.edu.uit.msshop.product.category.application.dto.command.HardDeleteCategoryCommand;
-import vn.edu.uit.msshop.product.category.application.dto.command.RestoreCategoryCommand;
-import vn.edu.uit.msshop.product.category.application.dto.command.SoftDeleteCategoryCommand;
-import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryImageCommand;
-import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
+import vn.edu.uit.msshop.product.category.application.dto.command.CategoryImageLifecycleCommands;
+import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
@@ -34,23 +29,23 @@ import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryImageUrlResolve
 public class CategoryWebMapper {
     private final CloudinaryImageUrlResolver urlResolver;
 
-    public CreateCategoryCommand toCreateCommand(
+    public CategoryLifecycleCommands.Create toCreateCommand(
             final CreateCategoryRequest request) {
         final var name = new CategoryName(request.name());
 
-        return new CreateCategoryCommand(name);
+        return new CategoryLifecycleCommands.Create(name);
     }
 
-    public RestoreCategoryCommand toRestoreCommand(
+    public CategoryLifecycleCommands.Restore toRestoreCommand(
             final UUID id,
             final long expectedVersion) {
         final var categoryId = new CategoryId(id);
         final var version = new CategoryVersion(expectedVersion);
 
-        return new RestoreCategoryCommand(categoryId, version);
+        return new CategoryLifecycleCommands.Restore(categoryId, version);
     }
 
-    public UpdateCategoryInfoCommand toUpdateInfoCommand(
+    public CategoryLifecycleCommands.UpdateInfo toUpdateInfoCommand(
             final UUID id,
             final UpdateCategoryInfoRequest request) {
         final var categoryId = new CategoryId(id);
@@ -58,44 +53,44 @@ public class CategoryWebMapper {
 
         final var name = ChangeRequest.toChange(request.name(), CategoryName::new);
 
-        return new UpdateCategoryInfoCommand(categoryId, name, version);
+        return new CategoryLifecycleCommands.UpdateInfo(categoryId, name, version);
     }
 
-    public UpdateCategoryImageCommand toUpdateImageCommand(
+    public CategoryImageLifecycleCommands.Update toUpdateImageCommand(
             final UUID id,
             final UpdateCategoryImageRequest request) {
         final var categoryId = new CategoryId(id);
         final var imageKey = CategoryWebMapper.extractKeyFromTempPublicId(request.newImageKey());
         final var version = new CategoryVersion(request.version());
 
-        return new UpdateCategoryImageCommand(categoryId, imageKey, version);
+        return new CategoryImageLifecycleCommands.Update(categoryId, imageKey, version);
     }
 
-    public DeleteCategoryImageCommand toDeleteImageCommand(
+    public CategoryImageLifecycleCommands.Delete toDeleteImageCommand(
             final UUID id,
             final long expectedVersion) {
         final var categoryId = new CategoryId(id);
         final var version = new CategoryVersion(expectedVersion);
 
-        return new DeleteCategoryImageCommand(categoryId, version);
+        return new CategoryImageLifecycleCommands.Delete(categoryId, version);
     }
 
-    public SoftDeleteCategoryCommand toSoftDeleteCommand(
+    public CategoryLifecycleCommands.SoftDelete toSoftDeleteCommand(
             final UUID id,
             final long expectedVersion) {
         final var categoryId = new CategoryId(id);
         final var version = new CategoryVersion(expectedVersion);
 
-        return new SoftDeleteCategoryCommand(categoryId, version);
+        return new CategoryLifecycleCommands.SoftDelete(categoryId, version);
     }
 
-    public HardDeleteCategoryCommand toHardDeleteCommand(
+    public CategoryLifecycleCommands.HardDelete toHardDeleteCommand(
             final UUID id,
             final long expectedVersion) {
         final var categoryId = new CategoryId(id);
         final var version = new CategoryVersion(expectedVersion);
 
-        return new HardDeleteCategoryCommand(categoryId, version);
+        return new CategoryLifecycleCommands.HardDelete(categoryId, version);
     }
 
     public CategoryId toCategoryId(

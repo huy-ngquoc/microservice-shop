@@ -9,9 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.category.application.dto.command.HardDeleteCategoryCommand;
-import vn.edu.uit.msshop.product.category.application.dto.command.RestoreCategoryCommand;
-import vn.edu.uit.msshop.product.category.application.dto.command.SoftDeleteCategoryCommand;
+import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.HardDeleteCategoryUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.command.RestoreCategoryUseCase;
@@ -60,18 +58,18 @@ public class CategoryDeletionService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY,
-                            key = "#command.id().value()"),
+                            key = "#cmd.id().value()"),
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY_LIST,
                             allEntries = true)
             })
     public void delete(
-            final SoftDeleteCategoryCommand command) {
-        final var categoryId = command.id();
+            final CategoryLifecycleCommands.SoftDelete cmd) {
+        final var categoryId = cmd.id();
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = category.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(expectedVersion.value(),
@@ -100,12 +98,12 @@ public class CategoryDeletionService
             cacheNames = CacheNames.CATEGORY_LIST,
             allEntries = true)
     public void restore(
-            final RestoreCategoryCommand command) {
-        final var categoryId = command.id();
+            final CategoryLifecycleCommands.Restore cmd) {
+        final var categoryId = cmd.id();
         final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = category.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(
@@ -127,12 +125,12 @@ public class CategoryDeletionService
     @Override
     @Transactional
     public void purge(
-            final HardDeleteCategoryCommand command) {
-        final var categoryId = command.id();
+            final CategoryLifecycleCommands.HardDelete cmd) {
+        final var categoryId = cmd.id();
         final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = category.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(
