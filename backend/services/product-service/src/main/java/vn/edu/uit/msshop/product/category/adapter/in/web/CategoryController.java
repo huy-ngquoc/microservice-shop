@@ -23,13 +23,8 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryI
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryInfoRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CreateCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.command.DeleteCategoryImageUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.command.HardDeleteCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.command.RestoreCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.command.SoftDeleteCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.command.UpdateCategoryImageUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.command.UpdateCategoryInfoUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryImageLifecycleUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
 import vn.edu.uit.msshop.product.category.application.port.in.query.CheckCategoryExistsUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryImageUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.query.FindCategoryUseCase;
@@ -49,13 +44,13 @@ public class CategoryController {
     private final FindCategoryImageUseCase findImageUseCase;
     private final CheckCategoryExistsUseCase checkExistsUseCase;
     private final FindSoftDeletedCategoryUseCase findSoftDeletedUseCase;
-    private final CreateCategoryUseCase createUseCase;
-    private final RestoreCategoryUseCase restoreUseCase;
-    private final UpdateCategoryInfoUseCase updateInfoUseCase;
-    private final UpdateCategoryImageUseCase updateImageUseCase;
-    private final DeleteCategoryImageUseCase deleteImageUseCase;
-    private final SoftDeleteCategoryUseCase softDeleteUseCase;
-    private final HardDeleteCategoryUseCase hardDeleteUseCase;
+    private final CategoryLifecycleUseCases.Create createUseCase;
+    private final CategoryLifecycleUseCases.Restore restoreUseCase;
+    private final CategoryLifecycleUseCases.UpdateInfo updateInfoUseCase;
+    private final CategoryImageLifecycleUseCases.Update updateImageUseCase;
+    private final CategoryImageLifecycleUseCases.Delete deleteImageUseCase;
+    private final CategoryLifecycleUseCases.SoftDelete softDeleteUseCase;
+    private final CategoryLifecycleUseCases.HardDelete hardDeleteUseCase;
     private final CategoryWebMapper mapper;
 
     @GetMapping
@@ -202,24 +197,23 @@ public class CategoryController {
             @Valid
             final UpdateCategoryImageRequest request) {
         final var command = this.mapper.toUpdateImageCommand(id, request);
-        final var view = this.updateImageUseCase.updateImage(command);
+        final var view = this.updateImageUseCase.update(command);
 
         final var response = this.mapper.toImageResponse(view);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}/image")
-    public ResponseEntity<CategoryImageResponse> deleteImageById(
+    public ResponseEntity<Void> deleteImageById(
             @PathVariable
             final UUID id,
 
             @RequestParam
             final long version) {
         final var command = this.mapper.toDeleteImageCommand(id, version);
-        final var view = this.deleteImageUseCase.deleteImage(command);
+        this.deleteImageUseCase.delete(command);
 
-        final var response = this.mapper.toImageResponse(view);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
@@ -230,7 +224,7 @@ public class CategoryController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
-        this.softDeleteUseCase.delete(command);
+        this.softDeleteUseCase.softDelete(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -243,7 +237,7 @@ public class CategoryController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toHardDeleteCommand(id, version);
-        this.hardDeleteUseCase.purge(command);
+        this.hardDeleteUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();
     }

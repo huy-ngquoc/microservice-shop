@@ -11,9 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
-import vn.edu.uit.msshop.product.category.application.port.in.command.HardDeleteCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.command.RestoreCategoryUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.command.SoftDeleteCategoryUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
 import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCategoryEventPort;
 import vn.edu.uit.msshop.product.category.application.port.out.image.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.DeleteCategoryPort;
@@ -36,9 +34,9 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Slf4j
 public class CategoryDeletionService
         implements
-        SoftDeleteCategoryUseCase,
-        RestoreCategoryUseCase,
-        HardDeleteCategoryUseCase {
+        CategoryLifecycleUseCases.SoftDelete,
+        CategoryLifecycleUseCases.Restore,
+        CategoryLifecycleUseCases.HardDelete {
 
     private final LoadCategoryPort loadPort;
     private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
@@ -63,7 +61,7 @@ public class CategoryDeletionService
                             cacheNames = CacheNames.CATEGORY_LIST,
                             allEntries = true)
             })
-    public void delete(
+    public void softDelete(
             final CategoryLifecycleCommands.SoftDelete cmd) {
         final var categoryId = cmd.id();
         final var category = this.loadPort.loadById(categoryId)
@@ -124,7 +122,7 @@ public class CategoryDeletionService
 
     @Override
     @Transactional
-    public void purge(
+    public void hardDelete(
             final CategoryLifecycleCommands.HardDelete cmd) {
         final var categoryId = cmd.id();
         final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
