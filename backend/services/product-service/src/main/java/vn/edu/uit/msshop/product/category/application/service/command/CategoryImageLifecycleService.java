@@ -14,8 +14,7 @@ import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView
 import vn.edu.uit.msshop.product.category.application.exception.CategoryImageKeyNotFoundException;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
-import vn.edu.uit.msshop.product.category.application.port.in.command.DeleteCategoryImageUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.command.UpdateCategoryImageUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryImageLifecycleUseCases;
 import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCategoryEventPort;
 import vn.edu.uit.msshop.product.category.application.port.out.image.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
@@ -30,8 +29,8 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Slf4j
 public class CategoryImageLifecycleService
         implements
-        UpdateCategoryImageUseCase,
-        DeleteCategoryImageUseCase {
+        CategoryImageLifecycleUseCases.Update,
+        CategoryImageLifecycleUseCases.Delete {
 
     private final LoadCategoryPort loadPort;
     private final UpdateCategoryPort updatePort;
@@ -52,7 +51,7 @@ public class CategoryImageLifecycleService
                             cacheNames = CacheNames.CATEGORY_LIST,
                             allEntries = true)
             })
-    public CategoryImageView updateImage(
+    public CategoryImageView update(
             final CategoryImageLifecycleCommands.Update cmd) {
         final var categoryId = cmd.id();
         final var category = this.loadPort.loadById(categoryId)
@@ -131,7 +130,7 @@ public class CategoryImageLifecycleService
                             cacheNames = CacheNames.CATEGORY_LIST,
                             allEntries = true)
             })
-    public CategoryImageView deleteImage(
+    public void delete(
             final CategoryImageLifecycleCommands.Delete cmd) {
         final var categoryId = cmd.id();
         final var category = this.loadPort.loadById(categoryId)
@@ -139,7 +138,7 @@ public class CategoryImageLifecycleService
 
         final var oldKey = category.getImageKey();
         if (oldKey == null) {
-            return this.mapper.toImageView(category);
+            return;
         }
 
         final var expectedVersion = cmd.expectedVersion();
@@ -165,8 +164,6 @@ public class CategoryImageLifecycleService
         this.eventPort.publish(event);
 
         this.deleteOldImage(oldKey);
-
-        return this.mapper.toImageView(saved);
     }
 
     private void deleteOldImage(
