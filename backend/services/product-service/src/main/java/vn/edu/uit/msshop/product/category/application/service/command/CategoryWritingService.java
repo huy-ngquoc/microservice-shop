@@ -9,8 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.category.application.dto.command.CreateCategoryCommand;
-import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryInfoCommand;
+import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
@@ -50,10 +49,10 @@ public class CategoryWritingService
             cacheNames = CacheNames.CATEGORY_LIST,
             allEntries = true)
     public CategoryView create(
-            final CreateCategoryCommand command) {
+            final CategoryLifecycleCommands.Create cmd) {
         final var newCategory = new NewCategory(
                 CategoryId.newId(),
-                command.name());
+                cmd.name());
 
         final var saved = this.createPort.create(newCategory);
         this.eventPort.publish(new CategoryCreated(saved.getId()));
@@ -67,25 +66,25 @@ public class CategoryWritingService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY,
-                            key = "#command.id().value()",
-                            condition = "#command.name().getSet() != null"),
+                            key = "#cmd.id().value()",
+                            condition = "#cmd.name().getSet() != null"),
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY_LIST,
                             allEntries = true,
-                            condition = "#command.name().getSet() != null")
+                            condition = "#cmd.name().getSet() != null")
             })
     public CategoryView updateInfo(
-            final UpdateCategoryInfoCommand command) {
-        final var categoryId = command.id();
+            final CategoryLifecycleCommands.UpdateInfo cmd) {
+        final var categoryId = cmd.id();
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var nameSet = command.name().getSet();
+        final var nameSet = cmd.name().getSet();
         if (nameSet == null) {
             return this.mapper.toView(category);
         }
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = category.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(

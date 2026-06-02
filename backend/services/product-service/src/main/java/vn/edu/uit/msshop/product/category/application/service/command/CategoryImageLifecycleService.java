@@ -9,8 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.category.application.dto.command.DeleteCategoryImageCommand;
-import vn.edu.uit.msshop.product.category.application.dto.command.UpdateCategoryImageCommand;
+import vn.edu.uit.msshop.product.category.application.dto.command.CategoryImageLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryImageKeyNotFoundException;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
@@ -48,18 +47,18 @@ public class CategoryImageLifecycleService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY,
-                            key = "#command.id().value()"),
+                            key = "#cmd.id().value()"),
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY_LIST,
                             allEntries = true)
             })
     public CategoryImageView updateImage(
-            final UpdateCategoryImageCommand command) {
-        final var categoryId = command.id();
+            final CategoryImageLifecycleCommands.Update cmd) {
+        final var categoryId = cmd.id();
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = category.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(
@@ -67,7 +66,7 @@ public class CategoryImageLifecycleService
                     currentVersion.value());
         }
 
-        final var saved = this.commitImageChange(category, command.newImageKey());
+        final var saved = this.commitImageChange(category, cmd.newImageKey());
         if (saved == null) {
             return this.mapper.toImageView(category);
         }
@@ -127,14 +126,14 @@ public class CategoryImageLifecycleService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY,
-                            key = "#command.id().value()"),
+                            key = "#cmd.id().value()"),
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY_LIST,
                             allEntries = true)
             })
     public CategoryImageView deleteImage(
-            final DeleteCategoryImageCommand command) {
-        final var categoryId = command.id();
+            final CategoryImageLifecycleCommands.Delete cmd) {
+        final var categoryId = cmd.id();
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
@@ -143,7 +142,7 @@ public class CategoryImageLifecycleService
             return this.mapper.toImageView(category);
         }
 
-        final var expectedVersion = command.expectedVersion();
+        final var expectedVersion = cmd.expectedVersion();
         final var currentVersion = category.getVersion();
         if (!expectedVersion.equals(currentVersion)) {
             throw new OptimisticLockException(
