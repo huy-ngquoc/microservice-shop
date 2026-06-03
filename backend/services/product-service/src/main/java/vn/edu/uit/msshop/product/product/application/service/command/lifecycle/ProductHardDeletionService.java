@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.HardDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.HardDeleteProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductRatingPort;
@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 public class ProductHardDeletionService
         implements
-        HardDeleteProductUseCase {
+        ProductHardDeletionUseCase {
     private final LoadSoftDeletedProductPort loadSoftDeletedPort;
     private final DeleteProductPort deletePort;
     private final DeleteProductSoldCountPort deleteSoldCountPort;

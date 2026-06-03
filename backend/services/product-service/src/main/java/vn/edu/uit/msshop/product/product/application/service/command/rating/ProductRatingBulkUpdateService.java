@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.SetAllProductRatingsCommand;
-import vn.edu.uit.msshop.product.product.application.port.in.command.rating.SetAllProductRatingsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingBulkUpdateUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateAllProductRatingsPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.sync.ProductRatingSnapshot;
@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.product.domain.sync.ProductRatingSnapshot;
 @Slf4j
 public class ProductRatingBulkUpdateService
         implements
-        SetAllProductRatingsUseCase {
+        ProductRatingBulkUpdateUseCase {
     private final UpdateAllProductRatingsPort updateAllPort;
 
     @Override

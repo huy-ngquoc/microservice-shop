@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.RestoreProductCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.RestoreProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductRestorationUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 public class ProductRestorationService
         implements
-        RestoreProductUseCase {
+        ProductRestorationUseCase {
     private final LoadSoftDeletedProductPort loadSoftDeletedPort;
     private final UpdateProductPort updatePort;
     private final RestoreVariantsForProductPort restoreVariantsForProductPort;

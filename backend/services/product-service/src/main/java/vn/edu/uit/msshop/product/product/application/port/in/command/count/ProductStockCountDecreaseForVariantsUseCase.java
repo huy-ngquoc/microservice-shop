@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.product.application.port.in.command.count;
 
 import vn.edu.uit.msshop.product.product.application.dto.command.DecreaseProductStockCountsForVariantsCommand;
 
-public interface DecreaseProductStockCountsForVariantsUseCase {
+public interface ProductStockCountDecreaseForVariantsUseCase {
     void execute(
             final DecreaseProductStockCountsForVariantsCommand command);
 }
