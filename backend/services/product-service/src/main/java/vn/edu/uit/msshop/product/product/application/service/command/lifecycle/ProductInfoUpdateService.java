@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFo
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductInfoUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.UpdateProductInfoUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
