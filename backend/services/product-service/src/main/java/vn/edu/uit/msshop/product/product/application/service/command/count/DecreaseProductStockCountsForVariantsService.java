@@ -8,13 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.DecreaseProductStockCountsForVariantsCommand;
-import vn.edu.uit.msshop.product.product.application.port.in.command.count.DecreaseProductStockCountsForVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountDecreaseForVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductStockCountsPort;
 
 @Service
 @RequiredArgsConstructor
 public class DecreaseProductStockCountsForVariantsService
-        implements DecreaseProductStockCountsForVariantsUseCase {
+        implements ProductStockCountDecreaseForVariantsUseCase {
     private final DecreaseAllProductStockCountsPort decreaseAllPort;
 
     @Override

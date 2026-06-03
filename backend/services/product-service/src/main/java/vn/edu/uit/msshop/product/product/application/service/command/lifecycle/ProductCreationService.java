@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.CreateProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductCreationUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductRatingPort;
@@ -32,7 +32,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @RequiredArgsConstructor
 public class ProductCreationService
         implements
-        CreateProductUseCase {
+        ProductCreationUseCase {
     private final CreateProductPort createPort;
     private final CheckProductCategoryExistsPort checkCategoryExistsPort;
     private final CheckProductBrandExistsPort checkBrandExistsPort;
@@ -51,7 +51,7 @@ public class ProductCreationService
             allEntries = true)
     public ProductView createSimple(
             final CreateSimpleProductCommand command) {
-        return CreateProductUseCase.super.createSimple(command);
+        return ProductCreationUseCase.super.createSimple(command);
     }
 
     @Override

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.application.dto.command.ReconcileProductRatingsCommand;
-import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ReconcileProductRatingsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingBulkReconciliationUseCase;
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.rating.Reco
 public class ReconcileProductRatingsJob {
     private static final Duration WINDOW_DURATION = Duration.ofHours(24);
 
-    private final ReconcileProductRatingsUseCase reconcileUseCase;
+    private final ProductRatingBulkReconciliationUseCase ratingBulkReconciliationUseCase;
 
     @Scheduled(
             fixedRate = 2,
@@ -30,7 +30,7 @@ public class ReconcileProductRatingsJob {
         final var command = new ReconcileProductRatingsCommand(rangeStartTime, rangeEndTime);
 
         try {
-            reconcileUseCase.execute(command);
+            ratingBulkReconciliationUseCase.execute(command);
         } catch (final RuntimeException e) {
             log.warn("Product rating reconciliation skipped: {}", e.getMessage());
         }

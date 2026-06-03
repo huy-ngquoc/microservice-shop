@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 
-public interface CreateProductUseCase {
+public interface ProductCreationUseCase {
     ProductView create(
             final CreateProductCommand command);
 
