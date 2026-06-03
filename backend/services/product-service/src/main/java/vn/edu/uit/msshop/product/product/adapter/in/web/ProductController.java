@@ -21,21 +21,22 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductReq
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.CreateProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.HardDeleteProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.RestoreProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.SoftDeleteProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.UpdateProductInfoUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductCreationUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductRestorationUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductSoftDeletionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductInfoUpdateUseCase;
 
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
-    private final CreateProductUseCase createUseCase;
-    private final RestoreProductUseCase restoreUseCase;
-    private final UpdateProductInfoUseCase updateInfoUseCase;
-    private final SoftDeleteProductUseCase softDeleteUseCase;
-    private final HardDeleteProductUseCase hardDeleteUseCase;
+    private final ProductCreationUseCase creationUseCase;
+    private final ProductRestorationUseCase restorationUseCase;
+    private final ProductInfoUpdateUseCase infoUpdateUseCase;
+    private final ProductSoftDeletionUseCase softDeletionUseCase;
+    private final ProductHardDeletionUseCase hardDeletionUseCase;
+
     private final ProductWebMapper mapper;
     private final ProductSharedWebMapper sharedMapper;
 
@@ -44,7 +45,7 @@ public class ProductController {
             @RequestBody
             @Valid
             final CreateProductRequest request) {
-        final var view = this.createUseCase.create(this.mapper.toCreateCommand(request));
+        final var view = this.creationUseCase.create(this.mapper.toCreateCommand(request));
 
         final var response = this.sharedMapper.toResponse(view);
         final var method = WebMvcLinkBuilder
@@ -62,7 +63,7 @@ public class ProductController {
             @RequestBody
             @Valid
             final CreateSimpleProductRequest request) {
-        final var view = this.createUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
+        final var view = this.creationUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
 
         final var response = this.sharedMapper.toResponse(view);
         final var method = WebMvcLinkBuilder
@@ -83,7 +84,7 @@ public class ProductController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toRestoreCommand(id, version);
-        this.restoreUseCase.restore(command);
+        this.restorationUseCase.restore(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -97,7 +98,7 @@ public class ProductController {
             @Valid
             final UpdateProductInfoRequest request) {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
-        final var view = this.updateInfoUseCase.updateInfo(command);
+        final var view = this.infoUpdateUseCase.updateInfo(command);
 
         final var response = this.sharedMapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -111,7 +112,7 @@ public class ProductController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
-        this.softDeleteUseCase.delete(command);
+        this.softDeletionUseCase.delete(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -124,7 +125,7 @@ public class ProductController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toHardDeleteCommand(id, version);
-        this.hardDeleteUseCase.purge(command);
+        this.hardDeletionUseCase.purge(command);
 
         return ResponseEntity.noContent().build();
     }

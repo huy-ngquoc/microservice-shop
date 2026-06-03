@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.SoftDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.SoftDeleteProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductSoftDeletionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 public class ProductSoftDeletionService
         implements
-        SoftDeleteProductUseCase {
+        ProductSoftDeletionUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final SoftDeleteVariantsForProductPort softDeleteVariantsForProductPort;

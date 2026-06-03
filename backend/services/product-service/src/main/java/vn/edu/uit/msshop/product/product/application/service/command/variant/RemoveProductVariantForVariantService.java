@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductMustHaveAtLeastOneVariantException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.variant.RemoveProductVariantForVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductSoldCountsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductStockCountsPort;
@@ -24,7 +24,7 @@ import vn.edu.uit.msshop.product.product.domain.model.Product;
 @Service
 @RequiredArgsConstructor
 public class RemoveProductVariantForVariantService
-        implements RemoveProductVariantForVariantUseCase {
+        implements ProductVariantRemovalForVariantUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final DecreaseAllProductSoldCountsPort decreaseSoldPort;

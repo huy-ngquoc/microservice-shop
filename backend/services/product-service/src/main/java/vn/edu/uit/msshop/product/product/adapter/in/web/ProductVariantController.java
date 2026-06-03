@@ -16,13 +16,14 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductVariantWeb
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.command.variant.AddProductVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantBulkAdditionUseCase;
 
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductVariantController {
-    private final AddProductVariantsUseCase addVariantsUseCase;
+    private final ProductVariantBulkAdditionUseCase bulkAdditionUseCase;
+
     private final ProductVariantWebMapper mapper;
     private final ProductSharedWebMapper sharedMapper;
 
@@ -35,7 +36,7 @@ public class ProductVariantController {
             @Valid
             final AddProductVariantRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
-        final var view = this.addVariantsUseCase.addVariants(command);
+        final var view = this.bulkAdditionUseCase.addVariants(command);
         return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 
@@ -47,7 +48,7 @@ public class ProductVariantController {
             @Valid
             final AddProductVariantsRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
-        final var view = this.addVariantsUseCase.addVariants(command);
+        final var view = this.bulkAdditionUseCase.addVariants(command);
         return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 }

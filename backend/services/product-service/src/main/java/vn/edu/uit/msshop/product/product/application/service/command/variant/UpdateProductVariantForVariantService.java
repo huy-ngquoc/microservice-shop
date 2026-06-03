@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.variant.UpdateProductVariantForVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantUpdateForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
@@ -20,7 +20,7 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 @Service
 @RequiredArgsConstructor
 public class UpdateProductVariantForVariantService
-        implements UpdateProductVariantForVariantUseCase {
+        implements ProductVariantUpdateForVariantUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final PublishProductEventPort eventPort;
