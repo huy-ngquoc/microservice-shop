@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductVariantWeb
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.AddProductVariantsUseCase;
 
 @RestController
 @RequestMapping("/products")

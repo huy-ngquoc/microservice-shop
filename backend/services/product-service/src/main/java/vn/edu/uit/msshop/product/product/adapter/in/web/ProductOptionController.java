@@ -19,17 +19,17 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductOption
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.RemoveProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductOptionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductOptionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductOptionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionAdditionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionRemovalUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionUpdateUseCase;
 
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductOptionController {
-    private final AddProductOptionUseCase addOptionUseCase;
-    private final UpdateProductOptionUseCase updateOptionUseCase;
-    private final RemoveProductOptionUseCase removeOptionUseCase;
+    private final ProductOptionAdditionUseCase addOptionUseCase;
+    private final ProductOptionUpdateUseCase updateOptionUseCase;
+    private final ProductOptionRemovalUseCase removeOptionUseCase;
     private final ProductOptionWebMapper mapper;
     private final ProductSharedWebMapper sharedMapper;
 

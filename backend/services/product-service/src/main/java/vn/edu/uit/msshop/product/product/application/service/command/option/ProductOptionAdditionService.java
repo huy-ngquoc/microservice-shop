@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.product.product.application.dto.command.AddProductOptio
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductOptionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionAdditionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
@@ -31,7 +31,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 public class ProductOptionAdditionService
         implements
-        AddProductOptionUseCase {
+        ProductOptionAdditionUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final UpdateAllProductVariantTraitsPort updateProductVariantTraitsPort;

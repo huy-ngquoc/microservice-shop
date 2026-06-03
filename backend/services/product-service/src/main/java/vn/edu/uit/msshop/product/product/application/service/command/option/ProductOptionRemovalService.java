@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductOp
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductOptionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionRemovalUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
@@ -43,7 +43,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 public class ProductOptionRemovalService
         implements
-        RemoveProductOptionUseCase {
+        ProductOptionRemovalUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final SoftDeleteVariantsForProductPort softDeleteVariantsForProductPort;

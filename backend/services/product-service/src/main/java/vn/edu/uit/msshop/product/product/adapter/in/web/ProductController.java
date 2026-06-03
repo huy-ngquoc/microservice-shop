@@ -21,11 +21,11 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductReq
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.command.CreateProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.HardDeleteProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.RestoreProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.SoftDeleteProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductInfoUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.CreateProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.HardDeleteProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.RestoreProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.SoftDeleteProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.UpdateProductInfoUseCase;
 
 @RestController
 @RequestMapping("/products")
