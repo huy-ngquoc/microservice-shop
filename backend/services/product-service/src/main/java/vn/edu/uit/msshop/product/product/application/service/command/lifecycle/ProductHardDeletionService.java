@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.HardDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.HardDeleteProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.HardDeleteProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductRatingPort;
