@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.port.in.command.ApplyRatingDeletedUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingDeletedUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProcessedRatingEventExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProcessedRatingEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
