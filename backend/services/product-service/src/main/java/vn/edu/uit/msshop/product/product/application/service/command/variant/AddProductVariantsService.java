@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVaria
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.command.variant.AddProductVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantBulkAdditionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
@@ -27,7 +27,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
-public class AddProductVariantsService implements AddProductVariantsUseCase {
+public class AddProductVariantsService implements ProductVariantBulkAdditionUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final CreateAllProductVariantsPort createAllVariantsPort;
