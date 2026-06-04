@@ -24,7 +24,7 @@ public record VariantResponse(
 
         @Nullable
         String imageKey,
-
+        String imageUrl,
         long version) {
     public VariantResponse {
         traits = List.copyOf(traits);

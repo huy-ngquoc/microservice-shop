@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.variant.adapter.in.web.mapper;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -8,13 +9,18 @@ import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.FindVariantsByIdsRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
+import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.PostImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
@@ -26,9 +32,14 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTarget;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
+import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryImageUrlResolver;
 
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class VariantWebMapper {
+        private final CloudinaryImageUrlResolver resolver;
+        private static final String VARIANTS_FOLDER = "variants";
     public ListVariantsQuery toListQuery(
             int page,
 
@@ -132,6 +143,7 @@ public class VariantWebMapper {
                 view.traits(),
                 view.targets(),
                 view.imageKey(),
+                resolver.resolve(view.imageKey(), VARIANTS_FOLDER),
                 view.version());
     }
 
@@ -140,5 +152,11 @@ public class VariantWebMapper {
         return views.stream()
                 .map(this::toResponse)
                 .toList();
+    }
+    public PostImageCommand toCommand(MultipartFile file, UUID variantId, long version) {
+        return new PostImageCommand(new VariantId(variantId), file, version);
+    }
+    public DeleteImageCommand toCommand(UUID variantId, long version) {
+        return new DeleteImageCommand(new VariantId(variantId), version);
     }
 }

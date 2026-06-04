@@ -1,5 +1,10 @@
 package vn.edu.uit.msshop.product.variant.application.port.out.image;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
 public interface VariantImageStoragePort {
@@ -14,4 +19,5 @@ public interface VariantImageStoragePort {
 
     void deleteImage(
             final VariantImageKey key);
+            String postImage(MultipartFile image) throws IOException;
 }

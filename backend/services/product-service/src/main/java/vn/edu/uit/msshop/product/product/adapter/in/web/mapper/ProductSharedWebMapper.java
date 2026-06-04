@@ -4,14 +4,19 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductVariantResponse;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductVariantView;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryImageUrlResolver;
 
 @Component
+@RequiredArgsConstructor
 public class ProductSharedWebMapper {
+        private final CloudinaryImageUrlResolver resolver;
+        private static final String VARIANTS_FOLDER = "variants";
     public ProductId toProductId(
             final UUID id) {
         return new ProductId(id);
@@ -37,6 +42,7 @@ public class ProductSharedWebMapper {
                 view.options(),
                 variantsList,
                 view.imageKeys(),
+                view.imageKeys().stream().map(item->resolver.resolve(item, VARIANTS_FOLDER)).toList(),
                 view.version());
     }
 
