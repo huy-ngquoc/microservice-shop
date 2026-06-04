@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ListProductsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ListSoftDeletedProductsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.FindProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.FindSoftDeletedProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductActiveListingUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductSoftDeletedListingUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.ProductActiveLookupByIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.ProductSoftDeletedLookupByIdUseCase;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
@@ -24,10 +24,10 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductQueryController {
-    private final ListProductsUseCase listUseCase;
-    private final ListSoftDeletedProductsUseCase listSoftDeletedUseCase;
-    private final FindProductUseCase findUseCase;
-    private final FindSoftDeletedProductUseCase findSoftDeletedUseCase;
+    private final ProductActiveListingUseCase listUseCase;
+    private final ProductSoftDeletedListingUseCase listSoftDeletedUseCase;
+    private final ProductActiveLookupByIdUseCase findUseCase;
+    private final ProductSoftDeletedLookupByIdUseCase findSoftDeletedUseCase;
     private final ProductSharedWebMapper sharedMapper;
 
     @GetMapping
