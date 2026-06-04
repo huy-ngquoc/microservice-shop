@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsUseCase;
 
 @RestController
 @RequestMapping("/products")

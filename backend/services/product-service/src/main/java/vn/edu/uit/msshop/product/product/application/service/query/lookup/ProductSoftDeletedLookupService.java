@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.query.FindSoftDeletedProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.FindSoftDeletedProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductSoldCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadSoftDeletedProductPort;
