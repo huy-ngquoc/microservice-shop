@@ -52,7 +52,7 @@ public class ProductOptionAdditionService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public ProductView addOption(
+    public ProductView add(
             AddProductOptionCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)

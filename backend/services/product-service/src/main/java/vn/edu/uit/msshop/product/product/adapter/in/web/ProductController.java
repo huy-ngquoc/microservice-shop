@@ -112,7 +112,7 @@ public class ProductController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
-        this.softDeletionUseCase.delete(command);
+        this.softDeletionUseCase.softDelete(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -125,7 +125,7 @@ public class ProductController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toHardDeleteCommand(id, version);
-        this.hardDeletionUseCase.purge(command);
+        this.hardDeletionUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();
     }

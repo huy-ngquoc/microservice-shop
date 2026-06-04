@@ -77,7 +77,7 @@ public class VariantToProductSyncAdapter
                 soldIncrement,
                 stockIncrement);
 
-        this.productVariantAdditionForVariantUseCase.addVariant(command);
+        this.productVariantAdditionForVariantUseCase.add(command);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class VariantToProductSyncAdapter
                 productId,
                 productVariant);
 
-        this.productVariantUpdateForVariantUseCase.updateVariant(command);
+        this.productVariantUpdateForVariantUseCase.update(command);
     }
 
     private static ProductVariant toProductVariant(
@@ -112,7 +112,7 @@ public class VariantToProductSyncAdapter
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
         final var command = new IncreaseProductSoldCountsForVariantsCommand(incrementById);
-        this.productSoldCountIncreaseForVariantsUseCase.execute(command);
+        this.productSoldCountIncreaseForVariantsUseCase.increase(command);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class VariantToProductSyncAdapter
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
         final var command = new IncreaseProductStockCountsForVariantsCommand(incrementById);
-        this.productStockCountIncreaseForVariantsUseCase.execute(command);
+        this.productStockCountIncreaseForVariantsUseCase.increase(command);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class VariantToProductSyncAdapter
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
         final var command = new DecreaseProductSoldCountsForVariantsCommand(decrementById);
-        this.productSoldCountDecreaseForVariantsUseCase.execute(command);
+        this.productSoldCountDecreaseForVariantsUseCase.decrease(command);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class VariantToProductSyncAdapter
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
         final var command = new DecreaseProductStockCountsForVariantsCommand(decrementById);
-        this.productStockCountDecreaseForVariantsUseCase.execute(command);
+        this.productStockCountDecreaseForVariantsUseCase.decrease(command);
     }
 
     @Override
@@ -160,6 +160,6 @@ public class VariantToProductSyncAdapter
                 soldDecrement,
                 stockDecrement);
 
-        this.productVariantRemovalForVariantUseCase.removeVariant(command);
+        this.productVariantRemovalForVariantUseCase.remove(command);
     }
 }

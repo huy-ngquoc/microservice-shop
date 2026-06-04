@@ -40,7 +40,7 @@ public class ProductSoftDeletionService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public void delete(
+    public void softDelete(
             final SoftDeleteProductCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)

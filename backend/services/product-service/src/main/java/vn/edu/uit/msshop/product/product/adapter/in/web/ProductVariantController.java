@@ -36,7 +36,7 @@ public class ProductVariantController {
             @Valid
             final AddProductVariantRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
-        final var view = this.bulkAdditionUseCase.addVariants(command);
+        final var view = this.bulkAdditionUseCase.addAll(command);
         return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 
@@ -48,7 +48,7 @@ public class ProductVariantController {
             @Valid
             final AddProductVariantsRequest request) {
         final var command = this.mapper.toAddVariantsCommand(id, request);
-        final var view = this.bulkAdditionUseCase.addVariants(command);
+        final var view = this.bulkAdditionUseCase.addAll(command);
         return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 }
