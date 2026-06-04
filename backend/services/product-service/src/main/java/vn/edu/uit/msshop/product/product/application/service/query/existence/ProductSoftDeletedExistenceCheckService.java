@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckSoftDeletedProductExistsByBrandUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckSoftDeletedProductExistsByCategoryUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckSoftDeletedProductExistsByBrandUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckSoftDeletedProductExistsByCategoryUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckSoftDeletedProductExistsByBrandPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckSoftDeletedProductExistsByCategoryPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
