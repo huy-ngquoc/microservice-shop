@@ -26,7 +26,8 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
-public class RemoveProductVariantsService implements ProductVariantBulkRemovalUseCase {
+public class ProductVariantBulkRemovalService
+        implements ProductVariantBulkRemovalUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final SoftDeleteAllProductVariantsPort softDeleteAllVariantsPort;
