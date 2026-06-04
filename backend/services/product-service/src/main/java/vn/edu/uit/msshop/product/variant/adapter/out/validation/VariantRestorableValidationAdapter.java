@@ -5,7 +5,7 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.FindProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.ProductActiveLookupByIdUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantRestorablePort;
@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 @Component
 @RequiredArgsConstructor
 public class VariantRestorableValidationAdapter implements CheckVariantRestorablePort {
-    private final FindProductUseCase findProductUseCase;
+    private final ProductActiveLookupByIdUseCase findProductUseCase;
 
     // TODO: too long, split into smaller function
     @Override

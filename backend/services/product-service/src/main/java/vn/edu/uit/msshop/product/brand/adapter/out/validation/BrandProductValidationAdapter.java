@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasProductsPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
-import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsByBrandUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckSoftDeletedProductExistsByBrandUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByBrandIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductSoftDeletedExistenceCheckByBrandIdUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 
 @Component
@@ -16,8 +16,8 @@ public class BrandProductValidationAdapter
         implements
         CheckBrandHasProductsPort,
         CheckBrandHasSoftDeletedProductsPort {
-    private final CheckProductExistsByBrandUseCase checkProductExistsByBrandUseCase;
-    private final CheckSoftDeletedProductExistsByBrandUseCase checkSoftDeletedProductExistsByBrandUseCase;
+    private final ProductActiveExistenceCheckByBrandIdUseCase checkProductExistsByBrandUseCase;
+    private final ProductSoftDeletedExistenceCheckByBrandIdUseCase checkSoftDeletedProductExistsByBrandUseCase;
 
     @Override
     public boolean hasProducts(
