@@ -17,6 +17,7 @@ public record ProductResponse(
         List<String> options,
         List<ProductVariantResponse> variants,
         List<String> imageKeys,
+        List<String> imageUrls,
         long version) {
     public ProductResponse {
         options = List.copyOf(options);

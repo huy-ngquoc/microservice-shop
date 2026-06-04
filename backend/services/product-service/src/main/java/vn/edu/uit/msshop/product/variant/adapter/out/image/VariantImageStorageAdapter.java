@@ -1,12 +1,15 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.image;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.api.exceptions.NotFound;
+import com.cloudinary.utils.ObjectUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,5 +89,19 @@ public class VariantImageStorageAdapter implements VariantImageStoragePort {
                     toPublicId);
             throw new ImageRenameFailedException(msg, e);
         }
+    }
+
+    @Override
+    public String postImage(MultipartFile image) throws IOException {
+        Map uploadResult = cloudinary.uploader().upload(image, ObjectUtils.asMap(
+        "folder", VARIANTS_FOLDER
+    ));
+    String fullPublicId = (String) uploadResult.get("public_id");
+    if (fullPublicId.contains("/")) {
+        return fullPublicId.substring(fullPublicId.lastIndexOf("/") + 1);
+    }
+    
+    return fullPublicId;
+    
     }
 }

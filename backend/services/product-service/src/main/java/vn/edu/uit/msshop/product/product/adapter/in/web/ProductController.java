@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.adapter.in.web;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -19,10 +20,12 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebM
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
+
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.application.port.in.command.CreateProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.HardDeleteProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.ReorderImageUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.RestoreProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.SoftDeleteProductUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductInfoUseCase;
@@ -38,7 +41,7 @@ public class ProductController {
     private final HardDeleteProductUseCase hardDeleteUseCase;
     private final ProductWebMapper mapper;
     private final ProductSharedWebMapper sharedMapper;
-
+    private final ReorderImageUseCase reorderImageCommand;
     @PostMapping
     public ResponseEntity<ProductResponse> create(
             @RequestBody
@@ -127,5 +130,12 @@ public class ProductController {
         this.hardDeleteUseCase.purge(command);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{productId}/image/order")
+    public ResponseEntity<Void> reorderImage(@RequestBody List<Integer> indexes, @PathVariable UUID productId, @RequestParam("version") long version) {
+        this.reorderImageCommand.reOrder(mapper.toReorderImageCommand(productId, indexes, version));
+        return ResponseEntity.noContent().build();
+
     }
 }

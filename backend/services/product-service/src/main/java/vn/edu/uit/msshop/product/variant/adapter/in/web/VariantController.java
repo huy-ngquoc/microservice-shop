@@ -19,6 +19,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.query.FindSoftDelet
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.ListVariantsUseCase;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +31,10 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import vn.edu.uit.msshop.product.variant.application.port.in.command.DeleteImageUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.PostImageUseCase;
 
 @RestController
 @RequestMapping("/variants")
@@ -43,6 +48,8 @@ public class VariantController {
     private final SoftDeleteVariantUseCase softDeleteUseCase;
     private final HardDeleteVariantUseCase hardDeleteUseCase;
     private final VariantWebMapper mapper;
+    private final PostImageUseCase postImageUseCase;
+    private final DeleteImageUseCase deleteImageUseCase;
 
     @GetMapping
     public ResponseEntity<PageResponseDto<VariantResponse>> list(
@@ -152,6 +159,16 @@ public class VariantController {
         final var command = this.mapper.toHardDeleteCommand(id, version);
         this.hardDeleteUseCase.purge(command);
 
+        return ResponseEntity.noContent().build();
+    }
+    @PatchMapping("/{id}/image")
+    public ResponseEntity<Void> postImage(@PathVariable UUID id, @RequestParam("file") MultipartFile file, @RequestParam("version") long version) throws IOException {
+        this.postImageUseCase.postImage(mapper.toCommand(file, id, version));
+        return ResponseEntity.noContent().build();
+    }
+    @DeleteMapping("/{id}/image")
+    public ResponseEntity<Void> deleteImage(@PathVariable UUID id, @RequestParam("version") long version) {
+        this.deleteImageUseCase.deleteImage(mapper.toCommand(id, version));
         return ResponseEntity.noContent().build();
     }
 }

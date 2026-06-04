@@ -39,6 +39,7 @@ public final class Variant {
 
     private final VariantVersion version;
 
+
     @Nullable
     private final VariantDeletionTime deletionTime;
 
@@ -72,5 +73,9 @@ public final class Variant {
 
         this.version = Domains.requireNonNull(version, "Variant version must not be null");
         this.deletionTime = deletionTime;
+    }
+
+    public Variant updateImageKey(VariantImageKey key) {
+        return new Variant(id, productId, productName, price, traits, targets, key, version, deletionTime);
     }
 }

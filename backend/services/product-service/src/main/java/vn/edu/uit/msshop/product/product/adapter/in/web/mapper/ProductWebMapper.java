@@ -1,15 +1,18 @@
 package vn.edu.uit.msshop.product.product.adapter.in.web.mapper;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
+
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.HardDeleteProductCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.ReorderImageCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.RestoreProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.SoftDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
@@ -110,5 +113,8 @@ public class ProductWebMapper {
         final var version = new ProductVersion(expectedVersion);
 
         return new HardDeleteProductCommand(productId, version);
+    }
+    public ReorderImageCommand toReorderImageCommand(UUID productId, List<Integer> newIndexes, long version) {
+        return new ReorderImageCommand(new ProductId(productId), newIndexes, version);
     }
 }
