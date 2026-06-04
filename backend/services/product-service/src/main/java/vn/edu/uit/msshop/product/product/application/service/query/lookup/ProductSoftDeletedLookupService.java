@@ -27,7 +27,7 @@ public class ProductSoftDeletedLookupService
     @Override
     @Transactional(
             readOnly = true)
-    public ProductView findSoftDeletedById(
+    public ProductView findById(
             final ProductId id) {
         final var product = this.loadSoftDeletedPort.loadSoftDeletedById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));

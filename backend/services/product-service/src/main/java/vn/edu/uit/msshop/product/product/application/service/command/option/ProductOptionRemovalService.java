@@ -66,7 +66,7 @@ public class ProductOptionRemovalService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public ProductView removeOption(
+    public ProductView remove(
             final RemoveProductOptionCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)

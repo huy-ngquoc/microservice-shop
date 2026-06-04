@@ -49,7 +49,7 @@ public class ProductVariantBulkRemovalService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public ProductView removeVariants(
+    public ProductView removeAll(
             final RemoveProductVariantsCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)

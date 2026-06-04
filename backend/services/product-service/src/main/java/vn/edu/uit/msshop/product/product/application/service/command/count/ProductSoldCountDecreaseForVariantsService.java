@@ -28,7 +28,7 @@ public class ProductSoldCountDecreaseForVariantsService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public void execute(
+    public void decrease(
             DecreaseProductSoldCountsForVariantsCommand command) {
         this.decreaseAllPort.decreaseAll(command.decrementById());
     }

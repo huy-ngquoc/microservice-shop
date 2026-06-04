@@ -33,7 +33,7 @@ public class ProductHardDeletionService
 
     @Override
     @Transactional
-    public void purge(
+    public void hardDelete(
             HardDeleteProductCommand command) {
         final var productId = command.id();
         final var product = this.loadSoftDeletedPort.loadSoftDeletedById(productId)

@@ -49,7 +49,7 @@ public class ProductOptionUpdateService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public ProductView updateOption(
+    public ProductView update(
             UpdateProductOptionCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)
