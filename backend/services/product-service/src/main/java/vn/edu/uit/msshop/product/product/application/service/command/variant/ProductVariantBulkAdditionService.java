@@ -27,7 +27,8 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
-public class AddProductVariantsService implements ProductVariantBulkAdditionUseCase {
+public class ProductVariantBulkAdditionService
+        implements ProductVariantBulkAdditionUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final CreateAllProductVariantsPort createAllVariantsPort;

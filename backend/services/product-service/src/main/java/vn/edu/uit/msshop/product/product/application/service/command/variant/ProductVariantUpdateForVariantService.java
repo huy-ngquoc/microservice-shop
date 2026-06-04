@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.product.application.service.command.variant;
 
-import java.util.Map;
-
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -9,26 +7,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductVariantForVariantCommand;
-import vn.edu.uit.msshop.product.product.application.exception.ProductMustHaveAtLeastOneVariantException;
+import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantUpdateForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductSoldCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductStockCountsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
+import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 
 @Service
 @RequiredArgsConstructor
-public class RemoveProductVariantForVariantService
-        implements ProductVariantRemovalForVariantUseCase {
+public class ProductVariantUpdateForVariantService
+        implements ProductVariantUpdateForVariantUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
-    private final DecreaseAllProductSoldCountsPort decreaseSoldPort;
-    private final DecreaseAllProductStockCountsPort decreaseStockPort;
     private final PublishProductEventPort eventPort;
 
     @Override
@@ -42,18 +36,16 @@ public class RemoveProductVariantForVariantService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public void removeVariant(
-            RemoveProductVariantForVariantCommand command) {
+    public void updateVariant(
+            final UpdateProductVariantForVariantCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        if (product.getVariants().size() <= 1) {
-            throw new ProductMustHaveAtLeastOneVariantException(productId);
-        }
-
-        final var newConfiguration = product.getConfiguration()
-                .removeVariant(command.variantId());
+        final var newVariant = command.updatedVariant();
+        final var newVariants = product.getVariants()
+                .replaceById(newVariant.id(), newVariant);
+        final var newConfiguration = new ProductConfiguration(product.getOptions(), newVariants);
 
         final var next = new Product(
                 product.getId(),
@@ -64,15 +56,9 @@ public class RemoveProductVariantForVariantService
                 product.getImageKeys(),
                 product.getVersion(),
                 product.getDeletionTime());
+
         final var saved = this.updatePort.update(next);
-
-        if (command.soldDecrement() > 0) {
-            this.decreaseSoldPort.decreaseAll(Map.of(productId, command.soldDecrement()));
-        }
-        if (command.stockDecrement() > 0) {
-            this.decreaseStockPort.decreaseAll(Map.of(productId, command.stockDecrement()));
-        }
-
         this.eventPort.publish(new ProductUpdated(saved.getId()));
     }
+
 }

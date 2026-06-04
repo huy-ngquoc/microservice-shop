@@ -7,20 +7,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantUpdateForVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantAdditionForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
-import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateProductVariantForVariantService
-        implements ProductVariantUpdateForVariantUseCase {
+public class ProductVariantAdditionForVariantService
+        implements ProductVariantAdditionForVariantUseCase {
     private final LoadProductPort loadPort;
     private final UpdateProductPort updatePort;
     private final PublishProductEventPort eventPort;
@@ -36,16 +35,14 @@ public class UpdateProductVariantForVariantService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public void updateVariant(
-            final UpdateProductVariantForVariantCommand command) {
+    public void addVariant(
+            final AddProductVariantForVariantCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var newVariant = command.updatedVariant();
-        final var newVariants = product.getVariants()
-                .replaceById(newVariant.id(), newVariant);
-        final var newConfiguration = new ProductConfiguration(product.getOptions(), newVariants);
+        final var newConfiguration = product.getConfiguration()
+                .addVariant(command.variant());
 
         final var next = new Product(
                 product.getId(),
@@ -60,5 +57,4 @@ public class UpdateProductVariantForVariantService
         final var saved = this.updatePort.update(next);
         this.eventPort.publish(new ProductUpdated(saved.getId()));
     }
-
 }

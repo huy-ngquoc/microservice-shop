@@ -7,15 +7,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.DecreaseProductStockCountsForVariantsCommand;
-import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountDecreaseForVariantsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductStockCountsPort;
+import vn.edu.uit.msshop.product.product.application.dto.command.IncreaseProductStockCountsForVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountIncreaseForVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.IncreaseAllProductStockCountsPort;
 
 @Service
 @RequiredArgsConstructor
-public class DecreaseProductStockCountsForVariantsService
-        implements ProductStockCountDecreaseForVariantsUseCase {
-    private final DecreaseAllProductStockCountsPort decreaseAllPort;
+public class ProductStockCountIncreaseForVariantsService
+        implements ProductStockCountIncreaseForVariantsUseCase {
+    private final IncreaseAllProductStockCountsPort increaseAllPort;
 
     @Override
     @Transactional
@@ -29,7 +29,7 @@ public class DecreaseProductStockCountsForVariantsService
                             allEntries = true)
             })
     public void execute(
-            DecreaseProductStockCountsForVariantsCommand command) {
-        this.decreaseAllPort.decreaseAll(command.decrementById());
+            final IncreaseProductStockCountsForVariantsCommand command) {
+        this.increaseAllPort.increaseAll(command.incrementById());
     }
 }
