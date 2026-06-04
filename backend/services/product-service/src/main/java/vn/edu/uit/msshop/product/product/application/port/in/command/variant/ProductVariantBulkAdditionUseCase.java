@@ -4,6 +4,6 @@ import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVaria
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 
 public interface ProductVariantBulkAdditionUseCase {
-    ProductView addVariants(
+    ProductView addAll(
             final AddProductVariantsCommand command);
 }

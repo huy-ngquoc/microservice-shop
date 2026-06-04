@@ -36,7 +36,7 @@ public class ProductVariantUpdateForVariantService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public void updateVariant(
+    public void update(
             final UpdateProductVariantForVariantCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)

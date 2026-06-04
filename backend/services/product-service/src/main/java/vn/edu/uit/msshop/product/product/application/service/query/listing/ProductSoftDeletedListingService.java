@@ -42,7 +42,7 @@ public class ProductSoftDeletedListingService
     @Override
     @Transactional(
             readOnly = true)
-    public PageResponseDto<ProductView> listSoftDeleted(
+    public PageResponseDto<ProductView> list(
             final PageRequestDto pageRequest) {
         final var page = this.listSoftDeletedPort.listSoftDeleted(pageRequest);
 

@@ -42,7 +42,7 @@ public class ProductOptionController {
             @Valid
             final AddProductOptionRequest request) {
         final var command = this.mapper.toAddOptionCommand(id, request);
-        final var view = this.addOptionUseCase.addOption(command);
+        final var view = this.addOptionUseCase.add(command);
         return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 
@@ -58,7 +58,7 @@ public class ProductOptionController {
             @Valid
             final UpdateProductOptionRequest request) {
         final var command = this.mapper.toUpdateOptionCommand(id, index, request);
-        final var view = this.updateOptionUseCase.updateOption(command);
+        final var view = this.updateOptionUseCase.update(command);
         return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 
@@ -74,7 +74,7 @@ public class ProductOptionController {
             @Valid
             final RemoveProductOptionRequest request) {
         final var command = this.mapper.toRemoveOptionCommand(id, index, request);
-        final var view = this.removeOptionUseCase.removeOption(command);
+        final var view = this.removeOptionUseCase.remove(command);
         return ResponseEntity.ok(this.sharedMapper.toResponse(view));
     }
 }
