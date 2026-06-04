@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsByBrandUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsByCategoryUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsByVariantUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsByBrandUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsByCategoryUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsByVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByBrandPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByCategoryPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByVariantPort;
