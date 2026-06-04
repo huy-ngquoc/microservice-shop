@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasProductsPort;
 import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsByCategoryUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckSoftDeletedProductExistsByCategoryUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsByCategoryUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckSoftDeletedProductExistsByCategoryUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 
 @Component

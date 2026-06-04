@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.query.FindProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.FindSoftDeletedProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.ListProductsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.ListSoftDeletedProductsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ListProductsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ListSoftDeletedProductsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.FindProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.FindSoftDeletedProductUseCase;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
