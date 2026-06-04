@@ -14,10 +14,10 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNo
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductCreationUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductStockCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.InitializeProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.InitializeProductStockCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.CreateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.InitializeProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;

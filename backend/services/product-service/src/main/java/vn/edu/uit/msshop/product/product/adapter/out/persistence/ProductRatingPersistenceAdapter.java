@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductRatingPersistenceMapper;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadAllProductRatingsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateAllProductRatingsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.DeleteProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.InitializeProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.UpdateAllProductRatingsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.UpdateProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadAllProductRatingsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadProductRatingPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 

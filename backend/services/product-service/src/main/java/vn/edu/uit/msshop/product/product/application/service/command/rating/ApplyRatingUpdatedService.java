@@ -11,10 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingUpdatedUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProcessedRatingEventExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProcessedRatingEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.UpdateProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.CheckProcessedRatingEventExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.CreateProcessedRatingEventPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 

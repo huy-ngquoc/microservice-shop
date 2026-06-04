@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProcessedRatingEventExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProcessedRatingEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.CheckProcessedRatingEventExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.CreateProcessedRatingEventPort;
 
 @Component
 @RequiredArgsConstructor
