@@ -8,10 +8,10 @@ import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductE
 import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsByCategoryUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsByVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByBrandPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByCategoryPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByVariantPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByBrandPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByCategoryPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByVariantPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
