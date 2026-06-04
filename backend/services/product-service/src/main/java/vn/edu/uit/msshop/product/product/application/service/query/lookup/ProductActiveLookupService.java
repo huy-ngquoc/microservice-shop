@@ -10,10 +10,10 @@ import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.query.FindProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductStockCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadProductRatingPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service

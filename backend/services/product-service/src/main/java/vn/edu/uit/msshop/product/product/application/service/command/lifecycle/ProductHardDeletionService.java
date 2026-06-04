@@ -8,11 +8,11 @@ import vn.edu.uit.msshop.product.product.application.dto.command.HardDeleteProdu
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductStockCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DeleteProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DeleteProductStockCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.DeleteProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadSoftDeletedProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.DeleteProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.HardDeleteAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductPurged;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;

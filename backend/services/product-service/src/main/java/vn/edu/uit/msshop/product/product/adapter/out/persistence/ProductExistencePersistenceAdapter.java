@@ -3,12 +3,12 @@ package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByBrandPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByCategoryPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsByVariantPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckProductExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckSoftDeletedProductExistsByBrandPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CheckSoftDeletedProductExistsByCategoryPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByBrandPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByCategoryPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByVariantPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckSoftDeletedProductExistsByBrandPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckSoftDeletedProductExistsByCategoryPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;

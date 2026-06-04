@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductStockCountPersistenceMapper;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductStockCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductStockCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.IncreaseAllProductStockCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.InitializeProductStockCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadAllProductStockCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DecreaseAllProductStockCountsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DeleteProductStockCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.IncreaseAllProductStockCountsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.InitializeProductStockCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadAllProductStockCountsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductStockCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 

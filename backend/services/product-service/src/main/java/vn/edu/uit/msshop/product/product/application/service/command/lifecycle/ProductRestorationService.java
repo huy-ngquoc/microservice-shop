@@ -10,8 +10,8 @@ import vn.edu.uit.msshop.product.product.application.dto.command.RestoreProductC
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductRestorationUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadSoftDeletedProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.RestoreVariantsForProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductRestored;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
