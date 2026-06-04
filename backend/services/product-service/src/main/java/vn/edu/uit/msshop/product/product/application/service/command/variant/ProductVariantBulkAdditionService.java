@@ -49,7 +49,7 @@ public class ProductVariantBulkAdditionService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public ProductView addVariants(
+    public ProductView addAll(
             final AddProductVariantsCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)

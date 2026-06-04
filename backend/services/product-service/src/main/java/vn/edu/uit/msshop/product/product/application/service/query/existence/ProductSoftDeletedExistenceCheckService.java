@@ -25,7 +25,7 @@ public class ProductSoftDeletedExistenceCheckService
     @Override
     @Transactional(
             readOnly = true)
-    public boolean existsSoftDeletedByBrandId(
+    public boolean existsByBrandId(
             final ProductBrandId brandId) {
         return this.existenceCheckByBrandIdPort.existsSoftDeletedByBrandId(brandId);
     }
@@ -33,7 +33,7 @@ public class ProductSoftDeletedExistenceCheckService
     @Override
     @Transactional(
             readOnly = true)
-    public boolean existsSoftDeletedByCategoryId(
+    public boolean existsByCategoryId(
             ProductCategoryId categoryId) {
         return this.existenceCheckByCategoryIdPort.existsSoftDeletedByCategoryId(categoryId);
     }

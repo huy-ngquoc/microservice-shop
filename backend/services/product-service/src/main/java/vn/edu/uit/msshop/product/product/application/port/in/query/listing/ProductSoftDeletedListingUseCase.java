@@ -5,6 +5,6 @@ import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 public interface ProductSoftDeletedListingUseCase {
-    PageResponseDto<ProductView> listSoftDeleted(
+    PageResponseDto<ProductView> list(
             final PageRequestDto pageRequest);
 }

@@ -74,7 +74,7 @@ public class ProductQueryController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = this.listSoftDeletedUseCase.listSoftDeleted(request);
+        final var views = this.listSoftDeletedUseCase.list(request);
 
         final var response = views.map(this.sharedMapper::toResponse);
         return ResponseEntity.ok(response);
@@ -94,7 +94,7 @@ public class ProductQueryController {
     public ResponseEntity<ProductResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
-        final var view = this.findSoftDeletedUseCase.findSoftDeletedById(
+        final var view = this.findSoftDeletedUseCase.findById(
                 this.sharedMapper.toProductId(id));
 
         final var response = this.sharedMapper.toResponse(view);

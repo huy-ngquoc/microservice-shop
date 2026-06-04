@@ -42,7 +42,7 @@ public class ProductVariantRemovalForVariantService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public void removeVariant(
+    public void remove(
             RemoveProductVariantForVariantCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)

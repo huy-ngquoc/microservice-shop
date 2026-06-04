@@ -31,6 +31,6 @@ public class CategoryProductValidationAdapter
             final CategoryId id) {
         final var productCategoryId = new ProductCategoryId(id.value());
         return this.checkSoftDeletedProductExistsByCategoryUseCase
-                .existsSoftDeletedByCategoryId(productCategoryId);
+                .existsByCategoryId(productCategoryId);
     }
 }

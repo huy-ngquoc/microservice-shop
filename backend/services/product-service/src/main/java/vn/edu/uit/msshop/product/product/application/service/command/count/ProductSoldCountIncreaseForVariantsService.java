@@ -28,7 +28,7 @@ public class ProductSoldCountIncreaseForVariantsService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public void execute(
+    public void increase(
             final IncreaseProductSoldCountsForVariantsCommand command) {
         this.increaseAllSoldCountsPort.increaseAll(command.incrementById());
     }

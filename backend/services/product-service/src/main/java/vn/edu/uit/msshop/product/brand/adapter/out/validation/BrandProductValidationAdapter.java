@@ -31,6 +31,6 @@ public class BrandProductValidationAdapter
             final BrandId brandId) {
         final var productBrandId = new ProductBrandId(brandId.value());
         return this.checkSoftDeletedProductExistsByBrandUseCase
-                .existsSoftDeletedByBrandId(productBrandId);
+                .existsByBrandId(productBrandId);
     }
 }
