@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ListSoftDeletedProductsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductSoftDeletedListingUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadAllProductSoldCountsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadAllProductStockCountsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.ListSoftDeletedProductsPort;
@@ -27,7 +27,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @Service
 @RequiredArgsConstructor
 public class ProductSoftDeletedListingService
-        implements ListSoftDeletedProductsUseCase {
+        implements ProductSoftDeletedListingUseCase {
     private static final Collector<
             ProductId,
             ?,

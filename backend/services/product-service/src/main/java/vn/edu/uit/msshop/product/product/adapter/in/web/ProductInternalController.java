@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByIdUseCase;
 
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductInternalController {
-    private final CheckProductExistsUseCase checkExistsUseCase;
+    private final ProductActiveExistenceCheckByIdUseCase checkExistsUseCase;
     private final ProductSharedWebMapper sharedMapper;
 
     @GetMapping("/{id}/exists")

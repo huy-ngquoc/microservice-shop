@@ -9,7 +9,7 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.FindProductUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.ProductActiveLookupByIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductSoldCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductStockCountPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @Service
 @RequiredArgsConstructor
 public class ProductActiveLookupService
-        implements FindProductUseCase {
+        implements ProductActiveLookupByIdUseCase {
     private final LoadProductPort loadPort;
     private final LoadProductSoldCountPort loadSoldCountPort;
     private final LoadProductStockCountPort loadStockCountPort;
