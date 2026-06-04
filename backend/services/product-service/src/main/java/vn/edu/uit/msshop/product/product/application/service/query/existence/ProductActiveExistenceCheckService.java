@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsByBrandUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsByCategoryUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsByVariantUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.existence.CheckProductExistsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByBrandIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByCategoryIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByVariantIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByBrandPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByCategoryPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByVariantPort;
@@ -21,10 +21,10 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 @RequiredArgsConstructor
 public class ProductActiveExistenceCheckService
         implements
-        CheckProductExistsUseCase,
-        CheckProductExistsByBrandUseCase,
-        CheckProductExistsByCategoryUseCase,
-        CheckProductExistsByVariantUseCase {
+        ProductActiveExistenceCheckByIdUseCase,
+        ProductActiveExistenceCheckByBrandIdUseCase,
+        ProductActiveExistenceCheckByCategoryIdUseCase,
+        ProductActiveExistenceCheckByVariantIdUseCase {
     private final CheckProductExistsPort checkExistsPort;
     private final CheckProductExistsByBrandPort checkExistsByBrandPort;
     private final CheckProductExistsByCategoryPort checkExistsByCategoryPort;

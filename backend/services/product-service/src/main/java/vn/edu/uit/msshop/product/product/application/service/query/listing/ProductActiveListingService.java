@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ListProductsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductActiveListingUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadAllProductSoldCountsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadAllProductStockCountsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.ListProductsPort;
@@ -29,7 +29,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @Service
 @RequiredArgsConstructor
 public class ProductActiveListingService
-        implements ListProductsUseCase {
+        implements ProductActiveListingUseCase {
     private static final Collector<
             ProductId,
             ?,
