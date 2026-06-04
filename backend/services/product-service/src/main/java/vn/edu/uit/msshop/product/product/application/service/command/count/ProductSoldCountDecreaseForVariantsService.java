@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.Decrea
 
 @Service
 @RequiredArgsConstructor
-public class DecreaseProductSoldCountsForVariantsService
+public class ProductSoldCountDecreaseForVariantsService
         implements ProductSoldCountDecreaseForVariantsUseCase {
     private final DecreaseAllProductSoldCountsPort decreaseAllPort;
 
