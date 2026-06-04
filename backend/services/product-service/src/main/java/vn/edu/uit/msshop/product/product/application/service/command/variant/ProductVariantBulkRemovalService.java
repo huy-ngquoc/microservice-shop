@@ -13,11 +13,11 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundEx
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantBulkRemovalUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductStockCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductStockCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadProductRatingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteAllProductVariantsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;

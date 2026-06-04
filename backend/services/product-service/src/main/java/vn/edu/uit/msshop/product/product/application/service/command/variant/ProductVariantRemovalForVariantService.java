@@ -14,10 +14,10 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductMustHaveAt
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductSoldCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DecreaseAllProductStockCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DecreaseAllProductSoldCountsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DecreaseAllProductStockCountsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 

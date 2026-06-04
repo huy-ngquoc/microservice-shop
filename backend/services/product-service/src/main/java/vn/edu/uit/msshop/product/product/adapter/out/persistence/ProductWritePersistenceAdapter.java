@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductPersistenceMapper;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListProductsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.ListSoftDeletedProductsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadAllProductsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadSoftDeletedProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.ListProductsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.ListSoftDeletedProductsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadAllProductsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadSoftDeletedProductPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
