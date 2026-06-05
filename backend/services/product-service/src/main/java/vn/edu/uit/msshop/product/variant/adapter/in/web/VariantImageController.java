@@ -30,7 +30,7 @@ public class VariantImageController {
     private final DeleteVariantImageUseCase deleteImageUseCase;
     private final VariantImageWebMapper mapper;
 
-    @GetMapping("/{id}/image")
+    //@GetMapping("/{id}/image")
     public ResponseEntity<VariantImageResponse> findImageById(
             @PathVariable
             final UUID id) {
@@ -41,7 +41,7 @@ public class VariantImageController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping("/{id}/image")
+    //@PatchMapping("/{id}/image")
     public ResponseEntity<VariantImageResponse> updateImage(
             @PathVariable
             final UUID id,
@@ -56,7 +56,7 @@ public class VariantImageController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{id}/image")
+    //@DeleteMapping("/{id}/image")
     public ResponseEntity<VariantImageResponse> deleteImageById(
             @PathVariable
             final UUID id,

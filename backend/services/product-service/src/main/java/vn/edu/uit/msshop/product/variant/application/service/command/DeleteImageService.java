@@ -1,10 +1,13 @@
 package vn.edu.uit.msshop.product.variant.application.service.command;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
@@ -32,6 +35,17 @@ public class DeleteImageService implements DeleteImageUseCase {
     private final VariantImageStoragePort variantImageStoragePort;
     @Override
     @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT,
+                            key = "#command.variantId().value()"
+                    ),
+                            
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT_LIST,
+                            allEntries = true)
+            })
     public void deleteImage(DeleteImageCommand command) {
        Variant variant = loadVariantPort.loadById(command.variantId())
         .orElseThrow(() -> new VariantNotFoundException(command.variantId()));
@@ -43,10 +57,12 @@ public class DeleteImageService implements DeleteImageUseCase {
             throw new RuntimeException("Variant does not have a key yet");
         }
         String removedKey = variant.getImageKey().value();
-        final Variant toSaveVariant = variant.updateImageKey(new VariantImageKey(null));
+        final Variant toSaveVariant = variant.updateImageKey(null);
         final Product toSaveProduct = product.removeKey(new ProductImageKey(removedKey));
         saveVariantPort.update(toSaveVariant);
-        saveProductPort.update(toSaveProduct);
+        if(toSaveProduct!=null) {
+            saveProductPort.update(toSaveProduct);
+        }
         variantImageStoragePort.deleteImage(new VariantImageKey(removedKey));
     }
 

@@ -1,12 +1,16 @@
 server:
     port: 8070
-
+cloudinary:
+    cloudName: ${CLOUDINARY_NAME}
+    apiKey: ${CLOUDINARY_API_KEY}
+    apiSecret: ${CLOUDINARY_SECRET_KEY}
 spring:
     output:
         ansi:
             enabled: ALWAYS
     servlet:
         multipart:
+            enabled: true
             max-file-size: 5MB
             max-request-size: 6MB
     mongodb:

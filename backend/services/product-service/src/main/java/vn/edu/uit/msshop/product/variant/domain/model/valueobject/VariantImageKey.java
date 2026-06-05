@@ -11,8 +11,7 @@ public record VariantImageKey(
     public VariantImageKey {
         if (value == null) {
             throw new DomainException("Key is null");
-        }
-
+        } 
         if (value.length() > MAX_LENGTH) {
             throw new DomainException("Key is too long");
         }

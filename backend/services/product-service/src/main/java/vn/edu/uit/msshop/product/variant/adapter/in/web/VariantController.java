@@ -2,6 +2,7 @@ package vn.edu.uit.msshop.product.variant.adapter.in.web;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -161,7 +163,7 @@ public class VariantController {
 
         return ResponseEntity.noContent().build();
     }
-    @PatchMapping("/{id}/image")
+    @PatchMapping(value="/{id}/image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> postImage(@PathVariable UUID id, @RequestParam("file") MultipartFile file, @RequestParam("version") long version) throws IOException {
         this.postImageUseCase.postImage(mapper.toCommand(file, id, version));
         return ResponseEntity.noContent().build();

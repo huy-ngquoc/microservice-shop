@@ -93,15 +93,15 @@ public class VariantImageStorageAdapter implements VariantImageStoragePort {
 
     @Override
     public String postImage(MultipartFile image) throws IOException {
-        Map uploadResult = cloudinary.uploader().upload(image, ObjectUtils.asMap(
+        Map uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.asMap(
         "folder", VARIANTS_FOLDER
     ));
     String fullPublicId = (String) uploadResult.get("public_id");
-    if (fullPublicId.contains("/")) {
+    if (fullPublicId!=null&&fullPublicId.contains("/")) {
         return fullPublicId.substring(fullPublicId.lastIndexOf("/") + 1);
     }
     
-    return fullPublicId;
+    return fullPublicId!=null?fullPublicId:"";
     
     }
 }

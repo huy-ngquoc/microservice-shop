@@ -75,7 +75,7 @@ public final class Variant {
         this.deletionTime = deletionTime;
     }
 
-    public Variant updateImageKey(VariantImageKey key) {
+    public Variant updateImageKey(@Nullable VariantImageKey key) {
         return new Variant(id, productId, productName, price, traits, targets, key, version, deletionTime);
     }
 }
