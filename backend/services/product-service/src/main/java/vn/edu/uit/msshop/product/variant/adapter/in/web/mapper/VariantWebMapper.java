@@ -35,11 +35,16 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion
 import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryImageUrlResolver;
 
 @Component
-@RequiredArgsConstructor
+
 @Slf4j
 public class VariantWebMapper {
+        
         private final CloudinaryImageUrlResolver resolver;
+        
         private static final String VARIANTS_FOLDER = "variants";
+        public VariantWebMapper(CloudinaryImageUrlResolver resolver) {
+            this.resolver=resolver;
+        }
     public ListVariantsQuery toListQuery(
             int page,
 
@@ -133,6 +138,7 @@ public class VariantWebMapper {
 
     public VariantResponse toResponse(
             final VariantView view) {
+                String resolvedUrl = resolver.resolve(view.imageKey() != null ? view.imageKey() : "", VARIANTS_FOLDER);
         return new VariantResponse(
                 view.id(),
                 view.productId(),
@@ -143,7 +149,7 @@ public class VariantWebMapper {
                 view.traits(),
                 view.targets(),
                 view.imageKey(),
-                resolver.resolve(view.imageKey(), VARIANTS_FOLDER),
+                resolvedUrl!=null?resolvedUrl:"",
                 view.version());
     }
 

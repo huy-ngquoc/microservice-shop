@@ -387,6 +387,9 @@ services:
             - REDIS_PRODUCT_HOST=${REDIS_PRODUCT_HOST}
             - REDIS_PORT=${REDIS_PORT}
             - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
+            - CLOUDINARY_NAME=${CLOUDINARY_NAME}
+            - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+            - CLOUDINARY_SECRET_KEY=${CLOUDINARY_SECRET_KEY}
         deploy:
             replicas: 2
             resources:

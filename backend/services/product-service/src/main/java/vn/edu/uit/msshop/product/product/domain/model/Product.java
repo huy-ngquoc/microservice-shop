@@ -87,7 +87,7 @@ public final class Product {
         return new Product(id, name, categoryId, brandId, configuration, new ProductImageKeys(newKeys), version, deletionTime);
     }
     public Product addKey(ProductImageKey newKey) {
-        List<ProductImageKey> newKeys = this.imageKeys.values();
+        List<ProductImageKey> newKeys = new ArrayList<>(this.imageKeys.values());
         newKeys.add(newKey);
         return new Product(id, name, categoryId, brandId, configuration, new ProductImageKeys(newKeys), version, deletionTime);
     }
