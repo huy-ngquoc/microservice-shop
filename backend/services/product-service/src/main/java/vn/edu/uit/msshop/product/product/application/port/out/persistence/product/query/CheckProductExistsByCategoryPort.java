@@ -1,8 +1,0 @@
-package vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query;
-
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
-
-public interface CheckProductExistsByCategoryPort {
-    boolean existsByCategoryId(
-            final ProductCategoryId categoryId);
-}

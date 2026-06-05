@@ -8,20 +8,21 @@ import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.ProductSoftDeletedLookupByIdUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductStockCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadSoftDeletedProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
 @RequiredArgsConstructor
 public class ProductSoftDeletedLookupService
         implements ProductSoftDeletedLookupByIdUseCase {
-    private final LoadSoftDeletedProductPort loadSoftDeletedPort;
-    private final LoadProductSoldCountPort loadSoldCountPort;
-    private final LoadProductStockCountPort loadStockCountPort;
-    private final LoadProductRatingPort loadRatingPort;
+    private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
+    private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;
+    private final ProductStockCountLookupByIdPort stockCountLookupByIdPort;
+    private final ProductRatingLookupByIdPort ratingLookupByIdPort;
+
     private final ProductViewMapper mapper;
 
     @Override
@@ -29,12 +30,12 @@ public class ProductSoftDeletedLookupService
             readOnly = true)
     public ProductView findById(
             final ProductId id) {
-        final var product = this.loadSoftDeletedPort.loadSoftDeletedById(id)
+        final var product = this.softDeletedLookupByIdPort.loadSoftDeletedById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(id);
-        final var stockCount = this.loadStockCountPort.loadByIdOrZero(id);
-        final var rating = this.loadRatingPort.loadByIdOrZero(id);
+        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(id);
+        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(id);
+        final var rating = this.ratingLookupByIdPort.loadByIdOrZero(id);
 
         return this.mapper.toView(product, soldCount, stockCount, rating);
     }

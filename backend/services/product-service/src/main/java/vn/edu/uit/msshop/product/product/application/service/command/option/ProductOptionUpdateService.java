@@ -14,11 +14,11 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundEx
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionUpdateUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductStockCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
@@ -30,13 +30,14 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 public class ProductOptionUpdateService
         implements
         ProductOptionUpdateUseCase {
-    private final LoadProductPort loadPort;
-    private final LoadProductSoldCountPort loadSoldCountPort;
-    private final LoadProductStockCountPort loadStockCountPort;
-    private final LoadProductRatingPort loadRatingPort;
-    private final UpdateProductPort updatePort;
-    private final PublishProductEventPort eventPort;
+    private final ProductActiveLookupByIdPort activeLookupByIdPort;
+    private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;
+    private final ProductStockCountLookupByIdPort stockCountLookupByIdPort;
+    private final ProductRatingLookupByIdPort ratingLookupByIdPort;
+    private final ProductUpdatePort updatePort;
+
     private final ProductViewMapper mapper;
+    private final PublishProductEventPort eventPort;
 
     @Override
     @Transactional
@@ -52,7 +53,7 @@ public class ProductOptionUpdateService
     public ProductView update(
             UpdateProductOptionCommand command) {
         final var productId = command.id();
-        final var product = this.loadPort.loadById(productId)
+        final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         final var expectedVersion = command.expectedVersion();
@@ -62,9 +63,9 @@ public class ProductOptionUpdateService
                     product.getVersion().value());
         }
 
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(productId);
-        final var stockCount = this.loadStockCountPort.loadByIdOrZero(productId);
-        final var rating = this.loadRatingPort.loadByIdOrZero(productId);
+        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(productId);
+        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(productId);
+        final var rating = this.ratingLookupByIdPort.loadByIdOrZero(productId);
 
         final var next = ProductOptionUpdateService.applyChanges(
                 product,

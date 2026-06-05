@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductSoldCountPersistenceMapper;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DecreaseAllProductSoldCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DeleteProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.IncreaseAllProductSoldCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.InitializeProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadAllProductSoldCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductSoldCountPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkDecreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountDeletionByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkIncreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountInitializationByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
@@ -33,12 +33,12 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @Slf4j
 public class ProductSoldCountPersistenceAdapter
         implements
-        LoadProductSoldCountPort,
-        LoadAllProductSoldCountsPort,
-        InitializeProductSoldCountPort,
-        IncreaseAllProductSoldCountsPort,
+        ProductSoldCountLookupByIdPort,
+        ProductSoldCountBulkLookupByIdsPort,
+        ProductSoldCountInitializationByIdPort,
+        ProductSoldCountBulkIncreationPort,
 
-        DecreaseAllProductSoldCountsPort, DeleteProductSoldCountPort {
+        ProductSoldCountBulkDecreationPort, ProductSoldCountDeletionByIdPort {
     private static final Collector<
             ProductSoldCount,
             ?,
@@ -78,7 +78,7 @@ public class ProductSoldCountPersistenceAdapter
     }
 
     @Override
-    public ProductSoldCount initialize(
+    public ProductSoldCount initializeById(
             final ProductId id) {
         final var jpaId = id.value();
 

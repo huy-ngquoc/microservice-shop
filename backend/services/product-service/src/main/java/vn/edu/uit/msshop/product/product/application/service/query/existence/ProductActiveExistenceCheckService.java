@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByBrandIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByCategoryIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByVariantIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductExistenceCheckByBrandIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductExistenceCheckByCategoryIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductExistenceCheckByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductExistenceCheckByVariantIdPort;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByIdUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByBrandPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByCategoryPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByVariantPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -25,17 +25,17 @@ public class ProductActiveExistenceCheckService
         ProductActiveExistenceCheckByBrandIdUseCase,
         ProductActiveExistenceCheckByCategoryIdUseCase,
         ProductActiveExistenceCheckByVariantIdUseCase {
-    private final CheckProductExistsPort checkExistsPort;
-    private final CheckProductExistsByBrandPort checkExistsByBrandPort;
-    private final CheckProductExistsByCategoryPort checkExistsByCategoryPort;
-    private final CheckProductExistsByVariantPort checkExistsByVariantPort;
+    private final ProductExistenceCheckByIdPort existenceCheckByIdPort;
+    private final ProductExistenceCheckByBrandIdPort existenceCheckByBrandIdPort;
+    private final ProductExistenceCheckByCategoryIdPort existenceCheckByCategoryIdPort;
+    private final ProductExistenceCheckByVariantIdPort existenceCheckByVariantIdPort;
 
     @Override
     @Transactional(
             readOnly = true)
     public boolean existsById(
             final ProductId id) {
-        return this.checkExistsPort.existsById(id);
+        return this.existenceCheckByIdPort.existsById(id);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ProductActiveExistenceCheckService
             readOnly = true)
     public boolean existsByBrandId(
             final ProductBrandId brandId) {
-        return this.checkExistsByBrandPort.existsByBrandId(brandId);
+        return this.existenceCheckByBrandIdPort.existsByBrandId(brandId);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ProductActiveExistenceCheckService
             readOnly = true)
     public boolean existsByCategoryId(
             final ProductCategoryId categoryId) {
-        return this.checkExistsByCategoryPort.existsByCategoryId(categoryId);
+        return this.existenceCheckByCategoryIdPort.existsByCategoryId(categoryId);
     }
 
     @Override
@@ -59,6 +59,6 @@ public class ProductActiveExistenceCheckService
             readOnly = true)
     public boolean existsByVariantId(
             final ProductVariantId variantId) {
-        return this.checkExistsByVariantPort.existsByVariantId(variantId);
+        return this.existenceCheckByVariantIdPort.existsByVariantId(variantId);
     }
 }
