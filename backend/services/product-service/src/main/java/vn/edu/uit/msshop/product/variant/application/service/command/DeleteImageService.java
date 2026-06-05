@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.product.application.dto.command.DeleteProductImageCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
@@ -29,10 +30,11 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Slf4j
 public class DeleteImageService implements DeleteImageUseCase {
     private final LoadVariantPort loadVariantPort;
-    private final LoadProductPort loadProductPort;
+    
     private final UpdateVariantPort saveVariantPort;
-    private final UpdateProductPort saveProductPort;
+    private final vn.edu.uit.msshop.product.product.application.port.in.command.DeleteImageUseCase deleteImageUseCase;
     private final VariantImageStoragePort variantImageStoragePort;
+    
     @Override
     @Transactional
     @Caching(
@@ -50,19 +52,16 @@ public class DeleteImageService implements DeleteImageUseCase {
        Variant variant = loadVariantPort.loadById(command.variantId())
         .orElseThrow(() -> new VariantNotFoundException(command.variantId()));
         
-        Product product = loadProductPort.loadById(new ProductId(variant.getProductId().value()))
-        .orElseThrow(() -> new ProductNotFoundException(new ProductId(variant.getProductId().value())));
+        
         if(command.version()!=variant.getVersion().value()) throw new OptimisticLockException(variant.getVersion().value(), command.version());
         if(variant.getImageKey()==null||variant.getImageKey().value()==null) {
             throw new RuntimeException("Variant does not have a key yet");
         }
         String removedKey = variant.getImageKey().value();
         final Variant toSaveVariant = variant.updateImageKey(null);
-        final Product toSaveProduct = product.removeKey(new ProductImageKey(removedKey));
+        final var deleteCommand = new DeleteProductImageCommand(new ProductId(variant.getProductId().value()),new ProductImageKey(removedKey));
         saveVariantPort.update(toSaveVariant);
-        if(toSaveProduct!=null) {
-            saveProductPort.update(toSaveProduct);
-        }
+        deleteImageUseCase.deleteImage(deleteCommand);
         variantImageStoragePort.deleteImage(new VariantImageKey(removedKey));
     }
 
