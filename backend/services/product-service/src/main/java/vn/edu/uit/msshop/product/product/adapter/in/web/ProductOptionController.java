@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductOptionWebMapper;
-import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.RemoveProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductOptionRequest;
@@ -27,11 +27,12 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.option.Prod
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductOptionController {
-    private final ProductOptionAdditionUseCase addOptionUseCase;
-    private final ProductOptionUpdateUseCase updateOptionUseCase;
-    private final ProductOptionRemovalUseCase removeOptionUseCase;
-    private final ProductOptionWebMapper mapper;
-    private final ProductSharedWebMapper sharedMapper;
+    private final ProductOptionAdditionUseCase additionUseCase;
+    private final ProductOptionUpdateUseCase updateUseCase;
+    private final ProductOptionRemovalUseCase removalUseCase;
+
+    private final ProductOptionWebMapper optionMapper;
+    private final ProductWebMapper mapper;
 
     @PostMapping("/{id}/options")
     public ResponseEntity<ProductResponse> addOption(
@@ -41,9 +42,9 @@ public class ProductOptionController {
             @RequestBody
             @Valid
             final AddProductOptionRequest request) {
-        final var command = this.mapper.toAddOptionCommand(id, request);
-        final var view = this.addOptionUseCase.add(command);
-        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
+        final var command = this.optionMapper.toAddOptionCommand(id, request);
+        final var view = this.additionUseCase.add(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
     }
 
     @PatchMapping("/{id}/options/{index}")
@@ -57,9 +58,9 @@ public class ProductOptionController {
             @RequestBody
             @Valid
             final UpdateProductOptionRequest request) {
-        final var command = this.mapper.toUpdateOptionCommand(id, index, request);
-        final var view = this.updateOptionUseCase.update(command);
-        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
+        final var command = this.optionMapper.toUpdateOptionCommand(id, index, request);
+        final var view = this.updateUseCase.update(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
     }
 
     @DeleteMapping("/{id}/options/{index}")
@@ -73,8 +74,8 @@ public class ProductOptionController {
             @RequestBody
             @Valid
             final RemoveProductOptionRequest request) {
-        final var command = this.mapper.toRemoveOptionCommand(id, index, request);
-        final var view = this.removeOptionUseCase.remove(command);
-        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
+        final var command = this.optionMapper.toRemoveOptionCommand(id, index, request);
+        final var view = this.removalUseCase.remove(command);
+        return ResponseEntity.ok(this.mapper.toResponse(view));
     }
 }
