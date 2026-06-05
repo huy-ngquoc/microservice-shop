@@ -11,7 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.product.application.dto.command.AddImageCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.ReplaceImageCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
+import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductImageUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.ReplaceProductImageUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
@@ -32,10 +36,13 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 public class PostImageService implements PostImageUseCase {
     private final LoadVariantPort loadVariantPort;
-    private final LoadProductPort loadProductPort;
+    
     private final UpdateVariantPort saveVariantPort;
-    private final UpdateProductPort saveProductPort;
+    
     private final VariantImageStoragePort variantImageStoragePort;
+
+    private final AddProductImageUseCase addProductImageUseCase;
+    private final ReplaceProductImageUseCase replaceProductImageUseCase;
 
     @Override
     @Transactional
@@ -54,8 +61,7 @@ public class PostImageService implements PostImageUseCase {
         Variant variant = loadVariantPort.loadById(command.variantId())
                 .orElseThrow(() -> new VariantNotFoundException(command.variantId()));
         
-        Product product = loadProductPort.loadById(new ProductId(variant.getProductId().value()))
-                .orElseThrow(() -> new ProductNotFoundException(new ProductId(variant.getProductId().value())));
+        
         
         if (command.version() != variant.getVersion().value()) {
             throw new OptimisticLockException(variant.getVersion().value(), command.version());
@@ -74,14 +80,14 @@ public class PostImageService implements PostImageUseCase {
         if (oldImageKey != null && oldImageKey.value() != null && !oldImageKey.value().isEmpty()) {
             String oldKey = oldImageKey.value();
             
-            final Product toSaveProduct = product.replaceKey(new ProductImageKey(oldKey), new ProductImageKey(newKey));
-            saveProductPort.update(toSaveProduct);
+            final var replaceImageCommand = new ReplaceImageCommand(new ProductId(variant.getProductId().value()),new ProductImageKey(oldKey), new ProductImageKey(newKey));
+            replaceProductImageUseCase.replaceImage(replaceImageCommand);
             
             variantImageStoragePort.deleteImage(oldImageKey); 
             
         } else {
-            final Product toSaveProduct = product.addKey(new ProductImageKey(newKey));
-            saveProductPort.update(toSaveProduct);
+            final var addImageCommand = new AddImageCommand(new ProductId(variant.getProductId().value()),new ProductImageKey(newKey));
+            addProductImageUseCase.addImage(addImageCommand);
         }
 
         final Variant toSaveVariant = variant.updateImageKey(new VariantImageKey(newKey));
