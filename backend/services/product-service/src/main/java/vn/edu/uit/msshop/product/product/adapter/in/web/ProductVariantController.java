@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductVariantWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
@@ -24,8 +24,8 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.variant.Pro
 public class ProductVariantController {
     private final ProductVariantBulkAdditionUseCase bulkAdditionUseCase;
 
-    private final ProductVariantWebMapper mapper;
-    private final ProductSharedWebMapper sharedMapper;
+    private final ProductVariantWebMapper variantMapper;
+    private final ProductWebMapper mapper;
 
     @PostMapping("/{id}/variants")
     public ResponseEntity<ProductResponse> addVariant(
@@ -35,9 +35,9 @@ public class ProductVariantController {
             @RequestBody
             @Valid
             final AddProductVariantRequest request) {
-        final var command = this.mapper.toAddVariantsCommand(id, request);
+        final var command = this.variantMapper.toAddVariantsCommand(id, request);
         final var view = this.bulkAdditionUseCase.addAll(command);
-        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
+        return ResponseEntity.ok(this.mapper.toResponse(view));
     }
 
     @PostMapping("/{id}/variants/batch")
@@ -47,8 +47,8 @@ public class ProductVariantController {
             @RequestBody
             @Valid
             final AddProductVariantsRequest request) {
-        final var command = this.mapper.toAddVariantsCommand(id, request);
+        final var command = this.variantMapper.toAddVariantsCommand(id, request);
         final var view = this.bulkAdditionUseCase.addAll(command);
-        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
+        return ResponseEntity.ok(this.mapper.toResponse(view));
     }
 }
