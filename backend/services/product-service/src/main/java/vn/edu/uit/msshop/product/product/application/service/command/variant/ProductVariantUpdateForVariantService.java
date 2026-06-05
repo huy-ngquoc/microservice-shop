@@ -11,8 +11,8 @@ import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVa
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantUpdateForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
@@ -21,8 +21,8 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 @RequiredArgsConstructor
 public class ProductVariantUpdateForVariantService
         implements ProductVariantUpdateForVariantUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
+    private final ProductActiveLookupByIdPort loadPort;
+    private final ProductUpdatePort updatePort;
     private final PublishProductEventPort eventPort;
 
     @Override

@@ -14,13 +14,13 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNo
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductCreationUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.InitializeProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.InitializeProductStockCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.CreateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.InitializeProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountInitializationByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountInitializationByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductCreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingInitializationByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkCreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductBrandExistenceCheckByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
@@ -31,17 +31,16 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @Service
 @RequiredArgsConstructor
 public class ProductCreationService
-        implements
-        ProductCreationUseCase {
-    private final CreateProductPort createPort;
-    private final CheckProductCategoryExistsPort checkCategoryExistsPort;
-    private final CheckProductBrandExistsPort checkBrandExistsPort;
-    private final CreateAllProductVariantsPort createVariantsForNewProductPort;
-    private final InitializeProductSoldCountPort initializeSoldCountPort;
-    private final InitializeProductStockCountPort initializeStockCountPort;
-    private final InitializeProductRatingPort initializeRatingPort;
-    private final PublishProductEventPort eventPort;
+        implements ProductCreationUseCase {
+    private final ProductCreationPort creationPort;
+    private final ProductCategoryExistenceCheckByIdPort categoryExistenceCheckByIdPort;
+    private final ProductBrandExistenceCheckByIdPort brandExistenceCheckByIdPort;
+    private final ProductVariantBulkCreationPort variantBulkCreationPort;
+    private final ProductSoldCountInitializationByIdPort soldCountInitializationByIdPort;
+    private final ProductStockCountInitializationByIdPort stockCountInitializationByIdPort;
+    private final ProductRatingInitializationByIdPort ratingInitializationPort;
 
+    private final PublishProductEventPort eventPort;
     private final ProductViewMapper mapper;
 
     @Override
@@ -66,7 +65,7 @@ public class ProductCreationService
 
         final var productId = ProductId.newId();
 
-        final var savedVariants = this.createVariantsForNewProductPort.create(
+        final var savedVariants = this.variantBulkCreationPort.create(
                 productId,
                 command.name(),
                 command.newConfiguration().newVariants());
@@ -82,12 +81,12 @@ public class ProductCreationService
                 command.brandId(),
                 configuration);
 
-        final var savedProduct = this.createPort.create(newProduct);
+        final var savedProduct = this.creationPort.create(newProduct);
         final var savedProductId = savedProduct.getId();
 
-        final var savedSoldCount = this.initializeSoldCountPort.initialize(savedProductId);
-        final var savedStockCount = this.initializeStockCountPort.initialize(savedProductId);
-        final var savedRating = this.initializeRatingPort.initialize(savedProductId);
+        final var savedSoldCount = this.soldCountInitializationByIdPort.initializeById(savedProductId);
+        final var savedStockCount = this.stockCountInitializationByIdPort.initializeById(savedProductId);
+        final var savedRating = this.ratingInitializationPort.initializeById(savedProductId);
 
         this.eventPort.publish(new ProductCreated(savedProductId));
         return this.mapper.toView(
@@ -99,14 +98,14 @@ public class ProductCreationService
 
     private void validateCategoryExists(
             final ProductCategoryId newCategoryId) {
-        if (!this.checkCategoryExistsPort.existsById(newCategoryId)) {
+        if (!this.categoryExistenceCheckByIdPort.existsById(newCategoryId)) {
             throw new ProductCategoryNotFoundException(newCategoryId);
         }
     }
 
     private void validateBrandExists(
             final ProductBrandId newBrandId) {
-        if (!this.checkBrandExistsPort.existsById(newBrandId)) {
+        if (!this.brandExistenceCheckByIdPort.existsById(newBrandId)) {
             throw new ProductBrandNotFoundException(newBrandId);
         }
     }

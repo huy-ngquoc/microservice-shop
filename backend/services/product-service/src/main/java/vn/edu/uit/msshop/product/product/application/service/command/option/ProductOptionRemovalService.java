@@ -17,14 +17,14 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundEx
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionRemovalUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductStockCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteVariantsForProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.UpdateAllProductVariantTraitsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkCreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
@@ -44,16 +44,17 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 public class ProductOptionRemovalService
         implements
         ProductOptionRemovalUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
-    private final SoftDeleteVariantsForProductPort softDeleteVariantsForProductPort;
-    private final CreateAllProductVariantsPort createVariantsPort;
-    private final UpdateAllProductVariantTraitsPort updateAllVariantTraitsPort;
-    private final LoadProductSoldCountPort loadSoldCountPort;
-    private final LoadProductStockCountPort loadStockCountPort;
-    private final LoadProductRatingPort loadRatingPort;
-    private final PublishProductEventPort eventPort;
+    private final ProductActiveLookupByIdPort activeLookupById;
+    private final ProductUpdatePort updatePort;
+    private final ProductVariantBulkSoftDeletionForProductPort variantBulkSoftDeletionForProductPort;
+    private final ProductVariantBulkCreationPort variantBulkCreationPort;
+    private final ProductVariantTraitBulkUpdatePort variantTraitBulkUpdatePort;
+    private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;
+    private final ProductStockCountLookupByIdPort stockCountLookupByIdPort;
+    private final ProductRatingLookupByIdPort ratingLookupByIdPort;
+
     private final ProductViewMapper mapper;
+    private final PublishProductEventPort eventPort;
 
     @Override
     @Transactional
@@ -69,7 +70,7 @@ public class ProductOptionRemovalService
     public ProductView remove(
             final RemoveProductOptionCommand command) {
         final var productId = command.id();
-        final var product = this.loadPort.loadById(productId)
+        final var product = this.activeLookupById.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         final var expectedVersion = command.expectedVersion();
@@ -96,9 +97,9 @@ public class ProductOptionRemovalService
         final var savedProduct = this.updatePort.update(next);
         final var savedProductId = savedProduct.getId();
 
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
-        final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
-        final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
+        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(savedProductId);
+        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(savedProductId);
+        final var rating = this.ratingLookupByIdPort.loadByIdOrZero(savedProductId);
 
         this.eventPort.publish(new ProductUpdated(savedProductId));
 
@@ -128,7 +129,7 @@ public class ProductOptionRemovalService
             for (final var variant : newConfig.variants().values()) {
                 newTraitsMap.put(variant.id(), variant.traits());
             }
-            this.updateAllVariantTraitsPort.updateTraitsByIds(newTraitsMap);
+            this.variantTraitBulkUpdatePort.updateTraitsByIds(newTraitsMap);
 
             return newConfig;
         }
@@ -138,13 +139,13 @@ public class ProductOptionRemovalService
         }
 
         final var productId = product.getId();
-        this.softDeleteVariantsForProductPort.deleteByProductId(productId);
+        this.variantBulkSoftDeletionForProductPort.deleteByProductId(productId);
 
         final var newVariant = new NewProductVariant(
                 new ProductVariantPrice(defaultPrice.value()),
                 ProductVariantTraits.empty(),
                 ProductVariantTargets.empty());
-        final var newVariants = this.createVariantsPort.create(
+        final var newVariants = this.variantBulkCreationPort.create(
                 productId,
                 product.getName(),
                 new NewProductVariants(List.of(newVariant)));

@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductRatingPersistenceMapper;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.DeleteProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.InitializeProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.UpdateAllProductRatingsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.UpdateProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadAllProductRatingsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadProductRatingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingDeletionPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingInitializationByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingBulkUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
@@ -32,12 +32,12 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @RequiredArgsConstructor
 public class ProductRatingPersistenceAdapter
         implements
-        LoadProductRatingPort,
-        LoadAllProductRatingsPort,
-        InitializeProductRatingPort,
-        UpdateProductRatingPort,
-        UpdateAllProductRatingsPort,
-        DeleteProductRatingPort {
+        ProductRatingLookupByIdPort,
+        ProductRatingBulkLookupByIdsPort,
+        ProductRatingInitializationByIdPort,
+        ProductRatingUpdatePort,
+        ProductRatingBulkUpdatePort,
+        ProductRatingDeletionPort {
     private static final Collector<
             ProductRating,
             ?,
@@ -77,7 +77,7 @@ public class ProductRatingPersistenceAdapter
     }
 
     @Override
-    public ProductRating initialize(
+    public ProductRating initializeById(
             final ProductId id) {
         final var jpaId = id.value();
 

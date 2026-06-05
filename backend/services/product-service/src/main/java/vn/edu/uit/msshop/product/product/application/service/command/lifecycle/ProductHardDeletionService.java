@@ -8,12 +8,12 @@ import vn.edu.uit.msshop.product.product.application.dto.command.HardDeleteProdu
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DeleteProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DeleteProductStockCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.DeleteProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadSoftDeletedProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.DeleteProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.HardDeleteAllProductVariantsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountDeletionByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountDeletionByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductDeletionByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingDeletionPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkHardDeletionForProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductPurged;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
@@ -23,12 +23,14 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 public class ProductHardDeletionService
         implements
         ProductHardDeletionUseCase {
-    private final LoadSoftDeletedProductPort loadSoftDeletedPort;
-    private final DeleteProductPort deletePort;
-    private final DeleteProductSoldCountPort deleteSoldCountPort;
-    private final DeleteProductStockCountPort deleteStockCountPort;
-    private final DeleteProductRatingPort deleteRatingPort;
-    private final HardDeleteAllProductVariantsPort hardDeleteAllVariantsPort;
+    private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
+    private final ProductDeletionByIdPort deletionByIdPort;
+    private final ProductSoldCountDeletionByIdPort soldCountDeletionByIdPort;
+    private final ProductStockCountDeletionByIdPort stockCountDeletionByIdPort;
+    private final ProductRatingDeletionPort ratingDeletionPort;
+
+    private final ProductVariantBulkHardDeletionForProductPort variantBulkHardDeleteByIdsPort;
+
     private final PublishProductEventPort eventPort;
 
     @Override
@@ -36,7 +38,7 @@ public class ProductHardDeletionService
     public void hardDelete(
             HardDeleteProductCommand command) {
         final var productId = command.id();
-        final var product = this.loadSoftDeletedPort.loadSoftDeletedById(productId)
+        final var product = this.softDeletedLookupByIdPort.loadSoftDeletedById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         final var expectedVersion = command.expectedVersion();
@@ -47,12 +49,12 @@ public class ProductHardDeletionService
                     currentVersion.value());
         }
 
-        this.deletePort.deleteById(productId);
-        this.deleteSoldCountPort.deleteById(productId);
-        this.deleteStockCountPort.deleteById(productId);
-        this.deleteRatingPort.deleteById(productId);
+        this.deletionByIdPort.deleteById(productId);
+        this.soldCountDeletionByIdPort.deleteById(productId);
+        this.stockCountDeletionByIdPort.deleteById(productId);
+        this.ratingDeletionPort.deleteById(productId);
 
-        this.hardDeleteAllVariantsPort.purgeByProductId(productId);
+        this.variantBulkHardDeleteByIdsPort.purgeByProductId(productId);
 
         this.eventPort.publish(new ProductPurged(productId));
     }

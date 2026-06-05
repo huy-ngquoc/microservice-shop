@@ -7,24 +7,24 @@ import vn.edu.uit.msshop.product.product.application.dto.command.ReconcileProduc
 import vn.edu.uit.msshop.product.product.application.dto.command.SetAllProductRatingsCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingBulkReconciliationUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingBulkUpdateUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.FetchProductRatingsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductRatingBulkFetchPort;
 
 @Service
 @RequiredArgsConstructor
 public class ProductRatingBulkReconciliationService
         implements
         ProductRatingBulkReconciliationUseCase {
-    private final FetchProductRatingsPort fetchPort;
-    private final ProductRatingBulkUpdateUseCase setAllUseCase;
+    private final ProductRatingBulkFetchPort ratingBulkFetchPort;
+    private final ProductRatingBulkUpdateUseCase ratingBulkUpdateUseCase;
 
     @Override
     public void execute(
             final ReconcileProductRatingsCommand command) {
-        final var ratings = fetchPort.fetchAll(
+        final var ratings = ratingBulkFetchPort.fetchAll(
                 command.rangeStartTime(),
                 command.rangeEndTime());
 
         final var setCommand = new SetAllProductRatingsCommand(ratings);
-        setAllUseCase.execute(setCommand);
+        ratingBulkUpdateUseCase.execute(setCommand);
     }
 }

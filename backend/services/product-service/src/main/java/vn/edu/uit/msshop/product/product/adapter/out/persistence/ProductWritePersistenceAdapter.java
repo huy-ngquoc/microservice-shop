@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductPersistenceMapper;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.ListProductsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.ListSoftDeletedProductsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadAllProductsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadSoftDeletedProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.listing.ProductActiveListingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.listing.ProductSoftDeletedListingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveBulkLookupByIds;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
@@ -23,11 +23,11 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequiredArgsConstructor
 public class ProductWritePersistenceAdapter
         implements
-        ListProductsPort,
-        ListSoftDeletedProductsPort,
-        LoadProductPort,
-        LoadAllProductsPort,
-        LoadSoftDeletedProductPort {
+        ProductActiveListingPort,
+        ProductSoftDeletedListingPort,
+        ProductActiveLookupByIdPort,
+        ProductActiveBulkLookupByIds,
+        ProductSoftDeletedLookupByIdPort {
     private final ProductMongoRepository repository;
     private final ProductPersistenceMapper mapper;
 

@@ -14,10 +14,10 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductMustHaveAt
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DecreaseAllProductSoldCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.DecreaseAllProductStockCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkDecreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 
@@ -25,10 +25,11 @@ import vn.edu.uit.msshop.product.product.domain.model.Product;
 @RequiredArgsConstructor
 public class ProductVariantRemovalForVariantService
         implements ProductVariantRemovalForVariantUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
-    private final DecreaseAllProductSoldCountsPort decreaseSoldPort;
-    private final DecreaseAllProductStockCountsPort decreaseStockPort;
+    private final ProductActiveLookupByIdPort activeLookupByIdPort;
+    private final ProductUpdatePort updatePort;
+    private final ProductSoldCountBulkDecreationPort soldCountBulkDecreationPort;
+    private final ProductStockCountBulkDecreationPort stockCountBulkDecreationPort;
+
     private final PublishProductEventPort eventPort;
 
     @Override
@@ -45,7 +46,7 @@ public class ProductVariantRemovalForVariantService
     public void remove(
             RemoveProductVariantForVariantCommand command) {
         final var productId = command.id();
-        final var product = this.loadPort.loadById(productId)
+        final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         if (product.getVariants().size() <= 1) {
@@ -67,10 +68,10 @@ public class ProductVariantRemovalForVariantService
         final var saved = this.updatePort.update(next);
 
         if (command.soldDecrement() > 0) {
-            this.decreaseSoldPort.decreaseAll(Map.of(productId, command.soldDecrement()));
+            this.soldCountBulkDecreationPort.decreaseAll(Map.of(productId, command.soldDecrement()));
         }
         if (command.stockDecrement() > 0) {
-            this.decreaseStockPort.decreaseAll(Map.of(productId, command.stockDecrement()));
+            this.stockCountBulkDecreationPort.decreaseAll(Map.of(productId, command.stockDecrement()));
         }
 
         this.eventPort.publish(new ProductUpdated(saved.getId()));
