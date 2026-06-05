@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductSoftDeletedExistenceCheckByBrandIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductSoftDeletedExistenceCheckByCategoryIdUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckSoftDeletedProductExistsByBrandPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckSoftDeletedProductExistsByCategoryPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductSoftDeletedExistenceCheckByBrandIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductSoftDeletedExistenceCheckByCategoryIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 
@@ -19,8 +19,8 @@ public class ProductSoftDeletedExistenceCheckService
         implements
         ProductSoftDeletedExistenceCheckByBrandIdUseCase,
         ProductSoftDeletedExistenceCheckByCategoryIdUseCase {
-    private final CheckSoftDeletedProductExistsByBrandPort existenceCheckByBrandIdPort;
-    private final CheckSoftDeletedProductExistsByCategoryPort existenceCheckByCategoryIdPort;
+    private final ProductSoftDeletedExistenceCheckByBrandIdPort existenceCheckByBrandIdPort;
+    private final ProductSoftDeletedExistenceCheckByCategoryIdPort existenceCheckByCategoryIdPort;
 
     @Override
     @Transactional(

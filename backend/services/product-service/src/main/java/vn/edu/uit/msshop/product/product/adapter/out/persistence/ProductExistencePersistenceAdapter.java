@@ -3,12 +3,12 @@ package vn.edu.uit.msshop.product.product.adapter.out.persistence;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByBrandPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByCategoryPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsByVariantPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckProductExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckSoftDeletedProductExistsByBrandPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.CheckSoftDeletedProductExistsByCategoryPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductExistenceCheckByBrandIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductExistenceCheckByCategoryIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductExistenceCheckByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductExistenceCheckByVariantIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductSoftDeletedExistenceCheckByBrandIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductSoftDeletedExistenceCheckByCategoryIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -18,12 +18,12 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 @RequiredArgsConstructor
 public class ProductExistencePersistenceAdapter
         implements
-        CheckProductExistsPort,
-        CheckProductExistsByBrandPort,
-        CheckProductExistsByCategoryPort,
-        CheckSoftDeletedProductExistsByBrandPort,
-        CheckSoftDeletedProductExistsByCategoryPort,
-        CheckProductExistsByVariantPort {
+        ProductExistenceCheckByIdPort,
+        ProductExistenceCheckByBrandIdPort,
+        ProductExistenceCheckByCategoryIdPort,
+        ProductSoftDeletedExistenceCheckByBrandIdPort,
+        ProductSoftDeletedExistenceCheckByCategoryIdPort,
+        ProductExistenceCheckByVariantIdPort {
     private final ProductMongoRepository repository;
 
     @Override

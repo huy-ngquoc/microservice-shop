@@ -11,10 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingDeletedUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.UpdateProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.CheckProcessedRatingEventExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.CreateProcessedRatingEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProcessedRatingEventExistenceCheckByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProcessedRatingEventCreationPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
@@ -23,10 +23,10 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 @Slf4j
 public class ApplyRatingDeletedService
         implements ApplyRatingDeletedUseCase {
-    private final LoadProductRatingPort loadRatingPort;
-    private final UpdateProductRatingPort updateRatingPort;
-    private final CheckProcessedRatingEventExistsPort checkProcessedEventExistsPort;
-    private final CreateProcessedRatingEventPort createProcessedEventPort;
+    private final ProductRatingLookupByIdPort ratingLookupByIdPort;
+    private final ProductRatingUpdatePort ratingUpdatePort;
+    private final ProcessedRatingEventExistenceCheckByIdPort processedRatingEventExistenceCheckByIdPort;
+    private final ProcessedRatingEventCreationPort processedRatingEventCreationPort;
 
     @Override
     @Transactional
@@ -43,21 +43,21 @@ public class ApplyRatingDeletedService
             final UUID eventId,
             final ProductId productId,
             final int point) {
-        if (checkProcessedEventExistsPort.exists(eventId)) {
+        if (processedRatingEventExistenceCheckByIdPort.exists(eventId)) {
             log.debug("Skipping already-processed event {}", eventId);
             return;
         }
 
         try {
-            final var rating = this.loadRatingPort.loadByIdOrZero(productId);
+            final var rating = this.ratingLookupByIdPort.loadByIdOrZero(productId);
 
             final var next = rating.removeRating(point);
-            this.updateRatingPort.update(next);
+            this.ratingUpdatePort.update(next);
         } catch (final DomainException e) {
             log.error("Invariant violation for rating deleted event {} — marking processed without state change",
                     eventId, e);
         }
 
-        this.createProcessedEventPort.create(eventId);
+        this.processedRatingEventCreationPort.create(eventId);
     }
 }

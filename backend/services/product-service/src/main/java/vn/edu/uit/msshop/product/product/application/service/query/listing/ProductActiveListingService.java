@@ -14,10 +14,10 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductActiveListingUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadAllProductSoldCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadAllProductStockCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.ListProductsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadAllProductRatingsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.listing.ProductActiveListingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
@@ -35,10 +35,11 @@ public class ProductActiveListingService
             ?,
             Set<ProductId>> SET_COLLECTOR = Collectors.toSet();
 
-    private final ListProductsPort listPort;
-    private final LoadAllProductSoldCountsPort loadAllSoldCountsPort;
-    private final LoadAllProductStockCountsPort loadALlStockCountsPort;
-    private final LoadAllProductRatingsPort loadAllRatingsPort;
+    private final ProductActiveListingPort activeListingPort;
+    private final ProductSoldCountBulkLookupByIdsPort soldCountBulkLookupByIdsPort;
+    private final ProductStockCountBulkLookupByIdsPort stockCountBulkLookupByIdsPort;
+    private final ProductRatingBulkLookupByIdsPort ratingBulkLookupByIdsPort;
+
     private final ProductViewMapper mapper;
 
     @Override
@@ -48,15 +49,15 @@ public class ProductActiveListingService
             cacheNames = CacheNames.PRODUCT_LIST)
     public PageResponseDto<ProductView> list(
             PageRequestDto pageRequest) {
-        final var page = this.listPort.list(pageRequest);
+        final var page = this.activeListingPort.list(pageRequest);
 
         final var ids = page.items().stream()
                 .map(Product::getId)
                 .collect(SET_COLLECTOR);
 
-        final var soldCountById = this.loadAllSoldCountsPort.loadAllByIds(ids);
-        final var stockCountById = this.loadALlStockCountsPort.loadAllByIds(ids);
-        final var ratingById = this.loadAllRatingsPort.loadAllByIds(ids);
+        final var soldCountById = this.soldCountBulkLookupByIdsPort.loadAllByIds(ids);
+        final var stockCountById = this.stockCountBulkLookupByIdsPort.loadAllByIds(ids);
+        final var ratingById = this.ratingBulkLookupByIdsPort.loadAllByIds(ids);
 
         return page.map(p -> this.toView(
                 p,

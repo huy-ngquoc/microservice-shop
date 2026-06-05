@@ -15,12 +15,12 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundEx
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionAdditionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductSoldCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadProductStockCountPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadProductRatingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.UpdateAllProductVariantTraitsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
@@ -32,14 +32,15 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 public class ProductOptionAdditionService
         implements
         ProductOptionAdditionUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
-    private final UpdateAllProductVariantTraitsPort updateProductVariantTraitsPort;
-    private final LoadProductSoldCountPort loadSoldCountPort;
-    private final LoadProductStockCountPort loadStockCountPort;
-    private final LoadProductRatingPort loadRatingPort;
-    private final PublishProductEventPort eventPort;
+    private final ProductActiveLookupByIdPort activeLookupByIdPort;
+    private final ProductUpdatePort updatePort;
+    private final ProductVariantTraitBulkUpdatePort variantTraitBulkUpdatePort;
+    private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;
+    private final ProductStockCountLookupByIdPort loadStockCountPort;
+    private final ProductRatingLookupByIdPort stockCountLookupByIdPort;
+
     private final ProductViewMapper mapper;
+    private final PublishProductEventPort eventPort;
 
     @Override
     @Transactional
@@ -55,7 +56,7 @@ public class ProductOptionAdditionService
     public ProductView add(
             AddProductOptionCommand command) {
         final var productId = command.id();
-        final var product = this.loadPort.loadById(productId)
+        final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         final var expectedVersion = command.expectedVersion();
@@ -89,13 +90,13 @@ public class ProductOptionAdditionService
         final var savedProduct = this.updatePort.update(next);
         final var savedProductId = savedProduct.getId();
 
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(savedProductId);
+        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(savedProductId);
         final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
-        final var rating = this.loadRatingPort.loadByIdOrZero(savedProductId);
+        final var rating = this.stockCountLookupByIdPort.loadByIdOrZero(savedProductId);
 
         this.eventPort.publish(new ProductUpdated(savedProductId));
 
-        this.updateProductVariantTraitsPort.updateTraitsByIds(newTraitsMap);
+        this.variantTraitBulkUpdatePort.updateTraitsByIds(newTraitsMap);
 
         return this.mapper.toView(
                 savedProduct,

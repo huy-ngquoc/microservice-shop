@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
-import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductBrandExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductBrandExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 
 @Component
 @RequiredArgsConstructor
 public class BrandValidationAdapter
         implements
-        CheckProductBrandExistsPort {
+        ProductBrandExistenceCheckByIdPort {
     private final BrandLookupUseCases.CheckExistsById checkExistsUseCase;
 
     @Override
