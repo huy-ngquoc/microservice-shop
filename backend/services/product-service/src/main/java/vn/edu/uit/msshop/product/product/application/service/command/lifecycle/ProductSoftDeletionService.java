@@ -11,9 +11,9 @@ import vn.edu.uit.msshop.product.product.application.dto.command.SoftDeleteProdu
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductSoftDeletionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteVariantsForProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeleted;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductDeletionTime;
@@ -24,9 +24,11 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 public class ProductSoftDeletionService
         implements
         ProductSoftDeletionUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
-    private final SoftDeleteVariantsForProductPort softDeleteVariantsForProductPort;
+    private final ProductActiveLookupByIdPort loadPort;
+    private final ProductUpdatePort updatePort;
+
+    private final ProductVariantBulkSoftDeletionForProductPort variantBulkSoftDeletionForProductPort;
+
     private final PublishProductEventPort eventPort;
 
     @Override
@@ -66,7 +68,7 @@ public class ProductSoftDeletionService
                 ProductDeletionTime.now());
         final var saved = this.updatePort.update(next);
 
-        this.softDeleteVariantsForProductPort.deleteByProductId(saved.getId());
+        this.variantBulkSoftDeletionForProductPort.deleteByProductId(saved.getId());
 
         this.eventPort.publish(new ProductSoftDeleted(saved.getId()));
     }

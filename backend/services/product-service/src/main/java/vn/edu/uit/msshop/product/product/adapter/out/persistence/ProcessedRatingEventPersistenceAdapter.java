@@ -5,15 +5,15 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.CheckProcessedRatingEventExistsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.CreateProcessedRatingEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProcessedRatingEventExistenceCheckByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProcessedRatingEventCreationPort;
 
 @Component
 @RequiredArgsConstructor
 public class ProcessedRatingEventPersistenceAdapter
         implements
-        CheckProcessedRatingEventExistsPort,
-        CreateProcessedRatingEventPort {
+        ProcessedRatingEventExistenceCheckByIdPort,
+        ProcessedRatingEventCreationPort {
     private final ProcessedRatingEventMongoRepository repository;
 
     @Override

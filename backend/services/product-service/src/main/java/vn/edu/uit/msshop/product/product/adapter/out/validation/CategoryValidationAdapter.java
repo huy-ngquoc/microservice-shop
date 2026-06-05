@@ -5,12 +5,12 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
-import vn.edu.uit.msshop.product.product.application.port.out.validation.CheckProductCategoryExistsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 
 @Component
 @RequiredArgsConstructor
-public class CategoryValidationAdapter implements CheckProductCategoryExistsPort {
+public class CategoryValidationAdapter implements ProductCategoryExistenceCheckByIdPort {
     private final CategoryLookupUseCases.CheckExistsById checkExistsUseCase;
 
     @Override

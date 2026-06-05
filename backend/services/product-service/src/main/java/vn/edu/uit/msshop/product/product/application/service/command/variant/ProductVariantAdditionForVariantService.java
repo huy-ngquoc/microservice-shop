@@ -11,8 +11,8 @@ import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVaria
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantAdditionForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 
@@ -20,8 +20,9 @@ import vn.edu.uit.msshop.product.product.domain.model.Product;
 @RequiredArgsConstructor
 public class ProductVariantAdditionForVariantService
         implements ProductVariantAdditionForVariantUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
+    private final ProductActiveLookupByIdPort activeLookupByIdPort;
+    private final ProductUpdatePort updatePort;
+
     private final PublishProductEventPort eventPort;
 
     @Override
@@ -38,7 +39,7 @@ public class ProductVariantAdditionForVariantService
     public void add(
             final AddProductVariantForVariantCommand command) {
         final var productId = command.id();
-        final var product = this.loadPort.loadById(productId)
+        final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
         final var newConfiguration = product.getConfiguration()

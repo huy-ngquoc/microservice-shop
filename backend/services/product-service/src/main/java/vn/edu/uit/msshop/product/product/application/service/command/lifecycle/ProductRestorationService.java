@@ -10,9 +10,9 @@ import vn.edu.uit.msshop.product.product.application.dto.command.RestoreProductC
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductRestorationUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.UpdateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.LoadSoftDeletedProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.RestoreVariantsForProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkRestorationByIdsPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductRestored;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
@@ -23,9 +23,10 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 public class ProductRestorationService
         implements
         ProductRestorationUseCase {
-    private final LoadSoftDeletedProductPort loadSoftDeletedPort;
-    private final UpdateProductPort updatePort;
-    private final RestoreVariantsForProductPort restoreVariantsForProductPort;
+    private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
+    private final ProductUpdatePort updatePort;
+    private final ProductVariantBulkRestorationByIdsPort variantBulkRestorationForProductPort;
+
     private final PublishProductEventPort eventPort;
 
     @Override
@@ -36,7 +37,7 @@ public class ProductRestorationService
     public void restore(
             final RestoreProductCommand command) {
         final var productId = command.id();
-        final var product = this.loadSoftDeletedPort
+        final var product = this.softDeletedLookupByIdPort
                 .loadSoftDeletedById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
@@ -62,7 +63,7 @@ public class ProductRestorationService
         final var manifestIds = saved.getVariants().values().stream()
                 .map(ProductVariant::id)
                 .toList();
-        this.restoreVariantsForProductPort.restoreByVariantIds(manifestIds);
+        this.variantBulkRestorationForProductPort.restoreByVariantIds(manifestIds);
 
         this.eventPort.publish(new ProductRestored(saved.getId()));
     }

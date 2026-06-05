@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.SetAllProductRatingsCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingBulkUpdateUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.UpdateAllProductRatingsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingBulkUpdatePort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.sync.ProductRatingSnapshot;
 
@@ -20,7 +20,7 @@ import vn.edu.uit.msshop.product.product.domain.sync.ProductRatingSnapshot;
 public class ProductRatingBulkUpdateService
         implements
         ProductRatingBulkUpdateUseCase {
-    private final UpdateAllProductRatingsPort updateAllPort;
+    private final ProductRatingBulkUpdatePort ratingBulkUpdatePort;
 
     @Override
     @Transactional
@@ -45,7 +45,7 @@ public class ProductRatingBulkUpdateService
         final var next = ratings.stream()
                 .map(ProductRatingBulkUpdateService::toNext)
                 .toList();
-        this.updateAllPort.updateAll(next);
+        this.ratingBulkUpdatePort.updateAll(next);
     }
 
     private static ProductRating toNext(

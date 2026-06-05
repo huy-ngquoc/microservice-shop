@@ -12,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductSoftDeletedListingUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadAllProductSoldCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.LoadAllProductStockCountsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.ListSoftDeletedProductsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.LoadAllProductRatingsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.listing.ProductSoftDeletedListingPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
@@ -33,10 +33,11 @@ public class ProductSoftDeletedListingService
             ?,
             Set<ProductId>> SET_COLLECTOR = Collectors.toSet();
 
-    private final ListSoftDeletedProductsPort listSoftDeletedPort;
-    private final LoadAllProductSoldCountsPort loadAllSoldCountsPort;
-    private final LoadAllProductStockCountsPort loadAllStockCountsPort;
-    private final LoadAllProductRatingsPort loadAllRatingsPort;
+    private final ProductSoftDeletedListingPort softDeletedListingPort;
+    private final ProductSoldCountBulkLookupByIdsPort soldCountBulkLookupByIdsPort;
+    private final ProductStockCountBulkLookupByIdsPort stockCountBulkLookupByIdsPort;
+    private final ProductRatingBulkLookupByIdsPort ratingBulkLookupByIdsPort;
+
     private final ProductViewMapper mapper;
 
     @Override
@@ -44,15 +45,15 @@ public class ProductSoftDeletedListingService
             readOnly = true)
     public PageResponseDto<ProductView> list(
             final PageRequestDto pageRequest) {
-        final var page = this.listSoftDeletedPort.listSoftDeleted(pageRequest);
+        final var page = this.softDeletedListingPort.listSoftDeleted(pageRequest);
 
         final var ids = page.items().stream()
                 .map(Product::getId)
                 .collect(SET_COLLECTOR);
 
-        final var soldCountById = this.loadAllSoldCountsPort.loadAllByIds(ids);
-        final var stockCountById = this.loadAllStockCountsPort.loadAllByIds(ids);
-        final var ratingById = this.loadAllRatingsPort.loadAllByIds(ids);
+        final var soldCountById = this.soldCountBulkLookupByIdsPort.loadAllByIds(ids);
+        final var stockCountById = this.stockCountBulkLookupByIdsPort.loadAllByIds(ids);
+        final var ratingById = this.ratingBulkLookupByIdsPort.loadAllByIds(ids);
 
         return page.map(p -> this.toView(
                 p,
