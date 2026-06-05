@@ -7,12 +7,16 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
+import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductVariantResponse;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.HardDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.RestoreProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.SoftDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
+import vn.edu.uit.msshop.product.product.application.dto.view.ProductVariantView;
+import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
@@ -28,6 +32,12 @@ import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
 @Component
 public class ProductWebMapper {
+
+    public ProductId toProductId(
+            final UUID id) {
+        return new ProductId(id);
+    }
+
     public CreateProductCommand toCreateCommand(
             final CreateProductRequest request) {
         final var name = new ProductName(request.name());
@@ -110,5 +120,36 @@ public class ProductWebMapper {
         final var version = new ProductVersion(expectedVersion);
 
         return new HardDeleteProductCommand(productId, version);
+    }
+
+    public ProductResponse toResponse(
+            final ProductView view) {
+        final var variantsList = view.variants().stream()
+                .map(this::toVariantResponse)
+                .toList();
+
+        return new ProductResponse(
+                view.id(),
+                view.name(),
+                view.categoryId(),
+                view.brandId(),
+                view.minPrice(),
+                view.maxPrice(),
+                view.soldCount(),
+                view.stockCount(),
+                view.ratingTotal(),
+                view.ratingCount(),
+                view.options(),
+                variantsList,
+                view.imageKeys(),
+                view.version());
+    }
+
+    private ProductVariantResponse toVariantResponse(
+            final ProductVariantView view) {
+        return new ProductVariantResponse(
+                view.id(),
+                view.price(),
+                view.traits());
     }
 }
