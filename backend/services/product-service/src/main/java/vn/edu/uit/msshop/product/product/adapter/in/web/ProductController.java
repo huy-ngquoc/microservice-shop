@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
@@ -38,7 +37,6 @@ public class ProductController {
     private final ProductHardDeletionUseCase hardDeletionUseCase;
 
     private final ProductWebMapper mapper;
-    private final ProductSharedWebMapper sharedMapper;
 
     @PostMapping
     public ResponseEntity<ProductResponse> create(
@@ -47,7 +45,7 @@ public class ProductController {
             final CreateProductRequest request) {
         final var view = this.creationUseCase.create(this.mapper.toCreateCommand(request));
 
-        final var response = this.sharedMapper.toResponse(view);
+        final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
                 .methodOn(ProductQueryController.class)
                 .findById(response.id());
@@ -65,7 +63,7 @@ public class ProductController {
             final CreateSimpleProductRequest request) {
         final var view = this.creationUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
 
-        final var response = this.sharedMapper.toResponse(view);
+        final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
                 .methodOn(ProductQueryController.class)
                 .findById(response.id());
@@ -100,7 +98,7 @@ public class ProductController {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
         final var view = this.infoUpdateUseCase.updateInfo(command);
 
-        final var response = this.sharedMapper.toResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
