@@ -1,6 +1,5 @@
 package vn.edu.uit.msshop.product.brand.application.service.command.logo;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -10,17 +9,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLogoLifecycleCommands;
-import vn.edu.uit.msshop.product.brand.application.exception.BrandLogoKeyNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLogoLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
-import vn.edu.uit.msshop.product.brand.domain.model.Brand;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +26,8 @@ public class BrandLogoDeletionService
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
 
-    private final BrandLogoStoragePort logoStoragePort;
+    private final BrandLogoDeleter deleter;
+
     private final PublishBrandEventPort eventPort;
 
     @Override
@@ -56,44 +52,19 @@ public class BrandLogoDeletionService
             return;
         }
 
-        final var expectedVersion = cmd.expectedVersion();
-        final var currentVersion = brand.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        BrandVersionGuard.ensureMatch(
+                cmd.expectedVersion(),
+                brand.getVersion());
 
-        final var next = new Brand(
-                brand.getId(),
-                brand.getName(),
-                null,
-                expectedVersion,
-                brand.getDeletionTime());
+        final var next = brand.removeLogoKey();
         final var saved = this.updatePort.update(next);
 
         final var event = new BrandLogoUpdated(
                 saved.getId(),
-                null,
+                saved.getLogoKey(),
                 oldKey);
         this.eventPort.publish(event);
 
-        this.deleteOldLogo(oldKey);
-    }
-
-    private void deleteOldLogo(
-            @Nullable
-            final BrandLogoKey oldKey) {
-        if (oldKey == null) {
-            return;
-        }
-
-        try {
-            this.logoStoragePort.deleteLogo(oldKey);
-        } catch (final RuntimeException e) {
-            log.warn("Failed to delete old image key '{}', manual cleanup required",
-                    oldKey.value(),
-                    e);
-        }
+        this.deleter.deleteQuietly(oldKey);
     }
 }

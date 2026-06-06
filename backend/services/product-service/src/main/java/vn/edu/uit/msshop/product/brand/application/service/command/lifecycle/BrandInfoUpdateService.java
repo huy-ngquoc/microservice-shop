@@ -16,11 +16,11 @@ import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycl
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 import vn.edu.uit.msshop.shared.application.dto.Change;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -56,13 +56,9 @@ public class BrandInfoUpdateService
             return this.mapper.toView(brand);
         }
 
-        final var expectedVersion = cmd.expectedVersion();
-        final var currentVersion = brand.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        BrandVersionGuard.ensureMatch(
+                cmd.expectedVersion(),
+                brand.getVersion());
 
         final var next = BrandInfoUpdateService.applyChanges(brand, nameSet);
         if (next == null) {
@@ -70,7 +66,9 @@ public class BrandInfoUpdateService
         }
 
         final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new BrandUpdated(saved.getId()));
+
+        final var event = new BrandUpdated(saved.getId());
+        this.eventPort.publish(event);
 
         return this.mapper.toView(saved);
     }
@@ -85,11 +83,7 @@ public class BrandInfoUpdateService
             return null;
         }
 
-        return new Brand(
-                current.getId(),
-                applyNameResult.newValue(),
-                current.getLogoKey(),
-                current.getVersion(),
-                current.getDeletionTime());
+        final var newName = applyNameResult.newValue();
+        return current.rename(newName);
     }
 }

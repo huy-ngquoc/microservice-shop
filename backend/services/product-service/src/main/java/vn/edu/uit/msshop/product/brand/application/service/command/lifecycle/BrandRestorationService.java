@@ -12,9 +12,8 @@ import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycl
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandRestored;
-import vn.edu.uit.msshop.product.brand.domain.model.Brand;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -32,27 +31,19 @@ public class BrandRestorationService
             cacheNames = CacheNames.BRAND_LIST,
             allEntries = true)
     public void restore(
-            final BrandLifecycleCommands.Restore command) {
-        final var brandId = command.id();
+            final BrandLifecycleCommands.Restore cmd) {
+        final var brandId = cmd.id();
         final var brand = this.loadSoftDeletedPort.loadSoftDeletedById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = brand.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        BrandVersionGuard.ensureMatch(
+                cmd.expectedVersion(),
+                brand.getVersion());
 
-        final var restored = new Brand(
-                brand.getId(),
-                brand.getName(),
-                brand.getLogoKey(),
-                brand.getVersion(),
-                null);
+        final var next = brand.restored();
+        final var saved = this.updatePort.update(next);
 
-        final var saved = this.updatePort.update(restored);
-        this.eventPort.publish(new BrandRestored(saved.getId()));
+        final var event = new BrandRestored(saved.getId());
+        this.eventPort.publish(event);
     }
 }

@@ -51,4 +51,52 @@ public final class Brand {
         this.version = Domains.requireNonNull(version, "Version must NOT be null");
         this.deletionTime = deletionTime;
     }
+
+    public Brand rename(
+            final BrandName newName) {
+        return new Brand(
+                this.id,
+                newName,
+                this.logoKey,
+                this.version,
+                this.deletionTime);
+    }
+
+    public Brand changeLogoKey(
+            final BrandLogoKey newKey) {
+        return new Brand(
+                this.id,
+                this.name,
+                newKey,
+                this.version,
+                this.deletionTime);
+    }
+
+    public Brand removeLogoKey() {
+        return new Brand(
+                this.id,
+                this.name,
+                null,
+                this.version,
+                this.deletionTime);
+    }
+
+    public Brand softDeleted() {
+        return new Brand(
+                this.id,
+                this.name,
+                this.logoKey,
+                this.version,
+                BrandDeletionTime.now());
+    }
+
+    public Brand restored() {
+        return new Brand(
+                this.id,
+                this.name,
+                this.logoKey,
+                this.version,
+                null);
+    }
+
 }
