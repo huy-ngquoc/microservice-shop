@@ -1,6 +1,5 @@
 package vn.edu.uit.msshop.product.brand.application.service.command.lifecycle;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,14 +9,13 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCom
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.DeleteBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasSoftDeletedProductsPort;
+import vn.edu.uit.msshop.product.brand.application.service.command.logo.BrandLogoDeleter;
+import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandPurged;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +26,7 @@ public class BrandHardDeletionService
     private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
     private final DeleteBrandPort deletePort;
 
-    private final BrandLogoStoragePort logoStoragePort;
+    private final BrandLogoDeleter logoDeleter;
 
     private final CheckBrandHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
 
@@ -42,37 +40,19 @@ public class BrandHardDeletionService
         final var brand = this.loadSoftDeletedPort.loadSoftDeletedById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
-        final var expectedVersion = cmd.expectedVersion();
-        final var currentVersion = brand.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        BrandVersionGuard.ensureMatch(
+                cmd.expectedVersion(),
+                brand.getVersion());
 
         if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(brandId)) {
             throw new BusinessRuleException("Cannot delete brand with existing products");
         }
 
         this.deletePort.deleteById(brandId);
-        this.eventPort.publish(new BrandPurged(brandId));
 
-        this.deleteLogo(brand.getLogoKey());
-    }
+        final var event = new BrandPurged(brandId);
+        this.eventPort.publish(event);
 
-    private void deleteLogo(
-            @Nullable
-            final BrandLogoKey key) {
-        if (key == null) {
-            return;
-        }
-
-        try {
-            this.logoStoragePort.deleteLogo(key);
-        } catch (final RuntimeException e) {
-            log.warn("Hard delete: failed to delete logo '{}', manual cleanup required",
-                    key.value(),
-                    e);
-        }
+        this.logoDeleter.deleteQuietly(brand.getLogoKey());
     }
 }
