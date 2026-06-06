@@ -1,0 +1,74 @@
+package vn.edu.uit.msshop.product.brand.application.service.command.lifecycle;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasProductsPort;
+import vn.edu.uit.msshop.product.brand.domain.event.BrandSoftDeleted;
+import vn.edu.uit.msshop.product.brand.domain.model.Brand;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandDeletionTime;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+
+@Service
+@RequiredArgsConstructor
+public class BrandSoftDeletionService
+        implements BrandLifecycleUseCases.SoftDelete {
+
+    private final LoadBrandPort loadPort;
+    private final UpdateBrandPort updatePort;
+
+    private final CheckBrandHasProductsPort checkHasProductsPort;
+
+    private final PublishBrandEventPort eventPort;
+
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.BRAND,
+                            key = "#cmd.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.BRAND_LIST,
+                            allEntries = true)
+            })
+    public void softDelete(
+            final BrandLifecycleCommands.SoftDelete cmd) {
+        final var brandId = cmd.id();
+        final var brand = this.loadPort.loadById(brandId)
+                .orElseThrow(() -> new BrandNotFoundException(brandId));
+
+        final var expectedVersion = cmd.expectedVersion();
+        final var currentVersion = brand.getVersion();
+        if (!expectedVersion.equals(currentVersion)) {
+            throw new OptimisticLockException(
+                    expectedVersion.value(),
+                    currentVersion.value());
+        }
+
+        if (this.checkHasProductsPort.hasProducts(brandId)) {
+            throw new BusinessRuleException("Cannot delete brand with existing products");
+        }
+
+        final var next = new Brand(
+                brand.getId(),
+                brand.getName(),
+                brand.getLogoKey(),
+                brand.getVersion(),
+                BrandDeletionTime.now());
+
+        final var saved = this.updatePort.update(next);
+        this.eventPort.publish(new BrandSoftDeleted(saved.getId()));
+    }
+}
