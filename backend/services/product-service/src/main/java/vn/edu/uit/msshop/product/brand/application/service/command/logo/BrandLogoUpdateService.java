@@ -19,10 +19,10 @@ import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEv
 import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +33,8 @@ public class BrandLogoUpdateService
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
 
-    private final BrandLogoStoragePort logoStoragePort;
+    private final BrandLogoStoragePort storagePort;
+    private final BrandLogoDeleter deleter;
 
     private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
@@ -55,13 +56,9 @@ public class BrandLogoUpdateService
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
-        final var expectedVersion = cmd.expectedVersion();
-        final var currentVersion = brand.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        BrandVersionGuard.ensureMatch(
+                cmd.expectedVersion(),
+                brand.getVersion());
 
         final var saved = this.commitImageChange(brand, cmd.newLogoKey());
         if (saved == null) {
@@ -74,7 +71,7 @@ public class BrandLogoUpdateService
                 brand.getLogoKey());
         this.eventPort.publish(event);
 
-        this.deleteOldLogo(brand.getLogoKey());
+        this.deleter.deleteQuietly(brand.getLogoKey());
 
         return this.mapper.toLogoView(saved);
     }
@@ -87,19 +84,14 @@ public class BrandLogoUpdateService
         }
 
         this.ensureLogoKeyExistsInTemp(newLogoKey);
-        this.logoStoragePort.publishLogo(newLogoKey);
+        this.storagePort.publishLogo(newLogoKey);
 
         try {
-            final var next = new Brand(
-                    current.getId(),
-                    current.getName(),
-                    newLogoKey,
-                    current.getVersion(),
-                    current.getDeletionTime());
+            final var next = current.changeLogoKey(newLogoKey);
             return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {
-                this.logoStoragePort.unpublishLogo(newLogoKey);
+                this.storagePort.unpublishLogo(newLogoKey);
             } catch (final RuntimeException compensateEx) {
                 e.addSuppressed(compensateEx);
                 log.error("Compensation failed for key '{}'",
@@ -112,24 +104,8 @@ public class BrandLogoUpdateService
 
     private void ensureLogoKeyExistsInTemp(
             final BrandLogoKey logoKey) {
-        if (!this.logoStoragePort.existsAsTemp(logoKey)) {
+        if (!this.storagePort.existsAsTemp(logoKey)) {
             throw new BrandLogoKeyNotFoundException(logoKey);
-        }
-    }
-
-    private void deleteOldLogo(
-            @Nullable
-            final BrandLogoKey oldKey) {
-        if (oldKey == null) {
-            return;
-        }
-
-        try {
-            this.logoStoragePort.deleteLogo(oldKey);
-        } catch (final RuntimeException e) {
-            log.warn("Failed to delete old image key '{}', manual cleanup required",
-                    oldKey.value(),
-                    e);
         }
     }
 }

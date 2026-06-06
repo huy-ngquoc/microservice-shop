@@ -14,11 +14,9 @@ import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEv
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasProductsPort;
+import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandSoftDeleted;
-import vn.edu.uit.msshop.product.brand.domain.model.Brand;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandDeletionTime;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -49,26 +47,18 @@ public class BrandSoftDeletionService
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
-        final var expectedVersion = cmd.expectedVersion();
-        final var currentVersion = brand.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        BrandVersionGuard.ensureMatch(
+                cmd.expectedVersion(),
+                brand.getVersion());
 
         if (this.checkHasProductsPort.hasProducts(brandId)) {
             throw new BusinessRuleException("Cannot delete brand with existing products");
         }
 
-        final var next = new Brand(
-                brand.getId(),
-                brand.getName(),
-                brand.getLogoKey(),
-                brand.getVersion(),
-                BrandDeletionTime.now());
-
+        final var next = brand.softDeleted();
         final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new BrandSoftDeleted(saved.getId()));
+
+        final var event = new BrandSoftDeleted(saved.getId());
+        this.eventPort.publish(event);
     }
 }
