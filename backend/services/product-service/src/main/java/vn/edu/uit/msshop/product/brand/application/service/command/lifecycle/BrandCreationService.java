@@ -38,7 +38,9 @@ public class BrandCreationService
                 cmd.name());
 
         final var saved = this.createPort.create(brand);
-        this.eventPort.publish(new BrandCreated(saved.getId()));
+
+        final var event = new BrandCreated(saved.getId());
+        this.eventPort.publish(event);
 
         return this.mapper.toView(saved);
     }
