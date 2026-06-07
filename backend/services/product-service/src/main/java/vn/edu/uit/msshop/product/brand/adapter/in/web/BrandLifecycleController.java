@@ -20,10 +20,10 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandCreationUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandHardDeletionUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandInfoUpdateUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandRestorationUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandSoftDeletionUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandHardDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandInfoUpdateByIdUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandRestorationByIdUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandSoftDeletionByIdUseCase;
 
 @RestController
 @RequestMapping("/brands")
@@ -31,10 +31,10 @@ import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.Bra
 public class BrandLifecycleController {
 
     private final BrandCreationUseCase creationUseCase;
-    private final BrandRestorationUseCase restorationUseCase;
-    private final BrandInfoUpdateUseCase infoUpdateUseCase;
-    private final BrandSoftDeletionUseCase softDeletionUseCase;
-    private final BrandHardDeletionUseCase hardDeletionUseCase;
+    private final BrandRestorationByIdUseCase restorationUseCase;
+    private final BrandInfoUpdateByIdUseCase infoUpdateUseCase;
+    private final BrandSoftDeletionByIdUseCase softDeletionUseCase;
+    private final BrandHardDeletionByIdUseCase hardDeletionUseCase;
 
     private final BrandWebMapper mapper;
 
@@ -58,15 +58,15 @@ public class BrandLifecycleController {
     }
 
     @PatchMapping("/{id}/info")
-    public ResponseEntity<BrandResponse> updateInfo(
+    public ResponseEntity<BrandResponse> updateInfoById(
             @PathVariable
             final UUID id,
 
             @RequestBody
             @Valid
             final UpdateBrandInfoRequest request) {
-        final var command = this.mapper.toInfoUpdateCommand(id, request);
-        final var view = this.infoUpdateUseCase.updateInfo(command);
+        final var command = this.mapper.toInfoUpdateByIdCommand(id, request);
+        final var view = this.infoUpdateUseCase.updateInfoById(command);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -79,8 +79,8 @@ public class BrandLifecycleController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toSoftDeletionCommand(id, version);
-        this.softDeletionUseCase.softDelete(command);
+        final var command = this.mapper.toSoftDeletionByIdCommand(id, version);
+        this.softDeletionUseCase.softDeleteById(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -92,8 +92,8 @@ public class BrandLifecycleController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toRestorationCommand(id, version);
-        this.restorationUseCase.restore(command);
+        final var command = this.mapper.toRestorationByIdCommand(id, version);
+        this.restorationUseCase.restoreById(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -105,8 +105,8 @@ public class BrandLifecycleController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toHardDeletionCommand(id, version);
-        this.hardDeletionUseCase.hardDelete(command);
+        final var command = this.mapper.toHardDeletionByIdCommand(id, version);
+        this.hardDeletionUseCase.hardDeleteById(command);
 
         return ResponseEntity.noContent().build();
     }

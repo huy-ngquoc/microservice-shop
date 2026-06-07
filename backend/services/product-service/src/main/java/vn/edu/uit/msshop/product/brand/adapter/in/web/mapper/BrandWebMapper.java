@@ -34,7 +34,7 @@ public class BrandWebMapper {
                 request.name());
     }
 
-    public BrandInfoUpdateByIdCommand toInfoUpdateCommand(
+    public BrandInfoUpdateByIdCommand toInfoUpdateByIdCommand(
             final UUID brandId,
             final UpdateBrandInfoRequest request) {
         final var brandNameChange = ChangeRequest.toChange(request.name());
@@ -44,7 +44,7 @@ public class BrandWebMapper {
                 request.version());
     }
 
-    public BrandSoftDeletionByIdCommand toSoftDeletionCommand(
+    public BrandSoftDeletionByIdCommand toSoftDeletionByIdCommand(
             final UUID brandId,
             final long brandVersion) {
         return new BrandSoftDeletionByIdCommand(
@@ -52,7 +52,7 @@ public class BrandWebMapper {
                 brandVersion);
     }
 
-    public BrandRestorationByIdCommand toRestorationCommand(
+    public BrandRestorationByIdCommand toRestorationByIdCommand(
             final UUID brandId,
             final long brandVersion) {
         return new BrandRestorationByIdCommand(
@@ -60,7 +60,7 @@ public class BrandWebMapper {
                 brandVersion);
     }
 
-    public BrandHardDeletionByIdCommand toHardDeletionCommand(
+    public BrandHardDeletionByIdCommand toHardDeletionByIdCommand(
             final UUID brandId,
             final long brandVersion) {
         return new BrandHardDeletionByIdCommand(

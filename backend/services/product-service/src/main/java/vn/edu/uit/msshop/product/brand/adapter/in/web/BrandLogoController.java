@@ -17,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandLogoWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoDeletionUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoUpdateUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
 
 @RestController
@@ -27,8 +27,8 @@ import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseC
 public class BrandLogoController {
 
     private final BrandLookupUseCases.FindActiveLogoById findLogoUseCase;
-    private final BrandLogoUpdateUseCase updateUseCase;
-    private final BrandLogoDeletionUseCase deletionUseCase;
+    private final BrandLogoUpdateByIdUseCase updateUseCase;
+    private final BrandLogoDeletionByIdUseCase deletionUseCase;
 
     private final BrandLogoWebMapper mapper;
 
@@ -51,8 +51,8 @@ public class BrandLogoController {
             @RequestBody
             @Valid
             final UpdateBrandLogoRequest request) {
-        final var command = this.mapper.toUpdateCommand(id, request);
-        final var view = this.updateUseCase.update(command);
+        final var command = this.mapper.toUpdateByIdCommand(id, request);
+        final var view = this.updateUseCase.updateById(command);
 
         final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);
@@ -65,8 +65,8 @@ public class BrandLogoController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toDeletionCommand(id, version);
-        this.deletionUseCase.delete(command);
+        final var command = this.mapper.toDeletionByIdCommand(id, version);
+        this.deletionUseCase.deleteById(command);
 
         return ResponseEntity.noContent().build();
     }
