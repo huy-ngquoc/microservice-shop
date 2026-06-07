@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.brand.application.port.in.command;
 
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLogoLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoDeletionCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoUpdateCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 
 public final class BrandLogoLifecycleUseCases {
@@ -10,11 +11,11 @@ public final class BrandLogoLifecycleUseCases {
 
     public interface Update {
         BrandLogoView update(
-                final BrandLogoLifecycleCommands.Update cmd);
+                final BrandLogoUpdateCommand cmd);
     }
 
     public interface Delete {
         void delete(
-                final BrandLogoLifecycleCommands.Delete cmd);
+                final BrandLogoDeletionCommand cmd);
     }
 }

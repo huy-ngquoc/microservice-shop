@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandSoftDeletionCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
@@ -16,6 +16,8 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBr
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasProductsPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandSoftDeleted;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
@@ -42,13 +44,15 @@ public class BrandSoftDeletionService
                             allEntries = true)
             })
     public void softDelete(
-            final BrandLifecycleCommands.SoftDelete cmd) {
-        final var brandId = cmd.id();
+            final BrandSoftDeletionCommand cmd) {
+        final var brandId = new BrandId(cmd.brandId());
+        final var expectedVersion = new BrandVersion(cmd.brandVersion());
+
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
         BrandVersionGuard.ensureMatch(
-                cmd.expectedVersion(),
+                expectedVersion,
                 brand.getVersion());
 
         if (this.checkHasProductsPort.hasProducts(brandId)) {
