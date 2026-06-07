@@ -9,7 +9,7 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandCreationCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandCreationUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CreateBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandCreated;
@@ -20,7 +20,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 @Service
 @RequiredArgsConstructor
 public class BrandCreationService
-        implements BrandLifecycleUseCases.Create {
+        implements BrandCreationUseCase {
 
     private final CreateBrandPort createPort;
 

@@ -5,9 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandHardDeletionCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandHardDeletionByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandHardDeletionUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.DeleteBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 @RequiredArgsConstructor
 @Slf4j
 public class BrandHardDeletionService
-        implements BrandLifecycleUseCases.HardDelete {
+        implements BrandHardDeletionUseCase {
 
     private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
     private final DeleteBrandPort deletePort;
@@ -37,7 +37,7 @@ public class BrandHardDeletionService
     @Override
     @Transactional
     public void hardDelete(
-            final BrandHardDeletionCommand cmd) {
+            final BrandHardDeletionByIdCommand cmd) {
         final var brandId = new BrandId(cmd.brandId());
         final var expectedVersion = new BrandVersion(cmd.brandVersion());
 
