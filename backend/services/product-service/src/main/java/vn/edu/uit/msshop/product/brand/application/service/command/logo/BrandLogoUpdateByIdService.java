@@ -17,8 +17,8 @@ import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandUpdatePort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
@@ -32,8 +32,8 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 public class BrandLogoUpdateByIdService
         implements BrandLogoUpdateByIdUseCase {
 
-    private final LoadBrandPort loadPort;
-    private final UpdateBrandPort updatePort;
+    private final BrandActiveLookupByIdPort loadPort;
+    private final BrandUpdatePort updatePort;
 
     private final BrandLogoStoragePort storagePort;
     private final BrandLogoDeleter deleter;
