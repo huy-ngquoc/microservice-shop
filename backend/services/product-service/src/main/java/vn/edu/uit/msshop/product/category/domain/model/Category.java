@@ -49,4 +49,51 @@ public final class Category {
         this.version = Domains.requireNonNull(version, "Version must NOT be null");
         this.deletionTime = deletionTime;
     }
+
+    public Category rename(
+            final CategoryName newName) {
+        return new Category(
+                this.id,
+                newName,
+                this.imageKey,
+                this.version,
+                this.deletionTime);
+    }
+
+    public Category changeImageKey(
+            final CategoryImageKey newKey) {
+        return new Category(
+                this.id,
+                this.name,
+                newKey,
+                this.version,
+                this.deletionTime);
+    }
+
+    public Category removeImageKey() {
+        return new Category(
+                this.id,
+                this.name,
+                null,
+                this.version,
+                this.deletionTime);
+    }
+
+    public Category softDeleted() {
+        return new Category(
+                this.id,
+                this.name,
+                this.imageKey,
+                this.version,
+                CategoryDeletionTime.now());
+    }
+
+    public Category restored() {
+        return new Category(
+                this.id,
+                this.name,
+                this.imageKey,
+                this.version,
+                null);
+    }
 }
