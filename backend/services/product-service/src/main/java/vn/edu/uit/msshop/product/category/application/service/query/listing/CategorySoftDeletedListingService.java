@@ -1,0 +1,30 @@
+package vn.edu.uit.msshop.product.category.application.service.query.listing;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
+import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
+import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListSoftDeletedCategoriesPort;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
+
+@Service
+@RequiredArgsConstructor
+public class CategorySoftDeletedListingService
+        implements CategoryLookupUseCases.ListSoftDeleted {
+
+    private final ListSoftDeletedCategoriesPort listSoftDeletedPort;
+    private final CategoryViewMapper mapper;
+
+    @Override
+    @Transactional(
+            readOnly = true)
+    public PageResponseDto<CategoryView> listSoftDeleted(
+            final PageRequestDto pageRequest) {
+        final var page = this.listSoftDeletedPort.listSoftDeleted(pageRequest);
+        return page.map(this.mapper::toView);
+    }
+}
