@@ -87,12 +87,7 @@ public class CategoryImageUpdateByIdService
         this.imageStoragePort.publishImage(newImageKey);
 
         try {
-            final var next = new Category(
-                    current.getId(),
-                    current.getName(),
-                    newImageKey,
-                    current.getVersion(),
-                    current.getDeletionTime());
+            final var next = current.changeImageKey(newImageKey);
             return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {
