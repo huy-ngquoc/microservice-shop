@@ -16,7 +16,6 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadC
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdatedEvent;
-import vn.edu.uit.msshop.product.category.domain.model.Category;
 
 @Service
 @RequiredArgsConstructor
@@ -57,12 +56,7 @@ public class CategoryImageDeletionByIdService
                 cmd.expectedVersion(),
                 category.getVersion());
 
-        final var next = new Category(
-                category.getId(),
-                category.getName(),
-                null,
-                category.getVersion(),
-                category.getDeletionTime());
+        final var next = category.removeImageKey();
         final var saved = this.updatePort.update(next);
 
         final var event = new CategoryImageUpdatedEvent(

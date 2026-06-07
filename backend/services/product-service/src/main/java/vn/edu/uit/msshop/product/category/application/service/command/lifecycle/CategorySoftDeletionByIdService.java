@@ -16,8 +16,6 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.Updat
 import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasProductsPort;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeletedEvent;
-import vn.edu.uit.msshop.product.category.domain.model.Category;
-import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryDeletionTime;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
@@ -58,13 +56,7 @@ public class CategorySoftDeletionByIdService
                     "Cannot delete category with existing products");
         }
 
-        final var next = new Category(
-                category.getId(),
-                category.getName(),
-                category.getImageKey(),
-                category.getVersion(),
-                CategoryDeletionTime.now());
-
+        final var next = category.softDeleted();
         final var saved = this.updatePort.update(next);
 
         final var event = new CategorySoftDeletedEvent(saved.getId());

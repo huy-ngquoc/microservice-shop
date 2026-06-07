@@ -14,7 +14,6 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadS
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryRestoredEvent;
-import vn.edu.uit.msshop.product.category.domain.model.Category;
 
 @Service
 @RequiredArgsConstructor
@@ -41,13 +40,7 @@ public class CategoryRestorationByIdService
                 cmd.expectedVersion(),
                 category.getVersion());
 
-        final var next = new Category(
-                category.getId(),
-                category.getName(),
-                category.getImageKey(),
-                category.getVersion(),
-                null);
-
+        final var next = category.restored();
         final var saved = this.updatePort.update(next);
 
         final var event = new CategoryRestoredEvent(saved.getId());
