@@ -4,17 +4,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.brand.application.dto.query.lookup.BrandSoftDeletedLookupByIdQuery;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.lookup.BrandSoftDeletedLookupByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
 @RequiredArgsConstructor
 public class BrandSoftDeletedLookupByIdService
-        implements BrandLookupUseCases.FindSoftDeletedById {
+        implements BrandSoftDeletedLookupByIdUseCase {
 
     private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
     private final BrandViewMapper mapper;
@@ -22,10 +23,11 @@ public class BrandSoftDeletedLookupByIdService
     @Override
     @Transactional(
             readOnly = true)
-    public BrandView findSoftDeletedById(
-            final BrandId id) {
-        return this.loadSoftDeletedPort.loadSoftDeletedById(id)
+    public BrandView find(
+            final BrandSoftDeletedLookupByIdQuery query) {
+        final var brandId = new BrandId(query.brandId());
+        return this.loadSoftDeletedPort.loadSoftDeletedById(brandId)
                 .map(this.mapper::toView)
-                .orElseThrow(() -> new BrandNotFoundException(id));
+                .orElseThrow(() -> new BrandNotFoundException(brandId));
     }
 }

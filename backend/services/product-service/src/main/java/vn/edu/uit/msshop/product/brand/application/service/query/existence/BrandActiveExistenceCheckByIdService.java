@@ -4,22 +4,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
+import vn.edu.uit.msshop.product.brand.application.dto.query.existence.BrandActiveExistenceCheckByIdQuery;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.existence.BrandActiveExistenceCheckByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBrandExistsPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
 @RequiredArgsConstructor
 public class BrandActiveExistenceCheckByIdService
-        implements BrandLookupUseCases.CheckExistsById {
+        implements BrandActiveExistenceCheckByIdUseCase {
 
     private final CheckBrandExistsPort checkExistsPort;
 
     @Override
     @Transactional(
             readOnly = true)
-    public boolean existsById(
-            final BrandId id) {
-        return this.checkExistsPort.existsById(id);
+    public boolean check(
+            final BrandActiveExistenceCheckByIdQuery query) {
+        final var brandId = new BrandId(query.brandId());
+        return this.checkExistsPort.existsById(brandId);
     }
 }

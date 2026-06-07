@@ -9,6 +9,7 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoReq
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
 import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoDeletionByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoUpdateByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.query.lookup.BrandLogoActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryPublicIds;
@@ -47,5 +48,11 @@ public class BrandLogoWebMapper {
         return new BrandLogoResponse(view.id(),
                 this.urlResolver.toLogoUrlString(view.logoKey()),
                 view.version());
+    }
+
+    public BrandLogoActiveLookupByIdQuery toActiveLookupByIdQuery(
+            final UUID brandId) {
+        return new BrandLogoActiveLookupByIdQuery(
+                brandId);
     }
 }

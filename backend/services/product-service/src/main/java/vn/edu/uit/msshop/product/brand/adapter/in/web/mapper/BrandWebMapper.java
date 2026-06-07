@@ -13,9 +13,14 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandHa
 import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandInfoUpdateByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandRestorationByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandSoftDeletionByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.query.existence.BrandActiveExistenceCheckByIdQuery;
+import vn.edu.uit.msshop.product.brand.application.dto.query.listing.BrandActiveListingQuery;
+import vn.edu.uit.msshop.product.brand.application.dto.query.listing.BrandSoftDeletedListingQuery;
+import vn.edu.uit.msshop.product.brand.application.dto.query.lookup.BrandActiveLookupByIdQuery;
+import vn.edu.uit.msshop.product.brand.application.dto.query.lookup.BrandSoftDeletedLookupByIdQuery;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 
 @Component
 @RequiredArgsConstructor
@@ -23,9 +28,34 @@ public class BrandWebMapper {
 
     private final BrandLogoUrlResolver urlResolver;
 
-    public BrandId toBrandId(
-            final UUID id) {
-        return new BrandId(id);
+    public BrandActiveListingQuery toActiveListingQuery(
+            final PageRequestDto pageRequest) {
+        return new BrandActiveListingQuery(
+                pageRequest);
+    }
+
+    public BrandSoftDeletedListingQuery toSoftDeletedListingQuery(
+            final PageRequestDto pageRequest) {
+        return new BrandSoftDeletedListingQuery(
+                pageRequest);
+    }
+
+    public BrandActiveExistenceCheckByIdQuery toActiveExistenceCheckByIdQuery(
+            final UUID brandId) {
+        return new BrandActiveExistenceCheckByIdQuery(
+                brandId);
+    }
+
+    public BrandActiveLookupByIdQuery toActiveLookupByIdQuery(
+            final UUID brandId) {
+        return new BrandActiveLookupByIdQuery(
+                brandId);
+    }
+
+    public BrandSoftDeletedLookupByIdQuery toSoftDeletedLookupByIdQuery(
+            final UUID brandId) {
+        return new BrandSoftDeletedLookupByIdQuery(
+                brandId);
     }
 
     public BrandCreationCommand toCreationCommand(
