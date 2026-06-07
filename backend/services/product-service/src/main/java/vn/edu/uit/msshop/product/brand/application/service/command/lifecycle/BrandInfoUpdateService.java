@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandInfoUpdateCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
@@ -19,7 +19,9 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBr
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.shared.application.dto.Change;
 
 @Service
@@ -39,25 +41,29 @@ public class BrandInfoUpdateService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND,
-                            key = "#cmd.id().value()",
-                            condition = "#cmd.name().getSet() != null"),
+                            key = "#cmd.brandId()",
+                            condition = "#cmd.brandNameChange().getSet() != null"),
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true,
-                            condition = "#cmd.name().getSet() != null")
+                            condition = "#cmd.brandNameChange().getSet() != null")
             })
     public BrandView updateInfo(
-            final BrandLifecycleCommands.UpdateInfo cmd) {
-        final var brand = this.loadPort.loadById(cmd.id())
-                .orElseThrow(() -> new BrandNotFoundException(cmd.id()));
+            final BrandInfoUpdateCommand cmd) {
+        final var brandId = new BrandId(cmd.brandId());
+        final var nameChange = cmd.brandNameChange().map(BrandName::new);
 
-        final var nameSet = cmd.name().getSet();
+        final var brand = this.loadPort.loadById(brandId)
+                .orElseThrow(() -> new BrandNotFoundException(brandId));
+
+        final var nameSet = nameChange.getSet();
         if (nameSet == null) {
             return this.mapper.toView(brand);
         }
 
+        final var expectedVersion = new BrandVersion(cmd.brandVersion());
         BrandVersionGuard.ensureMatch(
-                cmd.expectedVersion(),
+                expectedVersion,
                 brand.getVersion());
 
         final var next = BrandInfoUpdateService.applyChanges(brand, nameSet);

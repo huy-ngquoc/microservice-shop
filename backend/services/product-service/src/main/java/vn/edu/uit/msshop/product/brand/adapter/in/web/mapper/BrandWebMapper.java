@@ -8,11 +8,13 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandCreationCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandHardDeletionCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandInfoUpdateCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandRestorationCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandSoftDeletionCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
 @Component
@@ -26,49 +28,44 @@ public class BrandWebMapper {
         return new BrandId(id);
     }
 
-    public BrandLifecycleCommands.Create toCreateCommand(
+    public BrandCreationCommand toCreationCommand(
             final CreateBrandRequest request) {
-        final var name = new BrandName(request.name());
-
-        return new BrandLifecycleCommands.Create(name);
+        return new BrandCreationCommand(
+                request.name());
     }
 
-    public BrandLifecycleCommands.Restore toRestoreCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var brandId = new BrandId(id);
-        final var version = new BrandVersion(expectedVersion);
-
-        return new BrandLifecycleCommands.Restore(brandId, version);
-    }
-
-    public BrandLifecycleCommands.UpdateInfo toUpdateInfoCommand(
-            final UUID id,
+    public BrandInfoUpdateCommand toInfoUpdateCommand(
+            final UUID brandId,
             final UpdateBrandInfoRequest request) {
-        final var brandId = new BrandId(id);
-        final var version = new BrandVersion(request.version());
-
-        final var name = ChangeRequest.toChange(request.name(), BrandName::new);
-
-        return new BrandLifecycleCommands.UpdateInfo(brandId, name, version);
+        final var brandNameChange = ChangeRequest.toChange(request.name());
+        return new BrandInfoUpdateCommand(
+                brandId,
+                brandNameChange,
+                request.version());
     }
 
-    public BrandLifecycleCommands.SoftDelete toSoftDeleteCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var brandId = new BrandId(id);
-        final var version = new BrandVersion(expectedVersion);
-
-        return new BrandLifecycleCommands.SoftDelete(brandId, version);
+    public BrandSoftDeletionCommand toSoftDeletionCommand(
+            final UUID brandId,
+            final long brandVersion) {
+        return new BrandSoftDeletionCommand(
+                brandId,
+                brandVersion);
     }
 
-    public BrandLifecycleCommands.HardDelete toHardDeleteCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var brandId = new BrandId(id);
-        final var version = new BrandVersion(expectedVersion);
+    public BrandRestorationCommand toRestorationCommand(
+            final UUID brandId,
+            final long brandVersion) {
+        return new BrandRestorationCommand(
+                brandId,
+                brandVersion);
+    }
 
-        return new BrandLifecycleCommands.HardDelete(brandId, version);
+    public BrandHardDeletionCommand toHardDeletionCommand(
+            final UUID brandId,
+            final long brandVersion) {
+        return new BrandHardDeletionCommand(
+                brandId,
+                brandVersion);
     }
 
     public BrandResponse toResponse(
