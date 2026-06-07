@@ -4,17 +4,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.brand.application.dto.query.lookup.BrandLogoActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.lookup.BrandLogoActiveLookupByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
 @RequiredArgsConstructor
 public class BrandLogoActiveLookupByIdService
-        implements BrandLookupUseCases.FindActiveLogoById {
+        implements BrandLogoActiveLookupByIdUseCase {
 
     private final LoadBrandPort loadPort;
     private final BrandViewMapper mapper;
@@ -22,10 +23,11 @@ public class BrandLogoActiveLookupByIdService
     @Override
     @Transactional(
             readOnly = true)
-    public BrandLogoView findActiveLogoById(
-            final BrandId id) {
-        return this.loadPort.loadById(id)
+    public BrandLogoView find(
+            final BrandLogoActiveLookupByIdQuery query) {
+        final var brandId = new BrandId(query.brandId());
+        return this.loadPort.loadById(brandId)
                 .map(this.mapper::toLogoView)
-                .orElseThrow(() -> new BrandNotFoundException(id));
+                .orElseThrow(() -> new BrandNotFoundException(brandId));
     }
 }

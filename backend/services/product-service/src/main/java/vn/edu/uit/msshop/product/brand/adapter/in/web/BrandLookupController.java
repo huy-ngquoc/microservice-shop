@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.existence.BrandActiveExistenceCheckByIdUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.listing.BrandActiveListingUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.listing.BrandSoftDeletedListingUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.lookup.BrandActiveLookupByIdUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.lookup.BrandSoftDeletedLookupByIdUseCase;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
@@ -22,11 +26,11 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequiredArgsConstructor
 public class BrandLookupController {
 
-    private final BrandLookupUseCases.ListActive listUseCase;
-    private final BrandLookupUseCases.ListSoftDeleted listSoftDeletedUseCase;
-    private final BrandLookupUseCases.FindActiveById findActiveByIdUseCase;
-    private final BrandLookupUseCases.FindSoftDeletedById findSoftDeletedByIdUseCase;
-    private final BrandLookupUseCases.CheckExistsById checkExistsByIdUseCase;
+    private final BrandActiveListingUseCase activeListingUseCase;
+    private final BrandSoftDeletedListingUseCase softDeletedListingUseCase;
+    private final BrandActiveExistenceCheckByIdUseCase activeExistenceCheckByIdUseCase;
+    private final BrandActiveLookupByIdUseCase activeLookupByIdUseCase;
+    private final BrandSoftDeletedLookupByIdUseCase softDeletedLookupByIdUseCase;
 
     private final BrandWebMapper mapper;
 
@@ -49,7 +53,8 @@ public class BrandLookupController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = listUseCase.listActive(request);
+        final var query = this.mapper.toActiveListingQuery(request);
+        final var views = activeListingUseCase.list(query);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
@@ -74,7 +79,8 @@ public class BrandLookupController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = listSoftDeletedUseCase.listSoftDeleted(request);
+        final var query = this.mapper.toSoftDeletedListingQuery(request);
+        final var views = softDeletedListingUseCase.list(query);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
@@ -84,8 +90,8 @@ public class BrandLookupController {
     public ResponseEntity<BrandResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findActiveByIdUseCase.findActiveById(
-                this.mapper.toBrandId(id));
+        final var query = this.mapper.toActiveLookupByIdQuery(id);
+        final var view = this.activeLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -95,8 +101,8 @@ public class BrandLookupController {
     public ResponseEntity<BrandResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
-        final var view = this.findSoftDeletedByIdUseCase.findSoftDeletedById(
-                this.mapper.toBrandId(id));
+        final var query = this.mapper.toSoftDeletedLookupByIdQuery(id);
+        final var view = this.softDeletedLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -106,8 +112,9 @@ public class BrandLookupController {
     public ResponseEntity<Void> existsById(
             @PathVariable
             final UUID id) {
-        final var existed = this.checkExistsByIdUseCase.existsById(
-                this.mapper.toBrandId(id));
+        final var query = this.mapper.toActiveExistenceCheckByIdQuery(id);
+        final var existed = this.activeExistenceCheckByIdUseCase.check(query);
+
         if (!existed) {
             return ResponseEntity.notFound().build();
         }

@@ -6,17 +6,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.brand.application.dto.query.lookup.BrandActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.lookup.BrandActiveLookupByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
 @RequiredArgsConstructor
 public class BrandActiveLookupByIdService
-        implements BrandLookupUseCases.FindActiveById {
+        implements BrandActiveLookupByIdUseCase {
 
     private final LoadBrandPort loadPort;
     private final BrandViewMapper mapper;
@@ -26,11 +27,12 @@ public class BrandActiveLookupByIdService
             readOnly = true)
     @Cacheable(
             cacheNames = CacheNames.BRAND,
-            key = "#id.value()")
-    public BrandView findActiveById(
-            final BrandId id) {
-        return this.loadPort.loadById(id)
+            key = "#query.brandId()")
+    public BrandView find(
+            final BrandActiveLookupByIdQuery query) {
+        final var brandId = new BrandId(query.brandId());
+        return this.loadPort.loadById(brandId)
                 .map(this.mapper::toView)
-                .orElseThrow(() -> new BrandNotFoundException(id));
+                .orElseThrow(() -> new BrandNotFoundException(brandId));
     }
 }

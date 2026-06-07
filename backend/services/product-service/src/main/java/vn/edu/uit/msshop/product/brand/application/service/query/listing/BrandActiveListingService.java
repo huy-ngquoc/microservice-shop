@@ -6,17 +6,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.brand.application.dto.query.listing.BrandActiveListingQuery;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.listing.BrandActiveListingUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListBrandsPort;
-import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
 public class BrandActiveListingService
-        implements BrandLookupUseCases.ListActive {
+        implements BrandActiveListingUseCase {
 
     private final ListBrandsPort listPort;
     private final BrandViewMapper mapper;
@@ -26,9 +26,9 @@ public class BrandActiveListingService
             readOnly = true)
     @Cacheable(
             cacheNames = CacheNames.BRAND_LIST)
-    public PageResponseDto<BrandView> listActive(
-            final PageRequestDto pageRequest) {
-        final var page = listPort.list(pageRequest);
+    public PageResponseDto<BrandView> list(
+            final BrandActiveListingQuery query) {
+        final var page = listPort.list(query.pageRequest());
         return page.map(this.mapper::toView);
     }
 }
