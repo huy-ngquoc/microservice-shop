@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandInfoUpdateCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandInfoUpdateByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandInfoUpdateUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -27,7 +27,7 @@ import vn.edu.uit.msshop.shared.application.dto.Change;
 @Service
 @RequiredArgsConstructor
 public class BrandInfoUpdateService
-        implements BrandLifecycleUseCases.UpdateInfo {
+        implements BrandInfoUpdateUseCase {
 
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
@@ -49,7 +49,7 @@ public class BrandInfoUpdateService
                             condition = "#cmd.brandNameChange().getSet() != null")
             })
     public BrandView updateInfo(
-            final BrandInfoUpdateCommand cmd) {
+            final BrandInfoUpdateByIdCommand cmd) {
         final var brandId = new BrandId(cmd.brandId());
         final var nameChange = cmd.brandNameChange().map(BrandName::new);
 
