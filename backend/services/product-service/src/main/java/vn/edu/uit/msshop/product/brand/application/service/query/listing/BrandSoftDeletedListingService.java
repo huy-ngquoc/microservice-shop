@@ -8,7 +8,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.query.listing.BrandSoftDe
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.listing.BrandSoftDeletedListingUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListSoftDeletedBrandsPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.listing.BrandSoftDeletedListingPort;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 public class BrandSoftDeletedListingService
         implements BrandSoftDeletedListingUseCase {
 
-    private final ListSoftDeletedBrandsPort listSoftDeletedPort;
+    private final BrandSoftDeletedListingPort listSoftDeletedPort;
     private final BrandViewMapper mapper;
 
     @Override

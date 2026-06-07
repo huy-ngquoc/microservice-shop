@@ -12,8 +12,8 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoDel
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandUpdatePort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
@@ -25,8 +25,8 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 public class BrandLogoDeletionByIdService
         implements BrandLogoDeletionByIdUseCase {
 
-    private final LoadBrandPort loadPort;
-    private final UpdateBrandPort updatePort;
+    private final BrandActiveLookupByIdPort loadPort;
+    private final BrandUpdatePort updatePort;
 
     private final BrandLogoDeleter deleter;
 

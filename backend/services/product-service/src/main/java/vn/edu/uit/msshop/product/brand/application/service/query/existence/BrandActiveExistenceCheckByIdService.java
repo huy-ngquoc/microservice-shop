@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.application.dto.query.existence.BrandActiveExistenceCheckByIdQuery;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.existence.BrandActiveExistenceCheckByIdUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBrandExistsPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.existence.BrandActiveExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 public class BrandActiveExistenceCheckByIdService
         implements BrandActiveExistenceCheckByIdUseCase {
 
-    private final CheckBrandExistsPort checkExistsPort;
+    private final BrandActiveExistenceCheckByIdPort checkExistsPort;
 
     @Override
     @Transactional(

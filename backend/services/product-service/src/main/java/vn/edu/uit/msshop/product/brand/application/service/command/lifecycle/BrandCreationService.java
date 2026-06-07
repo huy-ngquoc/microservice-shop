@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandCreationUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CreateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandCreationPort;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandCreated;
 import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 public class BrandCreationService
         implements BrandCreationUseCase {
 
-    private final CreateBrandPort createPort;
+    private final BrandCreationPort createPort;
 
     private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;
