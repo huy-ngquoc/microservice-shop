@@ -9,7 +9,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.lookup.BrandSoftDeletedLookupByIdUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
@@ -17,7 +17,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 public class BrandSoftDeletedLookupByIdService
         implements BrandSoftDeletedLookupByIdUseCase {
 
-    private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
+    private final BrandSoftDeletedLookupByIdPort loadSoftDeletedPort;
     private final BrandViewMapper mapper;
 
     @Override

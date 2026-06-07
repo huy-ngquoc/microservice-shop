@@ -10,8 +10,8 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandRe
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandRestorationByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandUpdatePort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandRestored;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
@@ -22,8 +22,8 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 public class BrandRestorationByIdService
         implements BrandRestorationByIdUseCase {
 
-    private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
-    private final UpdateBrandPort updatePort;
+    private final BrandSoftDeletedLookupByIdPort loadSoftDeletedPort;
+    private final BrandUpdatePort updatePort;
 
     private final PublishBrandEventPort eventPort;
 

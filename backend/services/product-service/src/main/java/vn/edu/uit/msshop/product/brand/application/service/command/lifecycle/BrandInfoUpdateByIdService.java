@@ -14,8 +14,8 @@ import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundExcept
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandInfoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandUpdatePort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
@@ -29,8 +29,8 @@ import vn.edu.uit.msshop.shared.application.dto.Change;
 public class BrandInfoUpdateByIdService
         implements BrandInfoUpdateByIdUseCase {
 
-    private final LoadBrandPort loadPort;
-    private final UpdateBrandPort updatePort;
+    private final BrandActiveLookupByIdPort loadPort;
+    private final BrandUpdatePort updatePort;
 
     private final BrandViewMapper mapper;
     private final PublishBrandEventPort eventPort;

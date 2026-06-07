@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.lookup.BrandActiveLookupByIdUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 public class BrandActiveLookupByIdService
         implements BrandActiveLookupByIdUseCase {
 
-    private final LoadBrandPort loadPort;
+    private final BrandActiveLookupByIdPort loadPort;
     private final BrandViewMapper mapper;
 
     @Override

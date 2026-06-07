@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.query.listing.BrandActive
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.listing.BrandActiveListingUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListBrandsPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.listing.BrandActiveListingPort;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 public class BrandActiveListingService
         implements BrandActiveListingUseCase {
 
-    private final ListBrandsPort listPort;
+    private final BrandActiveListingPort listPort;
     private final BrandViewMapper mapper;
 
     @Override
