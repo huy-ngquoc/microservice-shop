@@ -9,8 +9,8 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandHa
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandHardDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.DeleteBrandPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandDeletionByIdPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasSoftDeletedProductsPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.logo.BrandLogoDeleter;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
@@ -25,8 +25,8 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 public class BrandHardDeletionByIdService
         implements BrandHardDeletionByIdUseCase {
 
-    private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
-    private final DeleteBrandPort deletePort;
+    private final BrandSoftDeletedLookupByIdPort loadSoftDeletedPort;
+    private final BrandDeletionByIdPort deletePort;
 
     private final BrandLogoDeleter logoDeleter;
 

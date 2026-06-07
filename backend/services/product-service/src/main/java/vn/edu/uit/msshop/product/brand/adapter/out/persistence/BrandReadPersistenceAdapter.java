@@ -6,11 +6,11 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.out.persistence.mapper.BrandPersistenceMapper;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CheckBrandExistsPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListBrandsPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.ListSoftDeletedBrandsPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.existence.BrandActiveExistenceCheckByIdPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.listing.BrandActiveListingPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.listing.BrandSoftDeletedListingPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
@@ -21,11 +21,11 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequiredArgsConstructor
 public class BrandReadPersistenceAdapter
         implements
-        ListBrandsPort,
-        ListSoftDeletedBrandsPort,
-        LoadBrandPort,
-        LoadSoftDeletedBrandPort,
-        CheckBrandExistsPort {
+        BrandActiveListingPort,
+        BrandSoftDeletedListingPort,
+        BrandActiveLookupByIdPort,
+        BrandSoftDeletedLookupByIdPort,
+        BrandActiveExistenceCheckByIdPort {
 
     private final BrandMongoRepository repository;
     private final BrandPersistenceMapper mapper;
