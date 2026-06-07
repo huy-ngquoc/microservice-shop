@@ -19,18 +19,22 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandCreationUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandHardDeletionUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandInfoUpdateUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandRestorationUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandSoftDeletionUseCase;
 
 @RestController
 @RequestMapping("/brands")
 @RequiredArgsConstructor
 public class BrandLifecycleController {
 
-    private final BrandLifecycleUseCases.Create createUseCase;
-    private final BrandLifecycleUseCases.Restore restoreUseCase;
-    private final BrandLifecycleUseCases.UpdateInfo updateInfoUseCase;
-    private final BrandLifecycleUseCases.SoftDelete softDeleteUseCase;
-    private final BrandLifecycleUseCases.HardDelete hardDeleteUseCase;
+    private final BrandCreationUseCase creationUseCase;
+    private final BrandRestorationUseCase restorationUseCase;
+    private final BrandInfoUpdateUseCase infoUpdateUseCase;
+    private final BrandSoftDeletionUseCase softDeletionUseCase;
+    private final BrandHardDeletionUseCase hardDeletionUseCase;
 
     private final BrandWebMapper mapper;
 
@@ -40,7 +44,7 @@ public class BrandLifecycleController {
             @Valid
             final CreateBrandRequest request) {
         final var command = this.mapper.toCreationCommand(request);
-        final var view = this.createUseCase.create(command);
+        final var view = this.creationUseCase.create(command);
 
         final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
@@ -62,7 +66,7 @@ public class BrandLifecycleController {
             @Valid
             final UpdateBrandInfoRequest request) {
         final var command = this.mapper.toInfoUpdateCommand(id, request);
-        final var view = this.updateInfoUseCase.updateInfo(command);
+        final var view = this.infoUpdateUseCase.updateInfo(command);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -76,7 +80,7 @@ public class BrandLifecycleController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toSoftDeletionCommand(id, version);
-        this.softDeleteUseCase.softDelete(command);
+        this.softDeletionUseCase.softDelete(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -89,7 +93,7 @@ public class BrandLifecycleController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toRestorationCommand(id, version);
-        this.restoreUseCase.restore(command);
+        this.restorationUseCase.restore(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -102,7 +106,7 @@ public class BrandLifecycleController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toHardDeletionCommand(id, version);
-        this.hardDeleteUseCase.hardDelete(command);
+        this.hardDeletionUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();
     }

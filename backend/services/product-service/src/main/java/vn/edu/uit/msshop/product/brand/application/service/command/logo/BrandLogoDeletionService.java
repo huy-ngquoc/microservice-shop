@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoDeletionCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoDeletionByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLogoLifecycleUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoDeletionUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 @RequiredArgsConstructor
 @Slf4j
 public class BrandLogoDeletionService
-        implements BrandLogoLifecycleUseCases.Delete {
+        implements BrandLogoDeletionUseCase {
 
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
@@ -44,7 +44,7 @@ public class BrandLogoDeletionService
                             allEntries = true)
             })
     public void delete(
-            final BrandLogoDeletionCommand cmd) {
+            final BrandLogoDeletionByIdCommand cmd) {
         final var brandId = new BrandId(cmd.brandId());
         final var expectedVersion = new BrandVersion(cmd.brandVersion());
 

@@ -17,7 +17,8 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandLogoWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLogoLifecycleUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoDeletionUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoUpdateUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
 
 @RestController
@@ -26,8 +27,8 @@ import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseC
 public class BrandLogoController {
 
     private final BrandLookupUseCases.FindActiveLogoById findLogoUseCase;
-    private final BrandLogoLifecycleUseCases.Update updateUseCase;
-    private final BrandLogoLifecycleUseCases.Delete deleteUseCase;
+    private final BrandLogoUpdateUseCase updateUseCase;
+    private final BrandLogoDeletionUseCase deletionUseCase;
 
     private final BrandLogoWebMapper mapper;
 
@@ -65,7 +66,7 @@ public class BrandLogoController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toDeletionCommand(id, version);
-        this.deleteUseCase.delete(command);
+        this.deletionUseCase.delete(command);
 
         return ResponseEntity.noContent().build();
     }
