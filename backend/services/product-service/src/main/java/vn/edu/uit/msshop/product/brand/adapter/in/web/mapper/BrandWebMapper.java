@@ -9,10 +9,10 @@ import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
 import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandCreationCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandHardDeletionCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandInfoUpdateCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandRestorationCommand;
-import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandSoftDeletionCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandHardDeletionByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandInfoUpdateByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandRestorationByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandSoftDeletionByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
@@ -34,36 +34,36 @@ public class BrandWebMapper {
                 request.name());
     }
 
-    public BrandInfoUpdateCommand toInfoUpdateCommand(
+    public BrandInfoUpdateByIdCommand toInfoUpdateCommand(
             final UUID brandId,
             final UpdateBrandInfoRequest request) {
         final var brandNameChange = ChangeRequest.toChange(request.name());
-        return new BrandInfoUpdateCommand(
+        return new BrandInfoUpdateByIdCommand(
                 brandId,
                 brandNameChange,
                 request.version());
     }
 
-    public BrandSoftDeletionCommand toSoftDeletionCommand(
+    public BrandSoftDeletionByIdCommand toSoftDeletionCommand(
             final UUID brandId,
             final long brandVersion) {
-        return new BrandSoftDeletionCommand(
+        return new BrandSoftDeletionByIdCommand(
                 brandId,
                 brandVersion);
     }
 
-    public BrandRestorationCommand toRestorationCommand(
+    public BrandRestorationByIdCommand toRestorationCommand(
             final UUID brandId,
             final long brandVersion) {
-        return new BrandRestorationCommand(
+        return new BrandRestorationByIdCommand(
                 brandId,
                 brandVersion);
     }
 
-    public BrandHardDeletionCommand toHardDeletionCommand(
+    public BrandHardDeletionByIdCommand toHardDeletionCommand(
             final UUID brandId,
             final long brandVersion) {
-        return new BrandHardDeletionCommand(
+        return new BrandHardDeletionByIdCommand(
                 brandId,
                 brandVersion);
     }
