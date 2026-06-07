@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.category.application.service.command;
+package vn.edu.uit.msshop.product.category.application.service.command.image;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,23 +19,22 @@ import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEve
 import vn.edu.uit.msshop.product.category.application.port.out.image.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
+import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdatedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CategoryImageLifecycleService
-        implements
-        CategoryImageLifecycleUseCases.Update,
-        CategoryImageLifecycleUseCases.Delete {
+public class CategoryImageUpdateByIdService
+        implements CategoryImageLifecycleUseCases.Update {
 
     private final LoadCategoryPort loadPort;
     private final UpdateCategoryPort updatePort;
 
     private final CategoryImageStoragePort imageStoragePort;
+    private final CategoryImageDeleter imageDeleter;
 
     private final CategoryEventPublicationPort eventPublicationPort;
     private final CategoryViewMapper mapper;
@@ -57,13 +56,9 @@ public class CategoryImageLifecycleService
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var expectedVersion = cmd.expectedVersion();
-        final var currentVersion = category.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        CategoryVersionGuard.ensureMatch(
+                cmd.expectedVersion(),
+                category.getVersion());
 
         final var saved = this.commitImageChange(category, cmd.newImageKey());
         if (saved == null) {
@@ -76,7 +71,7 @@ public class CategoryImageLifecycleService
                 category.getImageKey());
         this.eventPublicationPort.publishEvent(event);
 
-        this.deleteOldImage(category.getImageKey());
+        this.imageDeleter.deleteQuietly(category.getImageKey());
 
         return this.mapper.toImageView(saved);
     }
@@ -116,69 +111,6 @@ public class CategoryImageLifecycleService
             final CategoryImageKey imageKey) {
         if (!this.imageStoragePort.existsAsTemp(imageKey)) {
             throw new CategoryImageKeyNotFoundException(imageKey);
-        }
-    }
-
-    @Override
-    @Transactional
-    @Caching(
-            evict = {
-                    @CacheEvict(
-                            cacheNames = CacheNames.CATEGORY,
-                            key = "#cmd.id().value()"),
-                    @CacheEvict(
-                            cacheNames = CacheNames.CATEGORY_LIST,
-                            allEntries = true)
-            })
-    public void delete(
-            final CategoryImageLifecycleCommands.Delete cmd) {
-        final var categoryId = cmd.id();
-        final var category = this.loadPort.loadById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
-
-        final var oldKey = category.getImageKey();
-        if (oldKey == null) {
-            return;
-        }
-
-        final var expectedVersion = cmd.expectedVersion();
-        final var currentVersion = category.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
-
-        final var next = new Category(
-                category.getId(),
-                category.getName(),
-                null,
-                expectedVersion,
-                category.getDeletionTime());
-        final var saved = this.updatePort.update(next);
-
-        final var event = new CategoryImageUpdatedEvent(
-                saved.getId(),
-                null,
-                oldKey);
-        this.eventPublicationPort.publishEvent(event);
-
-        this.deleteOldImage(oldKey);
-    }
-
-    private void deleteOldImage(
-            @Nullable
-            final CategoryImageKey oldKey) {
-        if (oldKey == null) {
-            return;
-        }
-
-        try {
-            this.imageStoragePort.deleteImage(oldKey);
-        } catch (final RuntimeException e) {
-            log.warn("Failed to delete old image key '{}', manual cleanup required",
-                    oldKey.value(),
-                    e);
         }
     }
 }

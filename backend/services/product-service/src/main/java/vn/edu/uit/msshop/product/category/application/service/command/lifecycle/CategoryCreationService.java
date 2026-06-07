@@ -1,0 +1,46 @@
+package vn.edu.uit.msshop.product.category.application.service.command.lifecycle;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
+import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
+import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
+import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
+import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
+import vn.edu.uit.msshop.product.category.domain.event.CategoryCreatedEvent;
+import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+
+@Service
+@RequiredArgsConstructor
+public class CategoryCreationService
+        implements CategoryLifecycleUseCases.Create {
+
+    private final CreateCategoryPort createPort;
+
+    private final CategoryViewMapper mapper;
+    private final CategoryEventPublicationPort eventPublicationPort;
+
+    @Override
+    @Transactional
+    @CacheEvict(
+            cacheNames = CacheNames.CATEGORY_LIST,
+            allEntries = true)
+    public CategoryView create(
+            final CategoryLifecycleCommands.Create cmd) {
+        final var newCategory = new NewCategory(
+                CategoryId.newId(),
+                cmd.name());
+        final var saved = this.createPort.create(newCategory);
+
+        final var event = new CategoryCreatedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
+
+        return this.mapper.toView(saved);
+    }
+}

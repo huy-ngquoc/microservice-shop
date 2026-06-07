@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.category.application.service.command;
+package vn.edu.uit.msshop.product.category.application.service.command.lifecycle;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.cache.annotation.CacheEvict;
@@ -15,49 +15,25 @@ import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFound
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
-import vn.edu.uit.msshop.product.category.domain.event.CategoryCreatedEvent;
+import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
-import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
-import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
 import vn.edu.uit.msshop.shared.application.dto.Change;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CategoryWritingService
-        implements
-        CategoryLifecycleUseCases.Create,
-        CategoryLifecycleUseCases.UpdateInfo {
+public class CategoryInfoUpdateByIdService
+        implements CategoryLifecycleUseCases.UpdateInfo {
 
     private final LoadCategoryPort loadPort;
-    private final CreateCategoryPort createPort;
     private final UpdateCategoryPort updatePort;
 
     private final CategoryEventPublicationPort eventPublicationPort;
     private final CategoryViewMapper mapper;
-
-    @Override
-    @Transactional
-    @CacheEvict(
-            cacheNames = CacheNames.CATEGORY_LIST,
-            allEntries = true)
-    public CategoryView create(
-            final CategoryLifecycleCommands.Create cmd) {
-        final var newCategory = new NewCategory(
-                CategoryId.newId(),
-                cmd.name());
-
-        final var saved = this.createPort.create(newCategory);
-        this.eventPublicationPort.publishEvent(new CategoryCreatedEvent(saved.getId()));
-
-        return this.mapper.toView(saved);
-    }
 
     @Override
     @Transactional
@@ -83,21 +59,19 @@ public class CategoryWritingService
             return this.mapper.toView(category);
         }
 
-        final var expectedVersion = cmd.expectedVersion();
-        final var currentVersion = category.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        CategoryVersionGuard.ensureMatch(
+                cmd.expectedVersion(),
+                category.getVersion());
 
-        final var next = CategoryWritingService.applyChanges(category, nameSet);
+        final var next = CategoryInfoUpdateByIdService.applyChanges(category, nameSet);
         if (next == null) {
             return this.mapper.toView(category);
         }
 
         final var saved = this.updatePort.update(next);
-        this.eventPublicationPort.publishEvent(new CategoryInfoUpdatedEvent(saved.getId()));
+
+        final var event = new CategoryInfoUpdatedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
 
         return this.mapper.toView(saved);
     }
