@@ -24,7 +24,7 @@ public class BrandLogoWebMapper {
         return new BrandId(id);
     }
 
-    public BrandLogoUpdateByIdCommand toUpdateCommand(
+    public BrandLogoUpdateByIdCommand toUpdateByIdCommand(
             final UUID brandId,
             final UpdateBrandLogoRequest request) {
         final var logoKey = CloudinaryPublicIds.extractKeyFromTemp(request.logoId());
@@ -34,7 +34,7 @@ public class BrandLogoWebMapper {
                 request.version());
     }
 
-    public BrandLogoDeletionByIdCommand toDeletionCommand(
+    public BrandLogoDeletionByIdCommand toDeletionByIdCommand(
             final UUID brandId,
             final long brandVersion) {
         return new BrandLogoDeletionByIdCommand(
