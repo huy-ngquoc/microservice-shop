@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandLogoKeyNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoUpdateUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
@@ -29,8 +29,8 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BrandLogoUpdateService
-        implements BrandLogoUpdateUseCase {
+public class BrandLogoUpdateByIdService
+        implements BrandLogoUpdateByIdUseCase {
 
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
@@ -52,7 +52,7 @@ public class BrandLogoUpdateService
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
             })
-    public BrandLogoView update(
+    public BrandLogoView updateById(
             final BrandLogoUpdateByIdCommand cmd) {
         final var brandId = new BrandId(cmd.brandId());
         final var expectedVersion = new BrandVersion(cmd.brandVersion());

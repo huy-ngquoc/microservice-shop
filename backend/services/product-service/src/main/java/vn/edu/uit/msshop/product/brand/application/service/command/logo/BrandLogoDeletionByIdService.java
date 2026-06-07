@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoDeletionByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoDeletionUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -22,8 +22,8 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BrandLogoDeletionService
-        implements BrandLogoDeletionUseCase {
+public class BrandLogoDeletionByIdService
+        implements BrandLogoDeletionByIdUseCase {
 
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
@@ -43,7 +43,7 @@ public class BrandLogoDeletionService
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
             })
-    public void delete(
+    public void deleteById(
             final BrandLogoDeletionByIdCommand cmd) {
         final var brandId = new BrandId(cmd.brandId());
         final var expectedVersion = new BrandVersion(cmd.brandVersion());

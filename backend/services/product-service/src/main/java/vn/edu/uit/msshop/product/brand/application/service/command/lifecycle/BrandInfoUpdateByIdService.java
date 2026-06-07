@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandIn
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandInfoUpdateUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandInfoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -26,8 +26,8 @@ import vn.edu.uit.msshop.shared.application.dto.Change;
 
 @Service
 @RequiredArgsConstructor
-public class BrandInfoUpdateService
-        implements BrandInfoUpdateUseCase {
+public class BrandInfoUpdateByIdService
+        implements BrandInfoUpdateByIdUseCase {
 
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
@@ -48,7 +48,7 @@ public class BrandInfoUpdateService
                             allEntries = true,
                             condition = "#cmd.brandNameChange().getSet() != null")
             })
-    public BrandView updateInfo(
+    public BrandView updateInfoById(
             final BrandInfoUpdateByIdCommand cmd) {
         final var brandId = new BrandId(cmd.brandId());
         final var nameChange = cmd.brandNameChange().map(BrandName::new);
@@ -66,7 +66,7 @@ public class BrandInfoUpdateService
                 expectedVersion,
                 brand.getVersion());
 
-        final var next = BrandInfoUpdateService.applyChanges(brand, nameSet);
+        final var next = BrandInfoUpdateByIdService.applyChanges(brand, nameSet);
         if (next == null) {
             return this.mapper.toView(brand);
         }
