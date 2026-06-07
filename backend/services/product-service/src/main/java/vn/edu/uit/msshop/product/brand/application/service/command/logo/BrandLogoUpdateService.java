@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLogoLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoUpdateCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandLogoKeyNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
@@ -22,7 +22,9 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBr
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -45,22 +47,25 @@ public class BrandLogoUpdateService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND,
-                            key = "#cmd.id().value()"),
+                            key = "#cmd.brandId()"),
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
             })
     public BrandLogoView update(
-            BrandLogoLifecycleCommands.Update cmd) {
-        final var brandId = cmd.id();
+            final BrandLogoUpdateCommand cmd) {
+        final var brandId = new BrandId(cmd.brandId());
+        final var expectedVersion = new BrandVersion(cmd.brandVersion());
+
         final var brand = this.loadPort.loadById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
         BrandVersionGuard.ensureMatch(
-                cmd.expectedVersion(),
+                expectedVersion,
                 brand.getVersion());
 
-        final var saved = this.commitImageChange(brand, cmd.newLogoKey());
+        final var newLogoKey = new BrandLogoKey(cmd.brandNewLogoKey());
+        final var saved = this.commitImageChange(brand, newLogoKey);
         if (saved == null) {
             return this.mapper.toLogoView(brand);
         }

@@ -1,6 +1,10 @@
 package vn.edu.uit.msshop.product.brand.application.port.in.command;
 
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandCreationCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandHardDeletionCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandInfoUpdateCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandRestorationCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandSoftDeletionCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 
 public final class BrandLifecycleUseCases {
@@ -10,26 +14,26 @@ public final class BrandLifecycleUseCases {
 
     public interface Create {
         BrandView create(
-                final BrandLifecycleCommands.Create cmd);
+                final BrandCreationCommand cmd);
     }
 
     public interface UpdateInfo {
         BrandView updateInfo(
-                final BrandLifecycleCommands.UpdateInfo cmd);
+                final BrandInfoUpdateCommand cmd);
     }
 
     public interface SoftDelete {
         void softDelete(
-                final BrandLifecycleCommands.SoftDelete cmd);
+                final BrandSoftDeletionCommand cmd);
     }
 
     public interface Restore {
         void restore(
-                final BrandLifecycleCommands.Restore cmd);
+                final BrandRestorationCommand cmd);
     }
 
     public interface HardDelete {
         void hardDelete(
-                final BrandLifecycleCommands.HardDelete cmd);
+                final BrandHardDeletionCommand cmd);
     }
 }

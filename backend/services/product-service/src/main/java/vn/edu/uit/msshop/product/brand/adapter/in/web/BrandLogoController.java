@@ -50,7 +50,7 @@ public class BrandLogoController {
             @RequestBody
             @Valid
             final UpdateBrandLogoRequest request) {
-        final var command = this.mapper.toUpdateLogoCommand(id, request);
+        final var command = this.mapper.toUpdateCommand(id, request);
         final var view = this.updateUseCase.update(command);
 
         final var response = this.mapper.toLogoResponse(view);
@@ -64,7 +64,7 @@ public class BrandLogoController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toDeleteLogoCommand(id, version);
+        final var command = this.mapper.toDeletionCommand(id, version);
         this.deleteUseCase.delete(command);
 
         return ResponseEntity.noContent().build();

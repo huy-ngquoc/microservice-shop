@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandRestorationCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
@@ -14,6 +14,8 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoft
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandRestored;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -31,13 +33,15 @@ public class BrandRestorationService
             cacheNames = CacheNames.BRAND_LIST,
             allEntries = true)
     public void restore(
-            final BrandLifecycleCommands.Restore cmd) {
-        final var brandId = cmd.id();
+            final BrandRestorationCommand cmd) {
+        final var brandId = new BrandId(cmd.brandId());
+        final var expectedVersion = new BrandVersion(cmd.brandVersion());
+
         final var brand = this.loadSoftDeletedPort.loadSoftDeletedById(brandId)
                 .orElseThrow(() -> new BrandNotFoundException(brandId));
 
         BrandVersionGuard.ensureMatch(
-                cmd.expectedVersion(),
+                expectedVersion,
                 brand.getVersion());
 
         final var next = brand.restored();
