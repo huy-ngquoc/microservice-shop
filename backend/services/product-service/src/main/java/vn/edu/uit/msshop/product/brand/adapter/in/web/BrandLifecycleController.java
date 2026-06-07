@@ -39,7 +39,7 @@ public class BrandLifecycleController {
             @RequestBody
             @Valid
             final CreateBrandRequest request) {
-        final var command = this.mapper.toCreateCommand(request);
+        final var command = this.mapper.toCreationCommand(request);
         final var view = this.createUseCase.create(command);
 
         final var response = this.mapper.toResponse(view);
@@ -53,19 +53,6 @@ public class BrandLifecycleController {
         return ResponseEntity.created(location).body(response);
     }
 
-    @PostMapping("/{id}/restore")
-    public ResponseEntity<Void> restore(
-            @PathVariable
-            final UUID id,
-
-            @RequestParam
-            final long version) {
-        final var command = this.mapper.toRestoreCommand(id, version);
-        this.restoreUseCase.restore(command);
-
-        return ResponseEntity.noContent().build();
-    }
-
     @PatchMapping("/{id}/info")
     public ResponseEntity<BrandResponse> updateInfo(
             @PathVariable
@@ -74,7 +61,7 @@ public class BrandLifecycleController {
             @RequestBody
             @Valid
             final UpdateBrandInfoRequest request) {
-        final var command = this.mapper.toUpdateInfoCommand(id, request);
+        final var command = this.mapper.toInfoUpdateCommand(id, request);
         final var view = this.updateInfoUseCase.updateInfo(command);
 
         final var response = this.mapper.toResponse(view);
@@ -88,8 +75,21 @@ public class BrandLifecycleController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toSoftDeleteCommand(id, version);
+        final var command = this.mapper.toSoftDeletionCommand(id, version);
         this.softDeleteUseCase.softDelete(command);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreById(
+            @PathVariable
+            final UUID id,
+
+            @RequestParam
+            final long version) {
+        final var command = this.mapper.toRestorationCommand(id, version);
+        this.restoreUseCase.restore(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -101,7 +101,7 @@ public class BrandLifecycleController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toHardDeleteCommand(id, version);
+        final var command = this.mapper.toHardDeletionCommand(id, version);
         this.hardDeleteUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();

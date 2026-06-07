@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandCreationCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLifecycleUseCases;
@@ -15,6 +15,7 @@ import vn.edu.uit.msshop.product.brand.application.port.out.persistence.CreateBr
 import vn.edu.uit.msshop.product.brand.domain.event.BrandCreated;
 import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 
 @Service
 @RequiredArgsConstructor
@@ -32,12 +33,13 @@ public class BrandCreationService
             cacheNames = CacheNames.BRAND_LIST,
             allEntries = true)
     public BrandView create(
-            final BrandLifecycleCommands.Create cmd) {
-        final var brand = new NewBrand(
+            final BrandCreationCommand cmd) {
+        final var brandName = new BrandName(cmd.brandName());
+        final var newBrand = new NewBrand(
                 BrandId.newId(),
-                cmd.name());
+                brandName);
 
-        final var saved = this.createPort.create(brand);
+        final var saved = this.createPort.create(newBrand);
 
         final var event = new BrandCreated(saved.getId());
         this.eventPort.publish(event);
