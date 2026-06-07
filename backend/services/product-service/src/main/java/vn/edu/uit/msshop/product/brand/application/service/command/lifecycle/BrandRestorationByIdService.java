@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandRestorationByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandRestorationUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandRestorationByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadSoftDeletedBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -19,8 +19,8 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 
 @Service
 @RequiredArgsConstructor
-public class BrandRestorationService
-        implements BrandRestorationUseCase {
+public class BrandRestorationByIdService
+        implements BrandRestorationByIdUseCase {
 
     private final LoadSoftDeletedBrandPort loadSoftDeletedPort;
     private final UpdateBrandPort updatePort;
@@ -32,7 +32,7 @@ public class BrandRestorationService
     @CacheEvict(
             cacheNames = CacheNames.BRAND_LIST,
             allEntries = true)
-    public void restore(
+    public void restoreById(
             final BrandRestorationByIdCommand cmd) {
         final var brandId = new BrandId(cmd.brandId());
         final var expectedVersion = new BrandVersion(cmd.brandVersion());

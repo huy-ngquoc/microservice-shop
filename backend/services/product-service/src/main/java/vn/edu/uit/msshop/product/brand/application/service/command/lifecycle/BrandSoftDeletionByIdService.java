@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandSoftDeletionByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandSoftDeletionUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandSoftDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.LoadBrandPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.UpdateBrandPort;
@@ -22,8 +22,8 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
 @RequiredArgsConstructor
-public class BrandSoftDeletionService
-        implements BrandSoftDeletionUseCase {
+public class BrandSoftDeletionByIdService
+        implements BrandSoftDeletionByIdUseCase {
 
     private final LoadBrandPort loadPort;
     private final UpdateBrandPort updatePort;
@@ -43,7 +43,7 @@ public class BrandSoftDeletionService
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
             })
-    public void softDelete(
+    public void softDeleteById(
             final BrandSoftDeletionByIdCommand cmd) {
         final var brandId = new BrandId(cmd.brandId());
         final var expectedVersion = new BrandVersion(cmd.brandVersion());
