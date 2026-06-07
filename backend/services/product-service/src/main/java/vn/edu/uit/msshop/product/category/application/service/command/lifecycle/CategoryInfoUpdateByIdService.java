@@ -86,11 +86,7 @@ public class CategoryInfoUpdateByIdService
             return null;
         }
 
-        return new Category(
-                current.getId(),
-                applyNameResult.newValue(),
-                current.getImageKey(),
-                current.getVersion(),
-                current.getDeletionTime());
+        final var newName = applyNameResult.newValue();
+        return current.rename(newName);
     }
 }
