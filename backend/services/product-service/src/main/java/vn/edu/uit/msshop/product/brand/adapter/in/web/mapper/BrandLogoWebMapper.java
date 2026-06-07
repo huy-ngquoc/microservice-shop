@@ -27,7 +27,7 @@ public class BrandLogoWebMapper {
     public BrandLogoUpdateCommand toUpdateCommand(
             final UUID brandId,
             final UpdateBrandLogoRequest request) {
-        final var logoKey = CloudinaryPublicIds.extractKeyFromTemp(request.newLogoKey());
+        final var logoKey = CloudinaryPublicIds.extractKeyFromTemp(request.logoId());
         return new BrandLogoUpdateCommand(
                 brandId,
                 logoKey,
