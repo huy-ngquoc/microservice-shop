@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteAllVariantsUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 public class SoftDeleteAllVariantsService implements SoftDeleteAllVariantsUseCase {
     private final LoadAllVariantsPort loadAllPort;
     private final UpdateAllVariantsPort updateAllPort;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -46,7 +46,10 @@ public class SoftDeleteAllVariantsService implements SoftDeleteAllVariantsUseCas
 
         final var saved = this.updateAllPort.updateAll(next);
 
-        saved.forEach(s -> this.eventPort.publish(new VariantSoftDeleted(s.getId())));
+        saved.forEach(s -> {
+            final var event = new VariantSoftDeletedEvent(s.getId());
+            this.eventPublicationPort.publishEvent(event);
+        });
     }
 
     private static Variant toSoftDeleted(
