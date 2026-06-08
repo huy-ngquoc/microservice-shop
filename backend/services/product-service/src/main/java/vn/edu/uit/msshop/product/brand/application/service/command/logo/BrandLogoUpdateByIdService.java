@@ -15,12 +15,12 @@ import vn.edu.uit.msshop.product.brand.application.exception.BrandLogoKeyNotFoun
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoUpdateByIdUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.event.BrandEventPublicationPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.logo.BrandLogoStoragePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandUpdatePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
-import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
+import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdatedEvent;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
@@ -38,8 +38,8 @@ public class BrandLogoUpdateByIdService
     private final BrandLogoStoragePort storagePort;
     private final BrandLogoDeleter deleter;
 
+    private final BrandEventPublicationPort eventPublicationPort;
     private final BrandViewMapper mapper;
-    private final PublishBrandEventPort eventPort;
 
     @Override
     @Transactional
@@ -70,11 +70,11 @@ public class BrandLogoUpdateByIdService
             return this.mapper.toLogoView(brand);
         }
 
-        final var event = new BrandLogoUpdated(
+        final var event = new BrandLogoUpdatedEvent(
                 saved.getId(),
                 saved.getLogoKey(),
                 brand.getLogoKey());
-        this.eventPort.publish(event);
+        this.eventPublicationPort.publishEvent(event);
 
         this.deleter.deleteQuietly(brand.getLogoKey());
 
