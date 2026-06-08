@@ -13,11 +13,11 @@ import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandInfoUpdateByIdUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.event.BrandEventPublicationPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandUpdatePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
-import vn.edu.uit.msshop.product.brand.domain.event.BrandUpdated;
+import vn.edu.uit.msshop.product.brand.domain.event.BrandInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.brand.domain.model.Brand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
@@ -32,8 +32,8 @@ public class BrandInfoUpdateByIdService
     private final BrandActiveLookupByIdPort loadPort;
     private final BrandUpdatePort updatePort;
 
+    private final BrandEventPublicationPort eventPublicationPort;
     private final BrandViewMapper mapper;
-    private final PublishBrandEventPort eventPort;
 
     @Override
     @Transactional
@@ -73,8 +73,8 @@ public class BrandInfoUpdateByIdService
 
         final var saved = this.updatePort.update(next);
 
-        final var event = new BrandUpdated(saved.getId());
-        this.eventPort.publish(event);
+        final var event = new BrandInfoUpdatedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
 
         return this.mapper.toView(saved);
     }
