@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
-import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCategoryEventPort;
+import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
 import vn.edu.uit.msshop.product.category.application.port.out.image.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.DeleteCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
@@ -20,9 +20,9 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadS
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasProductsPort;
 import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasSoftDeletedProductsPort;
-import vn.edu.uit.msshop.product.category.domain.event.CategoryPurged;
-import vn.edu.uit.msshop.product.category.domain.event.CategoryRestored;
-import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeleted;
+import vn.edu.uit.msshop.product.category.domain.event.CategoryHardDeletedEvent;
+import vn.edu.uit.msshop.product.category.domain.event.CategoryRestoredEvent;
+import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeletedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryDeletionTime;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
@@ -48,7 +48,7 @@ public class CategoryDeletionService
 
     private final CategoryImageStoragePort imageStoragePort;
 
-    private final PublishCategoryEventPort eventPort;
+    private final CategoryEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -87,7 +87,7 @@ public class CategoryDeletionService
                 CategoryDeletionTime.now());
 
         final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new CategorySoftDeleted(saved.getId()));
+        this.eventPublicationPort.publishEvent(new CategorySoftDeletedEvent(saved.getId()));
     }
 
     @Override
@@ -117,7 +117,7 @@ public class CategoryDeletionService
                 null);
 
         final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new CategoryRestored(saved.getId()));
+        this.eventPublicationPort.publishEvent(new CategoryRestoredEvent(saved.getId()));
     }
 
     @Override
@@ -141,7 +141,7 @@ public class CategoryDeletionService
         }
 
         this.deletePort.deleteById(categoryId);
-        this.eventPort.publish(new CategoryPurged(categoryId));
+        this.eventPublicationPort.publishEvent(new CategoryHardDeletedEvent(categoryId));
 
         this.deleteLogo(category.getImageKey());
     }
