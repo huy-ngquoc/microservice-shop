@@ -6,14 +6,12 @@ import java.util.UUID;
 import org.jspecify.annotations.Nullable;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
 import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 
 @RequiredArgsConstructor
-@Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
 public final class BrandLogoUpdatedEvent
@@ -31,5 +29,28 @@ public final class BrandLogoUpdatedEvent
 
     @Nullable
     private final BrandLogoKey oldLogoKey;
+
+    @Override
+    public UUID getEventId() {
+        return this.eventId;
+    }
+
+    @Override
+    public Instant getOccurrenceTime() {
+        return this.occurrenceTime;
+    }
+
+    @Override
+    public BrandId getBrandId() {
+        return this.brandId;
+    }
+
+    public @Nullable BrandLogoKey getNewLogoKey() {
+        return this.newLogoKey;
+    }
+
+    public @Nullable BrandLogoKey getOldLogoKey() {
+        return this.oldLogoKey;
+    }
 
 }
