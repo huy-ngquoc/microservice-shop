@@ -4,13 +4,11 @@ import java.time.Instant;
 import java.util.UUID;
 
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 
 @RequiredArgsConstructor
-@Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
 public final class ProductSoftDeletedEvent
@@ -22,5 +20,20 @@ public final class ProductSoftDeletedEvent
     private final Instant occurrenceTime = Instant.now();
 
     private final ProductId productId;
+
+    @Override
+    public UUID getEventId() {
+        return this.eventId;
+    }
+
+    @Override
+    public Instant getOccurrenceTime() {
+        return this.occurrenceTime;
+    }
+
+    @Override
+    public ProductId getProductId() {
+        return this.productId;
+    }
 
 }
