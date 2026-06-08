@@ -14,12 +14,12 @@ import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
-import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCategoryEventPort;
+import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
-import vn.edu.uit.msshop.product.category.domain.event.CategoryCreated;
-import vn.edu.uit.msshop.product.category.domain.event.CategoryUpdated;
+import vn.edu.uit.msshop.product.category.domain.event.CategoryCreatedEvent;
+import vn.edu.uit.msshop.product.category.domain.event.CategoryInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
@@ -39,8 +39,8 @@ public class CategoryWritingService
     private final CreateCategoryPort createPort;
     private final UpdateCategoryPort updatePort;
 
+    private final CategoryEventPublicationPort eventPublicationPort;
     private final CategoryViewMapper mapper;
-    private final PublishCategoryEventPort eventPort;
 
     @Override
     @Transactional
@@ -54,7 +54,7 @@ public class CategoryWritingService
                 cmd.name());
 
         final var saved = this.createPort.create(newCategory);
-        this.eventPort.publish(new CategoryCreated(saved.getId()));
+        this.eventPublicationPort.publishEvent(new CategoryCreatedEvent(saved.getId()));
 
         return this.mapper.toView(saved);
     }
@@ -97,7 +97,7 @@ public class CategoryWritingService
         }
 
         final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new CategoryUpdated(saved.getId()));
+        this.eventPublicationPort.publishEvent(new CategoryInfoUpdatedEvent(saved.getId()));
 
         return this.mapper.toView(saved);
     }
