@@ -13,12 +13,12 @@ import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductVa
 import vn.edu.uit.msshop.product.product.application.exception.ProductMustHaveAtLeastOneVariantException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkDecreationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecreationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
+import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 
 @Service
@@ -30,7 +30,7 @@ public class ProductVariantRemovalForVariantService
     private final ProductSoldCountBulkDecreationPort soldCountBulkDecreationPort;
     private final ProductStockCountBulkDecreationPort stockCountBulkDecreationPort;
 
-    private final PublishProductEventPort eventPort;
+    private final ProductEventPublicationPort eventPort;
 
     @Override
     @Transactional
@@ -74,6 +74,6 @@ public class ProductVariantRemovalForVariantService
             this.stockCountBulkDecreationPort.decreaseAll(Map.of(productId, command.stockDecrement()));
         }
 
-        this.eventPort.publish(new ProductUpdated(saved.getId()));
+        this.eventPort.publishEvent(new ProductInfoUpdatedEvent(saved.getId()));
     }
 }
