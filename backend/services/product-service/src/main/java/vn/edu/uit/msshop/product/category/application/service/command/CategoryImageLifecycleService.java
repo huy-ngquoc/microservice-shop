@@ -15,11 +15,11 @@ import vn.edu.uit.msshop.product.category.application.exception.CategoryImageKey
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryImageLifecycleUseCases;
-import vn.edu.uit.msshop.product.category.application.port.out.event.PublishCategoryEventPort;
+import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
 import vn.edu.uit.msshop.product.category.application.port.out.image.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
-import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdated;
+import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdatedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
@@ -37,8 +37,8 @@ public class CategoryImageLifecycleService
 
     private final CategoryImageStoragePort imageStoragePort;
 
+    private final CategoryEventPublicationPort eventPublicationPort;
     private final CategoryViewMapper mapper;
-    private final PublishCategoryEventPort eventPort;
 
     @Override
     @Transactional
@@ -70,11 +70,11 @@ public class CategoryImageLifecycleService
             return this.mapper.toImageView(category);
         }
 
-        final var event = new CategoryImageUpdated(
+        final var event = new CategoryImageUpdatedEvent(
                 saved.getId(),
                 saved.getImageKey(),
                 category.getImageKey());
-        this.eventPort.publish(event);
+        this.eventPublicationPort.publishEvent(event);
 
         this.deleteOldImage(category.getImageKey());
 
@@ -157,11 +157,11 @@ public class CategoryImageLifecycleService
                 category.getDeletionTime());
         final var saved = this.updatePort.update(next);
 
-        final var event = new CategoryImageUpdated(
+        final var event = new CategoryImageUpdatedEvent(
                 saved.getId(),
                 null,
                 oldKey);
-        this.eventPort.publish(event);
+        this.eventPublicationPort.publishEvent(event);
 
         this.deleteOldImage(oldKey);
     }
