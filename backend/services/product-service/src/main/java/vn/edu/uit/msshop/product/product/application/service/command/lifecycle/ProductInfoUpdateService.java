@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNo
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductInfoUpdateUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
@@ -24,7 +24,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantNameBulkUpdateForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductBrandExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
+import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
@@ -47,8 +47,8 @@ public class ProductInfoUpdateService
 
     private final ProductVariantNameBulkUpdateForProductPort variantNameBulkUpdateForProductPort;
 
+    private final ProductEventPublicationPort eventPublicationPort;
     private final ProductViewMapper mapper;
-    private final PublishProductEventPort eventPort;
 
     @Override
     @Transactional
@@ -114,7 +114,7 @@ public class ProductInfoUpdateService
 
         final var savedProduct = this.updatePort.update(next);
         this.syncProductNameToVariantsIfChanged(product, savedProduct);
-        this.eventPort.publish(new ProductUpdated(savedProduct.getId()));
+        this.eventPublicationPort.publishEvent(new ProductInfoUpdatedEvent(savedProduct.getId()));
 
         return this.mapper.toView(
                 savedProduct,

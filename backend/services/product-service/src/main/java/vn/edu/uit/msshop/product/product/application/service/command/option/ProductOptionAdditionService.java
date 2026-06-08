@@ -14,14 +14,14 @@ import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionAdditionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
+import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
@@ -39,8 +39,8 @@ public class ProductOptionAdditionService
     private final ProductStockCountLookupByIdPort loadStockCountPort;
     private final ProductRatingLookupByIdPort stockCountLookupByIdPort;
 
+    private final ProductEventPublicationPort eventPublicationPort;
     private final ProductViewMapper mapper;
-    private final PublishProductEventPort eventPort;
 
     @Override
     @Transactional
@@ -94,7 +94,7 @@ public class ProductOptionAdditionService
         final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
         final var rating = this.stockCountLookupByIdPort.loadByIdOrZero(savedProductId);
 
-        this.eventPort.publish(new ProductUpdated(savedProductId));
+        this.eventPublicationPort.publishEvent(new ProductInfoUpdatedEvent(savedProductId));
 
         this.variantTraitBulkUpdatePort.updateTraitsByIds(newTraitsMap);
 
