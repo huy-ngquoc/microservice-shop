@@ -15,11 +15,11 @@ import vn.edu.uit.msshop.product.variant.application.exception.VariantImageKeyNo
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantImageUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdated;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
@@ -32,7 +32,7 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
     private final UpdateVariantPort updatePort;
     private final VariantImageStoragePort imageStoragePort;
     private final VariantViewMapper mapper;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -62,8 +62,11 @@ public class UpdateVariantImageService implements UpdateVariantImageUseCase {
             return this.mapper.toImageView(variant);
         }
 
-        final var event = new VariantImageUpdated(saved.getId(), saved.getImageKey(), variant.getImageKey());
-        this.eventPort.publish(event);
+        final var event = new VariantImageUpdatedEvent(
+                saved.getId(),
+                saved.getImageKey(),
+                variant.getImageKey());
+        this.eventPublicationPort.publishEvent(event);
 
         this.deleteOldImage(variant.getImageKey());
 

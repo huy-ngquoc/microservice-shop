@@ -9,10 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantsForProductUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantRestored;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
@@ -21,7 +21,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 public class RestoreVariantsForProductService implements RestoreVariantsForProductUseCase {
     private final LoadAllSoftDeletedVariantsPort loadAllSoftDeletedPort;
     private final UpdateAllVariantsPort updateAllPort;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -39,7 +39,10 @@ public class RestoreVariantsForProductService implements RestoreVariantsForProdu
 
         final var saved = this.updateAllPort.updateAll(next);
 
-        saved.forEach(s -> this.eventPort.publish(new VariantRestored(s.getId())));
+        saved.forEach(s -> {
+            final var event = new VariantRestoredEvent(s.getId());
+            this.eventPublicationPort.publishEvent(event);
+        });
     }
 
     private static Variant toRestored(
