@@ -12,14 +12,14 @@ import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantBulkAdditionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkCreationPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
+import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
@@ -37,7 +37,7 @@ public class ProductVariantBulkAdditionService
     private final ProductRatingLookupByIdPort ratingLookupByIdPort;
 
     private final ProductViewMapper mapper;
-    private final PublishProductEventPort eventPort;
+    private final ProductEventPublicationPort eventPort;
 
     @Override
     @Transactional
@@ -96,7 +96,7 @@ public class ProductVariantBulkAdditionService
         final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(savedProductId);
         final var rating = this.ratingLookupByIdPort.loadByIdOrZero(savedProductId);
 
-        this.eventPort.publish(new ProductUpdated(savedProductId));
+        this.eventPort.publishEvent(new ProductInfoUpdatedEvent(savedProductId));
 
         return this.mapper.toView(
                 savedProduct,

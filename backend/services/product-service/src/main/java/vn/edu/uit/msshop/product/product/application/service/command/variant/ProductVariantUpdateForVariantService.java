@@ -10,10 +10,10 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantUpdateForVariantUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
+import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 
@@ -23,7 +23,7 @@ public class ProductVariantUpdateForVariantService
         implements ProductVariantUpdateForVariantUseCase {
     private final ProductActiveLookupByIdPort loadPort;
     private final ProductUpdatePort updatePort;
-    private final PublishProductEventPort eventPort;
+    private final ProductEventPublicationPort eventPort;
 
     @Override
     @Transactional
@@ -58,7 +58,7 @@ public class ProductVariantUpdateForVariantService
                 product.getDeletionTime());
 
         final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new ProductUpdated(saved.getId()));
+        this.eventPort.publishEvent(new ProductInfoUpdatedEvent(saved.getId()));
     }
 
 }
