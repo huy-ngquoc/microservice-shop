@@ -10,11 +10,11 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.SoftDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductSoftDeletionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeleted;
+import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeletedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductDeletionTime;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
@@ -29,7 +29,7 @@ public class ProductSoftDeletionService
 
     private final ProductVariantBulkSoftDeletionForProductPort variantBulkSoftDeletionForProductPort;
 
-    private final PublishProductEventPort eventPort;
+    private final ProductEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -70,6 +70,6 @@ public class ProductSoftDeletionService
 
         this.variantBulkSoftDeletionForProductPort.deleteByProductId(saved.getId());
 
-        this.eventPort.publish(new ProductSoftDeleted(saved.getId()));
+        this.eventPublicationPort.publishEvent(new ProductSoftDeletedEvent(saved.getId()));
     }
 }

@@ -7,14 +7,14 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.HardDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountDeletionByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountDeletionByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductDeletionByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingDeletionPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkHardDeletionForProductPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductPurged;
+import vn.edu.uit.msshop.product.product.domain.event.ProductHardDeletedEvent;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 // TODO: delete image as well.
@@ -31,7 +31,7 @@ public class ProductHardDeletionService
 
     private final ProductVariantBulkHardDeletionForProductPort variantBulkHardDeleteByIdsPort;
 
-    private final PublishProductEventPort eventPort;
+    private final ProductEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -56,6 +56,6 @@ public class ProductHardDeletionService
 
         this.variantBulkHardDeleteByIdsPort.purgeByProductId(productId);
 
-        this.eventPort.publish(new ProductPurged(productId));
+        this.eventPublicationPort.publishEvent(new ProductHardDeletedEvent(productId));
     }
 }

@@ -9,11 +9,11 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.RestoreProductCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductRestorationUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkRestorationByIdsPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductRestored;
+import vn.edu.uit.msshop.product.product.domain.event.ProductRestoredEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
@@ -27,7 +27,7 @@ public class ProductRestorationService
     private final ProductUpdatePort updatePort;
     private final ProductVariantBulkRestorationByIdsPort variantBulkRestorationForProductPort;
 
-    private final PublishProductEventPort eventPort;
+    private final ProductEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -65,6 +65,6 @@ public class ProductRestorationService
                 .toList();
         this.variantBulkRestorationForProductPort.restoreByVariantIds(manifestIds);
 
-        this.eventPort.publish(new ProductRestored(saved.getId()));
+        this.eventPublicationPort.publishEvent(new ProductRestoredEvent(saved.getId()));
     }
 }

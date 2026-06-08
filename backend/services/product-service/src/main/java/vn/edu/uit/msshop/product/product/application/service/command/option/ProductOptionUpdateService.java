@@ -13,13 +13,13 @@ import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionUpdateUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductUpdated;
+import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
@@ -36,8 +36,8 @@ public class ProductOptionUpdateService
     private final ProductRatingLookupByIdPort ratingLookupByIdPort;
     private final ProductUpdatePort updatePort;
 
+    private final ProductEventPublicationPort eventPublicationPort;
     private final ProductViewMapper mapper;
-    private final PublishProductEventPort eventPort;
 
     @Override
     @Transactional
@@ -80,7 +80,7 @@ public class ProductOptionUpdateService
         }
 
         final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new ProductUpdated(saved.getId()));
+        this.eventPublicationPort.publishEvent(new ProductInfoUpdatedEvent(saved.getId()));
 
         return this.mapper.toView(
                 saved,

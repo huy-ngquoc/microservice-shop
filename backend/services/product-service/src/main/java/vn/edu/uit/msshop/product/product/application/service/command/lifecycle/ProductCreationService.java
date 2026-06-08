@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFo
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductCreationUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.PublishProductEventPort;
+import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountInitializationByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountInitializationByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductCreationPort;
@@ -21,7 +21,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkCreationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductBrandExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductCreated;
+import vn.edu.uit.msshop.product.product.domain.event.ProductCreatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
@@ -40,7 +40,7 @@ public class ProductCreationService
     private final ProductStockCountInitializationByIdPort stockCountInitializationByIdPort;
     private final ProductRatingInitializationByIdPort ratingInitializationPort;
 
-    private final PublishProductEventPort eventPort;
+    private final ProductEventPublicationPort eventPublicationPort;
     private final ProductViewMapper mapper;
 
     @Override
@@ -88,7 +88,7 @@ public class ProductCreationService
         final var savedStockCount = this.stockCountInitializationByIdPort.initializeById(savedProductId);
         final var savedRating = this.ratingInitializationPort.initializeById(savedProductId);
 
-        this.eventPort.publish(new ProductCreated(savedProductId));
+        this.eventPublicationPort.publishEvent(new ProductCreatedEvent(savedProductId));
         return this.mapper.toView(
                 savedProduct,
                 savedSoldCount,
