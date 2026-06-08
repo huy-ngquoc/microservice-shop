@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.Bra
 import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandDeletionByIdPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandSoftDeletedLookupByIdPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasSoftDeletedProductsPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.validation.BrandProductSoftDeletedExistenceCheckByBrandIdPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.logo.BrandLogoDeleter;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
 import vn.edu.uit.msshop.product.brand.domain.event.BrandPurged;
@@ -30,7 +30,7 @@ public class BrandHardDeletionByIdService
 
     private final BrandLogoDeleter logoDeleter;
 
-    private final CheckBrandHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
+    private final BrandProductSoftDeletedExistenceCheckByBrandIdPort productSoftDeletedExistenceCheckByBrandIdPort;
 
     private final PublishBrandEventPort eventPort;
 
@@ -48,7 +48,7 @@ public class BrandHardDeletionByIdService
                 expectedVersion,
                 brand.getVersion());
 
-        if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(brandId)) {
+        if (this.productSoftDeletedExistenceCheckByBrandIdPort.existsSoftDeletedByBrandId(brandId)) {
             throw new BusinessRuleException("Cannot delete brand with existing products");
         }
 
