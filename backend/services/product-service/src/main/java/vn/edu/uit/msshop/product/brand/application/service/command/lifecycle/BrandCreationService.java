@@ -10,9 +10,9 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandCr
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
 import vn.edu.uit.msshop.product.brand.application.mapper.BrandViewMapper;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandCreationUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.event.BrandEventPublicationPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandCreationPort;
-import vn.edu.uit.msshop.product.brand.domain.event.BrandCreated;
+import vn.edu.uit.msshop.product.brand.domain.event.BrandCreatedEvent;
 import vn.edu.uit.msshop.product.brand.domain.model.creation.NewBrand;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
@@ -24,8 +24,8 @@ public class BrandCreationService
 
     private final BrandCreationPort createPort;
 
+    private final BrandEventPublicationPort eventPublicationPort;
     private final BrandViewMapper mapper;
-    private final PublishBrandEventPort eventPort;
 
     @Override
     @Transactional
@@ -41,8 +41,8 @@ public class BrandCreationService
 
         final var saved = this.createPort.create(newBrand);
 
-        final var event = new BrandCreated(saved.getId());
-        this.eventPort.publish(event);
+        final var event = new BrandCreatedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
 
         return this.mapper.toView(saved);
     }

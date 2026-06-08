@@ -10,12 +10,12 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandSoftDeletionByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandSoftDeletionByIdUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.event.BrandEventPublicationPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandUpdatePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.BrandProductActiveExistenceCheckByBrandIdPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
-import vn.edu.uit.msshop.product.brand.domain.event.BrandSoftDeleted;
+import vn.edu.uit.msshop.product.brand.domain.event.BrandSoftDeletedEvent;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
@@ -30,7 +30,7 @@ public class BrandSoftDeletionByIdService
 
     private final BrandProductActiveExistenceCheckByBrandIdPort productActiveExistenceCheckByBrandIdPort;
 
-    private final PublishBrandEventPort eventPort;
+    private final BrandEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -62,7 +62,7 @@ public class BrandSoftDeletionByIdService
         final var next = brand.softDeleted();
         final var saved = this.updatePort.update(next);
 
-        final var event = new BrandSoftDeleted(saved.getId());
-        this.eventPort.publish(event);
+        final var event = new BrandSoftDeletedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
     }
 }

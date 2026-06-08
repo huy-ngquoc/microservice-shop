@@ -8,13 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandHardDeletionByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandHardDeletionByIdUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.event.BrandEventPublicationPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandDeletionByIdPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.validation.BrandProductSoftDeletedExistenceCheckByBrandIdPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.logo.BrandLogoDeleter;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
-import vn.edu.uit.msshop.product.brand.domain.event.BrandPurged;
+import vn.edu.uit.msshop.product.brand.domain.event.BrandHardDeletedEvent;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
@@ -32,7 +32,7 @@ public class BrandHardDeletionByIdService
 
     private final BrandProductSoftDeletedExistenceCheckByBrandIdPort productSoftDeletedExistenceCheckByBrandIdPort;
 
-    private final PublishBrandEventPort eventPort;
+    private final BrandEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -54,8 +54,8 @@ public class BrandHardDeletionByIdService
 
         this.deletePort.deleteById(brandId);
 
-        final var event = new BrandPurged(brandId);
-        this.eventPort.publish(event);
+        final var event = new BrandHardDeletedEvent(brandId);
+        this.eventPublicationPort.publishEvent(event);
 
         this.logoDeleter.deleteQuietly(brand.getLogoKey());
     }

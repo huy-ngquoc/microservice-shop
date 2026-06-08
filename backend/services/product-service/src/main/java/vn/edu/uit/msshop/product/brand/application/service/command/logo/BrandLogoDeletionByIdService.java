@@ -11,11 +11,11 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoDeletionByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
 import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoDeletionByIdUseCase;
-import vn.edu.uit.msshop.product.brand.application.port.out.event.PublishBrandEventPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.event.BrandEventPublicationPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandUpdatePort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
-import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdated;
+import vn.edu.uit.msshop.product.brand.domain.event.BrandLogoUpdatedEvent;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 
@@ -30,7 +30,7 @@ public class BrandLogoDeletionByIdService
 
     private final BrandLogoDeleter deleter;
 
-    private final PublishBrandEventPort eventPort;
+    private final BrandEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -63,11 +63,11 @@ public class BrandLogoDeletionByIdService
         final var next = brand.removeLogoKey();
         final var saved = this.updatePort.update(next);
 
-        final var event = new BrandLogoUpdated(
+        final var event = new BrandLogoUpdatedEvent(
                 saved.getId(),
                 saved.getLogoKey(),
                 oldKey);
-        this.eventPort.publish(event);
+        this.eventPublicationPort.publishEvent(event);
 
         this.deleter.deleteQuietly(oldKey);
     }
