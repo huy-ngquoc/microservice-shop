@@ -12,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateAllVariantTraitsForProductUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
@@ -26,7 +26,7 @@ public class UpdateAllVariantTraitsForProductService
         implements UpdateAllVariantTraitsForProductUseCase {
     private final LoadAllVariantsPort loadAllPort;
     private final UpdateAllVariantsPort updateAllPort;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -50,7 +50,8 @@ public class UpdateAllVariantTraitsForProductService
 
         final var saved = this.updateAllPort.updateAll(next);
         for (final var v : saved) {
-            this.eventPort.publish(new VariantUpdated(v.getId()));
+            final var event = new VariantInfoUpdatedEvent(v.getId());
+            this.eventPublicationPort.publishEvent(event);
         }
     }
 

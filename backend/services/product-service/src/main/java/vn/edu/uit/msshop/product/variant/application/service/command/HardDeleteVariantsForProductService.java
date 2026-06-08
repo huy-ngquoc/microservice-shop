@@ -7,12 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantsForProductUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteAllVariantSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantsForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantPurged;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantHardDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
@@ -25,7 +25,7 @@ public class HardDeleteVariantsForProductService implements HardDeleteVariantsFo
     private final DeleteVariantsForProductPort deleteForProductPort;
     private final DeleteAllVariantSoldCountsPort deleteAllSoldCountsPort;
     private final VariantImageStoragePort imageStoragePort;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -44,7 +44,10 @@ public class HardDeleteVariantsForProductService implements HardDeleteVariantsFo
         this.deleteAllSoldCountsPort.deleteAllByIds(ids);
 
         variants.forEach(v -> this.deleteImage(v.getImageKey()));
-        variants.forEach(v -> this.eventPort.publish(new VariantPurged(v.getId())));
+        variants.forEach(v -> {
+            final var event = new VariantHardDeletedEvent(v.getId());
+            this.eventPublicationPort.publishEvent(event);
+        });
     }
 
     private void deleteImage(

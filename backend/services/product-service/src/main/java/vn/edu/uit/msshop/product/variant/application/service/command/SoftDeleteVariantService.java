@@ -11,13 +11,13 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
 
@@ -29,7 +29,7 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
     private final LoadVariantStockCountPort loadStockCountPort;
     private final UpdateVariantPort updatePort;
     private final RemoveVariantFromProductPort removeFromProductPort;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -82,6 +82,7 @@ public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
                 soldDecrement,
                 stockDecrement);
 
-        this.eventPort.publish(new VariantSoftDeleted(saved.getId()));
+        final var event = new VariantSoftDeletedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
     }
 }

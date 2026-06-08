@@ -11,13 +11,13 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdated;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.DeleteVariantImageUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
@@ -29,7 +29,7 @@ public class DeleteVariantImageService implements DeleteVariantImageUseCase {
     private final LoadVariantPort loadPort;
     private final UpdateVariantPort updatePort;
     private final VariantImageStoragePort imageStoragePort;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
     private final VariantViewMapper mapper;
 
     @Override
@@ -74,11 +74,11 @@ public class DeleteVariantImageService implements DeleteVariantImageUseCase {
                 variant.getDeletionTime());
         final var saved = this.updatePort.update(next);
 
-        final var event = new VariantImageUpdated(
+        final var event = new VariantImageUpdatedEvent(
                 saved.getId(),
                 null,
                 oldKey);
-        this.eventPort.publish(event);
+        this.eventPublicationPort.publishEvent(event);
 
         this.deleteOldImage(oldKey);
 

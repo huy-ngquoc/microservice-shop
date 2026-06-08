@@ -10,8 +10,8 @@ import vn.edu.uit.msshop.product.variant.application.dto.integration.VariantUpda
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantIntegrationEventPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 
@@ -24,7 +24,7 @@ public class VariantIntegrationEventBridge {
     @TransactionalEventListener(
             phase = TransactionPhase.AFTER_COMMIT)
     public void on(
-            final VariantUpdated event) {
+            final VariantInfoUpdatedEvent event) {
         final var variantId = event.getVariantId();
         final var variant = this.loadPort.loadById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
@@ -42,7 +42,7 @@ public class VariantIntegrationEventBridge {
     @TransactionalEventListener(
             phase = TransactionPhase.AFTER_COMMIT)
     public void on(
-            final VariantSoftDeleted event) {
+            final VariantSoftDeletedEvent event) {
         final var msg = new VariantSoftDeletedIntegrationEvent(
                 UUIDs.newId(),
                 event.getVariantId().value());
