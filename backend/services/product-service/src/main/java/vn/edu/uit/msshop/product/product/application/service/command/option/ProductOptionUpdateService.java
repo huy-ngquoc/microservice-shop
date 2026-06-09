@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.option.UpdateProductOptionCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionUpdateCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
@@ -51,7 +51,7 @@ public class ProductOptionUpdateService
                             allEntries = true)
             })
     public ProductView update(
-            UpdateProductOptionCommand command) {
+            ProductOptionUpdateCommand command) {
         final var productId = command.id();
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));

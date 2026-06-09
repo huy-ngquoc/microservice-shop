@@ -4,9 +4,9 @@ import java.util.Map;
 
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
-public record IncreaseProductStockCountsForVariantsCommand(
+public record ProductSoldCountIncreaseForVariantsCommand(
         Map<ProductId, Integer> incrementById) {
-    public IncreaseProductStockCountsForVariantsCommand {
+    public ProductSoldCountIncreaseForVariantsCommand {
         incrementById = Map.copyOf(incrementById);
     }
 }

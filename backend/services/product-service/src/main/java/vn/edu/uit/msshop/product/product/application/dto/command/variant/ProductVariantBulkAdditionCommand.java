@@ -4,7 +4,7 @@ import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
-public record AddProductVariantsCommand(
+public record ProductVariantBulkAdditionCommand(
         ProductId id,
         NewProductVariants newVariants,
         ProductVersion expectedVersion) {

@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.count.DecreaseProductStockCountsForVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountDecreaseForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountDecreaseForVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecreationPort;
 
@@ -29,7 +29,7 @@ public class ProductStockCountDecreaseForVariantsService
                             allEntries = true)
             })
     public void decrease(
-            DecreaseProductStockCountsForVariantsCommand command) {
+            ProductStockCountDecreaseForVariantsCommand command) {
         this.bulkDecreationPort.decreaseAll(command.decrementById());
     }
 }
