@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.category.application.dto.command.CategoryImageLifecycleCommands;
+import vn.edu.uit.msshop.product.category.application.dto.command.image.CategoryImageUpdateByIdCommand;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryImageKeyNotFoundException;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
@@ -22,7 +22,9 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.Updat
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdatedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImageKey;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -51,16 +53,19 @@ public class CategoryImageUpdateByIdService
                             allEntries = true)
             })
     public CategoryImageView update(
-            final CategoryImageLifecycleCommands.Update cmd) {
-        final var categoryId = cmd.id();
+            final CategoryImageUpdateByIdCommand cmd) {
+        final var categoryId = new CategoryId(cmd.categoryId());
+        final var newImageKey = new CategoryImageKey(cmd.categoryNewImageKey());
+        final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
+
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         CategoryVersionGuard.ensureMatch(
-                cmd.expectedVersion(),
+                expectedVersion,
                 category.getVersion());
 
-        final var saved = this.commitImageChange(category, cmd.newImageKey());
+        final var saved = this.commitImageChange(category, newImageKey);
         if (saved == null) {
             return this.mapper.toImageView(category);
         }

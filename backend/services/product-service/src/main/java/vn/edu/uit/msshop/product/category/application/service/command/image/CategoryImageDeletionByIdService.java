@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.category.application.dto.command.CategoryImageLifecycleCommands;
+import vn.edu.uit.msshop.product.category.application.dto.command.image.CategoryImageDeletionByIdCommand;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.image.CategoryImageDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
@@ -16,6 +16,8 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadC
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdatedEvent;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -42,8 +44,10 @@ public class CategoryImageDeletionByIdService
                             allEntries = true)
             })
     public void delete(
-            final CategoryImageLifecycleCommands.Delete cmd) {
-        final var categoryId = cmd.id();
+            final CategoryImageDeletionByIdCommand cmd) {
+        final var categoryId = new CategoryId(cmd.categoryId());
+        final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
+
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
@@ -53,7 +57,7 @@ public class CategoryImageDeletionByIdService
         }
 
         CategoryVersionGuard.ensureMatch(
-                cmd.expectedVersion(),
+                expectedVersion,
                 category.getVersion());
 
         final var next = category.removeImageKey();

@@ -65,7 +65,7 @@ public class CategoryLifecycleController {
             @RequestBody
             @Valid
             final UpdateCategoryInfoRequest request) {
-        final var command = this.mapper.toUpdateInfoCommand(id, request);
+        final var command = this.mapper.toInfoUpdateByIdCommand(id, request);
         final var view = this.infoUpdateUseCase.updateInfo(command);
 
         final var response = this.mapper.toResponse(view);
@@ -79,7 +79,7 @@ public class CategoryLifecycleController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toSoftDeleteCommand(id, version);
+        final var command = this.mapper.toSoftDeletionCommand(id, version);
         this.softDeletionByIdUseCase.softDelete(command);
 
         return ResponseEntity.noContent().build();
@@ -92,7 +92,7 @@ public class CategoryLifecycleController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toRestoreCommand(id, version);
+        final var command = this.mapper.toRestorationCommand(id, version);
         this.restorationByIdUseCase.restore(command);
 
         return ResponseEntity.noContent().build();
@@ -105,7 +105,7 @@ public class CategoryLifecycleController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toHardDeleteCommand(id, version);
+        final var command = this.mapper.toHardDeletionCommand(id, version);
         this.hardDeletionByIdUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();
