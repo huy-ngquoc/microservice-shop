@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.category.application.dto.query.listing.CategoryActiveListingQuery;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.query.listing.CategoryActiveListingUseCase;
@@ -26,9 +27,9 @@ public class CategoryActiveListingService
             readOnly = true)
     @Cacheable(
             cacheNames = CacheNames.CATEGORY_LIST)
-    public PageResponseDto<CategoryView> listActive(
-            final PageRequestDto pageRequest) {
-        final var page = this.listPort.listActive(pageRequest);
+    public PageResponseDto<CategoryView> list(
+            final CategoryActiveListingQuery query) {
+        final var page = this.listPort.listActive(query.pageRequest());
         return page.map(this.mapper::toView);
     }
 }

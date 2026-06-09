@@ -9,8 +9,8 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryI
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.application.dto.command.image.CategoryImageDeletionByIdCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.image.CategoryImageUpdateByIdCommand;
+import vn.edu.uit.msshop.product.category.application.dto.query.lookup.CategoryImageActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView;
-import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryPublicIds;
 
 @Component
@@ -18,6 +18,20 @@ import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryPublicIds;
 public class CategoryImageWebMapper {
 
     private final CategoryLogoUrlResolver urlResolver;
+
+    public CategoryImageResponse toResponse(
+            final CategoryImageView view) {
+        return new CategoryImageResponse(
+                view.id(),
+                this.urlResolver.toLogoUrlString(view.imageKey()),
+                view.version());
+    }
+
+    public CategoryImageActiveLookupByIdQuery toActiveLookupByIdQuery(
+            final UUID categoryId) {
+        return new CategoryImageActiveLookupByIdQuery(
+                categoryId);
+    }
 
     public CategoryImageUpdateByIdCommand toImageUpdateByIdCommand(
             final UUID categoryId,
@@ -35,18 +49,5 @@ public class CategoryImageWebMapper {
         return new CategoryImageDeletionByIdCommand(
                 categoryId,
                 categoryVersion);
-    }
-
-    public CategoryId toCategoryId(
-            final UUID id) {
-        return new CategoryId(id);
-    }
-
-    public CategoryImageResponse toResponse(
-            final CategoryImageView view) {
-        return new CategoryImageResponse(
-                view.id(),
-                this.urlResolver.toLogoUrlString(view.imageKey()),
-                view.version());
     }
 }
