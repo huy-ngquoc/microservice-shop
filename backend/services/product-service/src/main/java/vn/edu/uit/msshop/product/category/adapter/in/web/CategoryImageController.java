@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryImageWebMapper;
 import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryWebMapper;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryImageRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
@@ -30,7 +31,7 @@ public class CategoryImageController {
     private final CategoryImageUpdateByIdUseCase updateByIdUseCase;
     private final CategoryImageDeletionByIdUseCase deletionByIdUseCase;
 
-    private final CategoryWebMapper mapper;
+    private final CategoryImageWebMapper mapper;
 
     @GetMapping("/{id}/image")
     public ResponseEntity<CategoryImageResponse> findById(
@@ -38,7 +39,7 @@ public class CategoryImageController {
             final UUID id) {
         final var view = this.findActiveUseCase.findActiveImageById(this.mapper.toCategoryId(id));
 
-        final var response = this.mapper.toImageResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -50,10 +51,10 @@ public class CategoryImageController {
             @RequestBody
             @Valid
             final UpdateCategoryImageRequest request) {
-        final var command = this.mapper.toUpdateImageCommand(id, request);
+        final var command = this.mapper.toImageUpdateByIdCommand(id, request);
         final var view = this.updateByIdUseCase.update(command);
 
-        final var response = this.mapper.toImageResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -64,7 +65,7 @@ public class CategoryImageController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toDeleteImageCommand(id, version);
+        final var command = this.mapper.toImageDeletionByIdCommand(id, version);
         this.deletionByIdUseCase.delete(command);
 
         return ResponseEntity.noContent().build();

@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
+import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.CategoryCreationCommand;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryCreationUseCase;
@@ -15,6 +15,7 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.Creat
 import vn.edu.uit.msshop.product.category.domain.event.CategoryCreatedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +33,12 @@ public class CategoryCreationService
             cacheNames = CacheNames.CATEGORY_LIST,
             allEntries = true)
     public CategoryView create(
-            final CategoryLifecycleCommands.Create cmd) {
+            final CategoryCreationCommand cmd) {
+        final var categoryName = new CategoryName(cmd.categoryName());
+
         final var newCategory = new NewCategory(
                 CategoryId.newId(),
-                cmd.name());
+                categoryName);
         final var saved = this.createPort.create(newCategory);
 
         final var event = new CategoryCreatedEvent(saved.getId());

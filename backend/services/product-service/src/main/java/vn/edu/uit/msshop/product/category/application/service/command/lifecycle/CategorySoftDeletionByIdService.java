@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
+import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.CategorySoftDeletionByIdCommand;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategorySoftDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
@@ -16,6 +16,8 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.Updat
 import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasProductsPort;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeletedEvent;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
@@ -42,13 +44,15 @@ public class CategorySoftDeletionByIdService
                             allEntries = true)
             })
     public void softDelete(
-            final CategoryLifecycleCommands.SoftDelete cmd) {
-        final var categoryId = cmd.id();
+            final CategorySoftDeletionByIdCommand cmd) {
+        final var categoryId = new CategoryId(cmd.categoryId());
+        final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
+
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         CategoryVersionGuard.ensureMatch(
-                cmd.expectedVersion(),
+                expectedVersion,
                 category.getVersion());
 
         if (this.checkHasProductsPort.hasProduct(categoryId)) {
