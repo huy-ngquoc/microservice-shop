@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.product.application.dto.command.rating.ReconcileProductRatingsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.rating.ProductRatingBulkReconciliationCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingBulkReconciliationUseCase;
 
 @Component
@@ -27,7 +27,7 @@ public class ReconcileProductRatingsJob {
         final var rangeEndTime = Instant.now();
         final var rangeStartTime = rangeEndTime.minus(WINDOW_DURATION);
 
-        final var command = new ReconcileProductRatingsCommand(rangeStartTime, rangeEndTime);
+        final var command = new ProductRatingBulkReconciliationCommand(rangeStartTime, rangeEndTime);
 
         try {
             ratingBulkReconciliationUseCase.execute(command);

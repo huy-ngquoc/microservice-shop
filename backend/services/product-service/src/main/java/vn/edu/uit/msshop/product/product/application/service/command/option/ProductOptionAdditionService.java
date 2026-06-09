@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.option.AddProductOptionCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionAdditionCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
@@ -54,7 +54,7 @@ public class ProductOptionAdditionService
                             allEntries = true)
             })
     public ProductView add(
-            AddProductOptionCommand command) {
+            ProductOptionAdditionCommand command) {
         final var productId = command.id();
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));

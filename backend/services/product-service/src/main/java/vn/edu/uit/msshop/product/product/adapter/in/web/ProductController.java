@@ -43,7 +43,7 @@ public class ProductController {
             @RequestBody
             @Valid
             final CreateProductRequest request) {
-        final var view = this.creationUseCase.create(this.mapper.toCreateCommand(request));
+        final var view = this.creationUseCase.create(this.mapper.toCreationCommand(request));
 
         final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
@@ -61,7 +61,7 @@ public class ProductController {
             @RequestBody
             @Valid
             final CreateSimpleProductRequest request) {
-        final var view = this.creationUseCase.createSimple(this.mapper.toCreateSimpleCommand(request));
+        final var view = this.creationUseCase.createSimple(this.mapper.toSimpleCreationCommand(request));
 
         final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
@@ -81,7 +81,7 @@ public class ProductController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toRestoreCommand(id, version);
+        final var command = this.mapper.toRestorationCommand(id, version);
         this.restorationUseCase.restore(command);
 
         return ResponseEntity.noContent().build();
@@ -95,7 +95,7 @@ public class ProductController {
             @RequestBody
             @Valid
             final UpdateProductInfoRequest request) {
-        final var command = this.mapper.toUpdateInfoCommand(id, request);
+        final var command = this.mapper.toInfoUpdateCommand(id, request);
         final var view = this.infoUpdateUseCase.updateInfo(command);
 
         final var response = this.mapper.toResponse(view);
@@ -109,7 +109,7 @@ public class ProductController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toSoftDeleteCommand(id, version);
+        final var command = this.mapper.toSoftDeletionCommand(id, version);
         this.softDeletionUseCase.softDelete(command);
 
         return ResponseEntity.noContent().build();
@@ -122,7 +122,7 @@ public class ProductController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toHardDeleteCommand(id, version);
+        final var command = this.mapper.toHardDeletionCommand(id, version);
         this.hardDeletionUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();

@@ -6,11 +6,11 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
-public record RemoveProductVariantsCommand(
+public record ProductVariantBulkRemovalCommand(
         ProductId id,
         List<ProductVariantId> variantIds,
         ProductVersion expectedVersion) {
-    public RemoveProductVariantsCommand {
+    public ProductVariantBulkRemovalCommand {
         variantIds = List.copyOf(variantIds);
     }
 }

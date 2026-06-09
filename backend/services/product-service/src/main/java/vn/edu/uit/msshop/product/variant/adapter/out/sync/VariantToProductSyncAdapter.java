@@ -7,13 +7,13 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.count.DecreaseProductSoldCountsForVariantsCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.count.DecreaseProductStockCountsForVariantsCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.count.IncreaseProductSoldCountsForVariantsCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.count.IncreaseProductStockCountsForVariantsCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.variant.AddProductVariantForVariantCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.variant.RemoveProductVariantForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.ProductVariantUpdateForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductSoldCountDecreaseForVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountDecreaseForVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductSoldCountIncreaseForVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountIncreaseForVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantAdditionForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantRemovalForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductSoldCountDecreaseForVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountDecreaseForVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductSoldCountIncreaseForVariantsUseCase;
@@ -71,7 +71,7 @@ public class VariantToProductSyncAdapter
         final var productId = new ProductId(variant.getProductId().value());
         final var productVariant = VariantToProductSyncAdapter.toProductVariant(variant);
 
-        final var command = new AddProductVariantForVariantCommand(
+        final var command = new ProductVariantAdditionForVariantCommand(
                 productId,
                 productVariant,
                 soldIncrement,
@@ -86,7 +86,7 @@ public class VariantToProductSyncAdapter
         final var productId = new ProductId(variant.getProductId().value());
         final var productVariant = VariantToProductSyncAdapter.toProductVariant(variant);
 
-        final var command = new UpdateProductVariantForVariantCommand(
+        final var command = new ProductVariantUpdateForVariantCommand(
                 productId,
                 productVariant);
 
@@ -111,7 +111,7 @@ public class VariantToProductSyncAdapter
         final var incrementById = incrementByProductId.entrySet().stream()
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
-        final var command = new IncreaseProductSoldCountsForVariantsCommand(incrementById);
+        final var command = new ProductSoldCountIncreaseForVariantsCommand(incrementById);
         this.productSoldCountIncreaseForVariantsUseCase.increase(command);
     }
 
@@ -121,7 +121,7 @@ public class VariantToProductSyncAdapter
         final var incrementById = incrementByProductId.entrySet().stream()
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
-        final var command = new IncreaseProductStockCountsForVariantsCommand(incrementById);
+        final var command = new ProductStockCountIncreaseForVariantsCommand(incrementById);
         this.productStockCountIncreaseForVariantsUseCase.increase(command);
     }
 
@@ -131,7 +131,7 @@ public class VariantToProductSyncAdapter
         final var decrementById = decrementByProductId.entrySet().stream()
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
-        final var command = new DecreaseProductSoldCountsForVariantsCommand(decrementById);
+        final var command = new ProductSoldCountDecreaseForVariantsCommand(decrementById);
         this.productSoldCountDecreaseForVariantsUseCase.decrease(command);
     }
 
@@ -141,7 +141,7 @@ public class VariantToProductSyncAdapter
         final var decrementById = decrementByProductId.entrySet().stream()
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
-        final var command = new DecreaseProductStockCountsForVariantsCommand(decrementById);
+        final var command = new ProductStockCountDecreaseForVariantsCommand(decrementById);
         this.productStockCountDecreaseForVariantsUseCase.decrease(command);
     }
 
@@ -154,7 +154,7 @@ public class VariantToProductSyncAdapter
         final var productVariantId = new ProductVariantId(variantId.value());
         final var productId = new ProductId(variantProductId.value());
 
-        final var command = new RemoveProductVariantForVariantCommand(
+        final var command = new ProductVariantRemovalForVariantCommand(
                 productId,
                 productVariantId,
                 soldDecrement,

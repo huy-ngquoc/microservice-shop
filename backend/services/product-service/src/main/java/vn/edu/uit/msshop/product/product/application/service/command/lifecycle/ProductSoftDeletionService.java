@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.SoftDeleteProductCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSoftDeletionCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductSoftDeletionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
@@ -43,7 +43,7 @@ public class ProductSoftDeletionService
                             allEntries = true)
             })
     public void softDelete(
-            final SoftDeleteProductCommand command) {
+            final ProductSoftDeletionCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));

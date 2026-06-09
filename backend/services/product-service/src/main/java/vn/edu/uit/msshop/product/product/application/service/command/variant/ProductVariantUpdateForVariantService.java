@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.ProductVariantUpdateForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantUpdateForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
@@ -37,7 +37,7 @@ public class ProductVariantUpdateForVariantService
                             allEntries = true)
             })
     public void update(
-            final UpdateProductVariantForVariantCommand command) {
+            final ProductVariantUpdateForVariantCommand command) {
         final var productId = command.id();
         final var product = this.loadPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));

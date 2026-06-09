@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.count.IncreaseProductSoldCountsForVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductSoldCountIncreaseForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductSoldCountIncreaseForVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkIncreationPort;
 
@@ -29,7 +29,7 @@ public class ProductSoldCountIncreaseForVariantsService
                             allEntries = true)
             })
     public void increase(
-            final IncreaseProductSoldCountsForVariantsCommand command) {
+            final ProductSoldCountIncreaseForVariantsCommand command) {
         this.bulkIncreationPort.increaseAll(command.incrementById());
     }
 }

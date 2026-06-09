@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
-import vn.edu.uit.msshop.product.product.application.dto.command.variant.AddProductVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantBulkAdditionCommand;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 @Component
 public class ProductVariantWebMapper {
 
-    public AddProductVariantsCommand toAddVariantsCommand(
+    public ProductVariantBulkAdditionCommand toBulkAdditionCommand(
             final UUID id,
             final AddProductVariantRequest request) {
         final var productId = new ProductId(id);
@@ -34,13 +34,13 @@ public class ProductVariantWebMapper {
                 variantTargets);
         final var newVariants = new NewProductVariants(List.of(newVariant));
 
-        return new AddProductVariantsCommand(
+        return new ProductVariantBulkAdditionCommand(
                 productId,
                 newVariants,
                 version);
     }
 
-    public AddProductVariantsCommand toAddVariantsCommand(
+    public ProductVariantBulkAdditionCommand toBulkAdditionCommand(
             final UUID id,
             final AddProductVariantsRequest request) {
         final var productId = new ProductId(id);
@@ -51,7 +51,7 @@ public class ProductVariantWebMapper {
                 .toList();
         final var newVariants = new NewProductVariants(newVariantsList);
 
-        return new AddProductVariantsCommand(
+        return new ProductVariantBulkAdditionCommand(
                 productId,
                 newVariants,
                 version);

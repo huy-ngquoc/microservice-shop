@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.HardDeleteProductCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductHardDeletionCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
@@ -36,7 +36,7 @@ public class ProductHardDeletionService
     @Override
     @Transactional
     public void hardDelete(
-            HardDeleteProductCommand command) {
+            ProductHardDeletionCommand command) {
         final var productId = command.id();
         final var product = this.softDeletedLookupByIdPort.loadSoftDeletedById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
