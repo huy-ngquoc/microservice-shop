@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.CategoryImageLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryImageLifecycleUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.command.image.CategoryImageDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
@@ -21,7 +21,7 @@ import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdatedEvent
 @RequiredArgsConstructor
 @Slf4j
 public class CategoryImageDeletionByIdService
-        implements CategoryImageLifecycleUseCases.Delete {
+        implements CategoryImageDeletionByIdUseCase {
 
     private final LoadCategoryPort loadPort;
     private final UpdateCategoryPort updatePort;

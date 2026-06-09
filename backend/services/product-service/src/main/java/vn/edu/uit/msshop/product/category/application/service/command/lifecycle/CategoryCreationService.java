@@ -9,7 +9,7 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryCreationUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryCreatedEvent;
@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 @Service
 @RequiredArgsConstructor
 public class CategoryCreationService
-        implements CategoryLifecycleUseCases.Create {
+        implements CategoryCreationUseCase {
 
     private final CreateCategoryPort createPort;
 
