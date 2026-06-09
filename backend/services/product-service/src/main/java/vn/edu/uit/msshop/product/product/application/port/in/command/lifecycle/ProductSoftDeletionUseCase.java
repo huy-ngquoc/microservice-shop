@@ -1,6 +1,6 @@
 package vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle;
 
-import vn.edu.uit.msshop.product.product.application.dto.command.SoftDeleteProductCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.SoftDeleteProductCommand;
 
 public interface ProductSoftDeletionUseCase {
     void softDelete(
