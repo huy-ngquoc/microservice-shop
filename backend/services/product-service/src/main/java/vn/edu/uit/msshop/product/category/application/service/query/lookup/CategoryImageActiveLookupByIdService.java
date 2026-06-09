@@ -8,7 +8,7 @@ import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.query.lookup.CategoryImageActiveLookupByIdUseCase;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategoryActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Service
@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 public class CategoryImageActiveLookupByIdService
         implements CategoryImageActiveLookupByIdUseCase {
 
-    private final LoadCategoryPort loadPort;
+    private final CategoryActiveLookupByIdPort loadPort;
     private final CategoryViewMapper mapper;
 
     @Override
@@ -24,7 +24,7 @@ public class CategoryImageActiveLookupByIdService
             readOnly = true)
     public CategoryImageView findActiveImageById(
             final CategoryId id) {
-        return this.loadPort.loadById(id).map(this.mapper::toImageView)
+        return this.loadPort.loadActiveById(id).map(this.mapper::toImageView)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
     }
 }

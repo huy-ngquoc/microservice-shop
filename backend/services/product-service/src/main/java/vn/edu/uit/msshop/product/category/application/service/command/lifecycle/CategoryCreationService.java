@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryCreationUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryCreationPort;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryCreatedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
 public class CategoryCreationService
         implements CategoryCreationUseCase {
 
-    private final CreateCategoryPort createPort;
+    private final CategoryCreationPort creationPort;
 
     private final CategoryViewMapper mapper;
     private final CategoryEventPublicationPort eventPublicationPort;
@@ -39,7 +39,7 @@ public class CategoryCreationService
         final var newCategory = new NewCategory(
                 CategoryId.newId(),
                 categoryName);
-        final var saved = this.createPort.create(newCategory);
+        final var saved = this.creationPort.create(newCategory);
 
         final var event = new CategoryCreatedEvent(saved.getId());
         this.eventPublicationPort.publishEvent(event);
