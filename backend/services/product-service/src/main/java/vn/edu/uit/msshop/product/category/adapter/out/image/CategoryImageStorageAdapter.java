@@ -80,25 +80,11 @@ public class CategoryImageStorageAdapter implements CategoryImageStoragePort {
                     .uploader()
                     .rename(fromPublicId, toPublicId, Map.of());
         } catch (final IOException e) {
-            throw new ImageRenameFailedException(
-                    "Failed to rename image: " + fromPublicId + " → " + toPublicId, e);
+            final var msg = String.format(
+                    "Failed to rename image from `%s` to `%s`",
+                    fromPublicId,
+                    toPublicId);
+            throw new ImageRenameFailedException(msg, e);
         }
     }
 }
-
-// @Component
-// @RequiredArgsConstructor
-// public class CategoryImageVerifyAdapter implements VerifyCategoryImageKeyPort
-// {
-// private final ImageServiceFeignClient imageServiceClient;
-// @Override
-// public boolean existsInTemp(CategoryImageKey key) {
-// return this.imageServiceClient.existsInTemp(key.value());
-// }
-// }
-// // Feign Client gọi sang image-service
-// @FeignClient(name = "image-service")
-// public interface ImageServiceFeignClient {
-// @GetMapping("/images/temp/{key}/exists")
-// boolean existsInTemp(@PathVariable String key);
-// }
