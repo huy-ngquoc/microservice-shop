@@ -2,8 +2,8 @@ package vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle;
 
 import java.util.List;
 
-import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.CreateProductCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductConfiguration;

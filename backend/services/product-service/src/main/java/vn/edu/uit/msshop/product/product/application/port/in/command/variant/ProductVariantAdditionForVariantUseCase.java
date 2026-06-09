@@ -1,6 +1,6 @@
 package vn.edu.uit.msshop.product.product.application.port.in.command.variant;
 
-import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVariantForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.variant.AddProductVariantForVariantCommand;
 
 public interface ProductVariantAdditionForVariantUseCase {
     void add(

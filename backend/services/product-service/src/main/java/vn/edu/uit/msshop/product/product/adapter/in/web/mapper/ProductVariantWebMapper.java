@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
-import vn.edu.uit.msshop.product.product.application.dto.command.AddProductVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.variant.AddProductVariantsCommand;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;

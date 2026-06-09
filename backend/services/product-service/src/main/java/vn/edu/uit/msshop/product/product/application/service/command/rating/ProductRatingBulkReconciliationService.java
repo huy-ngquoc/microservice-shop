@@ -3,8 +3,8 @@ package vn.edu.uit.msshop.product.product.application.service.command.rating;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.dto.command.ReconcileProductRatingsCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.SetAllProductRatingsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.rating.ReconcileProductRatingsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.rating.SetAllProductRatingsCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingBulkReconciliationUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingBulkUpdateUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductRatingBulkFetchPort;
