@@ -11,7 +11,6 @@ import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoDel
 import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoUpdateByIdCommand;
 import vn.edu.uit.msshop.product.brand.application.dto.query.lookup.BrandLogoActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryPublicIds;
 
 @Component
@@ -20,9 +19,17 @@ public class BrandLogoWebMapper {
 
     private final BrandLogoUrlResolver urlResolver;
 
-    public BrandId toBrandId(
-            final UUID id) {
-        return new BrandId(id);
+    public BrandLogoResponse toLogoResponse(
+            final BrandLogoView view) {
+        return new BrandLogoResponse(view.id(),
+                this.urlResolver.toLogoUrlString(view.logoKey()),
+                view.version());
+    }
+
+    public BrandLogoActiveLookupByIdQuery toActiveLookupByIdQuery(
+            final UUID brandId) {
+        return new BrandLogoActiveLookupByIdQuery(
+                brandId);
     }
 
     public BrandLogoUpdateByIdCommand toUpdateByIdCommand(
@@ -41,18 +48,5 @@ public class BrandLogoWebMapper {
         return new BrandLogoDeletionByIdCommand(
                 brandId,
                 brandVersion);
-    }
-
-    public BrandLogoResponse toLogoResponse(
-            final BrandLogoView view) {
-        return new BrandLogoResponse(view.id(),
-                this.urlResolver.toLogoUrlString(view.logoKey()),
-                view.version());
-    }
-
-    public BrandLogoActiveLookupByIdQuery toActiveLookupByIdQuery(
-            final UUID brandId) {
-        return new BrandLogoActiveLookupByIdQuery(
-                brandId);
     }
 }
