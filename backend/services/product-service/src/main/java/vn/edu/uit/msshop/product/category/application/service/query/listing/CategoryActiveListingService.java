@@ -9,7 +9,7 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.query.listing.CategoryActiveListingUseCase;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListCategoriesPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.listing.CategoryActiveListingPort;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 public class CategoryActiveListingService
         implements CategoryActiveListingUseCase {
 
-    private final ListCategoriesPort listPort;
+    private final CategoryActiveListingPort listPort;
     private final CategoryViewMapper mapper;
 
     @Override
@@ -28,7 +28,7 @@ public class CategoryActiveListingService
             cacheNames = CacheNames.CATEGORY_LIST)
     public PageResponseDto<CategoryView> listActive(
             final PageRequestDto pageRequest) {
-        final var page = this.listPort.list(pageRequest);
+        final var page = this.listPort.listActive(pageRequest);
         return page.map(this.mapper::toView);
     }
 }

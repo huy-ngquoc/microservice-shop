@@ -8,7 +8,7 @@ import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.query.lookup.CategorySoftDeletedLookupByIdUseCase;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategorySoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Service
@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 public class CategorySoftDeletedLookupByIdService
         implements CategorySoftDeletedLookupByIdUseCase {
 
-    private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
+    private final CategorySoftDeletedLookupByIdPort loadSoftDeletedPort;
     private final CategoryViewMapper mapper;
 
     @Override

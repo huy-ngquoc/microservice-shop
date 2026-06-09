@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.query.lookup.CategoryActiveLookupByIdUseCase;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategoryActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Service
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 public class CategoryActiveLookupByIdService
         implements CategoryActiveLookupByIdUseCase {
 
-    private final LoadCategoryPort loadPort;
+    private final CategoryActiveLookupByIdPort loadPort;
     private final CategoryViewMapper mapper;
 
     @Override
@@ -29,7 +29,7 @@ public class CategoryActiveLookupByIdService
             key = "#id.value()")
     public CategoryView findActiveById(
             final CategoryId id) {
-        return this.loadPort.loadById(id)
+        return this.loadPort.loadActiveById(id)
                 .map(this.mapper::toView)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
     }

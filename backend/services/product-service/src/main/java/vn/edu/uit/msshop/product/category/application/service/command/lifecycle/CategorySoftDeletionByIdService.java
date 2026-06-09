@@ -11,9 +11,9 @@ import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.Cate
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategorySoftDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasProductsPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryUpdatePort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategoryActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.category.application.port.out.validation.CategoryProductActiveExistenceCheckByCategoryIdPort;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategorySoftDeletedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
@@ -25,10 +25,10 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 public class CategorySoftDeletionByIdService
         implements CategorySoftDeletionByIdUseCase {
 
-    private final LoadCategoryPort loadPort;
-    private final UpdateCategoryPort updatePort;
+    private final CategoryActiveLookupByIdPort activeLookupByIdPort;
+    private final CategoryUpdatePort updatePort;
 
-    private final CheckCategoryHasProductsPort checkHasProductsPort;
+    private final CategoryProductActiveExistenceCheckByCategoryIdPort productActiveExistenceCheckByCategoryIdPort;
 
     private final CategoryEventPublicationPort eventPublicationPort;
 
@@ -48,14 +48,15 @@ public class CategorySoftDeletionByIdService
         final var categoryId = new CategoryId(cmd.categoryId());
         final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
 
-        final var category = this.loadPort.loadById(categoryId)
+        final var category = this.activeLookupByIdPort.loadActiveById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         CategoryVersionGuard.ensureMatch(
                 expectedVersion,
                 category.getVersion());
 
-        if (this.checkHasProductsPort.hasProduct(categoryId)) {
+        if (this.productActiveExistenceCheckByCategoryIdPort
+                .existsActiveByCategoryId(categoryId)) {
             throw new BusinessRuleException(
                     "Cannot delete category with existing products");
         }
