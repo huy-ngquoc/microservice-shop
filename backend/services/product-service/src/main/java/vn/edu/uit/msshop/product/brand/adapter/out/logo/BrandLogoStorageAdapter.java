@@ -29,10 +29,12 @@ public class BrandLogoStorageAdapter implements BrandLogoStoragePort {
     public boolean existsAsTemp(
             final BrandLogoKey key) {
         try {
-            final var result = this.cloudinary.api().resource(CloudinaryFolders.TEMP + "/" + key.value(), Map.of());
+            final var result = this.cloudinary
+                    .api()
+                    .resource(CloudinaryFolders.TEMP + "/" + key.value(), Map.of());
 
             return (result != null) && result.containsKey("public_id");
-        } catch (final NotFound e) {
+        } catch (final NotFound _) {
             log.debug("Image key '{}' not found in temp storage", key.value());
             return false;
         } catch (final Exception e) {
@@ -62,7 +64,9 @@ public class BrandLogoStorageAdapter implements BrandLogoStoragePort {
     public void deleteLogo(
             final BrandLogoKey key) {
         try {
-            this.cloudinary.uploader().destroy(BRAND_FOLDER + "/" + key.value(), Map.of());
+            this.cloudinary
+                    .uploader()
+                    .destroy(BRAND_FOLDER + "/" + key.value(), Map.of());
         } catch (final IOException e) {
             throw new ImageDeletionFailedException("Failed to delete image: " + key.value(), e);
         }
@@ -72,10 +76,15 @@ public class BrandLogoStorageAdapter implements BrandLogoStoragePort {
             final String fromPublicId,
             final String toPublicId) {
         try {
-            this.cloudinary.uploader().rename(fromPublicId, toPublicId, Map.of());
+            this.cloudinary
+                    .uploader()
+                    .rename(fromPublicId, toPublicId, Map.of());
         } catch (final IOException e) {
-            throw new ImageRenameFailedException(
-                    "Failed to rename image: " + fromPublicId + " → " + toPublicId, e);
+            final var msg = String.format(
+                    "Failed to rename image from `%s` to `%s`",
+                    fromPublicId,
+                    toPublicId);
+            throw new ImageRenameFailedException(msg, e);
         }
     }
 }
