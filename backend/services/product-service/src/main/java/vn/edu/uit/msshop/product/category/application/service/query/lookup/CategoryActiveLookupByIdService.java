@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.category.application.dto.query.lookup.CategoryActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
@@ -27,10 +28,11 @@ public class CategoryActiveLookupByIdService
     @Cacheable(
             cacheNames = CacheNames.CATEGORY,
             key = "#id.value()")
-    public CategoryView findActiveById(
-            final CategoryId id) {
-        return this.loadPort.loadActiveById(id)
+    public CategoryView find(
+            final CategoryActiveLookupByIdQuery query) {
+        final var categoryId = new CategoryId(query.categoryId());
+        return this.loadPort.loadActiveById(categoryId)
                 .map(this.mapper::toView)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
     }
 }

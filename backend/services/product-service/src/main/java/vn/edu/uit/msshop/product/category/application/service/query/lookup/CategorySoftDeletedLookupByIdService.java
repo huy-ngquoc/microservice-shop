@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.category.application.dto.query.lookup.CategorySoftDeletedLookupByIdQuery;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
@@ -22,10 +23,11 @@ public class CategorySoftDeletedLookupByIdService
     @Override
     @Transactional(
             readOnly = true)
-    public CategoryView findSoftDeletedById(
-            final CategoryId id) {
-        return this.loadSoftDeletedPort.loadSoftDeletedById(id)
+    public CategoryView find(
+            final CategorySoftDeletedLookupByIdQuery query) {
+        final var categoryId = new CategoryId(query.categoryId());
+        return this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
                 .map(this.mapper::toView)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
     }
 }

@@ -36,7 +36,8 @@ public class CategoryImageController {
     public ResponseEntity<CategoryImageResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.activeLookupByIdUseCase.findActiveImageById(this.mapper.toCategoryId(id));
+        final var query = this.mapper.toActiveLookupByIdQuery(id);
+        final var view = this.activeLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
