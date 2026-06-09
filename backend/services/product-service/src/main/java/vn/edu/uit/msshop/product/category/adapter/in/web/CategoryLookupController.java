@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryWebMapper;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
-import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.query.existence.CategoryActiveExistenceCheckByIdUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.listing.CategoryActiveListingUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.listing.CategorySoftDeletedListingUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.lookup.CategoryActiveLookupByIdUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.lookup.CategorySoftDeletedLookupByIdUseCase;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
@@ -22,16 +26,16 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequiredArgsConstructor
 public class CategoryLookupController {
 
-    private final CategoryLookupUseCases.ListActive listUseCase;
-    private final CategoryLookupUseCases.ListSoftDeleted listSoftDeletedUseCase;
-    private final CategoryLookupUseCases.CheckExistsById checkExistsByIdUseCase;
-    private final CategoryLookupUseCases.FindActiveById findActiveByIdUseCase;
-    private final CategoryLookupUseCases.FindSoftDeletedById findSoftDeletedByIdUseCase;
+    private final CategoryActiveListingUseCase activeListingUseCase;
+    private final CategorySoftDeletedListingUseCase softDeletedListingUseCase;
+    private final CategoryActiveExistenceCheckByIdUseCase activeExistenceCheckByIdUseCase;
+    private final CategoryActiveLookupByIdUseCase activeLookupByIdUseCase;
+    private final CategorySoftDeletedLookupByIdUseCase softDeletedLookupByIdUseCase;
 
     private final CategoryWebMapper mapper;
 
     @GetMapping
-    public ResponseEntity<PageResponseDto<CategoryResponse>> list(
+    public ResponseEntity<PageResponseDto<CategoryResponse>> listActive(
             @RequestParam(
                     defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
             final int page,
@@ -49,7 +53,7 @@ public class CategoryLookupController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = listUseCase.listActive(request);
+        final var views = activeListingUseCase.listActive(request);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
@@ -74,17 +78,17 @@ public class CategoryLookupController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = listSoftDeletedUseCase.listSoftDeleted(request);
+        final var views = softDeletedListingUseCase.listSoftDeleted(request);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}/exists")
-    public ResponseEntity<Void> existsById(
+    public ResponseEntity<Void> existsActiveById(
             @PathVariable
             final UUID id) {
-        final var existed = this.checkExistsByIdUseCase.existsById(
+        final var existed = this.activeExistenceCheckByIdUseCase.existsById(
                 this.mapper.toCategoryId(id));
         if (!existed) {
             return ResponseEntity.notFound().build();
@@ -97,7 +101,7 @@ public class CategoryLookupController {
     public ResponseEntity<CategoryResponse> findActiveById(
             @PathVariable
             final UUID id) {
-        final var view = this.findActiveByIdUseCase.findActiveById(
+        final var view = this.activeLookupByIdUseCase.findActiveById(
                 this.mapper.toCategoryId(id));
 
         final var response = this.mapper.toResponse(view);
@@ -108,7 +112,7 @@ public class CategoryLookupController {
     public ResponseEntity<CategoryResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
-        final var view = this.findSoftDeletedByIdUseCase.findSoftDeletedById(
+        final var view = this.softDeletedLookupByIdUseCase.findSoftDeletedById(
                 this.mapper.toCategoryId(id));
 
         final var response = this.mapper.toResponse(view);

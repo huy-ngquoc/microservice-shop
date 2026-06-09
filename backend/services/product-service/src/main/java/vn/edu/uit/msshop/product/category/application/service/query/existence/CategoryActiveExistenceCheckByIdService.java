@@ -4,14 +4,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.query.existence.CategoryActiveExistenceCheckByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.CheckCategoryExistsPort;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryActiveExistenceCheckByIdService
-        implements CategoryLookupUseCases.CheckExistsById {
+        implements CategoryActiveExistenceCheckByIdUseCase {
 
     private final CheckCategoryExistsPort checkExistsPort;
 
