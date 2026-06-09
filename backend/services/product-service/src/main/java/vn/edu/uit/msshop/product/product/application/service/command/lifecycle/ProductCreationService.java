@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.CreateProductCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.CreateSimpleProductCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductCreationCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSimpleCreationCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
@@ -49,7 +49,7 @@ public class ProductCreationService
             cacheNames = CacheNames.PRODUCT_LIST,
             allEntries = true)
     public ProductView createSimple(
-            final CreateSimpleProductCommand command) {
+            final ProductSimpleCreationCommand command) {
         return ProductCreationUseCase.super.createSimple(command);
     }
 
@@ -59,7 +59,7 @@ public class ProductCreationService
             cacheNames = CacheNames.PRODUCT_LIST,
             allEntries = true)
     public ProductView create(
-            final CreateProductCommand command) {
+            final ProductCreationCommand command) {
         this.validateCategoryExists(command.categoryId());
         this.validateBrandExists(command.brandId());
 

@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.variant.RemoveProductVariantForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantRemovalForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductMustHaveAtLeastOneVariantException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
@@ -44,7 +44,7 @@ public class ProductVariantRemovalForVariantService
                             allEntries = true)
             })
     public void remove(
-            RemoveProductVariantForVariantCommand command) {
+            ProductVariantRemovalForVariantCommand command) {
         final var productId = command.id();
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));

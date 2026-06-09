@@ -9,12 +9,12 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProd
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductVariantResponse;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.CreateProductCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.CreateSimpleProductCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.HardDeleteProductCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.RestoreProductCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.SoftDeleteProductCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.UpdateProductInfoCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductCreationCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSimpleCreationCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductHardDeletionCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductRestorationCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSoftDeletionCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductInfoUpdateCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductVariantView;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
@@ -38,7 +38,7 @@ public class ProductWebMapper {
         return new ProductId(id);
     }
 
-    public CreateProductCommand toCreateCommand(
+    public ProductCreationCommand toCreationCommand(
             final CreateProductRequest request) {
         final var name = new ProductName(request.name());
         final var categoryId = new ProductCategoryId(request.categoryId());
@@ -54,14 +54,14 @@ public class ProductWebMapper {
         final var newVariants = new NewProductVariants(variantsList);
         final var newConfiguration = new NewProductConfiguration(options, newVariants);
 
-        return new CreateProductCommand(
+        return new ProductCreationCommand(
                 name,
                 categoryId,
                 brandId,
                 newConfiguration);
     }
 
-    public CreateSimpleProductCommand toCreateSimpleCommand(
+    public ProductSimpleCreationCommand toSimpleCreationCommand(
             final CreateSimpleProductRequest request) {
         final var name = new ProductName(request.name());
         final var categoryId = new ProductCategoryId(request.categoryId());
@@ -69,7 +69,7 @@ public class ProductWebMapper {
         final var price = new ProductVariantPrice(request.price());
         final var targets = ProductVariantTargets.of(request.targets());
 
-        return new CreateSimpleProductCommand(
+        return new ProductSimpleCreationCommand(
                 name,
                 categoryId,
                 brandId,
@@ -77,16 +77,16 @@ public class ProductWebMapper {
                 targets);
     }
 
-    public RestoreProductCommand toRestoreCommand(
+    public ProductRestorationCommand toRestorationCommand(
             final UUID id,
             final long expectedVersion) {
         final var productId = new ProductId(id);
         final var version = new ProductVersion(expectedVersion);
 
-        return new RestoreProductCommand(productId, version);
+        return new ProductRestorationCommand(productId, version);
     }
 
-    public UpdateProductInfoCommand toUpdateInfoCommand(
+    public ProductInfoUpdateCommand toInfoUpdateCommand(
             final UUID id,
             final UpdateProductInfoRequest request) {
         final var productId = new ProductId(id);
@@ -96,7 +96,7 @@ public class ProductWebMapper {
         final var categoryId = ChangeRequest.toChange(request.categoryId(), ProductCategoryId::new);
         final var brandId = ChangeRequest.toChange(request.brandId(), ProductBrandId::new);
 
-        return new UpdateProductInfoCommand(
+        return new ProductInfoUpdateCommand(
                 productId,
                 name,
                 categoryId,
@@ -104,22 +104,22 @@ public class ProductWebMapper {
                 version);
     }
 
-    public SoftDeleteProductCommand toSoftDeleteCommand(
+    public ProductSoftDeletionCommand toSoftDeletionCommand(
             final UUID id,
             final long expectedVersion) {
         final var productId = new ProductId(id);
         final var version = new ProductVersion(expectedVersion);
 
-        return new SoftDeleteProductCommand(productId, version);
+        return new ProductSoftDeletionCommand(productId, version);
     }
 
-    public HardDeleteProductCommand toHardDeleteCommand(
+    public ProductHardDeletionCommand toHardDeletionCommand(
             final UUID id,
             final long expectedVersion) {
         final var productId = new ProductId(id);
         final var version = new ProductVersion(expectedVersion);
 
-        return new HardDeleteProductCommand(productId, version);
+        return new ProductHardDeletionCommand(productId, version);
     }
 
     public ProductResponse toResponse(
