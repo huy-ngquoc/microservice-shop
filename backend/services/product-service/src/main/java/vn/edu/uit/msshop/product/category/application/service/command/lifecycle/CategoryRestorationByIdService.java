@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryRestorationByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.product.category.domain.event.CategoryRestoredEvent;
 @Service
 @RequiredArgsConstructor
 public class CategoryRestorationByIdService
-        implements CategoryLifecycleUseCases.Restore {
+        implements CategoryRestorationByIdUseCase {
 
     private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
     private final UpdateCategoryPort updatePort;
