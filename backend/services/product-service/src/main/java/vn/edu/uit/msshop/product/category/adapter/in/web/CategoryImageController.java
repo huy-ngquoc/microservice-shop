@@ -17,7 +17,8 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryWebMapper;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryImageRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryImageLifecycleUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.command.image.CategoryImageDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.image.CategoryImageUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
 
 @RestController
@@ -26,8 +27,8 @@ import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLook
 public class CategoryImageController {
 
     private final CategoryLookupUseCases.FindActiveImageById findActiveUseCase;
-    private final CategoryImageLifecycleUseCases.Update updateUseCase;
-    private final CategoryImageLifecycleUseCases.Delete deleteUseCase;
+    private final CategoryImageUpdateByIdUseCase updateByIdUseCase;
+    private final CategoryImageDeletionByIdUseCase deletionByIdUseCase;
 
     private final CategoryWebMapper mapper;
 
@@ -50,7 +51,7 @@ public class CategoryImageController {
             @Valid
             final UpdateCategoryImageRequest request) {
         final var command = this.mapper.toUpdateImageCommand(id, request);
-        final var view = this.updateUseCase.update(command);
+        final var view = this.updateByIdUseCase.update(command);
 
         final var response = this.mapper.toImageResponse(view);
         return ResponseEntity.ok(response);
@@ -64,7 +65,7 @@ public class CategoryImageController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toDeleteImageCommand(id, version);
-        this.deleteUseCase.delete(command);
+        this.deletionByIdUseCase.delete(command);
 
         return ResponseEntity.noContent().build();
     }

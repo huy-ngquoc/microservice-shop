@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.category.application.dto.view.CategoryImageView
 import vn.edu.uit.msshop.product.category.application.exception.CategoryImageKeyNotFoundException;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryImageLifecycleUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.command.image.CategoryImageUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
 import vn.edu.uit.msshop.product.category.application.port.out.image.CategoryImageStoragePort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
@@ -28,7 +28,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryImage
 @RequiredArgsConstructor
 @Slf4j
 public class CategoryImageUpdateByIdService
-        implements CategoryImageLifecycleUseCases.Update {
+        implements CategoryImageUpdateByIdUseCase {
 
     private final LoadCategoryPort loadPort;
     private final UpdateCategoryPort updatePort;

@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategorySoftDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
@@ -21,7 +21,7 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 @Service
 @RequiredArgsConstructor
 public class CategorySoftDeletionByIdService
-        implements CategoryLifecycleUseCases.SoftDelete {
+        implements CategorySoftDeletionByIdUseCase {
 
     private final LoadCategoryPort loadPort;
     private final UpdateCategoryPort updatePort;

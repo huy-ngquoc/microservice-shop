@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryHardDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.DeleteCategoryPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
@@ -21,7 +21,7 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 @RequiredArgsConstructor
 @Slf4j
 public class CategoryHardDeletionByIdService
-        implements CategoryLifecycleUseCases.HardDelete {
+        implements CategoryHardDeletionByIdUseCase {
 
     private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
     private final DeleteCategoryPort deletePort;
