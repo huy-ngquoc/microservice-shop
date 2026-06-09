@@ -7,14 +7,14 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
-import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.query.lookup.CategorySoftDeletedLookupByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Service
 @RequiredArgsConstructor
 public class CategorySoftDeletedLookupByIdService
-        implements CategoryLookupUseCases.FindSoftDeletedById {
+        implements CategorySoftDeletedLookupByIdUseCase {
 
     private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
     private final CategoryViewMapper mapper;
