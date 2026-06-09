@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.product.application.dto.command.ReconcileProductRatingsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.rating.ReconcileProductRatingsCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingBulkReconciliationUseCase;
 
 @Component
