@@ -13,15 +13,59 @@ import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.Cate
 import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.CategoryInfoUpdateByIdCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.CategoryRestorationByIdCommand;
 import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.CategorySoftDeletionByIdCommand;
+import vn.edu.uit.msshop.product.category.application.dto.query.existence.CategoryActiveExistenceCheckByIdQuery;
+import vn.edu.uit.msshop.product.category.application.dto.query.listing.CategoryActiveListingQuery;
+import vn.edu.uit.msshop.product.category.application.dto.query.listing.CategorySoftDeletedListingQuery;
+import vn.edu.uit.msshop.product.category.application.dto.query.lookup.CategoryActiveLookupByIdQuery;
+import vn.edu.uit.msshop.product.category.application.dto.query.lookup.CategorySoftDeletedLookupByIdQuery;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
-import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 
 @Component
 @RequiredArgsConstructor
 public class CategoryWebMapper {
 
     private final CategoryLogoUrlResolver urlResolver;
+
+    public CategoryResponse toResponse(
+            final CategoryView view) {
+        return new CategoryResponse(
+                view.id(),
+                view.name(),
+                this.urlResolver.toLogoUrlString(view.imageKey()),
+                view.version());
+    }
+
+    public CategoryActiveListingQuery toActiveListingQuery(
+            final PageRequestDto pageRequest) {
+        return new CategoryActiveListingQuery(
+                pageRequest);
+    }
+
+    public CategorySoftDeletedListingQuery toSoftDeletedListingQuery(
+            final PageRequestDto pageRequest) {
+        return new CategorySoftDeletedListingQuery(
+                pageRequest);
+    }
+
+    public CategoryActiveExistenceCheckByIdQuery toActiveExistenceCheckByIdQuery(
+            final UUID categoryId) {
+        return new CategoryActiveExistenceCheckByIdQuery(
+                categoryId);
+    }
+
+    public CategoryActiveLookupByIdQuery toActiveLookupByIdQuery(
+            final UUID categoryId) {
+        return new CategoryActiveLookupByIdQuery(
+                categoryId);
+    }
+
+    public CategorySoftDeletedLookupByIdQuery toSoftDeletedLookupByIdQuery(
+            final UUID categoryId) {
+        return new CategorySoftDeletedLookupByIdQuery(
+                categoryId);
+    }
 
     public CategoryCreationCommand toCreateCommand(
             final CreateCategoryRequest request) {
@@ -61,19 +105,5 @@ public class CategoryWebMapper {
         return new CategoryHardDeletionByIdCommand(
                 categoryId,
                 categoryVersion);
-    }
-
-    public CategoryId toCategoryId(
-            final UUID id) {
-        return new CategoryId(id);
-    }
-
-    public CategoryResponse toResponse(
-            final CategoryView view) {
-        return new CategoryResponse(
-                view.id(),
-                view.name(),
-                this.urlResolver.toLogoUrlString(view.imageKey()),
-                view.version());
     }
 }
