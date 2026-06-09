@@ -3,12 +3,12 @@ package vn.edu.uit.msshop.product.product.application.dto.command.variant;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 
-public record RemoveProductVariantForVariantCommand(
+public record ProductVariantRemovalForVariantCommand(
         ProductId id,
         ProductVariantId variantId,
         int soldDecrement,
         int stockDecrement) {
-    public RemoveProductVariantForVariantCommand {
+    public ProductVariantRemovalForVariantCommand {
         if (soldDecrement < 0) {
             throw new IllegalArgumentException("soldDecrement cannot be negative");
         }

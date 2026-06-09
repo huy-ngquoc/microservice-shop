@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.option.RemoveProductOptionCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionRemovalCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
@@ -68,7 +68,7 @@ public class ProductOptionRemovalService
                             allEntries = true)
             })
     public ProductView remove(
-            final RemoveProductOptionCommand command) {
+            final ProductOptionRemovalCommand command) {
         final var productId = command.id();
         final var product = this.activeLookupById.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));

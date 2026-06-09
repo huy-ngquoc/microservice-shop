@@ -7,7 +7,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.shared.application.dto.Change;
 
-public record UpdateProductInfoCommand(
+public record ProductInfoUpdateCommand(
         ProductId id,
         Change<ProductName> name,
         Change<ProductCategoryId> categoryId,
