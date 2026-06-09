@@ -15,8 +15,8 @@ import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFound
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryInfoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryUpdatePort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategoryActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
@@ -31,8 +31,8 @@ import vn.edu.uit.msshop.shared.application.dto.Change;
 public class CategoryInfoUpdateByIdService
         implements CategoryInfoUpdateByIdUseCase {
 
-    private final LoadCategoryPort loadPort;
-    private final UpdateCategoryPort updatePort;
+    private final CategoryActiveLookupByIdPort activeLookupByIdPort;
+    private final CategoryUpdatePort updatePort;
 
     private final CategoryEventPublicationPort eventPublicationPort;
     private final CategoryViewMapper mapper;
@@ -56,7 +56,7 @@ public class CategoryInfoUpdateByIdService
         final var nameChange = cmd.categoryNameChange().map(CategoryName::new);
         final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
 
-        final var category = this.loadPort.loadById(categoryId)
+        final var category = this.activeLookupByIdPort.loadActiveById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         final var nameSet = nameChange.getSet();

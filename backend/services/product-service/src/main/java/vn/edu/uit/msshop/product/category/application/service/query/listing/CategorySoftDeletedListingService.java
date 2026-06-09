@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
 import vn.edu.uit.msshop.product.category.application.port.in.query.listing.CategorySoftDeletedListingUseCase;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListSoftDeletedCategoriesPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.listing.CategorySoftDeletedListingPort;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 public class CategorySoftDeletedListingService
         implements CategorySoftDeletedListingUseCase {
 
-    private final ListSoftDeletedCategoriesPort listSoftDeletedPort;
+    private final CategorySoftDeletedListingPort listSoftDeletedPort;
     private final CategoryViewMapper mapper;
 
     @Override

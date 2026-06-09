@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.application.port.in.query.existence.CategoryActiveExistenceCheckByIdUseCase;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.CheckCategoryExistsPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.existence.CategoryActiveExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Service
@@ -13,13 +13,13 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 public class CategoryActiveExistenceCheckByIdService
         implements CategoryActiveExistenceCheckByIdUseCase {
 
-    private final CheckCategoryExistsPort checkExistsPort;
+    private final CategoryActiveExistenceCheckByIdPort checkExistsPort;
 
     @Override
     @Transactional(
             readOnly = true)
     public boolean existsById(
             final CategoryId id) {
-        return this.checkExistsPort.existsById(id);
+        return this.checkExistsPort.existsActiveById(id);
     }
 }

@@ -3,8 +3,8 @@ package vn.edu.uit.msshop.product.category.adapter.out.validation;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasProductsPort;
-import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasSoftDeletedProductsPort;
+import vn.edu.uit.msshop.product.category.application.port.out.validation.CategoryProductActiveExistenceCheckByCategoryIdPort;
+import vn.edu.uit.msshop.product.category.application.port.out.validation.CategoryProductSoftDeletedExistenceCheckByCategoryIdPort;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByCategoryIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductSoftDeletedExistenceCheckByCategoryIdUseCase;
@@ -14,23 +14,23 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategor
 @RequiredArgsConstructor
 public class CategoryProductValidationAdapter
         implements
-        CheckCategoryHasProductsPort,
-        CheckCategoryHasSoftDeletedProductsPort {
-    private final ProductActiveExistenceCheckByCategoryIdUseCase checkProductExistsByCategoryUseCase;
-    private final ProductSoftDeletedExistenceCheckByCategoryIdUseCase checkSoftDeletedProductExistsByCategoryUseCase;
+        CategoryProductActiveExistenceCheckByCategoryIdPort,
+        CategoryProductSoftDeletedExistenceCheckByCategoryIdPort {
+    private final ProductActiveExistenceCheckByCategoryIdUseCase activeExistenceCheckByBrandIdUseCase;
+    private final ProductSoftDeletedExistenceCheckByCategoryIdUseCase softDeletedExistenceCheckByBrandIdUseCase;
 
     @Override
-    public boolean hasProduct(
+    public boolean existsActiveByCategoryId(
             final CategoryId id) {
         final var productCategoryId = new ProductCategoryId(id.value());
-        return this.checkProductExistsByCategoryUseCase.existsByCategoryId(productCategoryId);
+        return this.activeExistenceCheckByBrandIdUseCase.existsByCategoryId(productCategoryId);
     }
 
     @Override
-    public boolean hasSoftDeletedProduct(
+    public boolean existsSoftDeletedByCategoryId(
             final CategoryId id) {
         final var productCategoryId = new ProductCategoryId(id.value());
-        return this.checkSoftDeletedProductExistsByCategoryUseCase
+        return this.softDeletedExistenceCheckByBrandIdUseCase
                 .existsByCategoryId(productCategoryId);
     }
 }
