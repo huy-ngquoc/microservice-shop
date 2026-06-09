@@ -12,8 +12,8 @@ import vn.edu.uit.msshop.product.category.application.dto.command.image.Category
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.image.CategoryImageDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryUpdatePort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategoryActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryImageUpdatedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
@@ -25,8 +25,8 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersi
 public class CategoryImageDeletionByIdService
         implements CategoryImageDeletionByIdUseCase {
 
-    private final LoadCategoryPort loadPort;
-    private final UpdateCategoryPort updatePort;
+    private final CategoryActiveLookupByIdPort activeLookupByIdPort;
+    private final CategoryUpdatePort updatePort;
 
     private final CategoryImageDeleter imageDeleter;
 
@@ -48,7 +48,7 @@ public class CategoryImageDeletionByIdService
         final var categoryId = new CategoryId(cmd.categoryId());
         final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
 
-        final var category = this.loadPort.loadById(categoryId)
+        final var category = this.activeLookupByIdPort.loadActiveById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         final var oldKey = category.getImageKey();

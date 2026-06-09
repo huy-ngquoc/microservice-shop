@@ -9,9 +9,9 @@ import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.Cate
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryHardDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.DeleteCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckCategoryHasSoftDeletedProductsPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryDeletionByIdPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategorySoftDeletedLookupByIdPort;
+import vn.edu.uit.msshop.product.category.application.port.out.validation.CategoryProductSoftDeletedExistenceCheckByCategoryIdPort;
 import vn.edu.uit.msshop.product.category.application.service.command.image.CategoryImageDeleter;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryHardDeletedEvent;
@@ -25,10 +25,10 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 public class CategoryHardDeletionByIdService
         implements CategoryHardDeletionByIdUseCase {
 
-    private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
-    private final DeleteCategoryPort deletePort;
+    private final CategorySoftDeletedLookupByIdPort softDeletedLookupByIdPort;
+    private final CategoryDeletionByIdPort deletionByIdPort;
 
-    private final CheckCategoryHasSoftDeletedProductsPort checkHasSoftDeletedProductsPort;
+    private final CategoryProductSoftDeletedExistenceCheckByCategoryIdPort productSoftDeletedExistenceCheckByCategoryIdPort;
 
     private final CategoryImageDeleter imageDeleter;
 
@@ -41,18 +41,19 @@ public class CategoryHardDeletionByIdService
         final var categoryId = new CategoryId(cmd.categoryId());
         final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
 
-        final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
+        final var category = this.softDeletedLookupByIdPort.loadSoftDeletedById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         CategoryVersionGuard.ensureMatch(
                 expectedVersion,
                 category.getVersion());
 
-        if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(categoryId)) {
+        if (this.productSoftDeletedExistenceCheckByCategoryIdPort
+                .existsSoftDeletedByCategoryId(categoryId)) {
             throw new BusinessRuleException("Cannot delete category with existing products");
         }
 
-        this.deletePort.deleteById(categoryId);
+        this.deletionByIdPort.deleteById(categoryId);
 
         final var event = new CategoryHardDeletedEvent(categoryId);
         this.eventPort.publishEvent(event);

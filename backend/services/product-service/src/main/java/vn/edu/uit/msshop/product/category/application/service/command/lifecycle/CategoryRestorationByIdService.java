@@ -10,8 +10,8 @@ import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.Cate
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryRestorationByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryUpdatePort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategorySoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryRestoredEvent;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
@@ -22,8 +22,8 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersi
 public class CategoryRestorationByIdService
         implements CategoryRestorationByIdUseCase {
 
-    private final LoadSoftDeletedCategoryPort loadSoftDeletedPort;
-    private final UpdateCategoryPort updatePort;
+    private final CategorySoftDeletedLookupByIdPort softDeletedLookupByIdPort;
+    private final CategoryUpdatePort updatePort;
 
     private final CategoryEventPublicationPort eventPublicationPort;
 
@@ -37,7 +37,7 @@ public class CategoryRestorationByIdService
         final var categoryId = new CategoryId(cmd.categoryId());
         final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
 
-        final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
+        final var category = this.softDeletedLookupByIdPort.loadSoftDeletedById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         CategoryVersionGuard.ensureMatch(
