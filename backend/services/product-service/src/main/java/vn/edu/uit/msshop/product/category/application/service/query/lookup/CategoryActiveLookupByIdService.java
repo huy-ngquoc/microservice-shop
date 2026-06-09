@@ -9,14 +9,14 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
-import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.query.lookup.CategoryActiveLookupByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryActiveLookupByIdService
-        implements CategoryLookupUseCases.FindActiveById {
+        implements CategoryActiveLookupByIdUseCase {
 
     private final LoadCategoryPort loadPort;
     private final CategoryViewMapper mapper;
