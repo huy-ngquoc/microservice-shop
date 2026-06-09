@@ -15,19 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryImageWebMapper;
-import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryWebMapper;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryImageRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
 import vn.edu.uit.msshop.product.category.application.port.in.command.image.CategoryImageDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.in.command.image.CategoryImageUpdateByIdUseCase;
-import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.query.lookup.CategoryImageActiveLookupByIdUseCase;
 
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
 public class CategoryImageController {
 
-    private final CategoryLookupUseCases.FindActiveImageById findActiveUseCase;
+    private final CategoryImageActiveLookupByIdUseCase activeLookupByIdUseCase;
     private final CategoryImageUpdateByIdUseCase updateByIdUseCase;
     private final CategoryImageDeletionByIdUseCase deletionByIdUseCase;
 
@@ -37,7 +36,7 @@ public class CategoryImageController {
     public ResponseEntity<CategoryImageResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findActiveUseCase.findActiveImageById(this.mapper.toCategoryId(id));
+        final var view = this.activeLookupByIdUseCase.findActiveImageById(this.mapper.toCategoryId(id));
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
