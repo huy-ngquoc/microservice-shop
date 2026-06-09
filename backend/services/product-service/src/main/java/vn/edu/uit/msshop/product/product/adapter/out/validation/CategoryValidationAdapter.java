@@ -3,8 +3,8 @@ package vn.edu.uit.msshop.product.product.adapter.out.validation;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.category.application.dto.query.existence.CategoryActiveExistenceCheckByIdQuery;
 import vn.edu.uit.msshop.product.category.application.port.in.query.existence.CategoryActiveExistenceCheckByIdUseCase;
-import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 
@@ -17,7 +17,7 @@ public class CategoryValidationAdapter
     @Override
     public boolean existsById(
             final ProductCategoryId categoryId) {
-        final var id = new CategoryId(categoryId.value());
-        return this.categoryActiveExistenceCheckByIdUseCase.existsById(id);
+        final var query = new CategoryActiveExistenceCheckByIdQuery(categoryId.value());
+        return this.categoryActiveExistenceCheckByIdUseCase.exists(query);
     }
 }

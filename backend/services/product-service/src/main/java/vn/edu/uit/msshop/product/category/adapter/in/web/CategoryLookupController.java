@@ -52,8 +52,9 @@ public class CategoryLookupController {
             @RequestParam(
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
-        final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = activeListingUseCase.listActive(request);
+        final var pageRequest = new PageRequestDto(page, size, sortBy, direction);
+        final var query = this.mapper.toActiveListingQuery(pageRequest);
+        final var views = activeListingUseCase.list(query);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
@@ -77,8 +78,9 @@ public class CategoryLookupController {
             @RequestParam(
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
-        final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = softDeletedListingUseCase.listSoftDeleted(request);
+        final var pageRequest = new PageRequestDto(page, size, sortBy, direction);
+        final var query = this.mapper.toSoftDeletedListingQuery(pageRequest);
+        final var views = softDeletedListingUseCase.list(query);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
@@ -88,8 +90,8 @@ public class CategoryLookupController {
     public ResponseEntity<Void> existsActiveById(
             @PathVariable
             final UUID id) {
-        final var existed = this.activeExistenceCheckByIdUseCase.existsById(
-                this.mapper.toCategoryId(id));
+        final var query = this.mapper.toActiveExistenceCheckByIdQuery(id);
+        final var existed = this.activeExistenceCheckByIdUseCase.exists(query);
         if (!existed) {
             return ResponseEntity.notFound().build();
         }
@@ -101,8 +103,8 @@ public class CategoryLookupController {
     public ResponseEntity<CategoryResponse> findActiveById(
             @PathVariable
             final UUID id) {
-        final var view = this.activeLookupByIdUseCase.findActiveById(
-                this.mapper.toCategoryId(id));
+        final var query = this.mapper.toActiveLookupByIdQuery(id);
+        final var view = this.activeLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -112,8 +114,8 @@ public class CategoryLookupController {
     public ResponseEntity<CategoryResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
-        final var view = this.softDeletedLookupByIdUseCase.findSoftDeletedById(
-                this.mapper.toCategoryId(id));
+        final var query = this.mapper.toSoftDeletedLookupByIdQuery(id);
+        final var view = this.softDeletedLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
