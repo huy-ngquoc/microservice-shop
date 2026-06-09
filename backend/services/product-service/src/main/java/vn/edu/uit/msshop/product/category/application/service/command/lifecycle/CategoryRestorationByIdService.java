@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
+import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.CategoryRestorationByIdCommand;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryRestorationByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
@@ -14,6 +14,8 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadS
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryRestoredEvent;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -31,13 +33,15 @@ public class CategoryRestorationByIdService
             cacheNames = CacheNames.CATEGORY_LIST,
             allEntries = true)
     public void restore(
-            final CategoryLifecycleCommands.Restore cmd) {
-        final var categoryId = cmd.id();
+            final CategoryRestorationByIdCommand cmd) {
+        final var categoryId = new CategoryId(cmd.categoryId());
+        final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
+
         final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         CategoryVersionGuard.ensureMatch(
-                cmd.expectedVersion(),
+                expectedVersion,
                 category.getVersion());
 
         final var next = category.restored();

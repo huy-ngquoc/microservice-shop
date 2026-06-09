@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
+import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.CategoryInfoUpdateByIdCommand;
 import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
@@ -20,7 +20,9 @@ import vn.edu.uit.msshop.product.category.application.port.out.persistence.Updat
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 import vn.edu.uit.msshop.shared.application.dto.Change;
 
 @Service
@@ -49,18 +51,21 @@ public class CategoryInfoUpdateByIdService
                             condition = "#cmd.name().getSet() != null")
             })
     public CategoryView updateInfo(
-            final CategoryLifecycleCommands.UpdateInfo cmd) {
-        final var categoryId = cmd.id();
+            final CategoryInfoUpdateByIdCommand cmd) {
+        final var categoryId = new CategoryId(cmd.categoryId());
+        final var nameChange = cmd.categoryNameChange().map(CategoryName::new);
+        final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
+
         final var category = this.loadPort.loadById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        final var nameSet = cmd.name().getSet();
+        final var nameSet = nameChange.getSet();
         if (nameSet == null) {
             return this.mapper.toView(category);
         }
 
         CategoryVersionGuard.ensureMatch(
-                cmd.expectedVersion(),
+                expectedVersion,
                 category.getVersion());
 
         final var next = CategoryInfoUpdateByIdService.applyChanges(category, nameSet);

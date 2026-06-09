@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.category.application.dto.command.CategoryLifecycleCommands;
+import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.CategoryHardDeletionByIdCommand;
 import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
 import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryHardDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
@@ -15,6 +15,8 @@ import vn.edu.uit.msshop.product.category.application.port.out.validation.CheckC
 import vn.edu.uit.msshop.product.category.application.service.command.image.CategoryImageDeleter;
 import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
 import vn.edu.uit.msshop.product.category.domain.event.CategoryHardDeletedEvent;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
@@ -35,13 +37,15 @@ public class CategoryHardDeletionByIdService
     @Override
     @Transactional
     public void hardDelete(
-            final CategoryLifecycleCommands.HardDelete cmd) {
-        final var categoryId = cmd.id();
+            final CategoryHardDeletionByIdCommand cmd) {
+        final var categoryId = new CategoryId(cmd.categoryId());
+        final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
+
         final var category = this.loadSoftDeletedPort.loadSoftDeletedById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         CategoryVersionGuard.ensureMatch(
-                cmd.expectedVersion(),
+                expectedVersion,
                 category.getVersion());
 
         if (this.checkHasSoftDeletedProductsPort.hasSoftDeletedProduct(categoryId)) {
