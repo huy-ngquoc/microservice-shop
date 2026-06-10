@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductVariantWebMapper;
-import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductResponseWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductVariantAdditionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductVariantBulkAdditionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
@@ -22,10 +22,11 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.variant.Pro
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductVariantController {
+
     private final ProductVariantBulkAdditionUseCase bulkAdditionUseCase;
 
     private final ProductVariantWebMapper variantMapper;
-    private final ProductWebMapper mapper;
+    private final ProductResponseWebMapper responseMapper;
 
     @PostMapping("/{id}/variants")
     public ResponseEntity<ProductResponse> addVariant(
@@ -38,7 +39,7 @@ public class ProductVariantController {
         final var command = this.variantMapper.toBulkAdditionCommand(id, request);
         final var view = this.bulkAdditionUseCase.addAll(command);
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -52,7 +53,7 @@ public class ProductVariantController {
         final var command = this.variantMapper.toBulkAdditionCommand(id, request);
         final var view = this.bulkAdditionUseCase.addAll(command);
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 }
