@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.shared.application.dto;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.jspecify.annotations.Nullable;
 
@@ -37,6 +38,16 @@ public sealed interface Change<T>
 
     default @Nullable Set<T> getSet() {
         return null;
+    }
+
+    default <V> Change<V> map(
+            Function<? super T, ? extends V> fn) {
+        final var set = this.getSet();
+        if (set == null) {
+            return Change.unchanged();
+        }
+
+        return Change.set(fn.apply(set.value()));
     }
 
     ApplyChangeResult<T> applyChange(

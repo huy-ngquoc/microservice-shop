@@ -14,11 +14,11 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantsF
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.CreateVariantsForNewProductUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeAllVariantSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeAllVariantStockCountsPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantCreated;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantCreatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
@@ -37,7 +37,7 @@ public class CreateVariantsForNewProductService
     private final CreateAllVariantsPort createAllVariantsPort;
     private final InitializeAllVariantSoldCountsPort initializeAllSoldCountsPort;
     private final InitializeAllVariantStockCountsPort initializeAllStockCountsPort;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
     private final VariantViewMapper mapper;
 
     @Override
@@ -132,7 +132,8 @@ public class CreateVariantsForNewProductService
     private void publishCreatedEvents(
             final List<Variant> saved) {
         for (final var variant : saved) {
-            this.eventPort.publish(new VariantCreated(variant.getId()));
+            final var event = new VariantCreatedEvent(variant.getId());
+            this.eventPublicationPort.publishEvent(event);
         }
     }
 }

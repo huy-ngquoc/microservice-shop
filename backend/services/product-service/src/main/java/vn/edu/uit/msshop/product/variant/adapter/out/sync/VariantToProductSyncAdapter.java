@@ -14,13 +14,13 @@ import vn.edu.uit.msshop.product.product.application.dto.command.IncreaseProduct
 import vn.edu.uit.msshop.product.product.application.dto.command.IncreaseProductStockCountsForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.RemoveProductVariantForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductVariantForVariantCommand;
-import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantForVariantUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.DecreaseProductSoldCountsForVariantsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.DecreaseProductStockCountsForVariantsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.IncreaseProductSoldCountsForVariantsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.IncreaseProductStockCountsForVariantsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductVariantForVariantUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductVariantForVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductSoldCountDecreaseForVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountDecreaseForVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductSoldCountIncreaseForVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountIncreaseForVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantAdditionForVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantUpdateForVariantUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
@@ -55,13 +55,13 @@ public class VariantToProductSyncAdapter
                     entry -> new ProductId(entry.getKey().value()),
                     Map.Entry::getValue);
 
-    private final AddProductVariantForVariantUseCase addProductVariantForVariantUseCase;
-    private final UpdateProductVariantForVariantUseCase updateProductVariantForVariantUseCase;
-    private final IncreaseProductSoldCountsForVariantsUseCase increaseProductSoldCountsForVariantsUseCase;
-    private final IncreaseProductStockCountsForVariantsUseCase increaseProductStockCountsForVariantsUseCase;
-    private final DecreaseProductSoldCountsForVariantsUseCase decreaseProductSoldCountsForVariantsUseCase;
-    private final DecreaseProductStockCountsForVariantsUseCase decreaseProductStockCountsForVariantsUseCase;
-    private final RemoveProductVariantForVariantUseCase removeProductVariantForVariantUseCase;
+    private final ProductVariantAdditionForVariantUseCase productVariantAdditionForVariantUseCase;
+    private final ProductVariantUpdateForVariantUseCase productVariantUpdateForVariantUseCase;
+    private final ProductSoldCountIncreaseForVariantsUseCase productSoldCountIncreaseForVariantsUseCase;
+    private final ProductStockCountIncreaseForVariantsUseCase productStockCountIncreaseForVariantsUseCase;
+    private final ProductSoldCountDecreaseForVariantsUseCase productSoldCountDecreaseForVariantsUseCase;
+    private final ProductStockCountDecreaseForVariantsUseCase productStockCountDecreaseForVariantsUseCase;
+    private final ProductVariantRemovalForVariantUseCase productVariantRemovalForVariantUseCase;
 
     @Override
     public void addToProduct(
@@ -77,7 +77,7 @@ public class VariantToProductSyncAdapter
                 soldIncrement,
                 stockIncrement);
 
-        this.addProductVariantForVariantUseCase.addVariant(command);
+        this.productVariantAdditionForVariantUseCase.add(command);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class VariantToProductSyncAdapter
                 productId,
                 productVariant);
 
-        this.updateProductVariantForVariantUseCase.updateVariant(command);
+        this.productVariantUpdateForVariantUseCase.update(command);
     }
 
     private static ProductVariant toProductVariant(
@@ -112,7 +112,7 @@ public class VariantToProductSyncAdapter
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
         final var command = new IncreaseProductSoldCountsForVariantsCommand(incrementById);
-        this.increaseProductSoldCountsForVariantsUseCase.execute(command);
+        this.productSoldCountIncreaseForVariantsUseCase.increase(command);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class VariantToProductSyncAdapter
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
         final var command = new IncreaseProductStockCountsForVariantsCommand(incrementById);
-        this.increaseProductStockCountsForVariantsUseCase.execute(command);
+        this.productStockCountIncreaseForVariantsUseCase.increase(command);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class VariantToProductSyncAdapter
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
         final var command = new DecreaseProductSoldCountsForVariantsCommand(decrementById);
-        this.decreaseProductSoldCountsForVariantsUseCase.execute(command);
+        this.productSoldCountDecreaseForVariantsUseCase.decrease(command);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class VariantToProductSyncAdapter
                 .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
 
         final var command = new DecreaseProductStockCountsForVariantsCommand(decrementById);
-        this.decreaseProductStockCountsForVariantsUseCase.execute(command);
+        this.productStockCountDecreaseForVariantsUseCase.decrease(command);
     }
 
     @Override
@@ -160,6 +160,6 @@ public class VariantToProductSyncAdapter
                 soldDecrement,
                 stockDecrement);
 
-        this.removeProductVariantForVariantUseCase.removeVariant(command);
+        this.productVariantRemovalForVariantUseCase.remove(command);
     }
 }

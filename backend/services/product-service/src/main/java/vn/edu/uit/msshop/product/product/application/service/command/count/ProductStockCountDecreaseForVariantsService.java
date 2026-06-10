@@ -1,0 +1,35 @@
+package vn.edu.uit.msshop.product.product.application.service.command.count;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.product.application.dto.command.DecreaseProductStockCountsForVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountDecreaseForVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecreationPort;
+
+@Service
+@RequiredArgsConstructor
+public class ProductStockCountDecreaseForVariantsService
+        implements ProductStockCountDecreaseForVariantsUseCase {
+    private final ProductStockCountBulkDecreationPort bulkDecreationPort;
+
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.PRODUCT_LIST,
+                            allEntries = true)
+            })
+    public void decrease(
+            DecreaseProductStockCountsForVariantsCommand command) {
+        this.bulkDecreationPort.decreaseAll(command.decrementById());
+    }
+}

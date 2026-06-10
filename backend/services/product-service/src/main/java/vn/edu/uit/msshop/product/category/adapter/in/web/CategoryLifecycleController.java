@@ -19,18 +19,22 @@ import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryWebMappe
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.CreateCategoryRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryInfoRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryResponse;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryLifecycleUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryCreationUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryHardDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryInfoUpdateByIdUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryRestorationByIdUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategorySoftDeletionByIdUseCase;
 
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
 public class CategoryLifecycleController {
 
-    private final CategoryLifecycleUseCases.Create createUseCase;
-    private final CategoryLifecycleUseCases.UpdateInfo updateInfoUseCase;
-    private final CategoryLifecycleUseCases.SoftDelete softDeleteUseCase;
-    private final CategoryLifecycleUseCases.Restore restoreUseCase;
-    private final CategoryLifecycleUseCases.HardDelete hardDeleteUseCase;
+    private final CategoryCreationUseCase creationUseCase;
+    private final CategoryInfoUpdateByIdUseCase infoUpdateUseCase;
+    private final CategorySoftDeletionByIdUseCase softDeletionByIdUseCase;
+    private final CategoryRestorationByIdUseCase restorationByIdUseCase;
+    private final CategoryHardDeletionByIdUseCase hardDeletionByIdUseCase;
 
     private final CategoryWebMapper mapper;
 
@@ -40,7 +44,7 @@ public class CategoryLifecycleController {
             @Valid
             final CreateCategoryRequest request) {
         final var command = this.mapper.toCreateCommand(request);
-        final var view = this.createUseCase.create(command);
+        final var view = this.creationUseCase.create(command);
 
         final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
@@ -54,15 +58,15 @@ public class CategoryLifecycleController {
     }
 
     @PatchMapping("/{id}/info")
-    public ResponseEntity<CategoryResponse> updateInfo(
+    public ResponseEntity<CategoryResponse> updateInfoById(
             @PathVariable
             final UUID id,
 
             @RequestBody
             @Valid
             final UpdateCategoryInfoRequest request) {
-        final var command = this.mapper.toUpdateInfoCommand(id, request);
-        final var view = this.updateInfoUseCase.updateInfo(command);
+        final var command = this.mapper.toInfoUpdateByIdCommand(id, request);
+        final var view = this.infoUpdateUseCase.updateInfo(command);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -75,21 +79,21 @@ public class CategoryLifecycleController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toSoftDeleteCommand(id, version);
-        this.softDeleteUseCase.softDelete(command);
+        final var command = this.mapper.toSoftDeletionCommand(id, version);
+        this.softDeletionByIdUseCase.softDelete(command);
 
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/restore")
-    public ResponseEntity<Void> restore(
+    public ResponseEntity<Void> restoreById(
             @PathVariable
             final UUID id,
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toRestoreCommand(id, version);
-        this.restoreUseCase.restore(command);
+        final var command = this.mapper.toRestorationCommand(id, version);
+        this.restorationByIdUseCase.restore(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -101,8 +105,8 @@ public class CategoryLifecycleController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toHardDeleteCommand(id, version);
-        this.hardDeleteUseCase.hardDelete(command);
+        final var command = this.mapper.toHardDeletionCommand(id, version);
+        this.hardDeletionByIdUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();
     }

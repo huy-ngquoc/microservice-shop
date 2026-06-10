@@ -1,0 +1,68 @@
+package vn.edu.uit.msshop.product.brand.application.service.command.lifecycle;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandSoftDeletionByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.exception.BrandNotFoundException;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.lifecycle.BrandSoftDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.out.event.BrandEventPublicationPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandUpdatePort;
+import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.lookup.BrandActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.validation.BrandProductActiveExistenceCheckByBrandIdPort;
+import vn.edu.uit.msshop.product.brand.application.service.command.support.BrandVersionGuard;
+import vn.edu.uit.msshop.product.brand.domain.event.BrandSoftDeletedEvent;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
+import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+
+@Service
+@RequiredArgsConstructor
+public class BrandSoftDeletionByIdService
+        implements BrandSoftDeletionByIdUseCase {
+
+    private final BrandActiveLookupByIdPort loadPort;
+    private final BrandUpdatePort updatePort;
+
+    private final BrandProductActiveExistenceCheckByBrandIdPort productActiveExistenceCheckByBrandIdPort;
+
+    private final BrandEventPublicationPort eventPublicationPort;
+
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.BRAND,
+                            key = "#cmd.id().value()"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.BRAND_LIST,
+                            allEntries = true)
+            })
+    public void softDeleteById(
+            final BrandSoftDeletionByIdCommand cmd) {
+        final var brandId = new BrandId(cmd.brandId());
+        final var expectedVersion = new BrandVersion(cmd.brandVersion());
+
+        final var brand = this.loadPort.loadById(brandId)
+                .orElseThrow(() -> new BrandNotFoundException(brandId));
+
+        BrandVersionGuard.ensureMatch(
+                expectedVersion,
+                brand.getVersion());
+
+        if (this.productActiveExistenceCheckByBrandIdPort.existsActiveByBrandId(brandId)) {
+            throw new BusinessRuleException("Cannot delete brand with existing products");
+        }
+
+        final var next = brand.softDeleted();
+        final var saved = this.updatePort.update(next);
+
+        final var event = new BrandSoftDeletedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
+    }
+}

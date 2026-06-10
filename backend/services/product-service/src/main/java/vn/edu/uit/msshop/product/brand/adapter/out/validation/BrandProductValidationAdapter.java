@@ -3,34 +3,34 @@ package vn.edu.uit.msshop.product.brand.adapter.out.validation;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasProductsPort;
-import vn.edu.uit.msshop.product.brand.application.port.out.validation.CheckBrandHasSoftDeletedProductsPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.validation.BrandProductActiveExistenceCheckByBrandIdPort;
+import vn.edu.uit.msshop.product.brand.application.port.out.validation.BrandProductSoftDeletedExistenceCheckByBrandIdPort;
 import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsByBrandUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckSoftDeletedProductExistsByBrandUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByBrandIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductSoftDeletedExistenceCheckByBrandIdUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 
 @Component
 @RequiredArgsConstructor
 public class BrandProductValidationAdapter
         implements
-        CheckBrandHasProductsPort,
-        CheckBrandHasSoftDeletedProductsPort {
-    private final CheckProductExistsByBrandUseCase checkProductExistsByBrandUseCase;
-    private final CheckSoftDeletedProductExistsByBrandUseCase checkSoftDeletedProductExistsByBrandUseCase;
+        BrandProductActiveExistenceCheckByBrandIdPort,
+        BrandProductSoftDeletedExistenceCheckByBrandIdPort {
+    private final ProductActiveExistenceCheckByBrandIdUseCase activeExistenceCheckByBrandIdUseCase;
+    private final ProductSoftDeletedExistenceCheckByBrandIdUseCase softDeletedExistenceCheckByBrandIdUseCase;
 
     @Override
-    public boolean hasProducts(
+    public boolean existsActiveByBrandId(
             final BrandId brandId) {
         final var productBrandId = new ProductBrandId(brandId.value());
-        return this.checkProductExistsByBrandUseCase.existsByBrandId(productBrandId);
+        return this.activeExistenceCheckByBrandIdUseCase.existsByBrandId(productBrandId);
     }
 
     @Override
-    public boolean hasSoftDeletedProduct(
+    public boolean existsSoftDeletedByBrandId(
             final BrandId brandId) {
         final var productBrandId = new ProductBrandId(brandId.value());
-        return this.checkSoftDeletedProductExistsByBrandUseCase
-                .existsSoftDeletedByBrandId(productBrandId);
+        return this.softDeletedExistenceCheckByBrandIdUseCase
+                .existsByBrandId(productBrandId);
     }
 }

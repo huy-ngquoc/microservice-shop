@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.query.FindProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.FindSoftDeletedProductUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.ListProductsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.query.ListSoftDeletedProductsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductActiveListingUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductSoftDeletedListingUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.ProductActiveLookupByIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.ProductSoftDeletedLookupByIdUseCase;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
@@ -24,11 +25,12 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductQueryController {
-    private final ListProductsUseCase listUseCase;
-    private final ListSoftDeletedProductsUseCase listSoftDeletedUseCase;
-    private final FindProductUseCase findUseCase;
-    private final FindSoftDeletedProductUseCase findSoftDeletedUseCase;
-    private final ProductSharedWebMapper sharedMapper;
+    private final ProductActiveListingUseCase activeListingUseCase;
+    private final ProductSoftDeletedListingUseCase softDeletedListingUseCase;
+    private final ProductActiveLookupByIdUseCase activeLookupByIdUseCase;
+    private final ProductSoftDeletedLookupByIdUseCase softDeletedLookupByIdUseCase;
+    private final ProductSharedWebMapper sharedWebMapper;
+    private final ProductWebMapper mapper;
 
     @GetMapping
     public ResponseEntity<PageResponseDto<ProductResponse>> list(
@@ -49,9 +51,9 @@ public class ProductQueryController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = this.listUseCase.list(request);
+        final var views = this.activeListingUseCase.list(request);
 
-        final var response = views.map(this.sharedMapper::toResponse);
+        final var response = views.map(this.sharedWebMapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -74,9 +76,9 @@ public class ProductQueryController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = this.listSoftDeletedUseCase.listSoftDeleted(request);
+        final var views = this.softDeletedListingUseCase.list(request);
 
-        final var response = views.map(this.sharedMapper::toResponse);
+        final var response = views.map(this.sharedWebMapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -84,9 +86,9 @@ public class ProductQueryController {
     public ResponseEntity<ProductResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findUseCase.findById(this.sharedMapper.toProductId(id));
+        final var view = this.activeLookupByIdUseCase.findById(this.mapper.toProductId(id));
 
-        final var response = this.sharedMapper.toResponse(view);
+        final var response = this.sharedWebMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -94,10 +96,10 @@ public class ProductQueryController {
     public ResponseEntity<ProductResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
-        final var view = this.findSoftDeletedUseCase.findSoftDeletedById(
-                this.sharedMapper.toProductId(id));
+        final var view = this.softDeletedLookupByIdUseCase.findById(
+                this.mapper.toProductId(id));
 
-        final var response = this.sharedMapper.toResponse(view);
+        final var response = this.sharedWebMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 }

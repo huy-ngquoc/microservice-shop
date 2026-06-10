@@ -11,16 +11,16 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.DeleteProductImageCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.DeleteImageUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DeleteProductImageService implements DeleteImageUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
+    private final ProductActiveLookupByIdPort loadPort;
+    private final ProductUpdatePort updatePort;
     @Override
     @Transactional
     @Caching(

@@ -7,12 +7,11 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLogoLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoDeletionByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.logo.BrandLogoUpdateByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.query.lookup.BrandLogoActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandLogoView;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandLogoKey;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
-import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryFolders;
+import vn.edu.uit.msshop.shared.adapter.out.cloudinary.CloudinaryPublicIds;
 
 @Component
 @RequiredArgsConstructor
@@ -20,44 +19,34 @@ public class BrandLogoWebMapper {
 
     private final BrandLogoUrlResolver urlResolver;
 
-    public BrandId toBrandId(
-            final UUID id) {
-        return new BrandId(id);
-    }
-
-    public BrandLogoLifecycleCommands.Update toUpdateLogoCommand(
-            final UUID id,
-            final UpdateBrandLogoRequest request) {
-        final var brandId = new BrandId(id);
-        final var logoKey = BrandLogoWebMapper.extractKeyFromTempPublicId(request.newLogoKey());
-        final var version = new BrandVersion(request.version());
-
-        return new BrandLogoLifecycleCommands.Update(brandId, logoKey, version);
-    }
-
-    public BrandLogoLifecycleCommands.Delete toDeleteLogoCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var brandId = new BrandId(id);
-        final var version = new BrandVersion(expectedVersion);
-
-        return new BrandLogoLifecycleCommands.Delete(brandId, version);
-    }
-
-    private static BrandLogoKey extractKeyFromTempPublicId(
-            final String publicId) {
-        final var prefix = CloudinaryFolders.TEMP + "/";
-        if (!publicId.startsWith(prefix)) {
-            throw new IllegalArgumentException("Image key must be in temp folder");
-        }
-
-        return new BrandLogoKey(publicId.substring(prefix.length()));
-    }
-
     public BrandLogoResponse toLogoResponse(
             final BrandLogoView view) {
         return new BrandLogoResponse(view.id(),
                 this.urlResolver.toLogoUrlString(view.logoKey()),
                 view.version());
+    }
+
+    public BrandLogoActiveLookupByIdQuery toActiveLookupByIdQuery(
+            final UUID brandId) {
+        return new BrandLogoActiveLookupByIdQuery(
+                brandId);
+    }
+
+    public BrandLogoUpdateByIdCommand toUpdateByIdCommand(
+            final UUID brandId,
+            final UpdateBrandLogoRequest request) {
+        final var logoKey = CloudinaryPublicIds.extractKeyFromTemp(request.logoId());
+        return new BrandLogoUpdateByIdCommand(
+                brandId,
+                logoKey,
+                request.version());
+    }
+
+    public BrandLogoDeletionByIdCommand toDeletionByIdCommand(
+            final UUID brandId,
+            final long brandVersion) {
+        return new BrandLogoDeletionByIdCommand(
+                brandId,
+                brandVersion);
     }
 }

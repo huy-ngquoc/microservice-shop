@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingCreatedIntegrationEvent;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingDeletedIntegrationEvent;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingUpdatedIntegrationEvent;
-import vn.edu.uit.msshop.product.product.application.port.in.command.ApplyRatingCreatedUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.ApplyRatingDeletedUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.ApplyRatingUpdatedUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingCreatedUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingDeletedUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingUpdatedUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Component

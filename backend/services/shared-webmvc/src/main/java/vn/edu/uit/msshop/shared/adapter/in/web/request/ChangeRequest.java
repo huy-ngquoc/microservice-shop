@@ -17,6 +17,18 @@ public record ChangeRequest<T>(
     public ChangeRequest {
     }
 
+    public static <V> Change<V> toChange(
+            ChangeRequest<V> c) {
+
+        if ((c == null) || (c.value() == null)) {
+            return Change.unchanged();
+        }
+
+        return Change.set(c.value());
+    }
+
+    @Deprecated(
+            forRemoval = true)
     public static <T, V> Change<V> toChange(
             ChangeRequest<T> c,
 

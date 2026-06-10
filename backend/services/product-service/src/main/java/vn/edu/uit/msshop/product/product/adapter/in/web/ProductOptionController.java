@@ -15,23 +15,26 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductOptionWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.RemoveProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductOptionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductOptionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.RemoveProductOptionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.UpdateProductOptionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionAdditionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionRemovalUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionUpdateUseCase;
 
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductOptionController {
-    private final AddProductOptionUseCase addOptionUseCase;
-    private final UpdateProductOptionUseCase updateOptionUseCase;
-    private final RemoveProductOptionUseCase removeOptionUseCase;
-    private final ProductOptionWebMapper mapper;
-    private final ProductSharedWebMapper sharedMapper;
+    private final ProductOptionAdditionUseCase additionUseCase;
+    private final ProductOptionUpdateUseCase updateUseCase;
+    private final ProductOptionRemovalUseCase removalUseCase;
+
+    private final ProductOptionWebMapper optionMapper;
+    private final ProductWebMapper mapper;
+    private final ProductSharedWebMapper sharedWebMapper;
 
     @PostMapping("/{id}/options")
     public ResponseEntity<ProductResponse> addOption(
@@ -41,9 +44,9 @@ public class ProductOptionController {
             @RequestBody
             @Valid
             final AddProductOptionRequest request) {
-        final var command = this.mapper.toAddOptionCommand(id, request);
-        final var view = this.addOptionUseCase.addOption(command);
-        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
+        final var command = this.optionMapper.toAddOptionCommand(id, request);
+        final var view = this.additionUseCase.add(command);
+        return ResponseEntity.ok(this.sharedWebMapper.toResponse(view));
     }
 
     @PatchMapping("/{id}/options/{index}")
@@ -57,9 +60,9 @@ public class ProductOptionController {
             @RequestBody
             @Valid
             final UpdateProductOptionRequest request) {
-        final var command = this.mapper.toUpdateOptionCommand(id, index, request);
-        final var view = this.updateOptionUseCase.updateOption(command);
-        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
+        final var command = this.optionMapper.toUpdateOptionCommand(id, index, request);
+        final var view = this.updateUseCase.update(command);
+        return ResponseEntity.ok(this.sharedWebMapper.toResponse(view));
     }
 
     @DeleteMapping("/{id}/options/{index}")
@@ -73,8 +76,8 @@ public class ProductOptionController {
             @RequestBody
             @Valid
             final RemoveProductOptionRequest request) {
-        final var command = this.mapper.toRemoveOptionCommand(id, index, request);
-        final var view = this.removeOptionUseCase.removeOption(command);
-        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
+        final var command = this.optionMapper.toRemoveOptionCommand(id, index, request);
+        final var view = this.removalUseCase.remove(command);
+        return ResponseEntity.ok(this.sharedWebMapper.toResponse(view));
     }
 }

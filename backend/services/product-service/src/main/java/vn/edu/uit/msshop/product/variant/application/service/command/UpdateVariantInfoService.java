@@ -15,13 +15,13 @@ import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantInfoUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
@@ -35,7 +35,7 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
     private final LoadVariantStockCountPort loadStockCountPort;
     private final UpdateVariantPort updatePort;
     private final UpdateVariantInProductPort updateInProductPort;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
     private final VariantViewMapper mapper;
 
     @Override
@@ -101,7 +101,9 @@ public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
         }
 
         final var saved = this.updatePort.update(next);
-        this.eventPort.publish(new VariantUpdated(saved.getId()));
+
+        final var event = new VariantInfoUpdatedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
 
         this.updateInProductPort.updateInProduct(saved);
 

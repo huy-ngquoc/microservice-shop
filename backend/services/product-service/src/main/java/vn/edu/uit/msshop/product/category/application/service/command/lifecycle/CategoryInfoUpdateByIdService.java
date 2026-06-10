@@ -1,0 +1,97 @@
+package vn.edu.uit.msshop.product.category.application.service.command.lifecycle;
+
+import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.category.application.dto.command.lifecycle.CategoryInfoUpdateByIdCommand;
+import vn.edu.uit.msshop.product.category.application.dto.view.CategoryView;
+import vn.edu.uit.msshop.product.category.application.exception.CategoryNotFoundException;
+import vn.edu.uit.msshop.product.category.application.mapper.CategoryViewMapper;
+import vn.edu.uit.msshop.product.category.application.port.in.command.lifecycle.CategoryInfoUpdateByIdUseCase;
+import vn.edu.uit.msshop.product.category.application.port.out.event.CategoryEventPublicationPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryUpdatePort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategoryActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.category.application.service.command.support.CategoryVersionGuard;
+import vn.edu.uit.msshop.product.category.domain.event.CategoryInfoUpdatedEvent;
+import vn.edu.uit.msshop.product.category.domain.model.Category;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
+import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersion;
+import vn.edu.uit.msshop.shared.application.dto.Change;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class CategoryInfoUpdateByIdService
+        implements CategoryInfoUpdateByIdUseCase {
+
+    private final CategoryActiveLookupByIdPort activeLookupByIdPort;
+    private final CategoryUpdatePort updatePort;
+
+    private final CategoryEventPublicationPort eventPublicationPort;
+    private final CategoryViewMapper mapper;
+
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.CATEGORY,
+                            key = "#cmd.id().value()",
+                            condition = "#cmd.name().getSet() != null"),
+                    @CacheEvict(
+                            cacheNames = CacheNames.CATEGORY_LIST,
+                            allEntries = true,
+                            condition = "#cmd.name().getSet() != null")
+            })
+    public CategoryView updateInfo(
+            final CategoryInfoUpdateByIdCommand cmd) {
+        final var categoryId = new CategoryId(cmd.categoryId());
+        final var nameChange = cmd.categoryNameChange().map(CategoryName::new);
+        final var expectedVersion = new CategoryVersion(cmd.categoryVersion());
+
+        final var category = this.activeLookupByIdPort.loadActiveById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+
+        final var nameSet = nameChange.getSet();
+        if (nameSet == null) {
+            return this.mapper.toView(category);
+        }
+
+        CategoryVersionGuard.ensureMatch(
+                expectedVersion,
+                category.getVersion());
+
+        final var next = CategoryInfoUpdateByIdService.applyChanges(category, nameSet);
+        if (next == null) {
+            return this.mapper.toView(category);
+        }
+
+        final var saved = this.updatePort.update(next);
+
+        final var event = new CategoryInfoUpdatedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
+
+        return this.mapper.toView(saved);
+    }
+
+    private static @Nullable Category applyChanges(
+            final Category current,
+            final Change.Set<CategoryName> nameSet) {
+        final var applyNameResult = Change.Set.applyChange(
+                nameSet,
+                current.getName());
+        if (!applyNameResult.changed()) {
+            return null;
+        }
+
+        final var newName = applyNameResult.newValue();
+        return current.rename(newName);
+    }
+}

@@ -4,52 +4,25 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantCreated;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdated;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantPurged;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantRestored;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeleted;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantUpdated;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantCreatedEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdatedEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantHardDeletedEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 
 @Component
 @RequiredArgsConstructor
-public class VariantEventPublisherAdapter implements PublishVariantEventPort {
+public class VariantEventPublisherAdapter
+        implements VariantEventPublicationPort {
     private final ApplicationEventPublisher publisher;
 
     @Override
-    public void publish(
-            final VariantCreated event) {
+    public void publishEvent(
+            final VariantEvent event) {
         this.publisher.publishEvent(event);
     }
 
-    @Override
-    public void publish(
-            final VariantUpdated event) {
-        this.publisher.publishEvent(event);
-    }
-
-    @Override
-    public void publish(
-            final VariantImageUpdated event) {
-        this.publisher.publishEvent(event);
-    }
-
-    @Override
-    public void publish(
-            final VariantSoftDeleted event) {
-        this.publisher.publishEvent(event);
-    }
-
-    @Override
-    public void publish(
-            final VariantRestored event) {
-        this.publisher.publishEvent(event);
-    }
-
-    @Override
-    public void publish(
-            final VariantPurged event) {
-        this.publisher.publishEvent(event);
-    }
 }

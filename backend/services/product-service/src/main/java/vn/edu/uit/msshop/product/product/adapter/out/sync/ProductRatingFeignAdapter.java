@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.sync.response.RatingInfoResponse;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.FetchProductRatingsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductRatingBulkFetchPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingAmount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingTotal;
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.product.product.domain.sync.ProductRatingSnapshot;
 @Component
 @RequiredArgsConstructor
 public class ProductRatingFeignAdapter
-        implements FetchProductRatingsPort {
+        implements ProductRatingBulkFetchPort {
     private static final int PAGE_SIZE = 100;
 
     private final ProductRatingFeignClient feignClient;
