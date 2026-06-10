@@ -1,15 +1,12 @@
 package vn.edu.uit.msshop.product.product.application.dto.command.lifecycle;
 
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
+import java.util.List;
+import java.util.UUID;
 
 public record ProductSimpleCreationCommand(
-        ProductName name,
-        ProductCategoryId categoryId,
-        ProductBrandId brandId,
-        ProductVariantPrice price,
-        ProductVariantTargets targets) {
+        String productName,
+        UUID categoryId,
+        UUID brandId,
+        long productPrice,
+        List<String> productTargetList) {
 }

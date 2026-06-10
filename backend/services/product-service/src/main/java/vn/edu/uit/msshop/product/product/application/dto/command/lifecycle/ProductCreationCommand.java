@@ -1,16 +1,14 @@
 package vn.edu.uit.msshop.product.product.application.dto.command.lifecycle;
 
-import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductConfiguration;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
+import java.util.List;
+import java.util.UUID;
+
+import vn.edu.uit.msshop.product.product.application.dto.command.data.NewProductVariantData;
 
 public record ProductCreationCommand(
-        ProductName name,
-
-        ProductCategoryId categoryId,
-
-        ProductBrandId brandId,
-
-        NewProductConfiguration newConfiguration) {
+        String productName,
+        UUID categoryId,
+        UUID brandId,
+        List<String> optionList,
+        List<NewProductVariantData> variantList) {
 }

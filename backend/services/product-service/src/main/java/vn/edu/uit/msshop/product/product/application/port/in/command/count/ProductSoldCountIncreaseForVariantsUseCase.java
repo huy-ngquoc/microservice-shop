@@ -4,5 +4,5 @@ import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductSo
 
 public interface ProductSoldCountIncreaseForVariantsUseCase {
     void increase(
-            final ProductSoldCountIncreaseForVariantsCommand command);
+            final ProductSoldCountIncreaseForVariantsCommand cmd);
 }

@@ -1,19 +1,10 @@
 package vn.edu.uit.msshop.product.product.application.dto.command.variant;
 
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
+import java.util.UUID;
 
 public record ProductVariantRemovalForVariantCommand(
-        ProductId id,
-        ProductVariantId variantId,
-        int soldDecrement,
-        int stockDecrement) {
-    public ProductVariantRemovalForVariantCommand {
-        if (soldDecrement < 0) {
-            throw new IllegalArgumentException("soldDecrement cannot be negative");
-        }
-        if (stockDecrement < 0) {
-            throw new IllegalArgumentException("stockDecrement cannot be negative");
-        }
-    }
+        UUID productId,
+        UUID variantId,
+        int productSoldCountDecrement,
+        int productStockCountDecrement) {
 }

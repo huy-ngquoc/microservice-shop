@@ -19,17 +19,18 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 @Service
 @RequiredArgsConstructor
 public class ProductOptionUpdateService
-        implements
-        ProductOptionUpdateUseCase {
+        implements ProductOptionUpdateUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;
     private final ProductStockCountLookupByIdPort stockCountLookupByIdPort;
@@ -45,23 +46,23 @@ public class ProductOptionUpdateService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT,
-                            key = "#command.id().value()"),
+                            key = "#cmd.productId()"),
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
     public ProductView update(
-            ProductOptionUpdateCommand command) {
-        final var productId = command.id();
+            final ProductOptionUpdateCommand cmd) {
+        final var productId = new ProductId(cmd.productId());
+        final var newOption = new ProductOption(cmd.newOption());
+        final var expectedVersion = new ProductVersion(cmd.productVersion());
+
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var expectedVersion = command.expectedVersion();
-        if (!expectedVersion.equals(product.getVersion())) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    product.getVersion().value());
-        }
+        ProductVersionGuard.ensureMatch(
+                expectedVersion,
+                product.getVersion());
 
         final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(productId);
         final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(productId);
@@ -69,8 +70,8 @@ public class ProductOptionUpdateService
 
         final var next = ProductOptionUpdateService.applyChanges(
                 product,
-                command.optionIndex(),
-                command.newOption());
+                cmd.optionIndex(),
+                newOption);
         if (next == null) {
             return this.mapper.toView(
                     product,
@@ -80,7 +81,9 @@ public class ProductOptionUpdateService
         }
 
         final var saved = this.updatePort.update(next);
-        this.eventPublicationPort.publishEvent(new ProductInfoUpdatedEvent(saved.getId()));
+
+        final var event = new ProductInfoUpdatedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
 
         return this.mapper.toView(
                 saved,

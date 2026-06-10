@@ -10,56 +10,38 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductOpt
 import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionAdditionCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionRemovalCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionUpdateCommand;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 @Component
 public class ProductOptionWebMapper {
     public ProductOptionAdditionCommand toAdditionCommand(
-            final UUID id,
+            final UUID productId,
             final AddProductOptionRequest request) {
-        final var productId = new ProductId(id);
-        final var option = new ProductOption(request.option());
-        final var defaultTrait = new ProductVariantTrait(request.defaultTrait());
-        final var version = new ProductVersion(request.expectedVersion());
-
         return new ProductOptionAdditionCommand(
                 productId,
-                option,
-                defaultTrait,
-                version);
+                request.option(),
+                request.defaultTrait(),
+                request.version());
     }
 
     public ProductOptionUpdateCommand toUpdateCommand(
-            final UUID id,
-            final int index,
+            final UUID productId,
+            final int optionIndex,
             final UpdateProductOptionRequest request) {
-        final var productId = new ProductId(id);
-        final var option = new ProductOption(request.option());
-        final var version = new ProductVersion(request.expectedVersion());
-
         return new ProductOptionUpdateCommand(
                 productId,
-                index,
-                option,
-                version);
+                optionIndex,
+                request.option(),
+                request.version());
     }
 
     public ProductOptionRemovalCommand toRemovalCommand(
-            final UUID id,
-            final int index,
+            final UUID productId,
+            final int optionIndex,
             final RemoveProductOptionRequest request) {
-        final var productId = new ProductId(id);
-        final var defaultPrice = ProductPrice.ofNullable(request.defaultPrice());
-        final var version = new ProductVersion(request.expectedVersion());
-
         return new ProductOptionRemovalCommand(
                 productId,
-                index,
-                defaultPrice,
-                version);
+                optionIndex,
+                request.defaultPrice(),
+                request.version());
     }
 }

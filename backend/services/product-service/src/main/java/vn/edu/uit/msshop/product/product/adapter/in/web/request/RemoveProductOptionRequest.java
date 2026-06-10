@@ -9,5 +9,5 @@ public record RemoveProductOptionRequest(
         Long defaultPrice,
 
         @NotNull
-        Long expectedVersion) {
+        Long version) {
 }

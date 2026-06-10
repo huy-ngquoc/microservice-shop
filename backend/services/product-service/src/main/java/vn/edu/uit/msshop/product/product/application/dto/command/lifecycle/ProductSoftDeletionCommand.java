@@ -1,9 +1,8 @@
 package vn.edu.uit.msshop.product.product.application.dto.command.lifecycle;
 
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
+import java.util.UUID;
 
 public record ProductSoftDeletionCommand(
-        ProductId id,
-        ProductVersion expectedVersion) {
+        UUID productId,
+        long productVersion) {
 }
