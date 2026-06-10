@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 
 @Component
 @RequiredArgsConstructor
-public class ProductExistencePersistenceAdapter
+class ProductExistencePersistenceAdapter
         implements
         ProductExistenceCheckByIdPort,
         ProductExistenceCheckByBrandIdPort,

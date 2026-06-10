@@ -15,7 +15,7 @@ import lombok.experimental.FieldNameConstants;
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
 @FieldNameConstants
-public class ProductStockCountDocument {
+final class ProductStockCountDocument {
     @Id
     @EqualsAndHashCode.Include
     private final UUID id;

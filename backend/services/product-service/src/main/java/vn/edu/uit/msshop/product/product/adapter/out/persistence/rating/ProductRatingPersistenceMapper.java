@@ -8,7 +8,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingA
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingTotal;
 
 @Component
-public class ProductRatingPersistenceMapper {
+class ProductRatingPersistenceMapper {
     public ProductRating toDomain(
             final ProductRatingDocument entity) {
         final var id = new ProductId(entity.getId());
