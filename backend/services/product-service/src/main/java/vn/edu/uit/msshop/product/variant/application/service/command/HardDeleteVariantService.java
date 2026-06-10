@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class HardDeleteVariantService implements HardDeleteVariantUseCase {
+class HardDeleteVariantService implements HardDeleteVariantUseCase {
     private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
     private final DeleteVariantPort deletePort;
     private final DeleteVariantSoldCountPort deleteSoldCountPort;

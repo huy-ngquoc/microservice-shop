@@ -34,7 +34,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 
 @Service
 @RequiredArgsConstructor
-public class ProductCreationService
+class ProductCreationService
         implements ProductCreationUseCase {
     private final ProductCreationPort creationPort;
     private final ProductCategoryExistenceCheckByIdPort categoryExistenceCheckByIdPort;

@@ -20,7 +20,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class HardDeleteVariantsForProductService implements HardDeleteVariantsForProductUseCase {
+class HardDeleteVariantsForProductService implements HardDeleteVariantsForProductUseCase {
     private final LoadVariantsForProductPort loadForProductPort;
     private final DeleteVariantsForProductPort deleteForProductPort;
     private final DeleteAllVariantSoldCountsPort deleteAllSoldCountsPort;

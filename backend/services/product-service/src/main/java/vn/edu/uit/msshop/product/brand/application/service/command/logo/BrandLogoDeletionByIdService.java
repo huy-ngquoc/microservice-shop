@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BrandLogoDeletionByIdService
+class BrandLogoDeletionByIdService
         implements BrandLogoDeletionByIdUseCase {
 
     private final BrandActiveLookupByIdPort loadPort;

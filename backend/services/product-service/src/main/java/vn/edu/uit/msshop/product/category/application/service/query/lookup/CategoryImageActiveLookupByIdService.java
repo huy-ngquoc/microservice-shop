@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryImageActiveLookupByIdService
+class CategoryImageActiveLookupByIdService
         implements CategoryImageActiveLookupByIdUseCase {
 
     private final CategoryActiveLookupByIdPort loadPort;

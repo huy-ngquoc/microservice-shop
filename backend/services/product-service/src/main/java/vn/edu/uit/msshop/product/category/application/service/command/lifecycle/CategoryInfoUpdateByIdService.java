@@ -28,7 +28,7 @@ import vn.edu.uit.msshop.shared.application.dto.Change;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CategoryInfoUpdateByIdService
+class CategoryInfoUpdateByIdService
         implements CategoryInfoUpdateByIdUseCase {
 
     private final CategoryActiveLookupByIdPort activeLookupByIdPort;

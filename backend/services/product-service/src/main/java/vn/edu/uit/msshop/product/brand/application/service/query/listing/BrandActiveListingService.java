@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class BrandActiveListingService
+class BrandActiveListingService
         implements BrandActiveListingUseCase {
 
     private final BrandActiveListingPort listPort;

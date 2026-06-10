@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductRating
 
 @Service
 @RequiredArgsConstructor
-public class ProductRatingBulkReconciliationService
+class ProductRatingBulkReconciliationService
         implements ProductRatingBulkReconciliationUseCase {
     private final ProductRatingBulkFetchPort ratingBulkFetchPort;
     private final ProductRatingBulkUpdateUseCase ratingBulkUpdateUseCase;

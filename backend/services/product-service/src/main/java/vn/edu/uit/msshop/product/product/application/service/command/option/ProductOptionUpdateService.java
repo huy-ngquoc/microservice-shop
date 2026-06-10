@@ -29,7 +29,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 
 @Service
 @RequiredArgsConstructor
-public class ProductOptionUpdateService
+class ProductOptionUpdateService
         implements ProductOptionUpdateUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;

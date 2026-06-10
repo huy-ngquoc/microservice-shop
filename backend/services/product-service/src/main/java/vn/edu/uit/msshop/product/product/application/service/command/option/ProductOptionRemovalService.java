@@ -43,7 +43,7 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
 @RequiredArgsConstructor
-public class ProductOptionRemovalService
+class ProductOptionRemovalService
         implements ProductOptionRemovalUseCase {
     private final ProductActiveLookupByIdPort activeLookupById;
     private final ProductUpdatePort updatePort;

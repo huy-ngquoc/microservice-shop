@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
 @RequiredArgsConstructor
-public class ProductSoldCountIncreaseForVariantsService
+class ProductSoldCountIncreaseForVariantsService
         implements ProductSoldCountIncreaseForVariantsUseCase {
     private final ProductSoldCountBulkIncreationPort bulkIncreationPort;
 

@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-public class FindVariantImageService implements FindVariantImageUseCase {
+class FindVariantImageService implements FindVariantImageUseCase {
     private final LoadVariantPort loadPort;
     private final VariantViewMapper mapper;
 

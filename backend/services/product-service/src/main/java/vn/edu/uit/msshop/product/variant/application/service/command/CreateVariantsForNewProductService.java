@@ -32,7 +32,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 
 @Service
 @RequiredArgsConstructor
-public class CreateVariantsForNewProductService
+class CreateVariantsForNewProductService
         implements CreateVariantsForNewProductUseCase {
     private final CreateAllVariantsPort createAllVariantsPort;
     private final InitializeAllVariantSoldCountsPort initializeAllSoldCountsPort;
