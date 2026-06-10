@@ -20,11 +20,11 @@ public class ProductInternalController {
     private final ProductWebMapper mapper;
 
     @GetMapping("/{id}/exists")
-    public ResponseEntity<Void> existsById(
+    public ResponseEntity<Void> existsActiveById(
             @PathVariable
             final UUID id) {
-        final var existed = this.activeExistenceCheckByIdUseCase.existsById(
-                this.mapper.toProductId(id));
+        final var query = this.mapper.toActiveExistenceCheckByIdQuery(id);
+        final var existed = this.activeExistenceCheckByIdUseCase.exists(query);
         if (!existed) {
             return ResponseEntity.notFound().build();
         }

@@ -49,7 +49,7 @@ public class ProductController {
         final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
                 .methodOn(ProductQueryController.class)
-                .findById(response.id());
+                .findActiveById(response.id());
         final var location = WebMvcLinkBuilder
                 .linkTo(method)
                 .toUri();
@@ -68,7 +68,7 @@ public class ProductController {
         final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
                 .methodOn(ProductQueryController.class)
-                .findById(response.id());
+                .findActiveById(response.id());
         final var location = WebMvcLinkBuilder
                 .linkTo(method)
                 .toUri();

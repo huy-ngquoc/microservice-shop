@@ -5,6 +5,7 @@ import java.util.Locale;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.product.application.dto.query.lookup.ProductActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.ProductActiveLookupByIdUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
@@ -13,15 +14,18 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 
 @Component
 @RequiredArgsConstructor
-public class VariantRestorableValidationAdapter implements CheckVariantRestorablePort {
-    private final ProductActiveLookupByIdUseCase findProductUseCase;
+public class VariantRestorableValidationAdapter
+        implements CheckVariantRestorablePort {
+    private final ProductActiveLookupByIdUseCase productActiveLookupByIdUseCase;
 
     // TODO: too long, split into smaller function
     @Override
     public void validateRestorable(
             final Variant variant) {
         final var productId = new ProductId(variant.getProductId().value());
-        final var product = this.findProductUseCase.findById(productId);
+
+        final var productActiveLookupByIdQuery = new ProductActiveLookupByIdQuery(productId.value());
+        final var product = this.productActiveLookupByIdUseCase.find(productActiveLookupByIdQuery);
 
         final var optionsCount = product.options().size();
         final var traitsCount = variant.getTraits().values().size();

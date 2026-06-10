@@ -1,8 +1,8 @@
 package vn.edu.uit.msshop.product.product.application.port.in.query.existence;
 
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductSoftDeletedExistenceCheckByCategoryIdQuery;
 
 public interface ProductSoftDeletedExistenceCheckByCategoryIdUseCase {
-    boolean existsByCategoryId(
-            final ProductCategoryId categoryId);
+    boolean exists(
+            final ProductSoftDeletedExistenceCheckByCategoryIdQuery query);
 }
