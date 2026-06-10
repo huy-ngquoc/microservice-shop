@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-public class RestoreVariantsForProductService implements RestoreVariantsForProductUseCase {
+class RestoreVariantsForProductService implements RestoreVariantsForProductUseCase {
     private final LoadAllSoftDeletedVariantsPort loadAllSoftDeletedPort;
     private final UpdateAllVariantsPort updateAllPort;
     private final VariantEventPublicationPort eventPublicationPort;

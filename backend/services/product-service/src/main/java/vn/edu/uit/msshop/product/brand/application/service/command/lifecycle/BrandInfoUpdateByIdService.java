@@ -26,7 +26,7 @@ import vn.edu.uit.msshop.shared.application.dto.Change;
 
 @Service
 @RequiredArgsConstructor
-public class BrandInfoUpdateByIdService
+class BrandInfoUpdateByIdService
         implements BrandInfoUpdateByIdUseCase {
 
     private final BrandActiveLookupByIdPort loadPort;

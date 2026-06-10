@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
 @RequiredArgsConstructor
-public class ProductActiveLookupService
+class ProductActiveLookupService
         implements ProductActiveLookupByIdUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;

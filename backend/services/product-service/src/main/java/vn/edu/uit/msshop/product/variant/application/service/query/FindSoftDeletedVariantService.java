@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-public class FindSoftDeletedVariantService implements FindSoftDeletedVariantUseCase {
+class FindSoftDeletedVariantService implements FindSoftDeletedVariantUseCase {
     private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
     private final LoadVariantSoldCountPort loadSoldCountPort;
     private final LoadVariantStockCountPort loadStockCountPort;

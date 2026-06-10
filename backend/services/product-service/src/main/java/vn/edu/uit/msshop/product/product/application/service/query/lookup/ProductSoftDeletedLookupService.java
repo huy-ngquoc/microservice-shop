@@ -17,7 +17,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
 @RequiredArgsConstructor
-public class ProductSoftDeletedLookupService
+class ProductSoftDeletedLookupService
         implements ProductSoftDeletedLookupByIdUseCase {
     private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;

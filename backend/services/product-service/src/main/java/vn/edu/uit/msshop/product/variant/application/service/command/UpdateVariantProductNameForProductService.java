@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.Update
 
 @Service
 @RequiredArgsConstructor
-public class UpdateVariantProductNameForProductService
+class UpdateVariantProductNameForProductService
         implements UpdateVariantProductNameForProductUseCase {
     private final UpdateAllVariantsProductNameForProductPort updatePort;
 

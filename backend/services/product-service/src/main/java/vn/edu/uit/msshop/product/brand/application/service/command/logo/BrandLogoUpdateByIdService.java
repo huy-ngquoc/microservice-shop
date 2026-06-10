@@ -29,7 +29,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BrandLogoUpdateByIdService
+class BrandLogoUpdateByIdService
         implements BrandLogoUpdateByIdUseCase {
 
     private final BrandActiveLookupByIdPort loadPort;

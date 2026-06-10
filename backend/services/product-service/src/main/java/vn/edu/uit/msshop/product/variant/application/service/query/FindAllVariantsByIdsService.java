@@ -21,7 +21,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-public class FindAllVariantsByIdsService implements FindAllVariantsByIdsUseCase {
+class FindAllVariantsByIdsService implements FindAllVariantsByIdsUseCase {
     private final LoadAllVariantsPort loadAllPort;
     private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
     private final LoadAllVariantStockCountsPort loadAllStockCountsPort;

@@ -21,7 +21,7 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ApplyRatingDeletedService
+class ApplyRatingDeletedService
         implements ApplyRatingDeletedUseCase {
     private final ProductRatingLookupByIdPort ratingLookupByIdPort;
     private final ProductRatingUpdatePort ratingUpdatePort;

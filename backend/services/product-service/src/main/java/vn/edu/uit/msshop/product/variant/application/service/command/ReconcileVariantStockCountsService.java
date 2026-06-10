@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.sync.FetchInventor
 
 @Service
 @RequiredArgsConstructor
-public class ReconcileVariantStockCountsService implements ReconcileVariantStockCountsUseCase {
+class ReconcileVariantStockCountsService implements ReconcileVariantStockCountsUseCase {
     private final FetchInventoryStockCountsPort fetchPort;
     private final SetAllVariantStockCountsUseCase setAllUseCase;
 

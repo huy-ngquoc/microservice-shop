@@ -25,7 +25,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.Update
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DeleteVariantImageService implements DeleteVariantImageUseCase {
+class DeleteVariantImageService implements DeleteVariantImageUseCase {
     private final LoadVariantPort loadPort;
     private final UpdateVariantPort updatePort;
     private final VariantImageStoragePort imageStoragePort;

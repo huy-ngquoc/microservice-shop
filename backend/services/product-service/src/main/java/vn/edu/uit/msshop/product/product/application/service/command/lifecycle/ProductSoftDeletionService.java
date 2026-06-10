@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 
 @Service
 @RequiredArgsConstructor
-public class ProductSoftDeletionService
+class ProductSoftDeletionService
         implements ProductSoftDeletionUseCase {
     private final ProductActiveLookupByIdPort loadPort;
     private final ProductUpdatePort updatePort;

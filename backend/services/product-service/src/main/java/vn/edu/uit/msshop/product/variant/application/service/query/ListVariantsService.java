@@ -26,7 +26,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-public class ListVariantsService implements ListVariantsUseCase {
+class ListVariantsService implements ListVariantsUseCase {
 
     private static final Collector<
             VariantId,

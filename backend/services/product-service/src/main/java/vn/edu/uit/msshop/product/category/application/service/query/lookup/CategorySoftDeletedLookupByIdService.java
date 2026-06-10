@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Service
 @RequiredArgsConstructor
-public class CategorySoftDeletedLookupByIdService
+class CategorySoftDeletedLookupByIdService
         implements CategorySoftDeletedLookupByIdUseCase {
 
     private final CategorySoftDeletedLookupByIdPort loadSoftDeletedPort;
