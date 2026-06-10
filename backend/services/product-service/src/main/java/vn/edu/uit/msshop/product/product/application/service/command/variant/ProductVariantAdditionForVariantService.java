@@ -15,6 +15,11 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.produc
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 
 @Service
 @RequiredArgsConstructor
@@ -31,31 +36,42 @@ public class ProductVariantAdditionForVariantService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT,
-                            key = "#command.id().value()"),
+                            key = "#cmd.productId()"),
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
     public void add(
-            final ProductVariantAdditionForVariantCommand command) {
-        final var productId = command.id();
+            final ProductVariantAdditionForVariantCommand cmd) {
+        final var productId = new ProductId(cmd.productId());
+
+        final var variantId = new ProductVariantId(cmd.variantId());
+        final var variantPrice = new ProductVariantPrice(cmd.variantPrice());
+        final var variantTraits = ProductVariantTraits.of(cmd.variantTraitList());
+        final var newVariant = new ProductVariant(
+                variantId,
+                variantPrice,
+                variantTraits);
+
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var newConfiguration = product.getConfiguration()
-                .addVariant(command.variant());
+        final var currentConfig = product.getConfiguration();
+        final var newConfig = currentConfig.addVariant(newVariant);
 
         final var next = new Product(
                 product.getId(),
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                newConfiguration,
+                newConfig,
                 product.getImageKeys(),
                 product.getVersion(),
                 product.getDeletionTime());
 
         final var saved = this.updatePort.update(next);
-        this.eventPort.publishEvent(new ProductInfoUpdatedEvent(saved.getId()));
+
+        final var event = new ProductInfoUpdatedEvent(saved.getId());
+        this.eventPort.publishEvent(event);
     }
 }

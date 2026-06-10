@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.adapter.in.web.mapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -7,65 +8,42 @@ import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
+import vn.edu.uit.msshop.product.product.application.dto.command.data.NewProductVariantData;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantBulkAdditionCommand;
-import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
-import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 @Component
 public class ProductVariantWebMapper {
 
     public ProductVariantBulkAdditionCommand toBulkAdditionCommand(
-            final UUID id,
+            final UUID productId,
             final AddProductVariantRequest request) {
-        final var productId = new ProductId(id);
-        final var version = new ProductVersion(request.expectedVersion());
-
-        final var variantPrice = new ProductVariantPrice(request.price());
-        final var variantTraits = ProductVariantTraits.of(request.traits());
-        final var variantTargets = ProductVariantTargets.of(request.targets());
-        final var newVariant = new NewProductVariant(
-                variantPrice,
-                variantTraits,
-                variantTargets);
-        final var newVariants = new NewProductVariants(List.of(newVariant));
+        final var newVariant = new NewProductVariantData(
+                request.price(),
+                request.traits(),
+                request.targets());
+        final var newVariantList = List.of(newVariant);
 
         return new ProductVariantBulkAdditionCommand(
                 productId,
-                newVariants,
-                version);
+                newVariantList,
+                request.version());
     }
 
     public ProductVariantBulkAdditionCommand toBulkAdditionCommand(
-            final UUID id,
+            final UUID productId,
             final AddProductVariantsRequest request) {
-        final var productId = new ProductId(id);
-        final var version = new ProductVersion(request.expectedVersion());
-
-        final var newVariantsList = request.variants().stream()
-                .map(ProductVariantWebMapper::toNewVariant)
-                .toList();
-        final var newVariants = new NewProductVariants(newVariantsList);
+        final var newVariantList = new ArrayList<NewProductVariantData>(request.variants().size());
+        for (final var variantRequest : request.variants()) {
+            final var newVariant = new NewProductVariantData(
+                    variantRequest.price(),
+                    variantRequest.traits(),
+                    variantRequest.targets());
+            newVariantList.add(newVariant);
+        }
 
         return new ProductVariantBulkAdditionCommand(
                 productId,
-                newVariants,
-                version);
-    }
-
-    private static NewProductVariant toNewVariant(
-            final AddProductVariantsRequest.ProductVariantRequest request) {
-        final var variantPrice = new ProductVariantPrice(request.price());
-        final var variantTraits = ProductVariantTraits.of(request.traits());
-        final var variantTargets = ProductVariantTargets.of(request.targets());
-
-        return new NewProductVariant(
-                variantPrice,
-                variantTraits,
-                variantTargets);
+                newVariantList,
+                request.version());
     }
 }

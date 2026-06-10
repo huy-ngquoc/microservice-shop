@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.adapter.in.web.mapper;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProd
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductVariantResponse;
+import vn.edu.uit.msshop.product.product.application.dto.command.data.NewProductVariantData;
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductCreationCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSimpleCreationCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductHardDeletionCommand;
@@ -17,17 +19,7 @@ import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.Produ
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductInfoUpdateCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductVariantView;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
-import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
-import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductConfiguration;
-import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
-import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
 @Component
@@ -40,93 +32,80 @@ public class ProductWebMapper {
 
     public ProductCreationCommand toCreationCommand(
             final CreateProductRequest request) {
-        final var name = new ProductName(request.name());
-        final var categoryId = new ProductCategoryId(request.categoryId());
-        final var brandId = new ProductBrandId(request.brandId());
-
-        final var options = ProductOptions.of(request.options());
-        final var variantsList = request.variants().stream()
-                .map(v -> NewProductVariant.of(
-                        v.price(),
-                        v.traits(),
-                        v.targets()))
-                .toList();
-        final var newVariants = new NewProductVariants(variantsList);
-        final var newConfiguration = new NewProductConfiguration(options, newVariants);
+        final var variantList = new ArrayList<NewProductVariantData>(request.variants().size());
+        for (final var variantRequest : request.variants()) {
+            final var variantData = new NewProductVariantData(
+                    variantRequest.price(),
+                    variantRequest.traits(),
+                    variantRequest.targets());
+            variantList.add(variantData);
+        }
 
         return new ProductCreationCommand(
-                name,
-                categoryId,
-                brandId,
-                newConfiguration);
+                request.name(),
+                request.categoryId(),
+                request.brandId(),
+                request.options(),
+                variantList);
     }
 
     public ProductSimpleCreationCommand toSimpleCreationCommand(
             final CreateSimpleProductRequest request) {
-        final var name = new ProductName(request.name());
-        final var categoryId = new ProductCategoryId(request.categoryId());
-        final var brandId = new ProductBrandId(request.brandId());
-        final var price = new ProductVariantPrice(request.price());
-        final var targets = ProductVariantTargets.of(request.targets());
-
         return new ProductSimpleCreationCommand(
-                name,
-                categoryId,
-                brandId,
-                price,
-                targets);
+                request.name(),
+                request.categoryId(),
+                request.brandId(),
+                request.price(),
+                request.targets());
     }
 
     public ProductRestorationCommand toRestorationCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var productId = new ProductId(id);
-        final var version = new ProductVersion(expectedVersion);
-
-        return new ProductRestorationCommand(productId, version);
+            final UUID productId,
+            final long productVersion) {
+        return new ProductRestorationCommand(
+                productId,
+                productVersion);
     }
 
     public ProductInfoUpdateCommand toInfoUpdateCommand(
-            final UUID id,
+            final UUID productId,
             final UpdateProductInfoRequest request) {
-        final var productId = new ProductId(id);
-        final var version = new ProductVersion(request.expectedVersion());
-
-        final var name = ChangeRequest.toChange(request.name(), ProductName::new);
-        final var categoryId = ChangeRequest.toChange(request.categoryId(), ProductCategoryId::new);
-        final var brandId = ChangeRequest.toChange(request.brandId(), ProductBrandId::new);
+        final var nameChange = ChangeRequest.toChange(request.name());
+        final var categoryIdChange = ChangeRequest.toChange(request.categoryId());
+        final var brandIdChange = ChangeRequest.toChange(request.brandId());
 
         return new ProductInfoUpdateCommand(
                 productId,
-                name,
-                categoryId,
-                brandId,
-                version);
+                nameChange,
+                categoryIdChange,
+                brandIdChange,
+                request.version());
     }
 
     public ProductSoftDeletionCommand toSoftDeletionCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var productId = new ProductId(id);
-        final var version = new ProductVersion(expectedVersion);
+            final UUID productId,
+            final long productVersion) {
 
-        return new ProductSoftDeletionCommand(productId, version);
+        return new ProductSoftDeletionCommand(
+                productId,
+                productVersion);
     }
 
     public ProductHardDeletionCommand toHardDeletionCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var productId = new ProductId(id);
-        final var version = new ProductVersion(expectedVersion);
-
-        return new ProductHardDeletionCommand(productId, version);
+            final UUID productId,
+            final long productVersion) {
+        return new ProductHardDeletionCommand(
+                productId,
+                productVersion);
     }
 
     public ProductResponse toResponse(
             final ProductView view) {
-        final var variantsList = view.variants().stream()
-                .map(this::toVariantResponse)
-                .toList();
+        final var variantsList = new ArrayList<ProductVariantResponse>(view.variants().size());
+        for (final var variantView : view.variants()) {
+            final var variantResponse = this.toVariantResponse(variantView);
+            variantsList.add(variantResponse);
+        }
 
         return new ProductResponse(
                 view.id(),

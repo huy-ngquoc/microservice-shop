@@ -1,13 +1,12 @@
 package vn.edu.uit.msshop.product.product.application.dto.command.rating;
 
-import java.util.Collection;
 import java.util.List;
 
-import vn.edu.uit.msshop.product.product.domain.sync.ProductRatingSnapshot;
+import vn.edu.uit.msshop.product.product.application.dto.command.data.ProductRatingData;
 
 public record ProductRatingBulkUpdateCommand(
-        Collection<ProductRatingSnapshot> ratings) {
+        List<ProductRatingData> ratingList) {
     public ProductRatingBulkUpdateCommand {
-        ratings = List.copyOf(ratings);
+        ratingList = List.copyOf(ratingList);
     }
 }

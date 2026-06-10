@@ -1,12 +1,10 @@
 package vn.edu.uit.msshop.product.product.application.dto.command.option;
 
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
+import java.util.UUID;
 
 public record ProductOptionUpdateCommand(
-        ProductId id,
+        UUID productId,
         int optionIndex,
-        ProductOption newOption,
-        ProductVersion expectedVersion) {
+        String newOption,
+        long productVersion) {
 }

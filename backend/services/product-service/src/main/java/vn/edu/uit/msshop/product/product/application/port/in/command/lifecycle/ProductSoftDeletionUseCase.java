@@ -4,5 +4,5 @@ import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.Produ
 
 public interface ProductSoftDeletionUseCase {
     void softDelete(
-            final ProductSoftDeletionCommand command);
+            final ProductSoftDeletionCommand cmd);
 }

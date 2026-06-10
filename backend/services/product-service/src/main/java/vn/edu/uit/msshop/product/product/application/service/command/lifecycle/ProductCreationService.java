@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.product.application.dto.command.data.NewProductVariantData;
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductCreationCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSimpleCreationCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
@@ -23,10 +24,13 @@ import vn.edu.uit.msshop.product.product.application.port.out.validation.Product
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductCreatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
+import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
+import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 
 @Service
 @RequiredArgsConstructor
@@ -49,8 +53,8 @@ public class ProductCreationService
             cacheNames = CacheNames.PRODUCT_LIST,
             allEntries = true)
     public ProductView createSimple(
-            final ProductSimpleCreationCommand command) {
-        return ProductCreationUseCase.super.createSimple(command);
+            final ProductSimpleCreationCommand cmd) {
+        return ProductCreationUseCase.super.createSimple(cmd);
     }
 
     @Override
@@ -59,26 +63,32 @@ public class ProductCreationService
             cacheNames = CacheNames.PRODUCT_LIST,
             allEntries = true)
     public ProductView create(
-            final ProductCreationCommand command) {
-        this.validateCategoryExists(command.categoryId());
-        this.validateBrandExists(command.brandId());
+            final ProductCreationCommand cmd) {
+        final var categoryId = new ProductCategoryId(cmd.categoryId());
+        final var brandId = new ProductBrandId(cmd.brandId());
+        final var productName = new ProductName(cmd.productName());
+
+        final var options = ProductOptions.of(cmd.optionList());
+        final var newVariants = NewProductVariantData.toNewProductVariants(cmd.variantList());
+        final var newConfiguration = new NewProductConfiguration(options, newVariants);
+
+        this.validateCategoryExists(categoryId);
+        this.validateBrandExists(brandId);
 
         final var productId = ProductId.newId();
-
         final var savedVariants = this.variantBulkCreationPort.create(
                 productId,
-                command.name(),
-                command.newConfiguration().newVariants());
+                productName,
+                newConfiguration.newVariants());
 
         final var configuration = new ProductConfiguration(
-                command.newConfiguration().options(),
+                newConfiguration.options(),
                 savedVariants);
-
         final var newProduct = new NewProduct(
                 productId,
-                command.name(),
-                command.categoryId(),
-                command.brandId(),
+                productName,
+                categoryId,
+                brandId,
                 configuration);
 
         final var savedProduct = this.creationPort.create(newProduct);
@@ -88,7 +98,9 @@ public class ProductCreationService
         final var savedStockCount = this.stockCountInitializationByIdPort.initializeById(savedProductId);
         final var savedRating = this.ratingInitializationPort.initializeById(savedProductId);
 
-        this.eventPublicationPort.publishEvent(new ProductCreatedEvent(savedProductId));
+        final var event = new ProductCreatedEvent(savedProductId);
+        this.eventPublicationPort.publishEvent(event);
+
         return this.mapper.toView(
                 savedProduct,
                 savedSoldCount,

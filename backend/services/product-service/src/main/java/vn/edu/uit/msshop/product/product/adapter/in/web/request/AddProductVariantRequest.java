@@ -32,5 +32,5 @@ public record AddProductVariantRequest(
                         max = ProductVariantTarget.MAX_RAW_LENGTH) String> targets,
 
         @NotNull
-        Long expectedVersion) {
+        Long version) {
 }

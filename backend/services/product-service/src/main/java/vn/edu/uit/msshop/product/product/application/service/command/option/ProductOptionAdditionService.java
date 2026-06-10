@@ -21,17 +21,20 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.produc
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 @Service
 @RequiredArgsConstructor
 public class ProductOptionAdditionService
-        implements
-        ProductOptionAdditionUseCase {
+        implements ProductOptionAdditionUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductUpdatePort updatePort;
     private final ProductVariantTraitBulkUpdatePort variantTraitBulkUpdatePort;
@@ -48,31 +51,32 @@ public class ProductOptionAdditionService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT,
-                            key = "#command.id().value()"),
+                            key = "#cmd.productId()"),
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
     public ProductView add(
-            ProductOptionAdditionCommand command) {
-        final var productId = command.id();
+            final ProductOptionAdditionCommand cmd) {
+        final var productId = new ProductId(cmd.productId());
+        final var newOption = new ProductOption(cmd.newOption());
+        final var defaultTrait = new ProductVariantTrait(cmd.defaultTrait());
+        final var expectedVersion = new ProductVersion(cmd.productVersion());
+
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var expectedVersion = command.expectedVersion();
-        if (!expectedVersion.equals(product.getVersion())) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    product.getVersion().value());
-        }
+        ProductVersionGuard.ensureMatch(
+                expectedVersion,
+                product.getVersion());
 
-        final var newConfig = product.getConfiguration()
-                .addOption(
-                        command.newOption(),
-                        command.defaultTrait());
+        final var currentConfig = product.getConfiguration();
+        final var newConfig = currentConfig.addOption(
+                newOption,
+                defaultTrait);
 
-        final var newTraitsMap = new HashMap<ProductVariantId, ProductVariantTraits>(
-                newConfig.variants().size(), 1);
+        final var newTraitsMap = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(
+                newConfig.variants().size());
         for (final var v : newConfig.variants().values()) {
             newTraitsMap.put(v.id(), v.traits());
         }
@@ -94,7 +98,8 @@ public class ProductOptionAdditionService
         final var stockCount = this.loadStockCountPort.loadByIdOrZero(savedProductId);
         final var rating = this.stockCountLookupByIdPort.loadByIdOrZero(savedProductId);
 
-        this.eventPublicationPort.publishEvent(new ProductInfoUpdatedEvent(savedProductId));
+        final var event = new ProductInfoUpdatedEvent(savedProductId);
+        this.eventPublicationPort.publishEvent(event);
 
         this.variantTraitBulkUpdatePort.updateTraitsByIds(newTraitsMap);
 

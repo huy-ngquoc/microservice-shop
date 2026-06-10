@@ -20,6 +20,8 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.produc
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 
 @Service
 @RequiredArgsConstructor
@@ -38,14 +40,16 @@ public class ProductVariantRemovalForVariantService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT,
-                            key = "#command.id().value()"),
+                            key = "#cmd.productId()"),
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
     public void remove(
-            ProductVariantRemovalForVariantCommand command) {
-        final var productId = command.id();
+            final ProductVariantRemovalForVariantCommand cmd) {
+        final var productId = new ProductId(cmd.productId());
+        final var variantId = new ProductVariantId(cmd.variantId());
+
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
@@ -53,25 +57,27 @@ public class ProductVariantRemovalForVariantService
             throw new ProductMustHaveAtLeastOneVariantException(productId);
         }
 
-        final var newConfiguration = product.getConfiguration()
-                .removeVariant(command.variantId());
+        final var currentConfig = product.getConfiguration();
+        final var newConfig = currentConfig.removeVariant(variantId);
 
         final var next = new Product(
                 product.getId(),
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                newConfiguration,
+                newConfig,
                 product.getImageKeys(),
                 product.getVersion(),
                 product.getDeletionTime());
         final var saved = this.updatePort.update(next);
 
-        if (command.soldDecrement() > 0) {
-            this.soldCountBulkDecreationPort.decreaseAll(Map.of(productId, command.soldDecrement()));
+        if (cmd.productSoldCountDecrement() > 0) {
+            final var decrementByProductId = Map.of(productId, cmd.productSoldCountDecrement());
+            this.soldCountBulkDecreationPort.decreaseAll(decrementByProductId);
         }
-        if (command.stockDecrement() > 0) {
-            this.stockCountBulkDecreationPort.decreaseAll(Map.of(productId, command.stockDecrement()));
+        if (cmd.productStockCountDecrement() > 0) {
+            final var decrementByProductId = Map.of(productId, cmd.productStockCountDecrement());
+            this.stockCountBulkDecreationPort.decreaseAll(decrementByProductId);
         }
 
         this.eventPort.publishEvent(new ProductInfoUpdatedEvent(saved.getId()));

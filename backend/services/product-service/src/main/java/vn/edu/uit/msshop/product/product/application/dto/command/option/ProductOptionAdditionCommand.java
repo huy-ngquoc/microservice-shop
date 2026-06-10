@@ -1,13 +1,10 @@
 package vn.edu.uit.msshop.product.product.application.dto.command.option;
 
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
+import java.util.UUID;
 
 public record ProductOptionAdditionCommand(
-        ProductId id,
-        ProductOption newOption,
-        ProductVariantTrait defaultTrait,
-        ProductVersion expectedVersion) {
+        UUID productId,
+        String newOption,
+        String defaultTrait,
+        long productVersion) {
 }

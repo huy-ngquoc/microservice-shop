@@ -4,5 +4,5 @@ import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.Produ
 
 public interface ProductRestorationUseCase {
     void restore(
-            final ProductRestorationCommand command);
+            final ProductRestorationCommand cmd);
 }
