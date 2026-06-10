@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingUpdatedUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingUpdatedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProcessedRatingEventExistenceCheckByIdPort;
@@ -21,8 +21,9 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-class ApplyRatingUpdatedService
-        implements ApplyRatingUpdatedUseCase {
+class ProductRatingUpdatedEventApplyService
+        implements ProductRatingUpdatedEventApplyUseCase {
+
     private final ProductRatingLookupByIdPort ratingLookupByIdPort;
     private final ProductRatingUpdatePort ratingUpdatePort;
     private final ProcessedRatingEventExistenceCheckByIdPort ratingEventExistenceCheckByIdPort;

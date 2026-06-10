@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
-public interface ApplyRatingUpdatedUseCase {
+public interface ProductRatingUpdatedEventApplyUseCase {
     void execute(
             final UUID eventId,
             final ProductId productId,
