@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductCommandWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductResponseWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductCreationRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductSimpleCreationRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductInfoUpdateRequest;
@@ -30,23 +31,25 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.P
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
+
     private final ProductCreationUseCase creationUseCase;
     private final ProductRestorationUseCase restorationUseCase;
     private final ProductInfoUpdateUseCase infoUpdateUseCase;
     private final ProductSoftDeletionUseCase softDeletionUseCase;
     private final ProductHardDeletionUseCase hardDeletionUseCase;
 
-    private final ProductWebMapper mapper;
+    private final ProductCommandWebMapper commandMapper;
+    private final ProductResponseWebMapper responseMapper;
 
     @PostMapping
     public ResponseEntity<ProductResponse> create(
             @RequestBody
             @Valid
             final ProductCreationRequest request) {
-        final var command = this.mapper.toCreationCommand(request);
+        final var command = this.commandMapper.toCreationCommand(request);
         final var view = this.creationUseCase.create(command);
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         final var method = WebMvcLinkBuilder
                 .methodOn(ProductQueryController.class)
                 .findActiveById(response.id());
@@ -62,10 +65,10 @@ public class ProductController {
             @RequestBody
             @Valid
             final ProductSimpleCreationRequest request) {
-        final var command = this.mapper.toSimpleCreationCommand(request);
+        final var command = this.commandMapper.toSimpleCreationCommand(request);
         final var view = this.creationUseCase.createSimple(command);
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         final var method = WebMvcLinkBuilder
                 .methodOn(ProductQueryController.class)
                 .findActiveById(response.id());
@@ -83,7 +86,7 @@ public class ProductController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toRestorationCommand(id, version);
+        final var command = this.commandMapper.toRestorationCommand(id, version);
         this.restorationUseCase.restore(command);
 
         return ResponseEntity.noContent().build();
@@ -97,10 +100,10 @@ public class ProductController {
             @RequestBody
             @Valid
             final ProductInfoUpdateRequest request) {
-        final var command = this.mapper.toInfoUpdateCommand(id, request);
+        final var command = this.commandMapper.toInfoUpdateCommand(id, request);
         final var view = this.infoUpdateUseCase.updateInfo(command);
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -111,7 +114,7 @@ public class ProductController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toSoftDeletionCommand(id, version);
+        final var command = this.commandMapper.toSoftDeletionCommand(id, version);
         this.softDeletionUseCase.softDelete(command);
 
         return ResponseEntity.noContent().build();
@@ -124,7 +127,7 @@ public class ProductController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toHardDeletionCommand(id, version);
+        final var command = this.commandMapper.toHardDeletionCommand(id, version);
         this.hardDeletionUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();
