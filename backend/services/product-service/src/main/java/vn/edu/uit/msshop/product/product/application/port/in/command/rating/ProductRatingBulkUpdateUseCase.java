@@ -4,5 +4,5 @@ import vn.edu.uit.msshop.product.product.application.dto.command.rating.ProductR
 
 public interface ProductRatingBulkUpdateUseCase {
     void execute(
-            final ProductRatingBulkUpdateCommand command);
+            final ProductRatingBulkUpdateCommand cmd);
 }

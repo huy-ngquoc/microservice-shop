@@ -14,16 +14,17 @@ import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEvent
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeletedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductDeletionTime;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 @Service
 @RequiredArgsConstructor
 public class ProductSoftDeletionService
-        implements
-        ProductSoftDeletionUseCase {
+        implements ProductSoftDeletionUseCase {
     private final ProductActiveLookupByIdPort loadPort;
     private final ProductUpdatePort updatePort;
 
@@ -37,25 +38,22 @@ public class ProductSoftDeletionService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT,
-                            key = "#command.id().value()"),
+                            key = "#cmd.productId()"),
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
     public void softDelete(
-            final ProductSoftDeletionCommand command) {
-        final var productId = command.id();
+            final ProductSoftDeletionCommand cmd) {
+        final var productId = new ProductId(cmd.productId());
+        final var expectedVersion = new ProductVersion(cmd.productVersion());
+
         final var product = this.loadPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        // TODO: duplicate code across services, move it to somewhere to reuse
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = product.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        ProductVersionGuard.ensureMatch(
+                expectedVersion,
+                product.getVersion());
 
         final var next = new Product(
                 product.getId(),
@@ -70,6 +68,7 @@ public class ProductSoftDeletionService
 
         this.variantBulkSoftDeletionForProductPort.deleteByProductId(saved.getId());
 
-        this.eventPublicationPort.publishEvent(new ProductSoftDeletedEvent(saved.getId()));
+        final var event = new ProductSoftDeletedEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
     }
 }

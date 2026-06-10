@@ -13,16 +13,17 @@ import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEvent
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkRestorationByIdsPort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductRestoredEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 @Service
 @RequiredArgsConstructor
 public class ProductRestorationService
-        implements
-        ProductRestorationUseCase {
+        implements ProductRestorationUseCase {
     private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final ProductUpdatePort updatePort;
     private final ProductVariantBulkRestorationByIdsPort variantBulkRestorationForProductPort;
@@ -35,19 +36,17 @@ public class ProductRestorationService
             cacheNames = CacheNames.PRODUCT_LIST,
             allEntries = true)
     public void restore(
-            final ProductRestorationCommand command) {
-        final var productId = command.id();
+            final ProductRestorationCommand cmd) {
+        final var productId = new ProductId(cmd.productId());
+        final var expectedVersion = new ProductVersion(cmd.productVersion());
+
         final var product = this.softDeletedLookupByIdPort
                 .loadSoftDeletedById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = product.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        ProductVersionGuard.ensureMatch(
+                expectedVersion,
+                product.getVersion());
 
         final var next = new Product(
                 product.getId(),

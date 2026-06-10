@@ -5,5 +5,5 @@ import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 
 public interface ProductInfoUpdateUseCase {
     ProductView updateInfo(
-            final ProductInfoUpdateCommand command);
+            final ProductInfoUpdateCommand cmd);
 }

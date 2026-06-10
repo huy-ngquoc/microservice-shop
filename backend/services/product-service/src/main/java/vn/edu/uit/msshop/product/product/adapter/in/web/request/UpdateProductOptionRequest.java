@@ -12,5 +12,5 @@ public record UpdateProductOptionRequest(
         String option,
 
         @NotNull
-        Long expectedVersion) {
+        Long version) {
 }

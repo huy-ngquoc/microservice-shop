@@ -4,5 +4,5 @@ import vn.edu.uit.msshop.product.product.application.dto.command.variant.Product
 
 public interface ProductVariantAdditionForVariantUseCase {
     void add(
-            final ProductVariantAdditionForVariantCommand command);
+            final ProductVariantAdditionForVariantCommand cmd);
 }

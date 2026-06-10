@@ -1,19 +1,17 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.sync;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
+import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.dto.command.ProductVariantUpdateForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductSoldCountDecreaseForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountDecreaseForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductSoldCountIncreaseForVariantsCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountIncreaseForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantAdditionForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantRemovalForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantUpdateForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductSoldCountDecreaseForVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountDecreaseForVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductSoldCountIncreaseForVariantsUseCase;
@@ -21,11 +19,6 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.count.Produ
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantAdditionForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantUpdateForVariantUseCase;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductStockCountsPort;
@@ -48,12 +41,6 @@ public class VariantToProductSyncAdapter
         DecreaseProductSoldCountsPort,
         DecreaseProductStockCountsPort,
         RemoveVariantFromProductPort {
-    private static final Collector<
-            Map.Entry<VariantProductId, Integer>,
-            ?,
-            Map<ProductId, Integer>> BY_PRODUCT_ID_COLLECTOR = Collectors.toUnmodifiableMap(
-                    entry -> new ProductId(entry.getKey().value()),
-                    Map.Entry::getValue);
 
     private final ProductVariantAdditionForVariantUseCase productVariantAdditionForVariantUseCase;
     private final ProductVariantUpdateForVariantUseCase productVariantUpdateForVariantUseCase;
@@ -68,48 +55,33 @@ public class VariantToProductSyncAdapter
             final Variant variant,
             int soldIncrement,
             int stockIncrement) {
-        final var productId = new ProductId(variant.getProductId().value());
-        final var productVariant = VariantToProductSyncAdapter.toProductVariant(variant);
-
         final var command = new ProductVariantAdditionForVariantCommand(
-                productId,
-                productVariant,
+                variant.getProductId().value(),
+                variant.getId().value(),
+                variant.getPrice().value(),
+                variant.getTraits().unwrap(),
                 soldIncrement,
                 stockIncrement);
-
         this.productVariantAdditionForVariantUseCase.add(command);
     }
 
     @Override
     public void updateInProduct(
             final Variant variant) {
-        final var productId = new ProductId(variant.getProductId().value());
-        final var productVariant = VariantToProductSyncAdapter.toProductVariant(variant);
-
         final var command = new ProductVariantUpdateForVariantCommand(
-                productId,
-                productVariant);
+                variant.getProductId().value(),
+                variant.getId().value(),
+                variant.getPrice().value(),
+                variant.getTraits().unwrap());
 
         this.productVariantUpdateForVariantUseCase.update(command);
-    }
-
-    private static ProductVariant toProductVariant(
-            final Variant variant) {
-        final var productVariantId = new ProductVariantId(variant.getId().value());
-        final var productVariantPrice = new ProductVariantPrice(variant.getPrice().value());
-        final var productVariantTraits = ProductVariantTraits.of(variant.getTraits().unwrap());
-
-        return new ProductVariant(
-                productVariantId,
-                productVariantPrice,
-                productVariantTraits);
     }
 
     @Override
     public void increaseAllSoldCounts(
             final Map<VariantProductId, Integer> incrementByProductId) {
-        final var incrementById = incrementByProductId.entrySet().stream()
-                .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
+        final var incrementById = VariantToProductSyncAdapter
+                .toCountByProductId(incrementByProductId);
 
         final var command = new ProductSoldCountIncreaseForVariantsCommand(incrementById);
         this.productSoldCountIncreaseForVariantsUseCase.increase(command);
@@ -118,18 +90,18 @@ public class VariantToProductSyncAdapter
     @Override
     public void increaseAllStockCounts(
             final Map<VariantProductId, Integer> incrementByProductId) {
-        final var incrementById = incrementByProductId.entrySet().stream()
-                .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
+        final var incrementById = VariantToProductSyncAdapter
+                .toCountByProductId(incrementByProductId);
 
-        final var command = new ProductStockCountIncreaseForVariantsCommand(incrementById);
-        this.productStockCountIncreaseForVariantsUseCase.increase(command);
+        final var command = new ProductSoldCountIncreaseForVariantsCommand(incrementById);
+        this.productSoldCountIncreaseForVariantsUseCase.increase(command);
     }
 
     @Override
     public void decreaseAllSoldCounts(
             Map<VariantProductId, Integer> decrementByProductId) {
-        final var decrementById = decrementByProductId.entrySet().stream()
-                .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
+        final var decrementById = VariantToProductSyncAdapter
+                .toCountByProductId(decrementByProductId);
 
         final var command = new ProductSoldCountDecreaseForVariantsCommand(decrementById);
         this.productSoldCountDecreaseForVariantsUseCase.decrease(command);
@@ -138,8 +110,8 @@ public class VariantToProductSyncAdapter
     @Override
     public void decreaseAllStockCounts(
             Map<VariantProductId, Integer> decrementByProductId) {
-        final var decrementById = decrementByProductId.entrySet().stream()
-                .collect(VariantToProductSyncAdapter.BY_PRODUCT_ID_COLLECTOR);
+        final var decrementById = VariantToProductSyncAdapter
+                .toCountByProductId(decrementByProductId);
 
         final var command = new ProductStockCountDecreaseForVariantsCommand(decrementById);
         this.productStockCountDecreaseForVariantsUseCase.decrease(command);
@@ -151,15 +123,26 @@ public class VariantToProductSyncAdapter
             final VariantProductId variantProductId,
             int soldDecrement,
             int stockDecrement) {
-        final var productVariantId = new ProductVariantId(variantId.value());
-        final var productId = new ProductId(variantProductId.value());
-
         final var command = new ProductVariantRemovalForVariantCommand(
-                productId,
-                productVariantId,
+                variantProductId.value(),
+                variantId.value(),
                 soldDecrement,
                 stockDecrement);
 
         this.productVariantRemovalForVariantUseCase.remove(command);
+    }
+
+    private static Map<UUID, Integer> toCountByProductId(
+            final Map<VariantProductId, Integer> countByVariantProductId) {
+        final var countByProductId = HashMap.<UUID, Integer>newHashMap(
+                countByVariantProductId.size());
+        for (final var entry : countByVariantProductId.entrySet()) {
+            final var id = entry.getKey();
+            final var idValue = id.value();
+            final var count = entry.getValue();
+
+            countByProductId.put(idValue, count);
+        }
+        return countByProductId;
     }
 }
