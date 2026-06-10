@@ -18,7 +18,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantStockCountPersistenceMapper;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteAllVariantStockCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeAllVariantStockCountsPort;

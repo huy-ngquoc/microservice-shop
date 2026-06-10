@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantPersistenceMapper;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
