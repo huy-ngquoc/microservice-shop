@@ -1,8 +1,8 @@
 package vn.edu.uit.msshop.product.product.application.port.in.command.variant;
 
-import vn.edu.uit.msshop.product.product.application.dto.command.ProductVariantUpdateForVariantCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantUpdateForVariantCommand;
 
 public interface ProductVariantUpdateForVariantUseCase {
     void update(
-            final ProductVariantUpdateForVariantCommand command);
+            final ProductVariantUpdateForVariantCommand cmd);
 }

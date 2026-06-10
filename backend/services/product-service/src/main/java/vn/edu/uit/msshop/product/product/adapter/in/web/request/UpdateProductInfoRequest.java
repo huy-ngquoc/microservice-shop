@@ -18,5 +18,5 @@ public record UpdateProductInfoRequest(
         ChangeRequest<UUID> brandId,
 
         @NotNull
-        Long expectedVersion) {
+        Long version) {
 }

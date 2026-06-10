@@ -5,5 +5,5 @@ import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 
 public interface ProductOptionAdditionUseCase {
     ProductView add(
-            final ProductOptionAdditionCommand command);
+            final ProductOptionAdditionCommand cmd);
 }

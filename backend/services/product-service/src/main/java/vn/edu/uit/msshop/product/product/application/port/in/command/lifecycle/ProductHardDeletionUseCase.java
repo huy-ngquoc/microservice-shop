@@ -4,5 +4,5 @@ import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.Produ
 
 public interface ProductHardDeletionUseCase {
     void hardDelete(
-            final ProductHardDeletionCommand command);
+            final ProductHardDeletionCommand cmd);
 }

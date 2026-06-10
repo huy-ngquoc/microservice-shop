@@ -1,11 +1,12 @@
 package vn.edu.uit.msshop.product.product.application.dto.command.variant;
 
-import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
+import java.util.List;
+import java.util.UUID;
+
+import vn.edu.uit.msshop.product.product.application.dto.command.data.NewProductVariantData;
 
 public record ProductVariantBulkAdditionCommand(
-        ProductId id,
-        NewProductVariants newVariants,
-        ProductVersion expectedVersion) {
+        UUID productId,
+        List<NewProductVariantData> newVariantList,
+        long productVersion) {
 }

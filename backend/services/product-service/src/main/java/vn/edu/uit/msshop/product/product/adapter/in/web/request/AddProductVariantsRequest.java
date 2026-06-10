@@ -19,7 +19,7 @@ public record AddProductVariantsRequest(
         List<@Valid ProductVariantRequest> variants,
 
         @NotNull
-        Long expectedVersion) {
+        Long version) {
     public record ProductVariantRequest(
             @NotNull
             @PositiveOrZero

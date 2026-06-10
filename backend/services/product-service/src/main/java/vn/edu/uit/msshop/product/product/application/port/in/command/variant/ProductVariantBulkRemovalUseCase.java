@@ -5,5 +5,5 @@ import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 
 public interface ProductVariantBulkRemovalUseCase {
     ProductView removeAll(
-            final ProductVariantBulkRemovalCommand command);
+            final ProductVariantBulkRemovalCommand cmd);
 }

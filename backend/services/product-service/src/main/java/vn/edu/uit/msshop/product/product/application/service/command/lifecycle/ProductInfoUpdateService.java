@@ -24,19 +24,20 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantNameBulkUpdateForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductBrandExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.shared.application.dto.Change;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class ProductInfoUpdateService
-        implements
-        ProductInfoUpdateUseCase {
+        implements ProductInfoUpdateUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;
     private final ProductStockCountLookupByIdPort stockCountLookupByIdPort;
@@ -56,20 +57,25 @@ public class ProductInfoUpdateService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT,
-                            key = "#command.id().value()",
-                            condition = "#command.name().getSet() != null || " +
-                                    "#command.categoryId().getSet() != null || " +
-                                    "#command.brandId().getSet() != null"),
+                            key = "#cmd.productId()",
+                            condition = "#cmd.productNameChange().getSet() != null || " +
+                                    "#cmd.categoryIdChange().getSet() != null || " +
+                                    "#cmd.brandIdChange().getSet() != null"),
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true,
-                            condition = "#command.name().getSet() != null || " +
-                                    "#command.categoryId().getSet() != null || " +
-                                    "#command.brandId().getSet() != null")
+                            condition = "#cmd.productNameChange().getSet() != null || " +
+                                    "#cmd.categoryIdChange().getSet() != null || " +
+                                    "#cmd.brandIdChange().getSet() != null")
             })
     public ProductView updateInfo(
-            final ProductInfoUpdateCommand command) {
-        final var productId = command.id();
+            final ProductInfoUpdateCommand cmd) {
+        final var productId = new ProductId(cmd.productId());
+        final var nameChange = cmd.productNameChange().map(ProductName::new);
+        final var categoryIdChange = cmd.categoryIdChange().map(ProductCategoryId::new);
+        final var brandIdChange = cmd.brandIdChange().map(ProductBrandId::new);
+        final var expectedVersion = new ProductVersion(cmd.productVersion());
+
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
@@ -77,9 +83,9 @@ public class ProductInfoUpdateService
         final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(productId);
         final var rating = this.ratingLookupByIdPort.loadByIdOrZero(productId);
 
-        final var nameSet = command.name().getSet();
-        final var categoryIdSet = command.categoryId().getSet();
-        final var brandIdSet = command.brandId().getSet();
+        final var nameSet = nameChange.getSet();
+        final var categoryIdSet = categoryIdChange.getSet();
+        final var brandIdSet = brandIdChange.getSet();
 
         if ((nameSet == null)
                 && (categoryIdSet == null)
@@ -91,13 +97,9 @@ public class ProductInfoUpdateService
                     rating);
         }
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = product.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        ProductVersionGuard.ensureMatch(
+                expectedVersion,
+                product.getVersion());
 
         final var next = this.applyChanges(
                 product,
@@ -114,7 +116,9 @@ public class ProductInfoUpdateService
 
         final var savedProduct = this.updatePort.update(next);
         this.syncProductNameToVariantsIfChanged(product, savedProduct);
-        this.eventPublicationPort.publishEvent(new ProductInfoUpdatedEvent(savedProduct.getId()));
+
+        final var event = new ProductInfoUpdatedEvent(savedProduct.getId());
+        this.eventPublicationPort.publishEvent(event);
 
         return this.mapper.toView(
                 savedProduct,

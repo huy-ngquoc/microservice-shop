@@ -14,15 +14,16 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.produc
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingDeletionPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkHardDeletionForProductPort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductHardDeletedEvent;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 // TODO: delete image as well.
 @Service
 @RequiredArgsConstructor
 public class ProductHardDeletionService
-        implements
-        ProductHardDeletionUseCase {
+        implements ProductHardDeletionUseCase {
     private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final ProductDeletionByIdPort deletionByIdPort;
     private final ProductSoldCountDeletionByIdPort soldCountDeletionByIdPort;
@@ -36,18 +37,16 @@ public class ProductHardDeletionService
     @Override
     @Transactional
     public void hardDelete(
-            ProductHardDeletionCommand command) {
-        final var productId = command.id();
+            ProductHardDeletionCommand cmd) {
+        final var productId = new ProductId(cmd.productId());
+        final var expectedVersion = new ProductVersion(cmd.productVersion());
+
         final var product = this.softDeletedLookupByIdPort.loadSoftDeletedById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = product.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        ProductVersionGuard.ensureMatch(
+                expectedVersion,
+                product.getVersion());
 
         this.deletionByIdPort.deleteById(productId);
         this.soldCountDeletionByIdPort.deleteById(productId);
@@ -56,6 +55,7 @@ public class ProductHardDeletionService
 
         this.variantBulkHardDeleteByIdsPort.purgeByProductId(productId);
 
-        this.eventPublicationPort.publishEvent(new ProductHardDeletedEvent(productId));
+        final var event = new ProductHardDeletedEvent(productId);
+        this.eventPublicationPort.publishEvent(event);
     }
 }

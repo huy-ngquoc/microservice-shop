@@ -18,5 +18,5 @@ public record AddProductOptionRequest(
         String defaultTrait,
 
         @NotNull
-        Long expectedVersion) {
+        Long version) {
 }

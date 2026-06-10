@@ -25,25 +25,26 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkCreationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
 public class ProductOptionRemovalService
-        implements
-        ProductOptionRemovalUseCase {
+        implements ProductOptionRemovalUseCase {
     private final ProductActiveLookupByIdPort activeLookupById;
     private final ProductUpdatePort updatePort;
     private final ProductVariantBulkSoftDeletionForProductPort variantBulkSoftDeletionForProductPort;
@@ -62,28 +63,28 @@ public class ProductOptionRemovalService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT,
-                            key = "#command.id().value()"),
+                            key = "#cmd.productId()"),
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
     public ProductView remove(
-            final ProductOptionRemovalCommand command) {
-        final var productId = command.id();
+            final ProductOptionRemovalCommand cmd) {
+        final var productId = new ProductId(cmd.productId());
+        final var defaultPrice = ProductPrice.ofNullable(cmd.defaultPrice());
+        final var expectedVersion = new ProductVersion(cmd.productVersion());
+
         final var product = this.activeLookupById.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var expectedVersion = command.expectedVersion();
-        if (!expectedVersion.equals(product.getVersion())) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    product.getVersion().value());
-        }
+        ProductVersionGuard.ensureMatch(
+                expectedVersion,
+                product.getVersion());
 
         final var newConfiguration = this.removeOptionFromConfiguration(
                 product,
-                command.optionIndex(),
-                command.defaultPrice());
+                cmd.optionIndex(),
+                defaultPrice);
         final var next = new Product(
                 product.getId(),
                 product.getName(),

@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.product.application.service.command.variant;
 
+import java.util.ArrayList;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -19,10 +21,13 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.produc
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionByIdsPort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -44,40 +49,44 @@ public class ProductVariantBulkRemovalService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT,
-                            key = "#command.id().value()"),
+                            key = "#cmd.productId()"),
                     @CacheEvict(
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
     public ProductView removeAll(
-            final ProductVariantBulkRemovalCommand command) {
-        final var productId = command.id();
+            final ProductVariantBulkRemovalCommand cmd) {
+        final var productId = new ProductId(cmd.productId());
+        final var expectedVersion = new ProductVersion(cmd.productVersion());
+
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var expectedVersion = command.expectedVersion();
-        if (!expectedVersion.equals(product.getVersion())) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    product.getVersion().value());
+        ProductVersionGuard.ensureMatch(
+                expectedVersion,
+                product.getVersion());
+
+        final var variantIdList = new ArrayList<ProductVariantId>(cmd.variantIdList().size());
+        for (final var variantId : cmd.variantIdList()) {
+            final var productVariantId = new ProductVariantId(variantId);
+            variantIdList.add(productVariantId);
         }
 
-        var productVariants = product.getVariants();
-        final var variantIds = command.variantIds();
-
-        for (final var variantId : variantIds) {
-            productVariants = productVariants.removeById(variantId);
+        // FIXME: O(n^2)?
+        var nextVariants = product.getVariants();
+        for (final var variantId : variantIdList) {
+            nextVariants = nextVariants.removeById(variantId);
         }
 
-        final var newConfiguration = new ProductConfiguration(
+        final var newConfig = new ProductConfiguration(
                 product.getOptions(),
-                productVariants);
+                nextVariants);
         final var next = new Product(
                 product.getId(),
                 product.getName(),
                 product.getCategoryId(),
                 product.getBrandId(),
-                newConfiguration,
+                newConfig,
                 product.getImageKeys(),
                 product.getVersion(),
                 product.getDeletionTime());
@@ -89,10 +98,15 @@ public class ProductVariantBulkRemovalService
         final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(savedProductId);
         final var rating = this.ratingLookupByIdPort.loadByIdOrZero(savedProductId);
 
-        this.eventPort.publishEvent(new ProductInfoUpdatedEvent(savedProductId));
+        final var event = new ProductInfoUpdatedEvent(savedProductId);
+        this.eventPort.publishEvent(event);
 
-        this.variantBulkSoftDeletionByIdsPort.deleteByIds(variantIds);
+        this.variantBulkSoftDeletionByIdsPort.deleteByIds(variantIdList);
 
-        return this.mapper.toView(savedProduct, soldCount, stockCount, rating);
+        return this.mapper.toView(
+                savedProduct,
+                soldCount,
+                stockCount,
+                rating);
     }
 }

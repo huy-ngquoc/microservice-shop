@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.product.application.service.command.count;
 
+import java.util.HashMap;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountDecreaseForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountDecreaseForVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecreationPort;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +32,17 @@ public class ProductStockCountDecreaseForVariantsService
                             allEntries = true)
             })
     public void decrease(
-            ProductStockCountDecreaseForVariantsCommand command) {
-        this.bulkDecreationPort.decreaseAll(command.decrementById());
+            ProductStockCountDecreaseForVariantsCommand cmd) {
+        final var incrementByProductId = HashMap.<ProductId, Integer>newHashMap(
+                cmd.decrementById().size());
+
+        for (final var entry : cmd.decrementById().entrySet()) {
+            final var productId = new ProductId(entry.getKey());
+            final var decrement = entry.getValue();
+
+            incrementByProductId.put(productId, decrement);
+        }
+
+        this.bulkDecreationPort.decreaseAll(incrementByProductId);
     }
 }
