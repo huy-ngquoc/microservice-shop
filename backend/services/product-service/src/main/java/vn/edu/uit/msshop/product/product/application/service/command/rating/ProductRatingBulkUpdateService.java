@@ -23,6 +23,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingT
 @Slf4j
 class ProductRatingBulkUpdateService
         implements ProductRatingBulkUpdateUseCase {
+
     private final ProductRatingBulkUpdatePort ratingBulkUpdatePort;
 
     @Override

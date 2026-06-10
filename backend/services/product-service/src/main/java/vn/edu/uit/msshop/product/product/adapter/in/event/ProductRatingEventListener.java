@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingCreatedIntegrationEvent;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingDeletedIntegrationEvent;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingUpdatedIntegrationEvent;
-import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingCreatedUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingDeletedUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingUpdatedUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingCreatedEventApplyUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingDeletedEventApplyUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingUpdatedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Component
@@ -20,14 +20,14 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @KafkaListener(
         topics = "rating-product")
 public class ProductRatingEventListener {
-    private final ApplyRatingCreatedUseCase createdUseCase;
-    private final ApplyRatingUpdatedUseCase updatedUseCase;
-    private final ApplyRatingDeletedUseCase deletedUseCase;
+    private final ProductRatingCreatedEventApplyUseCase ratingCreatedEventApplyUseCase;
+    private final ProductRatingUpdatedEventApplyUseCase ratingUpdatedEventApplyUseCase;
+    private final ProductRatingDeletedEventApplyUseCase ratingDeletedEventApplyUseCase;
 
     @KafkaHandler
     public void onCreated(
             final RatingCreatedIntegrationEvent event) {
-        this.createdUseCase.execute(
+        this.ratingCreatedEventApplyUseCase.execute(
                 event.eventId(),
                 new ProductId(event.productId()),
                 event.point());
@@ -36,7 +36,7 @@ public class ProductRatingEventListener {
     @KafkaHandler
     public void onUpdate(
             final RatingUpdatedIntegrationEvent event) {
-        this.updatedUseCase.execute(
+        this.ratingUpdatedEventApplyUseCase.execute(
                 event.eventId(),
                 new ProductId(event.productId()),
                 event.oldPoint(),
@@ -46,7 +46,7 @@ public class ProductRatingEventListener {
     @KafkaHandler
     public void onDeleted(
             final RatingDeletedIntegrationEvent event) {
-        this.deletedUseCase.execute(
+        this.ratingDeletedEventApplyUseCase.execute(
                 event.eventId(),
                 new ProductId(event.productId()),
                 event.point());
