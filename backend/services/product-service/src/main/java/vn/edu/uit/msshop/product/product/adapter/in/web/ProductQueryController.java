@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductQueryWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductResponseWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductActiveListingUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductSoftDeletedListingUseCase;
@@ -24,12 +25,14 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductQueryController {
+
     private final ProductActiveListingUseCase activeListingUseCase;
     private final ProductSoftDeletedListingUseCase softDeletedListingUseCase;
     private final ProductActiveLookupByIdUseCase activeLookupByIdUseCase;
     private final ProductSoftDeletedLookupByIdUseCase softDeletedLookupByIdUseCase;
 
-    private final ProductWebMapper mapper;
+    private final ProductQueryWebMapper queryMapper;
+    private final ProductResponseWebMapper responseMapper;
 
     @GetMapping
     public ResponseEntity<PageResponseDto<ProductResponse>> listActive(
@@ -50,10 +53,10 @@ public class ProductQueryController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var query = this.mapper.toActiveListingQuery(request);
+        final var query = this.queryMapper.toActiveListingQuery(request);
         final var views = this.activeListingUseCase.list(query);
 
-        final var response = views.map(this.mapper::toResponse);
+        final var response = views.map(this.responseMapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -76,10 +79,10 @@ public class ProductQueryController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var query = this.mapper.toSoftDeletedListingQuery(request);
+        final var query = this.queryMapper.toSoftDeletedListingQuery(request);
         final var views = this.softDeletedListingUseCase.list(query);
 
-        final var response = views.map(this.mapper::toResponse);
+        final var response = views.map(this.responseMapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
@@ -87,10 +90,10 @@ public class ProductQueryController {
     public ResponseEntity<ProductResponse> findActiveById(
             @PathVariable
             final UUID id) {
-        final var query = this.mapper.toActiveLookupByIdQuery(id);
+        final var query = this.queryMapper.toActiveLookupByIdQuery(id);
         final var view = this.activeLookupByIdUseCase.find(query);
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -98,10 +101,10 @@ public class ProductQueryController {
     public ResponseEntity<ProductResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
-        final var query = this.mapper.toSoftDeletedLookupByIdQuery(id);
+        final var query = this.queryMapper.toSoftDeletedLookupByIdQuery(id);
         final var view = this.softDeletedLookupByIdUseCase.find(query);
 
-        final var response = this.mapper.toResponse(view);
+        final var response = this.responseMapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 }
