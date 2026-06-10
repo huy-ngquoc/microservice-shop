@@ -4,6 +4,6 @@ import java.util.UUID;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface ProductRatingMongoRepository
+interface ProductRatingMongoRepository
         extends MongoRepository<ProductRatingDocument, UUID> {
 }

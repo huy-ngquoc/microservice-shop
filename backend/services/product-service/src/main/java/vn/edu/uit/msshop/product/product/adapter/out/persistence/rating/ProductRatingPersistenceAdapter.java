@@ -29,7 +29,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Component
 @RequiredArgsConstructor
-public class ProductRatingPersistenceAdapter
+class ProductRatingPersistenceAdapter
         implements
         ProductRatingLookupByIdPort,
         ProductRatingBulkLookupByIdsPort,

@@ -15,7 +15,7 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-public final class ProcessedRatingEventDocument {
+final class ProcessedRatingEventDocument {
     @Id
     @EqualsAndHashCode.Include
     private final UUID id;

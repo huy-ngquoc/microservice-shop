@@ -7,7 +7,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductSoldCountValue;
 
 @Component
-public class ProductSoldCountPersistenceMapper {
+class ProductSoldCountPersistenceMapper {
     public ProductSoldCount toDomain(
             final ProductSoldCountDocument entity) {
         final var id = new ProductId(entity.getId());

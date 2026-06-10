@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 
 @Component
 @RequiredArgsConstructor
-public class ProcessedRatingEventPersistenceAdapter
+class ProcessedRatingEventPersistenceAdapter
         implements
         ProcessedRatingEventExistenceCheckByIdPort,
         ProcessedRatingEventCreationPort {
