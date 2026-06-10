@@ -10,14 +10,14 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantRestorablePort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantRestored;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 
 @Service
@@ -29,7 +29,7 @@ public class RestoreVariantService implements RestoreVariantUseCase {
     private final CheckVariantRestorablePort checkRestorablePort;
     private final AddVariantToProductPort addToProductPort;
     private final UpdateVariantPort updatePort;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -78,6 +78,7 @@ public class RestoreVariantService implements RestoreVariantUseCase {
                 soldIncrement,
                 stockIncrement);
 
-        this.eventPort.publish(new VariantRestored(saved.getId()));
+        final var event = new VariantRestoredEvent(saved.getId());
+        this.eventPublicationPort.publishEvent(event);
     }
 }

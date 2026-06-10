@@ -9,22 +9,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.query.CheckProductExistsUseCase;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByIdUseCase;
 
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductInternalController {
-    private final CheckProductExistsUseCase checkExistsUseCase;
-    private final ProductSharedWebMapper sharedMapper;
+    private final ProductActiveExistenceCheckByIdUseCase activeExistenceCheckByIdUseCase;
+    private final ProductWebMapper mapper;
 
     @GetMapping("/{id}/exists")
     public ResponseEntity<Void> existsById(
             @PathVariable
             final UUID id) {
-        final var existed = this.checkExistsUseCase.existsById(
-                this.sharedMapper.toProductId(id));
+        final var existed = this.activeExistenceCheckByIdUseCase.existsById(
+                this.mapper.toProductId(id));
         if (!existed) {
             return ResponseEntity.notFound().build();
         }

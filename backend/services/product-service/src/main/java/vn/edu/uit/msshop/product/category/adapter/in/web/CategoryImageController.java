@@ -14,30 +14,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryWebMapper;
+import vn.edu.uit.msshop.product.category.adapter.in.web.mapper.CategoryImageWebMapper;
 import vn.edu.uit.msshop.product.category.adapter.in.web.request.UpdateCategoryImageRequest;
 import vn.edu.uit.msshop.product.category.adapter.in.web.response.CategoryImageResponse;
-import vn.edu.uit.msshop.product.category.application.port.in.command.CategoryImageLifecycleUseCases;
-import vn.edu.uit.msshop.product.category.application.port.in.query.CategoryLookupUseCases;
+import vn.edu.uit.msshop.product.category.application.port.in.command.image.CategoryImageDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.command.image.CategoryImageUpdateByIdUseCase;
+import vn.edu.uit.msshop.product.category.application.port.in.query.lookup.CategoryImageActiveLookupByIdUseCase;
 
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
 public class CategoryImageController {
 
-    private final CategoryLookupUseCases.FindActiveImageById findActiveUseCase;
-    private final CategoryImageLifecycleUseCases.Update updateUseCase;
-    private final CategoryImageLifecycleUseCases.Delete deleteUseCase;
+    private final CategoryImageActiveLookupByIdUseCase activeLookupByIdUseCase;
+    private final CategoryImageUpdateByIdUseCase updateByIdUseCase;
+    private final CategoryImageDeletionByIdUseCase deletionByIdUseCase;
 
-    private final CategoryWebMapper mapper;
+    private final CategoryImageWebMapper mapper;
 
     @GetMapping("/{id}/image")
     public ResponseEntity<CategoryImageResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findActiveUseCase.findActiveImageById(this.mapper.toCategoryId(id));
+        final var query = this.mapper.toActiveLookupByIdQuery(id);
+        final var view = this.activeLookupByIdUseCase.find(query);
 
-        final var response = this.mapper.toImageResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -49,10 +51,10 @@ public class CategoryImageController {
             @RequestBody
             @Valid
             final UpdateCategoryImageRequest request) {
-        final var command = this.mapper.toUpdateImageCommand(id, request);
-        final var view = this.updateUseCase.update(command);
+        final var command = this.mapper.toImageUpdateByIdCommand(id, request);
+        final var view = this.updateByIdUseCase.update(command);
 
-        final var response = this.mapper.toImageResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -63,8 +65,8 @@ public class CategoryImageController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toDeleteImageCommand(id, version);
-        this.deleteUseCase.delete(command);
+        final var command = this.mapper.toImageDeletionByIdCommand(id, version);
+        this.deletionByIdUseCase.delete(command);
 
         return ResponseEntity.noContent().build();
     }

@@ -1,0 +1,10 @@
+package vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.listing;
+
+import vn.edu.uit.msshop.product.category.domain.model.Category;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
+
+public interface CategorySoftDeletedListingPort {
+    PageResponseDto<Category> listSoftDeleted(
+            final PageRequestDto pageRequest);
+}

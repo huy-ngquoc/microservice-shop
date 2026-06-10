@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.out.persistence.mapper.ProductPersistenceMapper;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.CreateProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.DeleteProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateAllProductsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductCreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductDeletionByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductBulkUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProduct;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -22,10 +22,10 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 public class ProductReadPersistenceAdapter
         implements
-        CreateProductPort,
-        UpdateProductPort,
-        UpdateAllProductsPort,
-        DeleteProductPort {
+        ProductCreationPort,
+        ProductUpdatePort,
+        ProductBulkUpdatePort,
+        ProductDeletionByIdPort {
     private final ProductMongoRepository repository;
     private final ProductPersistenceMapper mapper;
 

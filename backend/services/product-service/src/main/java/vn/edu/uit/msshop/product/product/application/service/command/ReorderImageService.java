@@ -11,8 +11,9 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.ReorderImageCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.ReorderImageUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
+
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
@@ -21,8 +22,8 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 @Slf4j
 public class ReorderImageService implements ReorderImageUseCase {
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updateProductPort;
+    private final ProductActiveLookupByIdPort loadPort;
+    private final ProductUpdatePort updateProductPort;
     @Override
     @Transactional
     @Caching(

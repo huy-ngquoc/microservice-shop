@@ -9,6 +9,8 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductReq
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
 
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
+import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductVariantResponse;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.CreateSimpleProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.HardDeleteProductCommand;
@@ -16,6 +18,8 @@ import vn.edu.uit.msshop.product.product.application.dto.command.ReorderImageCom
 import vn.edu.uit.msshop.product.product.application.dto.command.RestoreProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.SoftDeleteProductCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.UpdateProductInfoCommand;
+import vn.edu.uit.msshop.product.product.application.dto.view.ProductVariantView;
+import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
@@ -31,6 +35,12 @@ import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
 @Component
 public class ProductWebMapper {
+
+    public ProductId toProductId(
+            final UUID id) {
+        return new ProductId(id);
+    }
+
     public CreateProductCommand toCreateCommand(
             final CreateProductRequest request) {
         final var name = new ProductName(request.name());
@@ -116,5 +126,7 @@ public class ProductWebMapper {
     }
     public ReorderImageCommand toReorderImageCommand(UUID productId, List<Integer> newIndexes, long version) {
         return new ReorderImageCommand(new ProductId(productId), newIndexes, version);
+
     }
 }
+

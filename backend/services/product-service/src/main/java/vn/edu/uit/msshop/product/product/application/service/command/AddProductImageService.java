@@ -13,8 +13,9 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.AddImageCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductImageUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
+
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKey;
@@ -23,8 +24,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKe
 @RequiredArgsConstructor
 @Slf4j
 public class AddProductImageService implements AddProductImageUseCase{
-    private final LoadProductPort loadPort;
-    private final UpdateProductPort updatePort;
+    private final ProductActiveLookupByIdPort loadPort;
+    private final ProductUpdatePort updatePort;
     @Override
     @Transactional
     @Caching(

@@ -13,18 +13,21 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductSharedWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductVariantWebMapper;
+import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantBulkAdditionUseCase;
 
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductVariantController {
-    private final AddProductVariantsUseCase addVariantsUseCase;
-    private final ProductVariantWebMapper mapper;
-    private final ProductSharedWebMapper sharedMapper;
+    private final ProductVariantBulkAdditionUseCase bulkAdditionUseCase;
+
+    private final ProductVariantWebMapper variantMapper;
+    private final ProductWebMapper mapper;
+    private final ProductSharedWebMapper sharedWebMapper;
 
     @PostMapping("/{id}/variants")
     public ResponseEntity<ProductResponse> addVariant(
@@ -34,9 +37,9 @@ public class ProductVariantController {
             @RequestBody
             @Valid
             final AddProductVariantRequest request) {
-        final var command = this.mapper.toAddVariantsCommand(id, request);
-        final var view = this.addVariantsUseCase.addVariants(command);
-        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
+        final var command = this.variantMapper.toAddVariantsCommand(id, request);
+        final var view = this.bulkAdditionUseCase.addAll(command);
+        return ResponseEntity.ok(this.sharedWebMapper.toResponse(view));
     }
 
     @PostMapping("/{id}/variants/batch")
@@ -46,8 +49,8 @@ public class ProductVariantController {
             @RequestBody
             @Valid
             final AddProductVariantsRequest request) {
-        final var command = this.mapper.toAddVariantsCommand(id, request);
-        final var view = this.addVariantsUseCase.addVariants(command);
-        return ResponseEntity.ok(this.sharedMapper.toResponse(view));
+        final var command = this.variantMapper.toAddVariantsCommand(id, request);
+        final var view = this.bulkAdditionUseCase.addAll(command);
+        return ResponseEntity.ok(this.sharedWebMapper.toResponse(view));
     }
 }

@@ -16,8 +16,7 @@ import vn.edu.uit.msshop.product.product.application.dto.command.ReplaceImageCom
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.AddProductImageUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.ReplaceProductImageUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.LoadProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.UpdateProductPort;
+
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductImageKey;

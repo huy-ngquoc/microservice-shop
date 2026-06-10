@@ -29,7 +29,9 @@ public class CategoryImageStorageAdapter implements CategoryImageStoragePort {
     public boolean existsAsTemp(
             final CategoryImageKey key) {
         try {
-            final var result = this.cloudinary.api().resource(CloudinaryFolders.TEMP + "/" + key.value(), Map.of());
+            final var result = this.cloudinary
+                    .api()
+                    .resource(CloudinaryFolders.TEMP + "/" + key.value(), Map.of());
 
             return (result != null) && result.containsKey("public_id");
         } catch (final NotFound _) {
@@ -62,7 +64,9 @@ public class CategoryImageStorageAdapter implements CategoryImageStoragePort {
     public void deleteImage(
             final CategoryImageKey key) {
         try {
-            this.cloudinary.uploader().destroy(CATEGORY_FOLDER + "/" + key.value(), Map.of());
+            this.cloudinary
+                    .uploader()
+                    .destroy(CATEGORY_FOLDER + "/" + key.value(), Map.of());
         } catch (final IOException e) {
             throw new ImageDeletionFailedException("Failed to delete image: " + key.value(), e);
         }
@@ -72,27 +76,15 @@ public class CategoryImageStorageAdapter implements CategoryImageStoragePort {
             final String fromPublicId,
             final String toPublicId) {
         try {
-            this.cloudinary.uploader().rename(fromPublicId, toPublicId, Map.of());
+            this.cloudinary
+                    .uploader()
+                    .rename(fromPublicId, toPublicId, Map.of());
         } catch (final IOException e) {
-            throw new ImageRenameFailedException(
-                    "Failed to rename image: " + fromPublicId + " → " + toPublicId, e);
+            final var msg = String.format(
+                    "Failed to rename image from `%s` to `%s`",
+                    fromPublicId,
+                    toPublicId);
+            throw new ImageRenameFailedException(msg, e);
         }
     }
 }
-
-// @Component
-// @RequiredArgsConstructor
-// public class CategoryImageVerifyAdapter implements VerifyCategoryImageKeyPort
-// {
-// private final ImageServiceFeignClient imageServiceClient;
-// @Override
-// public boolean existsInTemp(CategoryImageKey key) {
-// return this.imageServiceClient.existsInTemp(key.value());
-// }
-// }
-// // Feign Client gọi sang image-service
-// @FeignClient(name = "image-service")
-// public interface ImageServiceFeignClient {
-// @GetMapping("/images/temp/{key}/exists")
-// boolean existsInTemp(@PathVariable String key);
-// }

@@ -17,17 +17,18 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.mapper.BrandLogoWebMapper;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandLogoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandLogoResponse;
-import vn.edu.uit.msshop.product.brand.application.port.in.command.BrandLogoLifecycleUseCases;
-import vn.edu.uit.msshop.product.brand.application.port.in.query.BrandLookupUseCases;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.command.logo.BrandLogoUpdateByIdUseCase;
+import vn.edu.uit.msshop.product.brand.application.port.in.query.lookup.BrandLogoActiveLookupByIdUseCase;
 
 @RestController
 @RequestMapping("/brands")
 @RequiredArgsConstructor
 public class BrandLogoController {
 
-    private final BrandLookupUseCases.FindActiveLogoById findLogoUseCase;
-    private final BrandLogoLifecycleUseCases.Update updateUseCase;
-    private final BrandLogoLifecycleUseCases.Delete deleteUseCase;
+    private final BrandLogoActiveLookupByIdUseCase activeLookupByIdUseCase;
+    private final BrandLogoUpdateByIdUseCase updateUseCase;
+    private final BrandLogoDeletionByIdUseCase deletionUseCase;
 
     private final BrandLogoWebMapper mapper;
 
@@ -35,8 +36,8 @@ public class BrandLogoController {
     public ResponseEntity<BrandLogoResponse> findLogoById(
             @PathVariable
             final UUID id) {
-        final var view = this.findLogoUseCase.findActiveLogoById(
-                this.mapper.toBrandId(id));
+        final var query = this.mapper.toActiveLookupByIdQuery(id);
+        final var view = this.activeLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);
@@ -50,8 +51,8 @@ public class BrandLogoController {
             @RequestBody
             @Valid
             final UpdateBrandLogoRequest request) {
-        final var command = this.mapper.toUpdateLogoCommand(id, request);
-        final var view = this.updateUseCase.update(command);
+        final var command = this.mapper.toUpdateByIdCommand(id, request);
+        final var view = this.updateUseCase.updateById(command);
 
         final var response = this.mapper.toLogoResponse(view);
         return ResponseEntity.ok(response);
@@ -64,8 +65,8 @@ public class BrandLogoController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toDeleteLogoCommand(id, version);
-        this.deleteUseCase.delete(command);
+        final var command = this.mapper.toDeletionByIdCommand(id, version);
+        this.deletionUseCase.deleteById(command);
 
         return ResponseEntity.noContent().build();
     }

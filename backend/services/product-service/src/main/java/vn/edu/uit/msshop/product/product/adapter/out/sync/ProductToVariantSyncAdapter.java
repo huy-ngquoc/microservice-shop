@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.CreateAllProductVariantsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.HardDeleteAllProductVariantsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.RestoreVariantsForProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteAllProductVariantsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.SoftDeleteVariantsForProductPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.UpdateAllProductVariantTraitsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.UpdateProductNameOnVariantsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkCreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkHardDeletionForProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkRestorationByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantNameBulkUpdateForProductPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
@@ -47,13 +47,13 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 @RequiredArgsConstructor
 public class ProductToVariantSyncAdapter
         implements
-        CreateAllProductVariantsPort,
-        RestoreVariantsForProductPort,
-        UpdateAllProductVariantTraitsPort,
-        UpdateProductNameOnVariantsPort,
-        SoftDeleteAllProductVariantsPort,
-        SoftDeleteVariantsForProductPort,
-        HardDeleteAllProductVariantsPort {
+        ProductVariantBulkCreationPort,
+        ProductVariantBulkRestorationByIdsPort,
+        ProductVariantTraitBulkUpdatePort,
+        ProductVariantNameBulkUpdateForProductPort,
+        ProductVariantBulkSoftDeletionByIdsPort,
+        ProductVariantBulkSoftDeletionForProductPort,
+        ProductVariantBulkHardDeletionForProductPort {
     private final CreateVariantsForNewProductUseCase createForNewProductUseCase;
     private final RestoreVariantsForProductUseCase restoreVariantsForProductUseCase;
     private final UpdateAllVariantTraitsForProductUseCase updateAllTraitsForProductUseCase;

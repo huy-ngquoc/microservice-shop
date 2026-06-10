@@ -1,0 +1,8 @@
+package vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command;
+
+import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
+
+public interface ProductRatingUpdatePort {
+    ProductRating update(
+            final ProductRating rating);
+}

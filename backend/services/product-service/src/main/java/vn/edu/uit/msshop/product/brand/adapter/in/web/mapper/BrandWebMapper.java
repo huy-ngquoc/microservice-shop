@@ -8,12 +8,19 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.CreateBrandRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.request.UpdateBrandInfoRequest;
 import vn.edu.uit.msshop.product.brand.adapter.in.web.response.BrandResponse;
-import vn.edu.uit.msshop.product.brand.application.dto.command.BrandLifecycleCommands;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandCreationCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandHardDeletionByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandInfoUpdateByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandRestorationByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.command.lifecycle.BrandSoftDeletionByIdCommand;
+import vn.edu.uit.msshop.product.brand.application.dto.query.existence.BrandActiveExistenceCheckByIdQuery;
+import vn.edu.uit.msshop.product.brand.application.dto.query.listing.BrandActiveListingQuery;
+import vn.edu.uit.msshop.product.brand.application.dto.query.listing.BrandSoftDeletedListingQuery;
+import vn.edu.uit.msshop.product.brand.application.dto.query.lookup.BrandActiveLookupByIdQuery;
+import vn.edu.uit.msshop.product.brand.application.dto.query.lookup.BrandSoftDeletedLookupByIdQuery;
 import vn.edu.uit.msshop.product.brand.application.dto.view.BrandView;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
-import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 
 @Component
 @RequiredArgsConstructor
@@ -21,54 +28,74 @@ public class BrandWebMapper {
 
     private final BrandLogoUrlResolver urlResolver;
 
-    public BrandId toBrandId(
-            final UUID id) {
-        return new BrandId(id);
+    public BrandActiveListingQuery toActiveListingQuery(
+            final PageRequestDto pageRequest) {
+        return new BrandActiveListingQuery(
+                pageRequest);
     }
 
-    public BrandLifecycleCommands.Create toCreateCommand(
+    public BrandSoftDeletedListingQuery toSoftDeletedListingQuery(
+            final PageRequestDto pageRequest) {
+        return new BrandSoftDeletedListingQuery(
+                pageRequest);
+    }
+
+    public BrandActiveExistenceCheckByIdQuery toActiveExistenceCheckByIdQuery(
+            final UUID brandId) {
+        return new BrandActiveExistenceCheckByIdQuery(
+                brandId);
+    }
+
+    public BrandActiveLookupByIdQuery toActiveLookupByIdQuery(
+            final UUID brandId) {
+        return new BrandActiveLookupByIdQuery(
+                brandId);
+    }
+
+    public BrandSoftDeletedLookupByIdQuery toSoftDeletedLookupByIdQuery(
+            final UUID brandId) {
+        return new BrandSoftDeletedLookupByIdQuery(
+                brandId);
+    }
+
+    public BrandCreationCommand toCreationCommand(
             final CreateBrandRequest request) {
-        final var name = new BrandName(request.name());
-
-        return new BrandLifecycleCommands.Create(name);
+        return new BrandCreationCommand(
+                request.name());
     }
 
-    public BrandLifecycleCommands.Restore toRestoreCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var brandId = new BrandId(id);
-        final var version = new BrandVersion(expectedVersion);
-
-        return new BrandLifecycleCommands.Restore(brandId, version);
-    }
-
-    public BrandLifecycleCommands.UpdateInfo toUpdateInfoCommand(
-            final UUID id,
+    public BrandInfoUpdateByIdCommand toInfoUpdateByIdCommand(
+            final UUID brandId,
             final UpdateBrandInfoRequest request) {
-        final var brandId = new BrandId(id);
-        final var version = new BrandVersion(request.version());
-
-        final var name = ChangeRequest.toChange(request.name(), BrandName::new);
-
-        return new BrandLifecycleCommands.UpdateInfo(brandId, name, version);
+        final var brandNameChange = ChangeRequest.toChange(request.name());
+        return new BrandInfoUpdateByIdCommand(
+                brandId,
+                brandNameChange,
+                request.version());
     }
 
-    public BrandLifecycleCommands.SoftDelete toSoftDeleteCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var brandId = new BrandId(id);
-        final var version = new BrandVersion(expectedVersion);
-
-        return new BrandLifecycleCommands.SoftDelete(brandId, version);
+    public BrandSoftDeletionByIdCommand toSoftDeletionByIdCommand(
+            final UUID brandId,
+            final long brandVersion) {
+        return new BrandSoftDeletionByIdCommand(
+                brandId,
+                brandVersion);
     }
 
-    public BrandLifecycleCommands.HardDelete toHardDeleteCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var brandId = new BrandId(id);
-        final var version = new BrandVersion(expectedVersion);
+    public BrandRestorationByIdCommand toRestorationByIdCommand(
+            final UUID brandId,
+            final long brandVersion) {
+        return new BrandRestorationByIdCommand(
+                brandId,
+                brandVersion);
+    }
 
-        return new BrandLifecycleCommands.HardDelete(brandId, version);
+    public BrandHardDeletionByIdCommand toHardDeletionByIdCommand(
+            final UUID brandId,
+            final long brandVersion) {
+        return new BrandHardDeletionByIdCommand(
+                brandId,
+                brandVersion);
     }
 
     public BrandResponse toResponse(

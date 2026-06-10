@@ -6,14 +6,14 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.category.adapter.out.persistence.mapper.CategoryPersistenceMapper;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.CheckCategoryExistsPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.CreateCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.DeleteCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListCategoriesPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.ListSoftDeletedCategoriesPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.LoadSoftDeletedCategoryPort;
-import vn.edu.uit.msshop.product.category.application.port.out.persistence.UpdateCategoryPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryCreationPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryDeletionByIdPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryUpdatePort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.existence.CategoryActiveExistenceCheckByIdPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.listing.CategoryActiveListingPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.listing.CategorySoftDeletedListingPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategoryActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.query.lookup.CategorySoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.category.domain.model.Category;
 import vn.edu.uit.msshop.product.category.domain.model.creation.NewCategory;
 import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
@@ -25,19 +25,19 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequiredArgsConstructor
 public class CategoryPersistenceAdapter
         implements
-        ListCategoriesPort,
-        ListSoftDeletedCategoriesPort,
-        LoadCategoryPort,
-        LoadSoftDeletedCategoryPort,
-        CheckCategoryExistsPort,
-        CreateCategoryPort,
-        UpdateCategoryPort,
-        DeleteCategoryPort {
+        CategoryActiveListingPort,
+        CategorySoftDeletedListingPort,
+        CategoryActiveLookupByIdPort,
+        CategorySoftDeletedLookupByIdPort,
+        CategoryActiveExistenceCheckByIdPort,
+        CategoryCreationPort,
+        CategoryUpdatePort,
+        CategoryDeletionByIdPort {
     private final CategoryMongoRepository repository;
     private final CategoryPersistenceMapper mapper;
 
     @Override
-    public PageResponseDto<Category> list(
+    public PageResponseDto<Category> listActive(
             final PageRequestDto pageRequest) {
         final var pageable = PageRequests.toPageable(
                 pageRequest,
@@ -75,7 +75,7 @@ public class CategoryPersistenceAdapter
     }
 
     @Override
-    public Optional<Category> loadById(
+    public Optional<Category> loadActiveById(
             final CategoryId id) {
         final var jpaId = id.value();
         return this.repository.findByIdAndDeletionTimeIsNull(jpaId)
@@ -91,7 +91,7 @@ public class CategoryPersistenceAdapter
     }
 
     @Override
-    public boolean existsById(
+    public boolean existsActiveById(
             final CategoryId id) {
         final var jpaId = id.value();
         return this.repository.existsByIdAndDeletionTimeIsNull(jpaId);

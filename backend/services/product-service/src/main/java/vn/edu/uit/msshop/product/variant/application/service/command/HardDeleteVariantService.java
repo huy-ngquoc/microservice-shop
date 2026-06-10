@@ -11,13 +11,13 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantSoldCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantReferencedByProductPort;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantPurged;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantHardDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 
 @Service
@@ -29,7 +29,7 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
     private final DeleteVariantSoldCountPort deleteSoldCountPort;
     private final CheckVariantReferencedByProductPort checkReferencedPort;
     private final VariantImageStoragePort imageStoragePort;
-    private final PublishVariantEventPort eventPort;
+    private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -55,7 +55,8 @@ public class HardDeleteVariantService implements HardDeleteVariantUseCase {
         this.deletePort.deleteById(variantId);
         this.deleteSoldCountPort.deleteById(variantId);
 
-        this.eventPort.publish(new VariantPurged(variantId));
+        final var event = new VariantHardDeletedEvent(variantId);
+        this.eventPublicationPort.publishEvent(event);
 
         this.deleteImage(variant.getImageKey());
     }
