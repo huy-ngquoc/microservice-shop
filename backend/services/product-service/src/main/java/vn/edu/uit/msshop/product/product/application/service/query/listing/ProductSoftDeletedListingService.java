@@ -26,7 +26,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class ProductSoftDeletedListingService
+class ProductSoftDeletedListingService
         implements ProductSoftDeletedListingUseCase {
     private static final Collector<
             ProductId,

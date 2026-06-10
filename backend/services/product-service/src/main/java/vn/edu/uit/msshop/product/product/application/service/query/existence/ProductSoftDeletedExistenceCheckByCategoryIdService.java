@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategor
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ProductSoftDeletedExistenceCheckByCategoryIdService
+class ProductSoftDeletedExistenceCheckByCategoryIdService
         implements ProductSoftDeletedExistenceCheckByCategoryIdUseCase {
 
     private final ProductSoftDeletedExistenceCheckByCategoryIdPort existenceCheckPort;

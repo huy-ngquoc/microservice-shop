@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryActiveListingService
+class CategoryActiveListingService
         implements CategoryActiveListingUseCase {
 
     private final CategoryActiveListingPort listPort;

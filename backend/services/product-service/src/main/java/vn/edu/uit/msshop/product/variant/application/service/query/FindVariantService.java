@@ -17,7 +17,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-public class FindVariantService implements FindVariantUseCase {
+class FindVariantService implements FindVariantUseCase {
     private final LoadVariantPort loadPort;
     private final LoadVariantSoldCountPort loadSoldCountPort;
     private final LoadVariantStockCountPort loadStockCountPort;

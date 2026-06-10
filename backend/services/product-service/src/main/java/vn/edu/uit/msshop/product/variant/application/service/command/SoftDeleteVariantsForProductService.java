@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 // TODO: should delete image?
 @Service
 @RequiredArgsConstructor
-public class SoftDeleteVariantsForProductService implements SoftDeleteVariantsForProductUseCase {
+class SoftDeleteVariantsForProductService implements SoftDeleteVariantsForProductUseCase {
     private final LoadVariantsForProductPort loadForProductPort;
     private final UpdateAllVariantsPort updateAllPort;
     private final VariantEventPublicationPort eventPublicationPort;

@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandName;
 
 @Service
 @RequiredArgsConstructor
-public class BrandCreationService
+class BrandCreationService
         implements BrandCreationUseCase {
 
     private final BrandCreationPort createPort;

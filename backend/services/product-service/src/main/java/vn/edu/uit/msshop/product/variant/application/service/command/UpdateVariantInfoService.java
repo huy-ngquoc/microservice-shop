@@ -29,7 +29,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
+class UpdateVariantInfoService implements UpdateVariantInfoUseCase {
     private final LoadVariantPort loadPort;
     private final LoadVariantSoldCountPort loadSoldCountPort;
     private final LoadVariantStockCountPort loadStockCountPort;

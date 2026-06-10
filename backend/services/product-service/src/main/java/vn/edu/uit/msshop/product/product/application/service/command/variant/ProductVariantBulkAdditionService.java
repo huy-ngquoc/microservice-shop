@@ -30,7 +30,7 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
 @RequiredArgsConstructor
-public class ProductVariantBulkAdditionService
+class ProductVariantBulkAdditionService
         implements ProductVariantBulkAdditionUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductUpdatePort updatePort;

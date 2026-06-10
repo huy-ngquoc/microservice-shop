@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandVersion;
 
 @Service
 @RequiredArgsConstructor
-public class BrandRestorationByIdService
+class BrandRestorationByIdService
         implements BrandRestorationByIdUseCase {
 
     private final BrandSoftDeletedLookupByIdPort loadSoftDeletedPort;

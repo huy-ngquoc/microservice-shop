@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 // TODO: delete image as well.
 @Service
 @RequiredArgsConstructor
-public class ProductHardDeletionService
+class ProductHardDeletionService
         implements ProductHardDeletionUseCase {
     private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final ProductDeletionByIdPort deletionByIdPort;

@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateAllVariantTraitsForProductService
+class UpdateAllVariantTraitsForProductService
         implements UpdateAllVariantTraitsForProductUseCase {
     private final LoadAllVariantsPort loadAllPort;
     private final UpdateAllVariantsPort updateAllPort;

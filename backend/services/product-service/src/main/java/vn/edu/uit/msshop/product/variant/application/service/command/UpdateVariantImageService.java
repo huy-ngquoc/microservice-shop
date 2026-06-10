@@ -27,7 +27,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UpdateVariantImageService implements UpdateVariantImageUseCase {
+class UpdateVariantImageService implements UpdateVariantImageUseCase {
     private final LoadVariantPort loadPort;
     private final UpdateVariantPort updatePort;
     private final VariantImageStoragePort imageStoragePort;

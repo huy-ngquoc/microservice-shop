@@ -36,7 +36,7 @@ import vn.edu.uit.msshop.shared.application.dto.Change;
 
 @Service
 @RequiredArgsConstructor
-public class ProductInfoUpdateService
+class ProductInfoUpdateService
         implements ProductInfoUpdateUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;

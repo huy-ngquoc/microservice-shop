@@ -29,7 +29,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersi
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CategoryImageUpdateByIdService
+class CategoryImageUpdateByIdService
         implements CategoryImageUpdateByIdUseCase {
 
     private final CategoryActiveLookupByIdPort activeLookupByIdPort;

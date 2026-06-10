@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
 @RequiredArgsConstructor
-public class BrandSoftDeletionByIdService
+class BrandSoftDeletionByIdService
         implements BrandSoftDeletionByIdUseCase {
 
     private final BrandActiveLookupByIdPort loadPort;

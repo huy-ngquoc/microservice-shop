@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryName;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryCreationService
+class CategoryCreationService
         implements CategoryCreationUseCase {
 
     private final CategoryCreationPort creationPort;

@@ -21,7 +21,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingT
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ProductRatingBulkUpdateService
+class ProductRatingBulkUpdateService
         implements ProductRatingBulkUpdateUseCase {
     private final ProductRatingBulkUpdatePort ratingBulkUpdatePort;
 

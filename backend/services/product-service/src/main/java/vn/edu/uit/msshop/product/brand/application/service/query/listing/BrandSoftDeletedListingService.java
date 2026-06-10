@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class BrandSoftDeletedListingService
+class BrandSoftDeletedListingService
         implements BrandSoftDeletedListingUseCase {
 
     private final BrandSoftDeletedListingPort listSoftDeletedPort;
