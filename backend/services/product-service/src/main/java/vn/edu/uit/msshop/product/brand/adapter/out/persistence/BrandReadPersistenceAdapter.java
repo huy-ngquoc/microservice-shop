@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.adapter.out.persistence.mapper.BrandPersistenceMapper;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.existence.BrandActiveExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.listing.BrandActiveListingPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.query.listing.BrandSoftDeletedListingPort;

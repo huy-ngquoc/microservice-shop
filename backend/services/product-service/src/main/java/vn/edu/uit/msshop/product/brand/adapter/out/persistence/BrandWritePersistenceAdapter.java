@@ -3,7 +3,6 @@ package vn.edu.uit.msshop.product.brand.adapter.out.persistence;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.brand.adapter.out.persistence.mapper.BrandPersistenceMapper;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandCreationPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandDeletionByIdPort;
 import vn.edu.uit.msshop.product.brand.application.port.out.persistence.brand.command.BrandUpdatePort;
