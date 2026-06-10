@@ -4,5 +4,5 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 public interface CategoryProductActiveExistenceCheckByCategoryIdPort {
     boolean existsActiveByCategoryId(
-            final CategoryId id);
+            final CategoryId categoryId);
 }

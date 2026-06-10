@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.product.application.dto.query.lookup.ProductSoftDeletedLookupByIdQuery;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
@@ -28,16 +29,21 @@ public class ProductSoftDeletedLookupService
     @Override
     @Transactional(
             readOnly = true)
-    public ProductView findById(
-            final ProductId id) {
-        final var product = this.softDeletedLookupByIdPort.loadSoftDeletedById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+    public ProductView find(
+            final ProductSoftDeletedLookupByIdQuery query) {
+        final var productId = new ProductId(query.productId());
+        final var product = this.softDeletedLookupByIdPort.loadSoftDeletedById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(id);
-        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(id);
-        final var rating = this.ratingLookupByIdPort.loadByIdOrZero(id);
+        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(productId);
+        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(productId);
+        final var rating = this.ratingLookupByIdPort.loadByIdOrZero(productId);
 
-        return this.mapper.toView(product, soldCount, stockCount, rating);
+        return this.mapper.toView(
+                product,
+                soldCount,
+                stockCount,
+                rating);
     }
 
 }

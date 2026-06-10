@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.product.application.dto.query.listing.ProductSoftDeletedListingQuery;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductSoftDeletedListingUseCase;
@@ -21,7 +22,6 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.ProductStockCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
@@ -44,8 +44,8 @@ public class ProductSoftDeletedListingService
     @Transactional(
             readOnly = true)
     public PageResponseDto<ProductView> list(
-            final PageRequestDto pageRequest) {
-        final var page = this.softDeletedListingPort.listSoftDeleted(pageRequest);
+            final ProductSoftDeletedListingQuery query) {
+        final var page = this.softDeletedListingPort.listSoftDeleted(query.pageRequest());
 
         final var ids = page.items().stream()
                 .map(Product::getId)
@@ -62,7 +62,7 @@ public class ProductSoftDeletedListingService
                 ratingById));
     }
 
-    // TODO: Duplicate with ListProductsService.
+    // TODO: Duplicate with ProductActiveListingService.
     // Move it to somewhere that all can use.
     private ProductView toView(
             Product product,

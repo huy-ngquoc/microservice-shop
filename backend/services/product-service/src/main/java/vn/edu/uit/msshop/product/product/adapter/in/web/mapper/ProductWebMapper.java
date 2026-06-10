@@ -16,18 +16,108 @@ import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.Produ
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductHardDeletionCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductRestorationCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSoftDeletionCommand;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByBrandIdQuery;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByCategoryIdQuery;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByIdQuery;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByVariantIdQuery;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductSoftDeletedExistenceCheckByBrandIdQuery;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductSoftDeletedExistenceCheckByCategoryIdQuery;
+import vn.edu.uit.msshop.product.product.application.dto.query.listing.ProductActiveListingQuery;
+import vn.edu.uit.msshop.product.product.application.dto.query.listing.ProductSoftDeletedListingQuery;
+import vn.edu.uit.msshop.product.product.application.dto.query.lookup.ProductActiveLookupByIdQuery;
+import vn.edu.uit.msshop.product.product.application.dto.query.lookup.ProductSoftDeletedLookupByIdQuery;
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductInfoUpdateCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductVariantView;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 
 @Component
 public class ProductWebMapper {
 
-    public ProductId toProductId(
-            final UUID id) {
-        return new ProductId(id);
+    public ProductResponse toResponse(
+            final ProductView view) {
+        final var variantsList = new ArrayList<ProductVariantResponse>(view.variants().size());
+        for (final var variantView : view.variants()) {
+            final var variantResponse = this.toVariantResponse(variantView);
+            variantsList.add(variantResponse);
+        }
+
+        return new ProductResponse(
+                view.id(),
+                view.name(),
+                view.categoryId(),
+                view.brandId(),
+                view.minPrice(),
+                view.maxPrice(),
+                view.soldCount(),
+                view.stockCount(),
+                view.ratingTotal(),
+                view.ratingCount(),
+                view.options(),
+                variantsList,
+                view.imageKeys(),
+                view.version());
+    }
+
+    public ProductActiveExistenceCheckByIdQuery toActiveExistenceCheckByIdQuery(
+            final UUID productId) {
+        return new ProductActiveExistenceCheckByIdQuery(
+                productId);
+    }
+
+    public ProductActiveExistenceCheckByBrandIdQuery toActiveExistenceCheckByBrandIdQuery(
+            final UUID brandId) {
+        return new ProductActiveExistenceCheckByBrandIdQuery(
+                brandId);
+    }
+
+    public ProductActiveExistenceCheckByCategoryIdQuery toActiveExistenceCheckByCategoryIdQuery(
+            final UUID categoryId) {
+        return new ProductActiveExistenceCheckByCategoryIdQuery(
+                categoryId);
+    }
+
+    public ProductActiveExistenceCheckByVariantIdQuery toActiveExistenceCheckByVariantIdQuery(
+            final UUID variantId) {
+        return new ProductActiveExistenceCheckByVariantIdQuery(
+                variantId);
+    }
+
+    public ProductSoftDeletedExistenceCheckByBrandIdQuery toSoftDeletedExistenceCheckByBrandIdQuery(
+            final UUID brandId) {
+        return new ProductSoftDeletedExistenceCheckByBrandIdQuery(
+                brandId);
+    }
+
+    public ProductSoftDeletedExistenceCheckByCategoryIdQuery toSoftDeletedExistenceCheckByCategoryIdQuery(
+            final UUID categoryId) {
+        return new ProductSoftDeletedExistenceCheckByCategoryIdQuery(
+                categoryId);
+    }
+
+    public ProductActiveListingQuery toActiveListingQuery(
+            final PageRequestDto pageRequest) {
+        return new ProductActiveListingQuery(
+                pageRequest);
+    }
+
+    public ProductSoftDeletedListingQuery toSoftDeletedListingQuery(
+            final PageRequestDto pageRequest) {
+        return new ProductSoftDeletedListingQuery(
+                pageRequest);
+    }
+
+    public ProductActiveLookupByIdQuery toActiveLookupByIdQuery(
+            UUID productId) {
+        return new ProductActiveLookupByIdQuery(
+                productId);
+    }
+
+    public ProductSoftDeletedLookupByIdQuery toSoftDeletedLookupByIdQuery(
+            UUID productId) {
+        return new ProductSoftDeletedLookupByIdQuery(
+                productId);
     }
 
     public ProductCreationCommand toCreationCommand(
@@ -97,31 +187,6 @@ public class ProductWebMapper {
         return new ProductHardDeletionCommand(
                 productId,
                 productVersion);
-    }
-
-    public ProductResponse toResponse(
-            final ProductView view) {
-        final var variantsList = new ArrayList<ProductVariantResponse>(view.variants().size());
-        for (final var variantView : view.variants()) {
-            final var variantResponse = this.toVariantResponse(variantView);
-            variantsList.add(variantResponse);
-        }
-
-        return new ProductResponse(
-                view.id(),
-                view.name(),
-                view.categoryId(),
-                view.brandId(),
-                view.minPrice(),
-                view.maxPrice(),
-                view.soldCount(),
-                view.stockCount(),
-                view.ratingTotal(),
-                view.ratingCount(),
-                view.options(),
-                variantsList,
-                view.imageKeys(),
-                view.version());
     }
 
     private ProductVariantResponse toVariantResponse(
