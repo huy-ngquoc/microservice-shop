@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Component
 @RequiredArgsConstructor
-public class ProductCommandPersistenceAdapter
+class ProductCommandPersistenceAdapter
         implements
         ProductCreationPort,
         ProductUpdatePort,

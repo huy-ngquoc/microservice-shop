@@ -30,7 +30,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ProductSoldCountPersistenceAdapter
+class ProductSoldCountPersistenceAdapter
         implements
         ProductSoldCountLookupByIdPort,
         ProductSoldCountBulkLookupByIdsPort,

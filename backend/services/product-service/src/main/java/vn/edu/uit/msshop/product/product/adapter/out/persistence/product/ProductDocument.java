@@ -19,7 +19,7 @@ import lombok.experimental.FieldNameConstants;
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
 @FieldNameConstants
-public class ProductDocument {
+final class ProductDocument {
     @Id
     @EqualsAndHashCode.Include
     private final UUID id;

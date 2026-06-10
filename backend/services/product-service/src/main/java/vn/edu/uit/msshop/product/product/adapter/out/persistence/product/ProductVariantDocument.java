@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-public class ProductVariantDocument {
+final class ProductVariantDocument {
     private final UUID id;
 
     private final long price;
