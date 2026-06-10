@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ApplyRatingDeletedUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingCreatedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProcessedRatingEventExistenceCheckByIdPort;
@@ -21,8 +21,9 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-class ApplyRatingDeletedService
-        implements ApplyRatingDeletedUseCase {
+class ProductRatingCreatedEventApplyService
+        implements ProductRatingCreatedEventApplyUseCase {
+
     private final ProductRatingLookupByIdPort ratingLookupByIdPort;
     private final ProductRatingUpdatePort ratingUpdatePort;
     private final ProcessedRatingEventExistenceCheckByIdPort processedRatingEventExistenceCheckByIdPort;
@@ -51,10 +52,10 @@ class ApplyRatingDeletedService
         try {
             final var rating = this.ratingLookupByIdPort.loadByIdOrZero(productId);
 
-            final var next = rating.removeRating(point);
+            final var next = rating.addRating(point);
             this.ratingUpdatePort.update(next);
         } catch (final DomainException e) {
-            log.error("Invariant violation for rating deleted event {} — marking processed without state change",
+            log.error("Invariant violation for rating created event {} — marking processed without state change",
                     eventId, e);
         }
 
