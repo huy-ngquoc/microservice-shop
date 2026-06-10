@@ -15,9 +15,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductOptionWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductOptionRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.RemoveProductOptionRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductOptionRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductOptionAdditionRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductOptionRemovalRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductOptionUpdateRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionAdditionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionRemovalUseCase;
@@ -41,7 +41,7 @@ public class ProductOptionController {
 
             @RequestBody
             @Valid
-            final AddProductOptionRequest request) {
+            final ProductOptionAdditionRequest request) {
         final var command = this.optionMapper.toAdditionCommand(id, request);
         final var view = this.additionUseCase.add(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -57,7 +57,7 @@ public class ProductOptionController {
 
             @RequestBody
             @Valid
-            final UpdateProductOptionRequest request) {
+            final ProductOptionUpdateRequest request) {
         final var command = this.optionMapper.toUpdateCommand(id, index, request);
         final var view = this.updateUseCase.update(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
@@ -73,7 +73,7 @@ public class ProductOptionController {
 
             @RequestBody
             @Valid
-            final RemoveProductOptionRequest request) {
+            final ProductOptionRemovalRequest request) {
         final var command = this.optionMapper.toRemovalCommand(id, index, request);
         final var view = this.removalUseCase.remove(command);
         return ResponseEntity.ok(this.mapper.toResponse(view));
