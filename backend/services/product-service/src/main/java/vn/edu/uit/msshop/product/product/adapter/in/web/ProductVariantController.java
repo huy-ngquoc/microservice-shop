@@ -13,8 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductVariantWebMapper;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.AddProductVariantsRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductVariantAdditionRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductVariantBulkAdditionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantBulkAdditionUseCase;
 
@@ -34,10 +34,12 @@ public class ProductVariantController {
 
             @RequestBody
             @Valid
-            final AddProductVariantRequest request) {
+            final ProductVariantAdditionRequest request) {
         final var command = this.variantMapper.toBulkAdditionCommand(id, request);
         final var view = this.bulkAdditionUseCase.addAll(command);
-        return ResponseEntity.ok(this.mapper.toResponse(view));
+
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{id}/variants/batch")
@@ -46,9 +48,11 @@ public class ProductVariantController {
             final UUID id,
             @RequestBody
             @Valid
-            final AddProductVariantsRequest request) {
+            final ProductVariantBulkAdditionRequest request) {
         final var command = this.variantMapper.toBulkAdditionCommand(id, request);
         final var view = this.bulkAdditionUseCase.addAll(command);
-        return ResponseEntity.ok(this.mapper.toResponse(view));
+
+        final var response = this.mapper.toResponse(view);
+        return ResponseEntity.ok(response);
     }
 }

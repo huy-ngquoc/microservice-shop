@@ -5,9 +5,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductCreationRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductSimpleCreationRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductInfoUpdateRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductVariantResponse;
 import vn.edu.uit.msshop.product.product.application.dto.command.data.NewProductVariantData;
@@ -31,7 +31,7 @@ public class ProductWebMapper {
     }
 
     public ProductCreationCommand toCreationCommand(
-            final CreateProductRequest request) {
+            final ProductCreationRequest request) {
         final var variantList = new ArrayList<NewProductVariantData>(request.variants().size());
         for (final var variantRequest : request.variants()) {
             final var variantData = new NewProductVariantData(
@@ -50,7 +50,7 @@ public class ProductWebMapper {
     }
 
     public ProductSimpleCreationCommand toSimpleCreationCommand(
-            final CreateSimpleProductRequest request) {
+            final ProductSimpleCreationRequest request) {
         return new ProductSimpleCreationCommand(
                 request.name(),
                 request.categoryId(),
@@ -69,7 +69,7 @@ public class ProductWebMapper {
 
     public ProductInfoUpdateCommand toInfoUpdateCommand(
             final UUID productId,
-            final UpdateProductInfoRequest request) {
+            final ProductInfoUpdateRequest request) {
         final var nameChange = ChangeRequest.toChange(request.name());
         final var categoryIdChange = ChangeRequest.toChange(request.categoryId());
         final var brandIdChange = ChangeRequest.toChange(request.brandId());
