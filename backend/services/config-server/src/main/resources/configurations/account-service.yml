@@ -68,11 +68,11 @@ app:
     keycloak:
         admin:
             server-url: http://${KEYCLOAK_URL:localhost:8080}
-            realm: ms_shop
-            client-id: ms_shop_rest_api
-            client-secret: VoU1JAQHpPCrEbUsaJUEeugfbx1qxhDU
-            token-uri: http://${KEYCLOAK_URL:localhost:8080}/realms/ms_shop/protocol/openid-connect/token
-            client-uuid: 23e0e082-c166-4cdb-afd7-2d1eba1c9cff
+            realm: ${KEYCLOAK_REALM}
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            token-uri: http://${KEYCLOAK_URL:localhost:8080}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token
+            client-uuid: ${KEYCLOAK_CLIENT_UUID}
 eureka:
     client:
         serviceUrl:
