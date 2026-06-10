@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.product.application.dto.query.lookup.ProductActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
@@ -33,15 +34,20 @@ public class ProductActiveLookupService
     @Cacheable(
             cacheNames = CacheNames.PRODUCT,
             key = "#id.value()")
-    public ProductView findById(
-            final ProductId id) {
-        final var product = this.activeLookupByIdPort.loadById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+    public ProductView find(
+            final ProductActiveLookupByIdQuery query) {
+        final var productId = new ProductId(query.productId());
+        final var product = this.activeLookupByIdPort.loadById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(id);
-        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(id);
-        final var rating = this.ratingLookupByIdPort.loadByIdOrZero(id);
+        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(productId);
+        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(productId);
+        final var rating = this.ratingLookupByIdPort.loadByIdOrZero(productId);
 
-        return this.mapper.toView(product, soldCount, stockCount, rating);
+        return this.mapper.toView(
+                product,
+                soldCount,
+                stockCount,
+                rating);
     }
 }

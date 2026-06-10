@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductSoftDeletedExistenceCheckByBrandIdQuery;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductSoftDeletedExistenceCheckByBrandIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductSoftDeletedExistenceCheckByBrandIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
@@ -18,8 +19,9 @@ public class ProductSoftDeletedExistenceCheckByBrandIdService
     @Override
     @Transactional(
             readOnly = true)
-    public boolean existsByBrandId(
-            final ProductBrandId brandId) {
+    public boolean exists(
+            final ProductSoftDeletedExistenceCheckByBrandIdQuery query) {
+        final var brandId = new ProductBrandId(query.brandId());
         return this.existenceCheckPort.existsSoftDeletedByBrandId(brandId);
     }
 }

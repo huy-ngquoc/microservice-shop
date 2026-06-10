@@ -1,8 +1,8 @@
 package vn.edu.uit.msshop.product.product.application.port.in.query.existence;
 
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByBrandIdQuery;
 
 public interface ProductActiveExistenceCheckByBrandIdUseCase {
-    boolean existsByBrandId(
-            final ProductBrandId brandId);
+    boolean exists(
+            final ProductActiveExistenceCheckByBrandIdQuery query);
 }
