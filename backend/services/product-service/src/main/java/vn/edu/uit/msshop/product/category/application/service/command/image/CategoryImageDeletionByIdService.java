@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersi
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CategoryImageDeletionByIdService
+class CategoryImageDeletionByIdService
         implements CategoryImageDeletionByIdUseCase {
 
     private final CategoryActiveLookupByIdPort activeLookupByIdPort;

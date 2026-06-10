@@ -20,7 +20,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-public class SoftDeleteAllVariantsService implements SoftDeleteAllVariantsUseCase {
+class SoftDeleteAllVariantsService implements SoftDeleteAllVariantsUseCase {
     private final LoadAllVariantsPort loadAllPort;
     private final UpdateAllVariantsPort updateAllPort;
     private final VariantEventPublicationPort eventPublicationPort;

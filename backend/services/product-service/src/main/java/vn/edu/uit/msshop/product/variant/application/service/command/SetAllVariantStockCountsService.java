@@ -28,7 +28,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCo
 
 @Service
 @RequiredArgsConstructor
-public class SetAllVariantStockCountsService implements SetAllVariantStockCountsUseCase {
+class SetAllVariantStockCountsService implements SetAllVariantStockCountsUseCase {
     private final LoadAllVariantStockCountsPort loadAllPort;
     private final UpdateAllVariantStockCountsPort updateAllPort;
     private final IncreaseProductStockCountsPort increaseProductStockCountsPort;

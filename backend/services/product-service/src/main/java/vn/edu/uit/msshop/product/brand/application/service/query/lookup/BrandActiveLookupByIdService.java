@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
 @RequiredArgsConstructor
-public class BrandActiveLookupByIdService
+class BrandActiveLookupByIdService
         implements BrandActiveLookupByIdUseCase {
 
     private final BrandActiveLookupByIdPort loadPort;

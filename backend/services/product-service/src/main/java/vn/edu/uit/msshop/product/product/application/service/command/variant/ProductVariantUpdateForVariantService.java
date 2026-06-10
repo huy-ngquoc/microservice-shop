@@ -24,7 +24,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 
 @Service
 @RequiredArgsConstructor
-public class ProductVariantUpdateForVariantService
+class ProductVariantUpdateForVariantService
         implements ProductVariantUpdateForVariantUseCase {
     private final ProductActiveLookupByIdPort loadPort;
     private final ProductUpdatePort updatePort;

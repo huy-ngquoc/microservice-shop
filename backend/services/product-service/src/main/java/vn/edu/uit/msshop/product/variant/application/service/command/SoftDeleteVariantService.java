@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletio
 
 @Service
 @RequiredArgsConstructor
-public class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
+class SoftDeleteVariantService implements SoftDeleteVariantUseCase {
     private final LoadVariantPort loadPort;
     private final LoadVariantSoldCountPort loadSoldCountPort;
     private final LoadVariantStockCountPort loadStockCountPort;

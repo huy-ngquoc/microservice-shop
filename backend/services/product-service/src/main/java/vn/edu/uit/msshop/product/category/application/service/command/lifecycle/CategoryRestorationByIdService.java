@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryVersi
 
 @Service
 @RequiredArgsConstructor
-public class CategoryRestorationByIdService
+class CategoryRestorationByIdService
         implements CategoryRestorationByIdUseCase {
 
     private final CategorySoftDeletedLookupByIdPort softDeletedLookupByIdPort;

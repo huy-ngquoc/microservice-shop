@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 
 @Service
 @RequiredArgsConstructor
-public class ProductRestorationService
+class ProductRestorationService
         implements ProductRestorationUseCase {
     private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final ProductUpdatePort updatePort;

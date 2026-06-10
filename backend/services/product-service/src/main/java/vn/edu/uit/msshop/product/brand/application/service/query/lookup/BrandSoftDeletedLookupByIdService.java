@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.brand.domain.model.valueobject.BrandId;
 
 @Service
 @RequiredArgsConstructor
-public class BrandSoftDeletedLookupByIdService
+class BrandSoftDeletedLookupByIdService
         implements BrandSoftDeletedLookupByIdUseCase {
 
     private final BrandSoftDeletedLookupByIdPort loadSoftDeletedPort;

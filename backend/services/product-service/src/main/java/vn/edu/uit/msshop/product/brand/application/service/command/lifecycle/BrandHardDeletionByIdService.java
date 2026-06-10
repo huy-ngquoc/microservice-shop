@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BrandHardDeletionByIdService
+class BrandHardDeletionByIdService
         implements BrandHardDeletionByIdUseCase {
 
     private final BrandSoftDeletedLookupByIdPort loadSoftDeletedPort;

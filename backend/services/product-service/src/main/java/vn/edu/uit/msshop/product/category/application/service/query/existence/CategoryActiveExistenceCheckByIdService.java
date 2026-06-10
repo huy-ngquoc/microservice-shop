@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.category.domain.model.valueobject.CategoryId;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryActiveExistenceCheckByIdService
+class CategoryActiveExistenceCheckByIdService
         implements CategoryActiveExistenceCheckByIdUseCase {
 
     private final CategoryActiveExistenceCheckByIdPort checkExistsPort;

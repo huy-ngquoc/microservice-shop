@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 
 @Service
 @RequiredArgsConstructor
-public class RestoreVariantService implements RestoreVariantUseCase {
+class RestoreVariantService implements RestoreVariantUseCase {
     private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
     private final LoadVariantSoldCountPort loadSoldCountPort;
     private final LoadVariantStockCountPort loadStockCountPort;

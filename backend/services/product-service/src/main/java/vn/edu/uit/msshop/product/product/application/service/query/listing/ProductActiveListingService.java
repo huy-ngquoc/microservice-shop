@@ -28,7 +28,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class ProductActiveListingService
+class ProductActiveListingService
         implements ProductActiveListingUseCase {
     private static final Collector<
             ProductId,

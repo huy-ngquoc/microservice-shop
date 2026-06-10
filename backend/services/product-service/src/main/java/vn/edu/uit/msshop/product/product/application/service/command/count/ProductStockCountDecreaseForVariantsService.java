@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
 @RequiredArgsConstructor
-public class ProductStockCountDecreaseForVariantsService
+class ProductStockCountDecreaseForVariantsService
         implements ProductStockCountDecreaseForVariantsUseCase {
     private final ProductStockCountBulkDecreationPort bulkDecreationPort;
 

@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
 @RequiredArgsConstructor
-public class CategorySoftDeletionByIdService
+class CategorySoftDeletionByIdService
         implements CategorySoftDeletionByIdUseCase {
 
     private final CategoryActiveLookupByIdPort activeLookupByIdPort;

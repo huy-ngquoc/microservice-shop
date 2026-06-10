@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
 @RequiredArgsConstructor
-public class ProductActiveExistenceCheckByIdService
+class ProductActiveExistenceCheckByIdService
         implements ProductActiveExistenceCheckByIdUseCase {
 
     private final ProductExistenceCheckByIdPort existenceCheckPort;
