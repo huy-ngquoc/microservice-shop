@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.category.adapter.out.persistence.mapper.CategoryPersistenceMapper;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryCreationPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryDeletionByIdPort;
 import vn.edu.uit.msshop.product.category.application.port.out.persistence.category.command.CategoryUpdatePort;

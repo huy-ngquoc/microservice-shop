@@ -8,7 +8,6 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.adapter.out.persistence.mapper.VariantPersistenceMapper;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
