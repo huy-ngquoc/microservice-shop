@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.adapter.in.web.mapper.ProductWebMapper;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateProductRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.CreateSimpleProductRequest;
-import vn.edu.uit.msshop.product.product.adapter.in.web.request.UpdateProductInfoRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductCreationRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductSimpleCreationRequest;
+import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductInfoUpdateRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductCreationUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionUseCase;
@@ -42,8 +42,9 @@ public class ProductController {
     public ResponseEntity<ProductResponse> create(
             @RequestBody
             @Valid
-            final CreateProductRequest request) {
-        final var view = this.creationUseCase.create(this.mapper.toCreationCommand(request));
+            final ProductCreationRequest request) {
+        final var command = this.mapper.toCreationCommand(request);
+        final var view = this.creationUseCase.create(command);
 
         final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
@@ -60,8 +61,9 @@ public class ProductController {
     public ResponseEntity<ProductResponse> createSimple(
             @RequestBody
             @Valid
-            final CreateSimpleProductRequest request) {
-        final var view = this.creationUseCase.createSimple(this.mapper.toSimpleCreationCommand(request));
+            final ProductSimpleCreationRequest request) {
+        final var command = this.mapper.toSimpleCreationCommand(request);
+        final var view = this.creationUseCase.createSimple(command);
 
         final var response = this.mapper.toResponse(view);
         final var method = WebMvcLinkBuilder
@@ -94,7 +96,7 @@ public class ProductController {
 
             @RequestBody
             @Valid
-            final UpdateProductInfoRequest request) {
+            final ProductInfoUpdateRequest request) {
         final var command = this.mapper.toInfoUpdateCommand(id, request);
         final var view = this.infoUpdateUseCase.updateInfo(command);
 
