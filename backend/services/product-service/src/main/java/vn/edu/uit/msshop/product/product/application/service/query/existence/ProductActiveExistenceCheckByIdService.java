@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByIdQuery;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.existence.ProductExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -18,8 +19,9 @@ public class ProductActiveExistenceCheckByIdService
     @Override
     @Transactional(
             readOnly = true)
-    public boolean existsById(
-            final ProductId id) {
-        return this.existenceCheckPort.existsById(id);
+    public boolean exists(
+            final ProductActiveExistenceCheckByIdQuery query) {
+        final var productId = new ProductId(query.productId());
+        return this.existenceCheckPort.existsById(productId);
     }
 }

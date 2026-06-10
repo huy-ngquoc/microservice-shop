@@ -32,7 +32,7 @@ public class ProductQueryController {
     private final ProductWebMapper mapper;
 
     @GetMapping
-    public ResponseEntity<PageResponseDto<ProductResponse>> list(
+    public ResponseEntity<PageResponseDto<ProductResponse>> listActive(
             @RequestParam(
                     defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
             final int page,
@@ -50,7 +50,8 @@ public class ProductQueryController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = this.activeListingUseCase.list(request);
+        final var query = this.mapper.toActiveListingQuery(request);
+        final var views = this.activeListingUseCase.list(query);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
@@ -75,17 +76,19 @@ public class ProductQueryController {
                     defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
             final PageRequestDto.Direction direction) {
         final var request = new PageRequestDto(page, size, sortBy, direction);
-        final var views = this.softDeletedListingUseCase.list(request);
+        final var query = this.mapper.toSoftDeletedListingQuery(request);
+        final var views = this.softDeletedListingUseCase.list(query);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> findById(
+    public ResponseEntity<ProductResponse> findActiveById(
             @PathVariable
             final UUID id) {
-        final var view = this.activeLookupByIdUseCase.findById(this.mapper.toProductId(id));
+        final var query = this.mapper.toActiveLookupByIdQuery(id);
+        final var view = this.activeLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -95,8 +98,8 @@ public class ProductQueryController {
     public ResponseEntity<ProductResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
-        final var view = this.softDeletedLookupByIdUseCase.findById(
-                this.mapper.toProductId(id));
+        final var query = this.mapper.toSoftDeletedLookupByIdQuery(id);
+        final var view = this.softDeletedLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);

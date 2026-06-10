@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductSoldCountDecreaseForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountDecreaseForVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountIncreaseForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductSoldCountIncreaseForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantAdditionForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantRemovalForVariantCommand;
@@ -93,8 +94,8 @@ public class VariantToProductSyncAdapter
         final var incrementById = VariantToProductSyncAdapter
                 .toCountByProductId(incrementByProductId);
 
-        final var command = new ProductSoldCountIncreaseForVariantsCommand(incrementById);
-        this.productSoldCountIncreaseForVariantsUseCase.increase(command);
+        final var command = new ProductStockCountIncreaseForVariantsCommand(incrementById);
+        this.productStockCountIncreaseForVariantsUseCase.increase(command);
     }
 
     @Override

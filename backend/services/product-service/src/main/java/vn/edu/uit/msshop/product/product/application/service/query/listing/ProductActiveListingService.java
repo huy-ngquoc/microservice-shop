@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.product.application.dto.query.listing.ProductActiveListingQuery;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductActiveListingUseCase;
@@ -23,7 +24,6 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.ProductStockCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
@@ -48,8 +48,8 @@ public class ProductActiveListingService
     @Cacheable(
             cacheNames = CacheNames.PRODUCT_LIST)
     public PageResponseDto<ProductView> list(
-            PageRequestDto pageRequest) {
-        final var page = this.activeListingPort.list(pageRequest);
+            final ProductActiveListingQuery query) {
+        final var page = this.activeListingPort.list(query.pageRequest());
 
         final var ids = page.items().stream()
                 .map(Product::getId)
