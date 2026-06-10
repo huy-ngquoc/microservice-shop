@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
 @Component
-public class ProductPersistenceMapper {
+class ProductPersistenceMapper {
     public Product toDomain(
             final ProductDocument entity) {
         final var id = new ProductId(entity.getId());
