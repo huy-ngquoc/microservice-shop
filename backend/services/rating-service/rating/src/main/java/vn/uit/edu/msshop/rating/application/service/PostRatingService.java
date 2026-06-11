@@ -1,14 +1,19 @@
 package vn.uit.edu.msshop.rating.application.service;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import vn.uit.edu.msshop.rating.application.dto.command.PostRatingCommand;
+import vn.uit.edu.msshop.rating.application.dto.integration.RatingCreatedIntegrationEvent;
 import vn.uit.edu.msshop.rating.application.exception.ProductNotFoundException;
 import vn.uit.edu.msshop.rating.application.port.in.PostRatingUseCase;
 import vn.uit.edu.msshop.rating.application.port.out.CheckProductPort;
 import vn.uit.edu.msshop.rating.application.port.out.LoadRatingInfoPort;
 import vn.uit.edu.msshop.rating.application.port.out.PublishRatingEvent;
+import vn.uit.edu.msshop.rating.application.port.out.PublishRatingIntegrationEventPort;
 import vn.uit.edu.msshop.rating.application.port.out.SaveRatingInfoPort;
 import vn.uit.edu.msshop.rating.application.port.out.SaveRatingPort;
 import vn.uit.edu.msshop.rating.domain.event.RatingPosted;
@@ -25,7 +30,7 @@ public class PostRatingService implements PostRatingUseCase {
     private final LoadRatingInfoPort loadRatingInfoPort;
     private final SaveRatingInfoPort saveRatingInfoPort;
     private final CheckProductPort checkProductPort;
-
+    private final PublishRatingIntegrationEventPort ratingKafkaPublisher;
     @Override
     public void post(
             PostRatingCommand command) {
@@ -54,6 +59,9 @@ public class PostRatingService implements PostRatingUseCase {
                 saved.getProductId(),
                 saved.getRatingPoint());
         this.publishEvent.publish(event);
+        
+        final var kafkaEvent = new RatingCreatedIntegrationEvent(UUID.randomUUID(),saved.getProductId().value(),saved.getRatingPoint().value(),Instant.now());
+        this.ratingKafkaPublisher.publishCreated(kafkaEvent);
     }
 
     private void updateRatingInfo(

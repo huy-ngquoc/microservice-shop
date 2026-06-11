@@ -14,6 +14,7 @@ import vn.uit.edu.msshop.rating.application.dto.integration.RatingDeletedIntegra
 import vn.uit.edu.msshop.rating.application.dto.integration.RatingIntegrationEvent;
 import vn.uit.edu.msshop.rating.application.dto.integration.RatingUpdatedIntegrationEvent;
 import vn.uit.edu.msshop.rating.application.port.out.PublishRatingIntegrationEventPort;
+import vn.uit.edu.msshop.rating.domain.event.RatingPosted;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class RatingKafkaPublisherAdapter
     @Override
     public void publishCreated(
             final RatingCreatedIntegrationEvent event) {
+                System.out.println("Send event");
         this.publish(event);
     }
 
@@ -54,4 +56,6 @@ public class RatingKafkaPublisherAdapter
 
         this.kafkaTemplate.send(producerRecord);
     }
+
+    
 }

@@ -127,6 +127,9 @@ services:
             - KEYCLOAK_URL=${KEYCLOAK_URL}
             - KAFKA_URL=${KAFKA_URL}
             - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
+            - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+            - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+            - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
         deploy:
             resources:
                 limits:
