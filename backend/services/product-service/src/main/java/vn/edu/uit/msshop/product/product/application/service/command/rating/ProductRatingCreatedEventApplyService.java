@@ -12,8 +12,8 @@ import vn.edu.uit.msshop.product.product.application.dto.command.rating.ProductR
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingCreatedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProcessedRatingEventExistenceCheckByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProcessedRatingEventCreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProductProcessedRatingEventExistenceCheckByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProductProcessedRatingEventCreationPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
@@ -25,8 +25,8 @@ class ProductRatingCreatedEventApplyService
 
     private final ProductRatingLookupByIdPort ratingLookupByIdPort;
     private final ProductRatingUpdatePort ratingUpdatePort;
-    private final ProcessedRatingEventExistenceCheckByIdPort processedRatingEventExistenceCheckByIdPort;
-    private final ProcessedRatingEventCreationPort processedRatingEventCreationPort;
+    private final ProductProcessedRatingEventExistenceCheckByIdPort processedRatingEventExistenceCheckByIdPort;
+    private final ProductProcessedRatingEventCreationPort processedRatingEventCreationPort;
 
     @Override
     @Transactional
