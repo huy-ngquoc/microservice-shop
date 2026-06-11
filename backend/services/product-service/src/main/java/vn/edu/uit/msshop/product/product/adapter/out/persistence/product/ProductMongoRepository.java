@@ -7,10 +7,10 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-interface ProductMongoRepository extends MongoRepository<ProductDocument, UUID> {
+interface ProductMongoRepository
+        extends MongoRepository<ProductDocument, UUID> {
+
     List<ProductDocument> findAllByDeletionTimeIsNull(
             final Iterable<UUID> ids);
 
