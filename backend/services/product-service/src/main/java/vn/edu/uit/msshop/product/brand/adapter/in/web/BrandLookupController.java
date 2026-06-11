@@ -113,7 +113,7 @@ public class BrandLookupController {
             @PathVariable
             final UUID id) {
         final var query = this.mapper.toActiveExistenceCheckByIdQuery(id);
-        final var existed = this.activeExistenceCheckByIdUseCase.check(query);
+        final var existed = this.activeExistenceCheckByIdUseCase.exists(query);
 
         if (!existed) {
             return ResponseEntity.notFound().build();

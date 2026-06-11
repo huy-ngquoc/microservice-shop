@@ -19,6 +19,6 @@ public class ProductBrandValidationAdapter
     public boolean existsById(
             final ProductBrandId brandId) {
         final var query = new BrandActiveExistenceCheckByIdQuery(brandId.value());
-        return this.brandActiveExistenceCheckByIdUseCase.check(query);
+        return this.brandActiveExistenceCheckByIdUseCase.exists(query);
     }
 }
