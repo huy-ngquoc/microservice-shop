@@ -8,10 +8,10 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface VariantMongoRepository extends MongoRepository<VariantDocument, UUID> {
+public interface VariantMongoRepository
+        extends MongoRepository<VariantDocument, UUID> {
+
     Page<VariantDocument> findAllByDeletionTimeIsNull(
             final Pageable pageable);
 
