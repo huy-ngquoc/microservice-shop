@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.adapter.out.sync.response.RatingInfoResponse;
+import vn.edu.uit.msshop.product.product.adapter.out.sync.response.ProductRatingInfoResponse;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductRatingBulkFetchPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingAmount;
@@ -51,7 +51,7 @@ public class ProductRatingFeignAdapter
     }
 
     private static ProductRatingSnapshot toDomainDto(
-            final RatingInfoResponse response) {
+            final ProductRatingInfoResponse response) {
         return new ProductRatingSnapshot(
                 new ProductId(response.productId()),
                 new ProductRatingTotal(response.totalPoint()),
