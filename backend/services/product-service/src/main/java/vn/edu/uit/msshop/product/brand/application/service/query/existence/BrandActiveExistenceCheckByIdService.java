@@ -19,7 +19,7 @@ class BrandActiveExistenceCheckByIdService
     @Override
     @Transactional(
             readOnly = true)
-    public boolean check(
+    public boolean exists(
             final BrandActiveExistenceCheckByIdQuery query) {
         final var brandId = new BrandId(query.brandId());
         return this.checkExistsPort.existsById(brandId);
