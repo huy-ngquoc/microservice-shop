@@ -15,7 +15,8 @@ import lombok.Getter;
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-final class ProcessedRatingEventDocument {
+final class ProductProcessedRatingEventDocument {
+
     @Id
     @EqualsAndHashCode.Include
     private final UUID id;
@@ -25,14 +26,14 @@ final class ProcessedRatingEventDocument {
     private final Instant processedTime;
 
     @PersistenceCreator
-    public ProcessedRatingEventDocument(
+    public ProductProcessedRatingEventDocument(
             final UUID id,
             final Instant processedTime) {
         this.id = id;
         this.processedTime = processedTime;
     }
 
-    public ProcessedRatingEventDocument(
+    public ProductProcessedRatingEventDocument(
             final UUID id) {
         this(id, Instant.now());
     }
