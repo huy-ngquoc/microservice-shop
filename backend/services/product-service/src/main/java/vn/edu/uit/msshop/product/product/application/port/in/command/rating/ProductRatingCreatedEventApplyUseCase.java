@@ -1,12 +1,8 @@
 package vn.edu.uit.msshop.product.product.application.port.in.command.rating;
 
-import java.util.UUID;
-
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.application.dto.command.rating.ProductRatingCreatedEventApplyCommand;
 
 public interface ProductRatingCreatedEventApplyUseCase {
-    void execute(
-            final UUID eventId,
-            final ProductId productId,
-            final int point);
+    void apply(
+            final ProductRatingCreatedEventApplyCommand cmd);
 }

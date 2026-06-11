@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.product.application.service.command.rating;
 
-import java.util.UUID;
-
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -10,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.product.application.dto.command.rating.ProductRatingUpdatedEventApplyCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingUpdatedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
@@ -40,20 +39,21 @@ class ProductRatingUpdatedEventApplyService
                             cacheNames = CacheNames.PRODUCT_LIST,
                             allEntries = true)
             })
-    public void execute(
-            final UUID eventId,
-            final ProductId productId,
-            final int oldPoint,
-            final int newPoint) {
+    public void apply(
+            final ProductRatingUpdatedEventApplyCommand cmd) {
+        final var eventId = cmd.eventId();
         if (ratingEventExistenceCheckByIdPort.exists(eventId)) {
             log.debug("Skipping already-processed event {}", eventId);
             return;
         }
 
         try {
+            final var productId = new ProductId(cmd.productId());
             final var rating = this.ratingLookupByIdPort.loadByIdOrZero(productId);
 
-            final var next = rating.updateRating(oldPoint, newPoint);
+            final var next = rating.updateRating(
+                    cmd.oldRatingPoint(),
+                    cmd.newRatingPoint());
             this.ratingUpdatePort.update(next);
         } catch (final DomainException e) {
             log.error("Invariant violation for rating update event {} — marking processed without state change",
