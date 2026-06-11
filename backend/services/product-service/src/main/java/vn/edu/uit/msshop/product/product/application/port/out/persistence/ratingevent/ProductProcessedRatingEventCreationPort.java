@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.product.application.port.out.persistence.ratin
 
 import java.util.UUID;
 
-public interface ProcessedRatingEventCreationPort {
+public interface ProductProcessedRatingEventCreationPort {
     void create(
             final UUID eventId);
 }

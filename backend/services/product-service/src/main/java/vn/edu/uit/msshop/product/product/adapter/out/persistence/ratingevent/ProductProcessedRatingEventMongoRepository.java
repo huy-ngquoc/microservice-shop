@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-interface ProcessedRatingEventMongoRepository
-        extends MongoRepository<ProcessedRatingEventDocument, UUID> {
+interface ProductProcessedRatingEventMongoRepository
+        extends MongoRepository<ProductProcessedRatingEventDocument, UUID> {
 }
