@@ -27,6 +27,7 @@ public class ProductRatingEventListener {
     @KafkaHandler
     public void onCreated(
             final RatingCreatedIntegrationEvent event) {
+                System.out.println("Nhan su kien");
         this.createdUseCase.execute(
                 event.eventId(),
                 new ProductId(event.productId()),

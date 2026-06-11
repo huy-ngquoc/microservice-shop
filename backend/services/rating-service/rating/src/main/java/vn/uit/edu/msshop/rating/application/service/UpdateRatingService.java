@@ -1,5 +1,8 @@
 package vn.uit.edu.msshop.rating.application.service;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,11 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.dto.Change;
 import vn.uit.edu.msshop.rating.application.dto.command.UpdateRatingCommand;
+import vn.uit.edu.msshop.rating.application.dto.integration.RatingUpdatedIntegrationEvent;
 import vn.uit.edu.msshop.rating.application.exception.RatingInfoNotFoundException;
 import vn.uit.edu.msshop.rating.application.port.in.UpdateRatingUseCase;
 import vn.uit.edu.msshop.rating.application.port.out.LoadRatingInfoPort;
 import vn.uit.edu.msshop.rating.application.port.out.LoadRatingPort;
 import vn.uit.edu.msshop.rating.application.port.out.PublishRatingEvent;
+import vn.uit.edu.msshop.rating.application.port.out.PublishRatingIntegrationEventPort;
 import vn.uit.edu.msshop.rating.application.port.out.SaveRatingInfoPort;
 import vn.uit.edu.msshop.rating.application.port.out.SaveRatingPort;
 import vn.uit.edu.msshop.rating.domain.event.RatingUpdated;
@@ -27,6 +32,7 @@ public class UpdateRatingService implements UpdateRatingUseCase {
     private final LoadRatingPort loadPort;
     private final LoadRatingInfoPort loadRatingInfoPort;
     private final SaveRatingInfoPort saveRatingInfoPort;
+    private final PublishRatingIntegrationEventPort ratingKafkaPublisher;
 
     @Override
     @Transactional
@@ -40,6 +46,7 @@ public class UpdateRatingService implements UpdateRatingUseCase {
         }
 
         final var rating = loadPort.loadById(command.ratingId());
+        int oldPoint = rating.getRatingPoint().value();
         final var next = this.applyChanges(
                 rating,
                 contentSet,
@@ -56,6 +63,8 @@ public class UpdateRatingService implements UpdateRatingUseCase {
                 rating.getRatingPoint(),
                 saved.getRatingPoint());
         eventPublisher.publish(event);
+        final var kafkaEvent = new RatingUpdatedIntegrationEvent(UUID.randomUUID(),saved.getProductId().value(),oldPoint,saved.getRatingPoint().value(),Instant.now());
+        ratingKafkaPublisher.publishUpdated(kafkaEvent);
     }
 
     private @Nullable Rating applyChanges(

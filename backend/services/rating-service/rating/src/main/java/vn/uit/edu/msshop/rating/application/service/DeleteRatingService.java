@@ -1,13 +1,18 @@
 package vn.uit.edu.msshop.rating.application.service;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.uit.edu.msshop.rating.application.dto.integration.RatingDeletedIntegrationEvent;
 import vn.uit.edu.msshop.rating.application.port.in.DeleteRatingUseCase;
 import vn.uit.edu.msshop.rating.application.port.out.DeleteRatingPort;
 import vn.uit.edu.msshop.rating.application.port.out.LoadRatingPort;
 import vn.uit.edu.msshop.rating.application.port.out.PublishRatingEvent;
+import vn.uit.edu.msshop.rating.application.port.out.PublishRatingIntegrationEventPort;
 import vn.uit.edu.msshop.rating.domain.event.RatingDeleted;
 import vn.uit.edu.msshop.rating.domain.model.valueobject.RatingId;
 
@@ -17,6 +22,7 @@ public class DeleteRatingService implements DeleteRatingUseCase {
     private final LoadRatingPort loadPort;
     private final DeleteRatingPort deletePort;
     private final PublishRatingEvent eventPublisher;
+    private final PublishRatingIntegrationEventPort ratingKafkaPublisher;
 
     @Override
     @Transactional
@@ -31,6 +37,8 @@ public class DeleteRatingService implements DeleteRatingUseCase {
                 rating.getProductId(),
                 rating.getRatingPoint());
         eventPublisher.publish(event);
+        final var kafkaEvent = new RatingDeletedIntegrationEvent(UUID.randomUUID(),rating.getProductId().value(),rating.getRatingPoint().value(),Instant.now());
+        ratingKafkaPublisher.publishDeleted(kafkaEvent);
     }
 
 }
