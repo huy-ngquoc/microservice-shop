@@ -1,0 +1,77 @@
+package vn.edu.uit.msshop.product.variant.application.service.command.sync;
+
+import java.util.Map;
+
+import org.jspecify.annotations.Nullable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateAllVariantTraitsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
+import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
+
+@Service
+@RequiredArgsConstructor
+class VariantTraitBulkUpdateByIdsForProductService
+        implements UpdateAllVariantTraitsForProductUseCase {
+    private final LoadAllVariantsPort loadAllPort;
+    private final UpdateAllVariantsPort updateAllPort;
+    private final VariantEventPublicationPort eventPublicationPort;
+
+    @Override
+    @Transactional
+    @Caching(
+            evict = {
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT,
+                            allEntries = true),
+                    @CacheEvict(
+                            cacheNames = CacheNames.VARIANT_LIST,
+                            allEntries = true)
+            })
+    public void updateTraitsByIds(
+            Map<VariantId, VariantTraits> newTraitsMap) {
+        final var ids = newTraitsMap.keySet();
+        final var variantById = this.loadAllPort.loadAllByIds(ids);
+
+        final var next = variantById.values().stream()
+                .map(v -> withNewTraits(v, newTraitsMap.get(v.getId())))
+                .toList();
+
+        final var saved = this.updateAllPort.updateAll(next);
+        for (final var v : saved) {
+            final var event = new VariantInfoUpdatedEvent(v.getId());
+            this.eventPublicationPort.publishEvent(event);
+        }
+    }
+
+    private static Variant withNewTraits(
+            final Variant variant,
+            @Nullable
+            final VariantTraits newTraits) {
+        if (newTraits == null) {
+            throw new BusinessRuleException("Missing traits for variant: " + variant.getId().value());
+        }
+
+        return new Variant(
+                variant.getId(),
+                variant.getProductId(),
+                variant.getProductName(),
+                variant.getPrice(),
+                newTraits,
+                variant.getTargets(),
+                variant.getImageKey(),
+                variant.getVersion(),
+                variant.getDeletionTime());
+    }
+}
