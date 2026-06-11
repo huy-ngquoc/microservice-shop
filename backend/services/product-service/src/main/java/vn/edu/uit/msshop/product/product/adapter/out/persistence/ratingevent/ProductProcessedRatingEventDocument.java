@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-@Document("ProcessedRatingEvents")
+@Document("ProductProcessedRatingEvents")
 @Getter
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
