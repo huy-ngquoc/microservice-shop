@@ -9,10 +9,12 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingCreatedIntegrationEvent;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingDeletedIntegrationEvent;
 import vn.edu.uit.msshop.product.product.adapter.in.event.payload.RatingUpdatedIntegrationEvent;
+import vn.edu.uit.msshop.product.product.application.dto.command.rating.ProductRatingCreatedEventApplyCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.rating.ProductRatingDeletedEventApplyCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.rating.ProductRatingUpdatedEventApplyCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingCreatedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingDeletedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingUpdatedEventApplyUseCase;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Component
 @RequiredArgsConstructor
@@ -27,28 +29,31 @@ public class ProductRatingEventListener {
     @KafkaHandler
     public void onCreated(
             final RatingCreatedIntegrationEvent event) {
-        this.ratingCreatedEventApplyUseCase.execute(
+        final var command = new ProductRatingCreatedEventApplyCommand(
                 event.eventId(),
-                new ProductId(event.productId()),
+                event.productId(),
                 event.point());
+        this.ratingCreatedEventApplyUseCase.apply(command);
     }
 
     @KafkaHandler
     public void onUpdate(
             final RatingUpdatedIntegrationEvent event) {
-        this.ratingUpdatedEventApplyUseCase.execute(
+        final var command = new ProductRatingUpdatedEventApplyCommand(
                 event.eventId(),
-                new ProductId(event.productId()),
+                event.productId(),
                 event.oldPoint(),
                 event.newPoint());
+        this.ratingUpdatedEventApplyUseCase.apply(command);
     }
 
     @KafkaHandler
     public void onDeleted(
             final RatingDeletedIntegrationEvent event) {
-        this.ratingDeletedEventApplyUseCase.execute(
+        final var command = new ProductRatingDeletedEventApplyCommand(
                 event.eventId(),
-                new ProductId(event.productId()),
+                event.productId(),
                 event.point());
+        this.ratingDeletedEventApplyUseCase.apply(command);
     }
 }
