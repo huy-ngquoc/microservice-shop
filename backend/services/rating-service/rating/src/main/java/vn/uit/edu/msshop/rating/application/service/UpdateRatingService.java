@@ -63,8 +63,7 @@ public class UpdateRatingService implements UpdateRatingUseCase {
                 rating.getRatingPoint(),
                 saved.getRatingPoint());
         eventPublisher.publish(event);
-        final var kafkaEvent = new RatingUpdatedIntegrationEvent(UUID.randomUUID(),saved.getProductId().value(),oldPoint,saved.getRatingPoint().value(),Instant.now());
-        ratingKafkaPublisher.publishUpdated(kafkaEvent);
+        
     }
 
     private @Nullable Rating applyChanges(

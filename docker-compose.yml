@@ -605,16 +605,25 @@ services:
         container_name: ms_mongo_db_rating
         image: mongo:8
         ports:
-            - 27018:27017
+        - 27018:27017
         volumes:
-            - mongo_rating:/data
+        - mongo_rating:/data/db
         environment:
-            - MONGO_INITDB_ROOT_USERNAME=alibou
-            - MONGO_INITDB_ROOT_PASSWORD=alibou
-            - TZ=UTC
+        - MONGO_INITDB_ROOT_USERNAME=alibou
+        - MONGO_INITDB_ROOT_PASSWORD=alibou
+        - TZ=UTC
         networks:
-            - microservices-net
+        - microservices-net
         restart: unless-stopped
+        entrypoint: >
+            bash -c "
+            if [ ! -f /data/db/mongo-keyfile ]; then
+                openssl rand -base64 756 > /data/db/mongo-keyfile
+                chmod 400 /data/db/mongo-keyfile
+                chown 999:999 /data/db/mongo-keyfile
+            fi;
+            exec mongod --replSet rs0 --bind_ip_all --keyFile /data/db/mongo-keyfile
+            "
         deploy:
             resources:
                 limits:
