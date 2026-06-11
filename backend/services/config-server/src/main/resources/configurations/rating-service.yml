@@ -1,7 +1,7 @@
 spring:
     data:
         mongodb:
-            uri: mongodb://alibou:alibou@${RATING_DB_URL:localhost:27018}/rating_db?authSource=admin&uuidRepresentation=STANDARD
+            uri: mongodb://alibou:alibou@${RATING_DB_URL:localhost:27018}/rating_db?authSource=admin&replicaSet=rs0&uuidRepresentation=STANDARD&directConnection=true
     kafka:
         bootstrap-servers: ${KAFKA_URL:localhost:9092}
         consumer:

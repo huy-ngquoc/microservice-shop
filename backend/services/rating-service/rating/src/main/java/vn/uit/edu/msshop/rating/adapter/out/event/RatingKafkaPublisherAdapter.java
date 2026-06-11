@@ -26,7 +26,7 @@ public class RatingKafkaPublisherAdapter
     @Override
     public void publishCreated(
             final RatingCreatedIntegrationEvent event) {
-                System.out.println("Send event");
+                
         this.publish(event);
     }
 

@@ -22,6 +22,7 @@ public class RatingIntegrationEventBridge {
             phase = TransactionPhase.AFTER_COMMIT)
     public void on(
             final RatingPosted event) {
+                
         final var msg = new RatingCreatedIntegrationEvent(
                 event.getEventId(),
                 event.getProductId().value(),
