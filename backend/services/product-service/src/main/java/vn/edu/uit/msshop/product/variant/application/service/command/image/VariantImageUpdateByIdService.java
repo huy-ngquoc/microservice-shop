@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantImageKeyNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantImageUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
@@ -28,7 +28,8 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 @RequiredArgsConstructor
 @Slf4j
 class VariantImageUpdateByIdService
-        implements UpdateVariantImageUseCase {
+        implements VariantImageUpdateByIdUseCase {
+
     private final LoadVariantPort loadPort;
     private final UpdateVariantPort updatePort;
     private final VariantImageStoragePort imageStoragePort;

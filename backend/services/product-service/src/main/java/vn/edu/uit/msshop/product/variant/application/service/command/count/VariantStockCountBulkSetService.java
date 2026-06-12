@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SetAllVariantStockCountsCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantStockCountsUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkSetUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantStockCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantStockCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductStockCountsPort;
@@ -29,7 +29,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCo
 @Service
 @RequiredArgsConstructor
 class VariantStockCountBulkSetService
-        implements SetAllVariantStockCountsUseCase {
+        implements VariantStockCountBulkSetUseCase {
 
     private final LoadAllVariantStockCountsPort loadAllPort;
     private final UpdateAllVariantStockCountsPort updateAllPort;

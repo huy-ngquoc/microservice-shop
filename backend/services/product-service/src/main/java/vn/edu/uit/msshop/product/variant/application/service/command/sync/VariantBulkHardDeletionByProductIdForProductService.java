@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkHardDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteAllVariantSoldCountsPort;
@@ -21,7 +21,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @RequiredArgsConstructor
 @Slf4j
 class VariantBulkHardDeletionByProductIdForProductService
-        implements HardDeleteVariantsForProductUseCase {
+        implements VariantBulkHardDeletionByProductIdForProductUseCase {
+
     private final LoadVariantsForProductPort loadForProductPort;
     private final DeleteVariantsForProductPort deleteForProductPort;
     private final DeleteAllVariantSoldCountsPort deleteAllSoldCountsPort;
