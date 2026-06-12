@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkRestorationByIdsPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkRestorationByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Component
@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 public class ProductToVariantRestorationSyncAdapter
         implements ProductVariantBulkRestorationByIdsPort {
 
-    private final RestoreVariantsForProductUseCase restoreVariantsForProductUseCase;
+    private final VariantBulkRestorationByIdsForProductUseCase variantBulkRestorationByIdsForProductUseCase;
 
     @Override
     public void restoreByVariantIds(
@@ -24,6 +24,6 @@ public class ProductToVariantRestorationSyncAdapter
                 .map(VariantId::new)
                 .toList();
 
-        this.restoreVariantsForProductUseCase.restoreByIds(ids);
+        this.variantBulkRestorationByIdsForProductUseCase.restoreByIds(ids);
     }
 }

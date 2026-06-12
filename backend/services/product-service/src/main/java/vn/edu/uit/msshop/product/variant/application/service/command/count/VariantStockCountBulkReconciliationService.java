@@ -5,17 +5,17 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.dto.command.ReconcileVariantStockCountsCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.SetAllVariantStockCountsCommand;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVariantStockCountsUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.SetAllVariantStockCountsUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkReconciliationUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkSetUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.FetchInventoryStockCountsPort;
 
 @Service
 @RequiredArgsConstructor
 class VariantStockCountBulkReconciliationService
-        implements ReconcileVariantStockCountsUseCase {
+        implements VariantStockCountBulkReconciliationUseCase {
 
     private final FetchInventoryStockCountsPort fetchPort;
-    private final SetAllVariantStockCountsUseCase setAllUseCase;
+    private final VariantStockCountBulkSetUseCase setAllUseCase;
 
     @Override
     public void execute(

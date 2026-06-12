@@ -17,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.mapper.VariantImageWebMapper;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.DeleteVariantImageUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantImageUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantImageUseCase;
 
 @RestController
@@ -26,12 +26,13 @@ import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantIm
 @RequiredArgsConstructor
 public class VariantImageController {
     private final FindVariantImageUseCase findImageUseCase;
-    private final UpdateVariantImageUseCase updateImageUseCase;
-    private final DeleteVariantImageUseCase deleteImageUseCase;
+    private final VariantImageUpdateByIdUseCase updateByIdUseCase;
+    private final VariantImageDeletionByIdUseCase deletionByIdUseCase;
+
     private final VariantImageWebMapper mapper;
 
     @GetMapping("/{id}/image")
-    public ResponseEntity<VariantImageResponse> findImageById(
+    public ResponseEntity<VariantImageResponse> findById(
             @PathVariable
             final UUID id) {
         final var view = this.findImageUseCase
@@ -42,7 +43,7 @@ public class VariantImageController {
     }
 
     @PatchMapping("/{id}/image")
-    public ResponseEntity<VariantImageResponse> updateImage(
+    public ResponseEntity<VariantImageResponse> updateById(
             @PathVariable
             final UUID id,
 
@@ -50,21 +51,21 @@ public class VariantImageController {
             @Valid
             final UpdateVariantImageRequest request) {
         final var command = this.mapper.toUpdateImageCommand(id, request);
-        final var view = this.updateImageUseCase.updateImage(command);
+        final var view = this.updateByIdUseCase.updateImage(command);
 
         final var response = this.mapper.toImageResponse(view);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}/image")
-    public ResponseEntity<VariantImageResponse> deleteImageById(
+    public ResponseEntity<VariantImageResponse> deleteById(
             @PathVariable
             final UUID id,
 
             @RequestParam
             final long version) {
         final var command = this.mapper.toDeleteImageCommand(id, version);
-        final var view = this.deleteImageUseCase.deleteImage(command);
+        final var view = this.deletionByIdUseCase.deleteImage(command);
 
         final var response = this.mapper.toImageResponse(view);
         return ResponseEntity.ok(response);

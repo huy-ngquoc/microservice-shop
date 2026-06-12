@@ -13,8 +13,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantProductNameForProductCommand;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateAllVariantTraitsForProductUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantProductNameForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantTraitBulkUpdateByIdsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantProductNameBulkUpdateForProductUseCase;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
@@ -27,8 +27,8 @@ public class ProductToVariantUpdateSyncAdapter
         ProductVariantTraitBulkUpdatePort,
         ProductVariantNameBulkUpdateForProductPort {
 
-    private final UpdateAllVariantTraitsForProductUseCase updateAllTraitsForProductUseCase;
-    private final UpdateVariantProductNameForProductUseCase updateVariantProductNameForProductUseCase;
+    private final VariantTraitBulkUpdateByIdsForProductUseCase variantTraitBulkUpdateByIdsForProductUseCase;
+    private final VariantProductNameBulkUpdateForProductUseCase variantProductNameBulkUpdateForProductUseCase;
 
     @Override
     public void updateTraitsByIds(
@@ -45,7 +45,7 @@ public class ProductToVariantUpdateSyncAdapter
             map.put(variantId, variantTraits);
         }
 
-        this.updateAllTraitsForProductUseCase.updateTraitsByIds(map);
+        this.variantTraitBulkUpdateByIdsForProductUseCase.updateTraitsByIds(map);
     }
 
     @Override
@@ -58,6 +58,6 @@ public class ProductToVariantUpdateSyncAdapter
         final var command = new UpdateVariantProductNameForProductCommand(
                 variantProductId,
                 variantProductName);
-        this.updateVariantProductNameForProductUseCase.execute(command);
+        this.variantProductNameBulkUpdateForProductUseCase.execute(command);
     }
 }
