@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantIn
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantInfoUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantInfoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
@@ -29,7 +29,9 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Service
 @RequiredArgsConstructor
-class VariantInfoUpdateByIdService implements UpdateVariantInfoUseCase {
+class VariantInfoUpdateByIdService
+        implements VariantInfoUpdateByIdUseCase {
+
     private final LoadVariantPort loadPort;
     private final LoadVariantSoldCountPort loadSoldCountPort;
     private final LoadVariantStockCountPort loadStockCountPort;

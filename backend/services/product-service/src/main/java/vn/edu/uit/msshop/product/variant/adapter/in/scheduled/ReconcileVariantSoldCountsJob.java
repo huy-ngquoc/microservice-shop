@@ -7,20 +7,20 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVariantSoldCountsUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantSoldCountBulkReconciliationUSeCase;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class ReconcileVariantSoldCountsJob {
-    private final ReconcileVariantSoldCountsUseCase reconcileVariantSoldCountsUseCase;
+    private final VariantSoldCountBulkReconciliationUSeCase soldCountBulkReconciliationUSeCase;
 
     @Scheduled(
             fixedRate = 2,
             timeUnit = TimeUnit.HOURS)
     public void reconcile() {
         try {
-            this.reconcileVariantSoldCountsUseCase.execute();
+            this.soldCountBulkReconciliationUSeCase.execute();
         } catch (final RuntimeException e) {
             log.warn("Sold count reconciliation skipped: {}", e.getMessage());
         }

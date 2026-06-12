@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantsForNewProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.CreateVariantsForNewProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkCreationForNewProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeAllVariantSoldCountsPort;
@@ -33,7 +33,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @Service
 @RequiredArgsConstructor
 class VariantBulkCreationForNewProductService
-        implements CreateVariantsForNewProductUseCase {
+        implements VariantBulkCreationForNewProductUseCase {
+
     private final CreateAllVariantsPort createAllVariantsPort;
     private final InitializeAllVariantSoldCountsPort initializeAllSoldCountsPort;
     private final InitializeAllVariantStockCountsPort initializeAllStockCountsPort;

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.variant.application.dto.command.ReconcileVariantStockCountsCommand;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVariantStockCountsUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkReconciliationUseCase;
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.ReconcileVa
 public class ReconcileVariantStockCountsJob {
     private static final Duration WINDOW_DURATION = Duration.ofHours(24);
 
-    private final ReconcileVariantStockCountsUseCase reconcileUseCase;
+    private final VariantStockCountBulkReconciliationUseCase stockCountBulkReconciliationUseCase;
 
     @Scheduled(
             fixedRate = 2,
@@ -30,7 +30,7 @@ public class ReconcileVariantStockCountsJob {
         final var command = new ReconcileVariantStockCountsCommand(rangeStartTime, rangeEndTime);
 
         try {
-            this.reconcileUseCase.execute(command);
+            this.stockCountBulkReconciliationUseCase.execute(command);
         } catch (final RuntimeException e) {
             log.warn("Stock count reconciliation skipped: {}", e.getMessage());
         }

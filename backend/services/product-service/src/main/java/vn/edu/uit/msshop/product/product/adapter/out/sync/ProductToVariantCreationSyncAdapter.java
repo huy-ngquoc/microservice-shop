@@ -9,14 +9,14 @@ import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.CreateVariantsForNewProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkCreationForNewProductUseCase;
 
 @Component
 @RequiredArgsConstructor
 public class ProductToVariantCreationSyncAdapter
         implements ProductVariantBulkCreationPort {
 
-    private final CreateVariantsForNewProductUseCase createForNewProductUseCase;
+    private final VariantBulkCreationForNewProductUseCase variantBulkCreationForNewProductUseCase;
     private final ProductToVariantCreationSyncMapper mapper;
 
     @Override
@@ -28,7 +28,7 @@ public class ProductToVariantCreationSyncAdapter
                 id,
                 name,
                 newVariants);
-        final var variantViewsList = this.createForNewProductUseCase.create(command);
+        final var variantViewsList = this.variantBulkCreationForNewProductUseCase.create(command);
 
         return this.mapper.toProductVariants(variantViewsList);
     }

@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.DeleteVariantImageUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
@@ -26,7 +26,8 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.Update
 @RequiredArgsConstructor
 @Slf4j
 class VariantImageDeletionByIdService
-        implements DeleteVariantImageUseCase {
+        implements VariantImageDeletionByIdUseCase {
+
     private final LoadVariantPort loadPort;
     private final UpdateVariantPort updatePort;
     private final VariantImageStoragePort imageStoragePort;

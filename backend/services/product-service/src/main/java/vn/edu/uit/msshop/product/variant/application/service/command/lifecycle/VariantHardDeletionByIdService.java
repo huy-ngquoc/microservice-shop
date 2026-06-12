@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantHardDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
@@ -24,7 +24,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 @RequiredArgsConstructor
 @Slf4j
 class VariantHardDeletionByIdService
-        implements HardDeleteVariantUseCase {
+        implements VariantHardDeletionByIdUseCase {
+
     private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
     private final DeleteVariantPort deletePort;
     private final DeleteVariantSoldCountPort deleteSoldCountPort;

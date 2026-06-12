@@ -11,10 +11,10 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.mapper.VariantWebMapper;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateVariantInfoUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantHardDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantRestorationByIdUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantSoftDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantInfoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindSoftDeletedVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.ListVariantsUseCase;
@@ -38,10 +38,11 @@ public class VariantController {
     private final ListVariantsUseCase listUseCase;
     private final FindVariantUseCase findUseCase;
     private final FindSoftDeletedVariantUseCase findSoftDeletedUseCase;
-    private final RestoreVariantUseCase restoreUseCase;
-    private final UpdateVariantInfoUseCase updateInfoUseCase;
-    private final SoftDeleteVariantUseCase softDeleteUseCase;
-    private final HardDeleteVariantUseCase hardDeleteUseCase;
+    private final VariantInfoUpdateByIdUseCase updateInfoByIdUseCase;
+    private final VariantSoftDeletionByIdUseCase softDeletionByIdUseCase;
+    private final VariantRestorationByIdUseCase restorationByIdUseCase;
+    private final VariantHardDeletionByIdUseCase hardDeletionByIdUseCase;
+
     private final VariantWebMapper mapper;
 
     @GetMapping
@@ -109,13 +110,13 @@ public class VariantController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toRestoreCommand(id, version);
-        this.restoreUseCase.restore(command);
+        this.restorationByIdUseCase.restore(command);
 
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/info")
-    public ResponseEntity<VariantResponse> updateInfo(
+    public ResponseEntity<VariantResponse> updateInfoById(
             @PathVariable
             final UUID id,
 
@@ -123,7 +124,7 @@ public class VariantController {
             @Valid
             final UpdateVariantInfoRequest request) {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
-        final var view = this.updateInfoUseCase.updateInfo(command);
+        final var view = this.updateInfoByIdUseCase.updateInfo(command);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -137,7 +138,7 @@ public class VariantController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
-        this.softDeleteUseCase.delete(command);
+        this.softDeletionByIdUseCase.delete(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -150,7 +151,7 @@ public class VariantController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toHardDeleteCommand(id, version);
-        this.hardDeleteUseCase.purge(command);
+        this.hardDeletionByIdUseCase.purge(command);
 
         return ResponseEntity.noContent().build();
     }
