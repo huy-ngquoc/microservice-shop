@@ -9,7 +9,7 @@ import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantRestorationByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
@@ -23,7 +23,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 @Service
 @RequiredArgsConstructor
 class VariantRestorationByIdService
-        implements RestoreVariantUseCase {
+        implements VariantRestorationByIdUseCase {
+
     private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
     private final LoadVariantSoldCountPort loadSoldCountPort;
     private final LoadVariantStockCountPort loadStockCountPort;

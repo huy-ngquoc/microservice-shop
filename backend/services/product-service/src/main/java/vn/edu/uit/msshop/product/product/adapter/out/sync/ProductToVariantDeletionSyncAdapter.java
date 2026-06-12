@@ -11,9 +11,9 @@ import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVarian
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.HardDeleteVariantsForProductUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteAllVariantsUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkHardDeletionByProductIdForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByIdsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
@@ -25,15 +25,15 @@ public class ProductToVariantDeletionSyncAdapter
         ProductVariantBulkSoftDeletionForProductPort,
         ProductVariantBulkHardDeletionForProductPort {
 
-    private final SoftDeleteAllVariantsUseCase softDeleteAllUseCase;
-    private final SoftDeleteVariantsForProductUseCase softDeleteForProductUseCase;
-    private final HardDeleteVariantsForProductUseCase hardDeleteVariantsForProductUseCase;
+    private final VariantBulkSoftDeletionByIdsForProductUseCase variantBulkSoftDeletionByIdsForProductUseCase;
+    private final VariantBulkSoftDeletionByProductIdForProductUseCase variantBulkSoftDeletionByProductIdForProductUseCase;
+    private final VariantBulkHardDeletionByProductIdForProductUseCase variantBulkHardDeletionByProductIdForProductUseCase;
 
     @Override
     public void deleteByProductId(
             final ProductId id) {
         final var productId = new VariantProductId(id.value());
-        this.softDeleteForProductUseCase.deleteByProductId(productId);
+        this.variantBulkSoftDeletionByProductIdForProductUseCase.deleteByProductId(productId);
     }
 
     @Override
@@ -43,13 +43,13 @@ public class ProductToVariantDeletionSyncAdapter
                 .map(ProductVariantId::value)
                 .map(VariantId::new)
                 .collect(Collectors.toUnmodifiableSet());
-        this.softDeleteAllUseCase.deleteByIds(ids);
+        this.variantBulkSoftDeletionByIdsForProductUseCase.deleteByIds(ids);
     }
 
     @Override
     public void purgeByProductId(
             final ProductId productId) {
         final var variantProductId = new VariantProductId(productId.value());
-        this.hardDeleteVariantsForProductUseCase.purgeByProductId(variantProductId);
+        this.variantBulkHardDeletionByProductIdForProductUseCase.purgeByProductId(variantProductId);
     }
 }

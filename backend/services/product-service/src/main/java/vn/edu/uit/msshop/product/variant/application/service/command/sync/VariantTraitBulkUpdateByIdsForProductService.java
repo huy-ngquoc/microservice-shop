@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.UpdateAllVariantTraitsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantTraitBulkUpdateByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 @Service
 @RequiredArgsConstructor
 class VariantTraitBulkUpdateByIdsForProductService
-        implements UpdateAllVariantTraitsForProductUseCase {
+        implements VariantTraitBulkUpdateByIdsForProductUseCase {
     private final LoadAllVariantsPort loadAllPort;
     private final UpdateAllVariantsPort updateAllPort;
     private final VariantEventPublicationPort eventPublicationPort;

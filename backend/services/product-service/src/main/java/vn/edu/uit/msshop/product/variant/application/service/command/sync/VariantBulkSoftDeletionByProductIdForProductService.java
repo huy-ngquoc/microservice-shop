@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.SoftDeleteVariantsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
@@ -20,7 +20,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @Service
 @RequiredArgsConstructor
 class VariantBulkSoftDeletionByProductIdForProductService
-        implements SoftDeleteVariantsForProductUseCase {
+        implements VariantBulkSoftDeletionByProductIdForProductUseCase {
+
     private final LoadVariantsForProductPort loadForProductPort;
     private final UpdateAllVariantsPort updateAllPort;
     private final VariantEventPublicationPort eventPublicationPort;

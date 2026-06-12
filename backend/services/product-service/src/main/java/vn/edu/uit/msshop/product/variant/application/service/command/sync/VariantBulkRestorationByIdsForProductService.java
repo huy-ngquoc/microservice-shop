@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.RestoreVariantsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkRestorationByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
@@ -19,7 +19,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 @Service
 @RequiredArgsConstructor
 class VariantBulkRestorationByIdsForProductService
-        implements RestoreVariantsForProductUseCase {
+        implements VariantBulkRestorationByIdsForProductUseCase {
+
     private final LoadAllSoftDeletedVariantsPort loadAllSoftDeletedPort;
     private final UpdateAllVariantsPort updateAllPort;
     private final VariantEventPublicationPort eventPublicationPort;
