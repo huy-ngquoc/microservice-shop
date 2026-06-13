@@ -19,13 +19,13 @@ import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantIma
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageUpdateByIdUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantImageUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantActiveImageLookupByIdUseCase;
 
 @RestController
 @RequestMapping("/variants")
 @RequiredArgsConstructor
 public class VariantImageController {
-    private final FindVariantImageUseCase findImageUseCase;
+    private final VariantActiveImageLookupByIdUseCase activeLookupByIdUseCase;
     private final VariantImageUpdateByIdUseCase updateByIdUseCase;
     private final VariantImageDeletionByIdUseCase deletionByIdUseCase;
 
@@ -35,7 +35,7 @@ public class VariantImageController {
     public ResponseEntity<VariantImageResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findImageUseCase
+        final var view = this.activeLookupByIdUseCase
                 .findImageById(this.mapper.toVariantId(id));
 
         final var response = this.mapper.toImageResponse(view);
