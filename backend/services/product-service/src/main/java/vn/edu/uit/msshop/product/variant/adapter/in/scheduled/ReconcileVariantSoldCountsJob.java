@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantSoldCountBulkReconciliationUSeCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantSoldCountBulkReconciliationUseCase;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class ReconcileVariantSoldCountsJob {
-    private final VariantSoldCountBulkReconciliationUSeCase soldCountBulkReconciliationUSeCase;
+    private final VariantSoldCountBulkReconciliationUseCase soldCountBulkReconciliationUSeCase;
 
     @Scheduled(
             fixedRate = 2,

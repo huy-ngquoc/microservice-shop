@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantSoftDeletionByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantSoftDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
@@ -17,9 +16,12 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVa
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
+import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -45,18 +47,16 @@ class VariantSoftDeletionByIdService
                             allEntries = true)
             })
     public void delete(
-            final SoftDeleteVariantCommand command) {
-        final var variantId = command.id();
+            final VariantSoftDeletionByIdCommand cmd) {
+        final var variantId = new VariantId(cmd.variantId());
+        final var expectedVersion = new VariantVersion(cmd.variantVersion());
+
         final var variant = this.loadPort.loadById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = variant.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        VariantVersionGuard.ensureMatch(
+                expectedVersion,
+                variant.getVersion());
 
         final var productId = variant.getProductId();
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(

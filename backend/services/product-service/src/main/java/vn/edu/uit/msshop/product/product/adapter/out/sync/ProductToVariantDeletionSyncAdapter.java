@@ -11,11 +11,12 @@ import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVarian
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkHardDeletionByProductIdForProductCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkSoftDeletionByIdsForProductCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkSoftDeletionByProductIdForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkHardDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByProductIdForProductUseCase;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 @Component
 @RequiredArgsConstructor
@@ -31,25 +32,30 @@ public class ProductToVariantDeletionSyncAdapter
 
     @Override
     public void deleteByProductId(
-            final ProductId id) {
-        final var productId = new VariantProductId(id.value());
-        this.variantBulkSoftDeletionByProductIdForProductUseCase.deleteByProductId(productId);
+            final ProductId productId) {
+        final var rawProductId = productId.value();
+
+        final var command = new VariantBulkSoftDeletionByProductIdForProductCommand(rawProductId);
+        this.variantBulkSoftDeletionByProductIdForProductUseCase.deleteByProductId(command);
     }
 
     @Override
     public void deleteByIds(
-            final Collection<ProductVariantId> variantIds) {
-        final var ids = variantIds.stream()
+            final Collection<ProductVariantId> variantIdCollection) {
+        final var rawVariantIdSet = variantIdCollection.stream()
                 .map(ProductVariantId::value)
-                .map(VariantId::new)
                 .collect(Collectors.toUnmodifiableSet());
-        this.variantBulkSoftDeletionByIdsForProductUseCase.deleteByIds(ids);
+
+        final var command = new VariantBulkSoftDeletionByIdsForProductCommand(rawVariantIdSet);
+        this.variantBulkSoftDeletionByIdsForProductUseCase.deleteByIds(command);
     }
 
     @Override
     public void purgeByProductId(
             final ProductId productId) {
-        final var variantProductId = new VariantProductId(productId.value());
-        this.variantBulkHardDeletionByProductIdForProductUseCase.purgeByProductId(variantProductId);
+        final var rawProductId = productId.value();
+
+        final var command = new VariantBulkHardDeletionByProductIdForProductCommand(rawProductId);
+        this.variantBulkHardDeletionByProductIdForProductUseCase.purgeByProductId(command);
     }
 }

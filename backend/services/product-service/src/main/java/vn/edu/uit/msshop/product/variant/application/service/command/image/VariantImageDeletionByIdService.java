@@ -8,19 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.image.VariantImageDeletionByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
+import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +30,9 @@ class VariantImageDeletionByIdService
 
     private final LoadVariantPort loadPort;
     private final UpdateVariantPort updatePort;
-    private final VariantImageStoragePort imageStoragePort;
+
+    private final VariantImageDeleter imageDeleter;
+
     private final VariantEventPublicationPort eventPublicationPort;
     private final VariantViewMapper mapper;
 
@@ -46,8 +48,10 @@ class VariantImageDeletionByIdService
                             allEntries = true)
             })
     public VariantImageView deleteImage(
-            final DeleteVariantImageCommand command) {
-        final var variantId = command.id();
+            final VariantImageDeletionByIdCommand cmd) {
+        final var variantId = new VariantId(cmd.variantId());
+        final var expectedVersion = new VariantVersion(cmd.variantVersion());
+
         final var variant = this.loadPort.loadById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
 
@@ -56,13 +60,9 @@ class VariantImageDeletionByIdService
             return this.mapper.toImageView(variant);
         }
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = variant.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        VariantVersionGuard.ensureMatch(
+                expectedVersion,
+                variant.getVersion());
 
         final var next = new Variant(
                 variant.getId(),
@@ -82,19 +82,8 @@ class VariantImageDeletionByIdService
                 oldKey);
         this.eventPublicationPort.publishEvent(event);
 
-        this.deleteOldImage(oldKey);
+        this.imageDeleter.deleteQuietly(oldKey);
 
         return this.mapper.toImageView(saved);
-    }
-
-    private void deleteOldImage(
-            final VariantImageKey oldKey) {
-        try {
-            this.imageStoragePort.deleteImage(oldKey);
-        } catch (final RuntimeException e) {
-            log.warn("Failed to delete old image key '{}', manual cleanup required",
-                    oldKey.value(),
-                    e);
-        }
     }
 }

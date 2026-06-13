@@ -1,7 +1,9 @@
 package vn.edu.uit.msshop.product.product.adapter.out.sync;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -12,13 +14,10 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
-import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantProductNameForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantTraitBulkUpdateByIdsForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantProductNameBulkUpdateForProductCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantTraitBulkUpdateByIdsForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantProductNameBulkUpdateForProductUseCase;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Component
 @RequiredArgsConstructor
@@ -32,32 +31,34 @@ public class ProductToVariantUpdateSyncAdapter
 
     @Override
     public void updateTraitsByIds(
-            final Map<ProductVariantId, ProductVariantTraits> newTraitsMap) {
-        final var map = HashMap.<VariantId, VariantTraits>newHashMap(newTraitsMap.size());
+            final Map<ProductVariantId, ProductVariantTraits> newTraitsByVariantId) {
+        final var amountVariants = newTraitsByVariantId.size();
+        final var traitListById = HashMap.<UUID, List<String>>newHashMap(amountVariants);
 
-        for (final var entry : newTraitsMap.entrySet()) {
+        for (final var entry : newTraitsByVariantId.entrySet()) {
             final var productVariantId = entry.getKey();
             final var productVariantTraits = entry.getValue();
 
-            final var variantId = new VariantId(productVariantId.value());
-            final var variantTraits = VariantTraits.of(productVariantTraits.unwrap());
+            final var rawVariantId = productVariantId.value();
+            final var rawVariantTraitList = productVariantTraits.unwrap();
 
-            map.put(variantId, variantTraits);
+            traitListById.put(rawVariantId, rawVariantTraitList);
         }
 
-        this.variantTraitBulkUpdateByIdsForProductUseCase.updateTraitsByIds(map);
+        final var command = new VariantTraitBulkUpdateByIdsForProductCommand(traitListById);
+        this.variantTraitBulkUpdateByIdsForProductUseCase.updateTraitsByIds(command);
     }
 
     @Override
     public void updateProductNameByProductId(
             final ProductId id,
             final ProductName name) {
-        final var variantProductId = new VariantProductId(id.value());
-        final var variantProductName = new VariantProductName(name.value());
+        final var rawVariantId = id.value();
+        final var rawProductName = name.value();
 
-        final var command = new UpdateVariantProductNameForProductCommand(
-                variantProductId,
-                variantProductName);
+        final var command = new VariantProductNameBulkUpdateForProductCommand(
+                rawVariantId,
+                rawProductName);
         this.variantProductNameBulkUpdateForProductUseCase.execute(command);
     }
 }

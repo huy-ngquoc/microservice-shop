@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.variant.application.service.command.sync;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -10,7 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantsForNewProductCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.data.NewVariantForNewProductData;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkCreationForNewProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkCreationForNewProductUseCase;
@@ -23,12 +25,14 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
-import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantForNewProduct;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Service
 @RequiredArgsConstructor
@@ -47,8 +51,8 @@ class VariantBulkCreationForNewProductService
             cacheNames = CacheNames.VARIANT_LIST,
             allEntries = true)
     public List<VariantView> create(
-            final CreateVariantsForNewProductCommand command) {
-        final var saved = this.createVariants(command);
+            final VariantBulkCreationForNewProductCommand cmd) {
+        final var saved = this.createVariants(cmd);
         final var soldCountByVariantId = this.initializeSoldCounts(saved);
         final var stockCountByVariantId = this.initializeStockCounts(saved);
         this.publishCreatedEvents(saved);
@@ -58,56 +62,75 @@ class VariantBulkCreationForNewProductService
                 stockCountByVariantId);
     }
 
+    private List<Variant> createVariants(
+            final VariantBulkCreationForNewProductCommand command) {
+        final var productId = new VariantProductId(command.productId());
+        final var productName = new VariantProductName(command.productName());
+
+        final var newVariantDataList = command.newVariantList();
+        final var amountVariant = newVariantDataList.size();
+
+        final var newVariantList = new ArrayList<NewVariant>(amountVariant);
+        for (final var data : newVariantDataList) {
+            final var newVariant = VariantBulkCreationForNewProductService.toNewVariant(
+                    productId,
+                    productName,
+                    data);
+            newVariantList.add(newVariant);
+        }
+        return this.createAllVariantsPort.createAll(newVariantList);
+    }
+
     private static NewVariant toNewVariant(
             final VariantProductId productId,
             final VariantProductName productName,
-            final NewVariantForNewProduct newInputs) {
+            final NewVariantForNewProductData data) {
         return new NewVariant(
                 VariantId.newId(),
                 productId,
                 productName,
-                newInputs.price(),
-                newInputs.traits(),
-                newInputs.targets());
-    }
-
-    private List<Variant> createVariants(
-            final CreateVariantsForNewProductCommand command) {
-        final var newVariants = command.newVariantsForNewProduct().values().stream()
-                .map(v -> VariantBulkCreationForNewProductService.toNewVariant(
-                        command.productId(),
-                        command.productName(),
-                        v))
-                .toList();
-        return this.createAllVariantsPort.createAll(newVariants);
+                new VariantPrice(data.price()),
+                VariantTraits.of(data.traitList()),
+                VariantTargets.of(data.targetList()));
     }
 
     private Map<VariantId, VariantSoldCount> initializeSoldCounts(
             final List<Variant> saved) {
-        final var newSoldCounts = saved.stream()
-                .map(v -> new NewVariantSoldCount(v.getId(), v.getProductId()))
-                .toList();
-        return this.initializeAllSoldCountsPort.initializeAll(newSoldCounts);
+        final var newSoldCountList = new ArrayList<NewVariantSoldCount>(saved.size());
+        for (final var variant : saved) {
+            final var newSoldCount = new NewVariantSoldCount(
+                    variant.getId(),
+                    variant.getProductId());
+            newSoldCountList.add(newSoldCount);
+        }
+        return this.initializeAllSoldCountsPort.initializeAll(newSoldCountList);
     }
 
     private Map<VariantId, VariantStockCount> initializeStockCounts(
             final List<Variant> saved) {
-        final var newStockCounts = saved.stream()
-                .map(v -> new NewVariantStockCount(v.getId(), v.getProductId()))
-                .toList();
-        return this.initializeAllStockCountsPort.initializeAll(newStockCounts);
+        final var newStockCountList = new ArrayList<NewVariantStockCount>(saved.size());
+        for (final var variant : saved) {
+            final var newStockCount = new NewVariantStockCount(
+                    variant.getId(),
+                    variant.getProductId());
+            newStockCountList.add(newStockCount);
+        }
+        return this.initializeAllStockCountsPort.initializeAll(newStockCountList);
     }
 
     private List<VariantView> toViews(
             final List<Variant> saved,
             final Map<VariantId, VariantSoldCount> soldCountByVariantId,
             final Map<VariantId, VariantStockCount> stockCountByVariantId) {
-        return saved.stream()
-                .map(v -> this.toView(
-                        v,
-                        soldCountByVariantId,
-                        stockCountByVariantId))
-                .toList();
+        final var viewList = new ArrayList<VariantView>(saved.size());
+        for (final var variant : saved) {
+            final var view = this.toView(
+                    variant,
+                    soldCountByVariantId,
+                    stockCountByVariantId);
+            viewList.add(view);
+        }
+        return viewList;
     }
 
     private VariantView toView(

@@ -1,6 +1,8 @@
 package vn.edu.uit.msshop.product.product.adapter.out.sync.mapper;
 
+import java.util.ArrayList;
 import java.util.Collection;
+
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
@@ -12,34 +14,31 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
-import vn.edu.uit.msshop.product.variant.application.dto.command.CreateVariantsForNewProductCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.data.NewVariantForNewProductData;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkCreationForNewProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
-import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantForNewProduct;
-import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantsForNewProduct;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Component
 public class ProductToVariantCreationSyncMapper {
 
-    public CreateVariantsForNewProductCommand toCreateCommand(
+    public VariantBulkCreationForNewProductCommand toCreateCommand(
             final ProductId id,
             final ProductName name,
             final NewProductVariants newVariants) {
-        final var variantProductId = new VariantProductId(id.value());
-        final var variantProductName = new VariantProductName(name.value());
-        final var newVariantInputsList = newVariants.values().stream()
-                .map(ProductToVariantCreationSyncMapper::toNewVariantInput)
-                .toList();
-        final var newVariantInputs = new NewVariantsForNewProduct(newVariantInputsList);
+        final var newVariantList = newVariants.values();
+        final var amountVariant = newVariantList.size();
+        final var newVariantDataList = new ArrayList<NewVariantForNewProductData>(
+                amountVariant);
 
-        return new CreateVariantsForNewProductCommand(
-                variantProductId,
-                variantProductName,
-                newVariantInputs);
+        for (final var variant : newVariantList) {
+            final var newVariantData = ProductToVariantCreationSyncMapper.toNewVariantData(variant);
+            newVariantDataList.add(newVariantData);
+        }
+
+        return new VariantBulkCreationForNewProductCommand(
+                id.value(),
+                name.value(),
+                newVariantDataList);
     }
 
     public ProductVariants toProductVariants(
@@ -50,13 +49,12 @@ public class ProductToVariantCreationSyncMapper {
         return new ProductVariants(productVariantList);
     }
 
-    private static NewVariantForNewProduct toNewVariantInput(
+    private static NewVariantForNewProductData toNewVariantData(
             final NewProductVariant variant) {
-        final var price = new VariantPrice(variant.price().value());
-        final var traits = VariantTraits.of(variant.traits().unwrap());
-        final var targets = VariantTargets.of(variant.targets().unwrap());
-
-        return new NewVariantForNewProduct(price, traits, targets);
+        return new NewVariantForNewProductData(
+                variant.price().value(),
+                variant.traits().unwrap(),
+                variant.targets().unwrap());
     }
 
     private static ProductVariant toProductVariant(

@@ -8,9 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.dto.Change;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantInfoUpdateByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
@@ -21,11 +20,14 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVa
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
+import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -59,42 +61,42 @@ class VariantInfoUpdateByIdService
             })
     // TODO: traits size must be the same
     public VariantView updateInfo(
-            final UpdateVariantInfoCommand command) {
-        final var id = command.id();
+            final VariantInfoUpdateByIdCommand cmd) {
+        final var variantId = new VariantId(cmd.variantId());
+        final var priceChange = cmd.priceChange().map(VariantPrice::new);
+        final var traitListChange = cmd.traitListChange().map(VariantTraits::of);
+        final var targetListChange = cmd.targetListChange().map(VariantTargets::of);
+        final var expectedVersion = new VariantVersion(cmd.variantVersion());
 
-        final var variant = this.loadPort.loadById(command.id())
-                .orElseThrow(() -> new VariantNotFoundException(command.id()));
+        final var variant = this.loadPort.loadById(variantId)
+                .orElseThrow(() -> new VariantNotFoundException(variantId));
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
-                id, variant.getProductId());
+                variantId, variant.getProductId());
         final var stockCount = this.loadStockCountPort.loadByIdOrZero(
-                id, variant.getProductId());
+                variantId, variant.getProductId());
 
-        final var priceSet = command.price().getSet();
-        final var traitsSet = command.traits().getSet();
-        final var targetsSet = command.targets().getSet();
+        final var priceSet = priceChange.getSet();
+        final var traitListSet = traitListChange.getSet();
+        final var targetListSet = targetListChange.getSet();
 
         if ((priceSet == null)
-                && (traitsSet == null)
-                && (targetsSet == null)) {
+                && (traitListSet == null)
+                && (targetListSet == null)) {
             return this.mapper.toView(
                     variant,
                     soldCount,
                     stockCount);
         }
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = variant.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        VariantVersionGuard.ensureMatch(
+                expectedVersion,
+                variant.getVersion());
 
         final var next = VariantInfoUpdateByIdService.applyChanges(
                 variant,
                 priceSet,
-                traitsSet,
-                targetsSet);
+                traitListSet,
+                targetListSet);
         if (next == null) {
             return this.mapper.toView(
                     variant,

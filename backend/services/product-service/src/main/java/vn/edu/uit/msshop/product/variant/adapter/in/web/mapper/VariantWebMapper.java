@@ -14,18 +14,14 @@ import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.FindVariantsByIdsRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
-import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantInfoCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantHardDeletionByIdCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantRestorationByIdCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantSoftDeletionByIdCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantInfoUpdateByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.query.ListVariantsQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantPrice;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTarget;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Component
 public class VariantWebMapper {
@@ -66,53 +62,43 @@ public class VariantWebMapper {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    public RestoreVariantCommand toRestoreCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var variantId = new VariantId(id);
-        final var version = new VariantVersion(expectedVersion);
-
-        return new RestoreVariantCommand(variantId, version);
+    public VariantRestorationByIdCommand toRestoreCommand(
+            final UUID variantId,
+            final long variantVersion) {
+        return new VariantRestorationByIdCommand(
+                variantId,
+                variantVersion);
     }
 
-    public UpdateVariantInfoCommand toUpdateInfoCommand(
-            final UUID id,
+    public VariantInfoUpdateByIdCommand toUpdateInfoCommand(
+            final UUID variantId,
             final UpdateVariantInfoRequest request) {
-        final var variantId = new VariantId(id);
-        final var version = new VariantVersion(request.version());
+        final var priceChange = ChangeRequest.toChange(request.price());
+        final var traitListChange = ChangeRequest.toChange(request.traits());
+        final var targetListChange = ChangeRequest.toChange(request.targets());
 
-        final var price = ChangeRequest.toChange(request.price(), VariantPrice::new);
-        final var traits = ChangeRequest.toChange(request.traits(), VariantTraits::of);
-        final var targets = ChangeRequest.toChange(request.targets(), VariantTargets::of);
-
-        return new UpdateVariantInfoCommand(
+        return new VariantInfoUpdateByIdCommand(
                 variantId,
-                price,
-                traits,
-                targets,
-                version);
+                priceChange,
+                traitListChange,
+                targetListChange,
+                request.version());
     }
 
-    public SoftDeleteVariantCommand toSoftDeleteCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var variantId = new VariantId(id);
-        final var version = new VariantVersion(expectedVersion);
-
-        return new SoftDeleteVariantCommand(
+    public VariantSoftDeletionByIdCommand toSoftDeleteCommand(
+            final UUID variantId,
+            final long variantVersion) {
+        return new VariantSoftDeletionByIdCommand(
                 variantId,
-                version);
+                variantVersion);
     }
 
-    public HardDeleteVariantCommand toHardDeleteCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var variantId = new VariantId(id);
-        final var version = new VariantVersion(expectedVersion);
-
-        return new HardDeleteVariantCommand(
+    public VariantHardDeletionByIdCommand toHardDeleteCommand(
+            final UUID variantId,
+            final long variantVersion) {
+        return new VariantHardDeletionByIdCommand(
                 variantId,
-                version);
+                variantVersion);
     }
 
     public VariantId toVariantId(

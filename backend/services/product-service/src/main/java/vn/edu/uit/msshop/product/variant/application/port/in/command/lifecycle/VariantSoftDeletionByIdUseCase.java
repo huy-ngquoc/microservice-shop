@@ -1,8 +1,8 @@
 package vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle;
 
-import vn.edu.uit.msshop.product.variant.application.dto.command.SoftDeleteVariantCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantSoftDeletionByIdCommand;
 
 public interface VariantSoftDeletionByIdUseCase {
     void delete(
-            final SoftDeleteVariantCommand command);
+            final VariantSoftDeletionByIdCommand cmd);
 }
