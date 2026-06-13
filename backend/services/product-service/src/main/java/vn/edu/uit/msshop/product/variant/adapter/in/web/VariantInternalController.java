@@ -27,8 +27,9 @@ public class VariantInternalController {
             @RequestBody
             @Valid
             FindVariantsByIdsRequest request) {
-        final var variantIds = this.mapper.toVariantIds(request);
-        final var variantById = this.findAllByIdsUseCase.findAllByIds(variantIds);
+        // TODO: create "query" record
+        // final var variantIds = this.mapper.toVariantIds(request);
+        final var variantById = this.findAllByIdsUseCase.findAllByIds(request.ids());
 
         final var responses = this.mapper.toListResponse(variantById.values());
         return ResponseEntity.ok(responses);
