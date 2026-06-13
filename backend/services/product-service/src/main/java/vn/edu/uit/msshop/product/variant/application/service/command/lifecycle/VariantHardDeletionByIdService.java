@@ -7,8 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
-import vn.edu.uit.msshop.product.variant.application.dto.command.HardDeleteVariantCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantHardDeletionByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantHardDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
@@ -17,8 +16,11 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.Delete
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantSoldCountPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantReferencedByProductPort;
+import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantHardDeletedEvent;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -36,18 +38,16 @@ class VariantHardDeletionByIdService
     @Override
     @Transactional
     public void purge(
-            final HardDeleteVariantCommand command) {
-        final var variantId = command.id();
+            final VariantHardDeletionByIdCommand cmd) {
+        final var variantId = new VariantId(cmd.variantId());
+        final var expectedVersion = new VariantVersion(cmd.variantVersion());
+
         final var variant = this.loadSoftDeletedPort.loadSoftDeletedById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = variant.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        VariantVersionGuard.ensureMatch(
+                expectedVersion,
+                variant.getVersion());
 
         final var referenced = this.checkReferencedPort.isReferencedByProduct(variantId);
         if (referenced) {

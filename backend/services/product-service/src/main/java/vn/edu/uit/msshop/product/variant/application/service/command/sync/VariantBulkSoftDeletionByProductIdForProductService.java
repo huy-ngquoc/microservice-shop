@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkSoftDeletionByProductIdForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
@@ -38,7 +39,9 @@ class VariantBulkSoftDeletionByProductIdForProductService
                             allEntries = true)
             })
     public void deleteByProductId(
-            final VariantProductId productId) {
+            final VariantBulkSoftDeletionByProductIdForProductCommand cmd) {
+        final var productId = new VariantProductId(cmd.productId());
+
         final var variants = this.loadForProductPort.loadAllByProductId(productId);
         if (variants.isEmpty()) {
             return;
@@ -49,11 +52,10 @@ class VariantBulkSoftDeletionByProductIdForProductService
                 .toList();
 
         final var saved = this.updateAllPort.updateAll(next);
-
-        saved.forEach(s -> {
-            final var event = new VariantSoftDeletedEvent(s.getId());
+        for (final var variant : saved) {
+            final var event = new VariantSoftDeletedEvent(variant.getId());
             this.eventPublicationPort.publishEvent(event);
-        });
+        }
     }
 
     private static Variant toSoftDeleted(

@@ -1,20 +1,19 @@
 package vn.edu.uit.msshop.product.variant.application.service.command.sync;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkHardDeletionByProductIdForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkHardDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteAllVariantSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantsForProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
+import vn.edu.uit.msshop.product.variant.application.service.command.image.VariantImageDeleter;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantHardDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 @Service
@@ -26,44 +25,36 @@ class VariantBulkHardDeletionByProductIdForProductService
     private final LoadVariantsForProductPort loadForProductPort;
     private final DeleteVariantsForProductPort deleteForProductPort;
     private final DeleteAllVariantSoldCountsPort deleteAllSoldCountsPort;
-    private final VariantImageStoragePort imageStoragePort;
+
+    private final VariantImageDeleter imageDeleter;
+
     private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
     public void purgeByProductId(
-            final VariantProductId productId) {
+            final VariantBulkHardDeletionByProductIdForProductCommand cmd) {
+        final var productId = new VariantProductId(cmd.productId());
+
         final var variants = this.loadForProductPort.loadAllByProductId(productId);
         if (variants.isEmpty()) {
             return;
         }
 
-        final var ids = variants.stream()
+        final var variantIdList = variants.stream()
                 .map(Variant::getId)
                 .toList();
 
         this.deleteForProductPort.deleteByProductId(productId);
-        this.deleteAllSoldCountsPort.deleteAllByIds(ids);
+        this.deleteAllSoldCountsPort.deleteAllByIds(variantIdList);
 
-        variants.forEach(v -> this.deleteImage(v.getImageKey()));
-        variants.forEach(v -> {
-            final var event = new VariantHardDeletedEvent(v.getId());
-            this.eventPublicationPort.publishEvent(event);
-        });
-    }
-
-    private void deleteImage(
-            @Nullable
-            final VariantImageKey key) {
-        if (key == null) {
-            return;
+        for (final var variant : variants) {
+            this.imageDeleter.deleteQuietly(variant.getImageKey());
         }
-        try {
-            this.imageStoragePort.deleteImage(key);
-        } catch (final RuntimeException e) {
-            log.warn("Hard delete: failed to delete image '{}', manual cleanup required",
-                    key.value(),
-                    e);
+
+        for (final var variant : variants) {
+            final var event = new VariantHardDeletedEvent(variant.getId());
+            this.eventPublicationPort.publishEvent(event);
         }
     }
 }

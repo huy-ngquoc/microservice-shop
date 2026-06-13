@@ -1,6 +1,6 @@
 package vn.edu.uit.msshop.product.variant.application.service.command.sync;
 
-import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkRestorationByIdsForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkRestorationByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
@@ -31,20 +32,23 @@ class VariantBulkRestorationByIdsForProductService
             cacheNames = CacheNames.VARIANT_LIST,
             allEntries = true)
     public void restoreByIds(
-            final Collection<VariantId> ids) {
+            final VariantBulkRestorationByIdsForProductCommand cmd) {
+        final var variantIdSet = cmd.idSet().stream()
+                .map(VariantId::new)
+                .collect(Collectors.toUnmodifiableSet());
+
         final var variants = this.loadAllSoftDeletedPort
-                .loadAllSoftDeletedByIds(ids);
+                .loadAllSoftDeletedByIds(variantIdSet);
 
         final var next = variants.stream()
                 .map(VariantBulkRestorationByIdsForProductService::toRestored)
                 .toList();
-
         final var saved = this.updateAllPort.updateAll(next);
 
-        saved.forEach(s -> {
-            final var event = new VariantRestoredEvent(s.getId());
+        for (final var variant : saved) {
+            final var event = new VariantRestoredEvent(variant.getId());
             this.eventPublicationPort.publishEvent(event);
-        });
+        }
     }
 
     private static Variant toRestored(
