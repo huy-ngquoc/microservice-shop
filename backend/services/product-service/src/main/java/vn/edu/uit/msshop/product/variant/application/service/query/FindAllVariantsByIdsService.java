@@ -1,7 +1,9 @@
 package vn.edu.uit.msshop.product.variant.application.service.query;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -21,37 +23,47 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
 @RequiredArgsConstructor
-class FindAllVariantsByIdsService implements FindAllVariantsByIdsUseCase {
+class FindAllVariantsByIdsService
+        implements FindAllVariantsByIdsUseCase {
+
     private final LoadAllVariantsPort loadAllPort;
     private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
     private final LoadAllVariantStockCountsPort loadAllStockCountsPort;
     private final VariantViewMapper mapper;
 
     @Override
-    public Map<VariantId, VariantView> findAllByIds(
-            final Set<VariantId> ids) {
-        if (ids.isEmpty()) {
+    public Map<UUID, VariantView> findAllByIds(
+            final Set<UUID> idSet) {
+        if (idSet.isEmpty()) {
             return Map.of();
         }
 
-        final var variantById = this.loadAllPort.loadAllByIds(ids);
-        final var missing = ids.stream()
+        final var variantIdSet = idSet.stream()
+                .map(VariantId::new)
+                .collect(Collectors.toUnmodifiableSet());
+
+        final var variantById = this.loadAllPort.loadAllByIds(variantIdSet);
+        final var missing = variantIdSet.stream()
                 .filter(id -> !variantById.containsKey(id))
                 .collect(Collectors.toUnmodifiableSet());
         if (!missing.isEmpty()) {
             throw new VariantsNotFoundException(missing);
         }
 
-        final var soldCountById = this.loadAllSoldCountsPort.loadAllByIds(ids);
-        final var stockCountById = this.loadAllStockCountsPort.loadAllByIds(ids);
+        final var soldCountById = this.loadAllSoldCountsPort.loadAllByIds(variantIdSet);
+        final var stockCountById = this.loadAllStockCountsPort.loadAllByIds(variantIdSet);
 
-        final var variantViewCollector = Collectors.toUnmodifiableMap(
-                Variant::getId,
-                variant -> toView(
-                        variant,
-                        soldCountById,
-                        stockCountById));
-        return variantById.values().stream().collect(variantViewCollector);
+        final var viewById = HashMap.<UUID, VariantView>newHashMap(variantById.size());
+        for (final var variant : variantById.values()) {
+            final var rawVariantId = variant.getId().value();
+            final var view = this.toView(
+                    variant,
+                    soldCountById,
+                    stockCountById);
+
+            viewById.put(rawVariantId, view);
+        }
+        return Map.copyOf(viewById);
     }
 
     private VariantView toView(
