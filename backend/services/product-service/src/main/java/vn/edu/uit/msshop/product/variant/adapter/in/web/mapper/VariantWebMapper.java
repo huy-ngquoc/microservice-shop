@@ -21,7 +21,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.Varia
 import vn.edu.uit.msshop.product.variant.application.dto.query.ListVariantsQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTarget;
 
 @Component
 public class VariantWebMapper {
@@ -43,13 +42,11 @@ public class VariantWebMapper {
                 sortBy,
                 direction);
 
-        final List<VariantTarget> targets;
+        final List<String> targets;
         if (rawTargets == null) {
             targets = List.of();
         } else {
-            targets = rawTargets.stream()
-                    .map(VariantTarget::new)
-                    .toList();
+            targets = List.copyOf(rawTargets);
         }
 
         return new ListVariantsQuery(pageRequest, targets);
