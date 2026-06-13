@@ -1,11 +1,10 @@
 package vn.edu.uit.msshop.product.variant.application.service.command.count;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
+import java.util.UUID;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.dto.command.SetAllVariantSoldCountsCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantSoldCountBulkSetCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantSoldCountBulkSetUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantSoldCountsPort;
@@ -21,7 +20,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.Update
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
-import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantOrderSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCountValue;
@@ -48,51 +46,66 @@ class VariantSoldCountBulkSetService
                             allEntries = true)
             })
     public void execute(
-            final SetAllVariantSoldCountsCommand command) {
-        final var orderSoldCounts = command.orderSoldCounts();
-        if (orderSoldCounts.isEmpty()) {
+            final VariantSoldCountBulkSetCommand cmd) {
+        final var rawNewValueById = cmd.soldCountById();
+        if (rawNewValueById.isEmpty()) {
             return;
         }
+        final var newValueById = VariantSoldCountBulkSetService.toNewValueById(rawNewValueById);
 
-        final var resolved = this.resolve(orderSoldCounts);
-        this.persistUpdates(resolved);
-        this.propagateDeltas(resolved);
+        final var changeList = this.loadChangeList(newValueById);
+        this.persistUpdates(changeList);
+        this.propagateDeltas(changeList);
     }
 
-    private List<ResolvedSoldCount> resolve(
-            final Collection<VariantOrderSoldCount> orderSoldCounts) {
-        final var variantIds = orderSoldCounts.stream()
-                .map(VariantOrderSoldCount::variantId)
-                .collect(Collectors.toUnmodifiableSet());
-        final var currentByVariantId = this.loadAllSoldCountsPort.loadAllByIds(variantIds);
+    private static Map<VariantId, VariantSoldCountValue> toNewValueById(
+            final Map<UUID, Integer> rawNewValueById) {
+        final var newValueById = HashMap.<VariantId, VariantSoldCountValue>newHashMap(
+                rawNewValueById.size());
+        for (final var entry : rawNewValueById.entrySet()) {
+            final var variantId = new VariantId(entry.getKey());
+            final var variantSoldCountValue = new VariantSoldCountValue(entry.getValue());
 
-        return orderSoldCounts.stream()
-                .map(order -> VariantSoldCountBulkSetService
-                        .resolveOne(order, currentByVariantId))
-                .toList();
-    }
-
-    private static ResolvedSoldCount resolveOne(
-            final VariantOrderSoldCount order,
-            final Map<VariantId, VariantSoldCount> currentByVariantId) {
-        final var current = currentByVariantId.get(order.variantId());
-        if (current == null) {
-            throw new VariantNotFoundException(order.variantId());
+            newValueById.put(
+                    variantId,
+                    variantSoldCountValue);
         }
-        return new ResolvedSoldCount(current, order.value());
+        return newValueById;
+    }
+
+    private List<SoldCountChange> loadChangeList(
+            final Map<VariantId, VariantSoldCountValue> newValueById) {
+        final var idSet = newValueById.keySet();
+        final var amountVariant = idSet.size();
+        final var currentById = this.loadAllSoldCountsPort.loadAllByIds(idSet);
+
+        final var changeList = new ArrayList<SoldCountChange>(amountVariant);
+        for (final var entry : newValueById.entrySet()) {
+            final var variantId = entry.getKey();
+            final var newValue = entry.getValue();
+
+            final var current = currentById.get(variantId);
+            if (current == null) {
+                throw new VariantNotFoundException(variantId);
+            }
+
+            final var change = new SoldCountChange(current, newValue);
+            changeList.add(change);
+        }
+        return changeList;
     }
 
     private void persistUpdates(
-            final List<ResolvedSoldCount> resolved) {
-        final var updated = resolved.stream()
-                .map(ResolvedSoldCount::toUpdated)
+            final List<SoldCountChange> changeList) {
+        final var updatedCounts = changeList.stream()
+                .map(SoldCountChange::updatedCount)
                 .toList();
-        this.updateAllSoldCountsPort.updateAll(updated);
+        this.updateAllSoldCountsPort.updateAll(updatedCounts);
     }
 
     private void propagateDeltas(
-            final List<ResolvedSoldCount> resolved) {
-        final var deltas = VariantSoldCountBulkSetService.toDeltasByProductId(resolved);
+            final List<SoldCountChange> changeList) {
+        final var deltas = VariantSoldCountBulkSetService.toDeltasByProductId(changeList);
 
         if (!deltas.increments().isEmpty()) {
             this.increaseProductSoldCountsPort.increaseAllSoldCounts(deltas.increments());
@@ -103,17 +116,19 @@ class VariantSoldCountBulkSetService
     }
 
     private static DeltasByProductId toDeltasByProductId(
-            final List<ResolvedSoldCount> resolved) {
-        final var incrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
-        final var decrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(resolved.size());
+            final List<SoldCountChange> changeList) {
+        final var amountVariant = changeList.size();
 
-        for (final var item : resolved) {
-            final var delta = item.delta();
+        final var incrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(amountVariant);
+        final var decrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(amountVariant);
+
+        for (final var change : changeList) {
+            final var delta = change.delta();
             if (delta == 0) {
                 continue;
             }
 
-            final var productId = item.current().getProductId();
+            final var productId = change.productId();
             if (delta > 0) {
                 incrementByProductId.merge(productId, delta, Integer::sum);
             } else {
@@ -126,11 +141,11 @@ class VariantSoldCountBulkSetService
                 decrementByProductId);
     }
 
-    private record ResolvedSoldCount(
+    private record SoldCountChange(
             VariantSoldCount current,
             VariantSoldCountValue newValue) {
 
-        VariantSoldCount toUpdated() {
+        VariantSoldCount updatedCount() {
             return new VariantSoldCount(
                     this.current.getId(),
                     this.current.getProductId(),
@@ -139,6 +154,10 @@ class VariantSoldCountBulkSetService
 
         int delta() {
             return this.newValue.value() - this.current.getValue().value();
+        }
+
+        VariantProductId productId() {
+            return this.current.getProductId();
         }
     }
 

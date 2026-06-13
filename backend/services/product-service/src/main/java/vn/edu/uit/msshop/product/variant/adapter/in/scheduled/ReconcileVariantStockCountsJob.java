@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.variant.application.dto.command.ReconcileVariantStockCountsCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantStockCountBulkReconciliationCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkReconciliationUseCase;
 
 @Component
@@ -27,7 +27,7 @@ public class ReconcileVariantStockCountsJob {
         final var rangeEndTime = Instant.now();
         final var rangeStartTime = rangeEndTime.minus(WINDOW_DURATION);
 
-        final var command = new ReconcileVariantStockCountsCommand(rangeStartTime, rangeEndTime);
+        final var command = new VariantStockCountBulkReconciliationCommand(rangeStartTime, rangeEndTime);
 
         try {
             this.stockCountBulkReconciliationUseCase.execute(command);
