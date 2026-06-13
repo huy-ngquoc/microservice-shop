@@ -6,12 +6,10 @@ import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
-import vn.edu.uit.msshop.product.variant.application.dto.command.DeleteVariantImageCommand;
-import vn.edu.uit.msshop.product.variant.application.dto.command.UpdateVariantImageCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.image.VariantImageDeletionByIdCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.image.VariantImageUpdateByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Component
 public class VariantImageWebMapper {
@@ -28,25 +26,20 @@ public class VariantImageWebMapper {
                 view.version());
     }
 
-    public UpdateVariantImageCommand toUpdateImageCommand(
-            final UUID id,
+    public VariantImageUpdateByIdCommand toUpdateImageCommand(
+            final UUID variantId,
             final UpdateVariantImageRequest request) {
-        final var variantId = new VariantId(id);
-        final var imageKey = new VariantImageKey(request.newImageKey());
-        final var version = new VariantVersion(request.version());
-
-        return new UpdateVariantImageCommand(
+        return new VariantImageUpdateByIdCommand(
                 variantId,
-                imageKey,
-                version);
+                request.newImageKey(),
+                request.version());
     }
 
-    public DeleteVariantImageCommand toDeleteImageCommand(
-            final UUID id,
-            final long expectedVersion) {
-        final var variantId = new VariantId(id);
-        final var version = new VariantVersion(expectedVersion);
-
-        return new DeleteVariantImageCommand(variantId, version);
+    public VariantImageDeletionByIdCommand toDeleteImageCommand(
+            final UUID variantId,
+            final long variantVersion) {
+        return new VariantImageDeletionByIdCommand(
+                variantId,
+                variantVersion);
     }
 }

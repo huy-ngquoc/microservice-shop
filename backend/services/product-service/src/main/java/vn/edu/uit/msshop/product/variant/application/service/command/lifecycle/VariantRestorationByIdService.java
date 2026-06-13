@@ -5,9 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.dto.command.RestoreVariantCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantRestorationByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantRestorationByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
@@ -17,8 +16,11 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVa
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantRestorablePort;
+import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
 @Service
 @RequiredArgsConstructor
@@ -39,19 +41,17 @@ class VariantRestorationByIdService
             cacheNames = CacheNames.VARIANT_LIST,
             allEntries = true)
     public void restore(
-            final RestoreVariantCommand command) {
-        final var variantId = command.id();
+            final VariantRestorationByIdCommand cmd) {
+        final var variantId = new VariantId(cmd.variantId());
+        final var expectedVersion = new VariantVersion(cmd.variantVersion());
+
         final var variant = this.loadSoftDeletedPort
                 .loadSoftDeletedById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
 
-        final var expectedVersion = command.expectedVersion();
-        final var currentVersion = variant.getVersion();
-        if (!expectedVersion.equals(currentVersion)) {
-            throw new OptimisticLockException(
-                    expectedVersion.value(),
-                    currentVersion.value());
-        }
+        VariantVersionGuard.ensureMatch(
+                expectedVersion,
+                variant.getVersion());
 
         this.checkRestorablePort.validateRestorable(variant);
 
