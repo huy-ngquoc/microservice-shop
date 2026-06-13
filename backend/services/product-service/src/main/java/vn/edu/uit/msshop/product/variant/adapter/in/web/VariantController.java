@@ -15,9 +15,9 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.V
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantRestorationByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantSoftDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantInfoUpdateByIdUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.query.FindSoftDeletedVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.query.FindVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.query.ListVariantsUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.listing.VariantActiveListingUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantActiveLookupByIdUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantSoftDeletedLookupByIdUseCase;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,9 +35,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/variants")
 @RequiredArgsConstructor
 public class VariantController {
-    private final ListVariantsUseCase listUseCase;
-    private final FindVariantUseCase findUseCase;
-    private final FindSoftDeletedVariantUseCase findSoftDeletedUseCase;
+    private final VariantActiveListingUseCase activeListingUseCase;
+    private final VariantActiveLookupByIdUseCase activeLookupByIdUseCase;
+    private final VariantSoftDeletedLookupByIdUseCase softDeletedLookupByIdUseCase;
     private final VariantInfoUpdateByIdUseCase updateInfoByIdUseCase;
     private final VariantSoftDeletionByIdUseCase softDeletionByIdUseCase;
     private final VariantRestorationByIdUseCase restorationByIdUseCase;
@@ -75,7 +75,7 @@ public class VariantController {
                 sortBy,
                 direction,
                 targets);
-        final var views = this.listUseCase.list(query);
+        final var views = this.activeListingUseCase.list(query);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
@@ -85,7 +85,7 @@ public class VariantController {
     public ResponseEntity<VariantResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.findUseCase.findById(this.mapper.toVariantId(id));
+        final var view = this.activeLookupByIdUseCase.findById(this.mapper.toVariantId(id));
         final var response = this.mapper.toResponse(view);
 
         return ResponseEntity.ok(response);
@@ -95,7 +95,7 @@ public class VariantController {
     public ResponseEntity<VariantResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
-        final var view = this.findSoftDeletedUseCase
+        final var view = this.softDeletedLookupByIdUseCase
                 .findSoftDeletedById(this.mapper.toVariantId(id));
 
         final var response = this.mapper.toResponse(view);
