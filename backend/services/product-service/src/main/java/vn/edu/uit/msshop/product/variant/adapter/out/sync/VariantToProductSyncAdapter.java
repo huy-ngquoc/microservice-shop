@@ -20,13 +20,13 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.count.Produ
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantAdditionForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantUpdateForVariantUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductStockCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductStockCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductAdditionPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductSoldCountBulkDecrementPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductStockCountBulkDecrementPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductSoldCountBulkIncrementPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductStockCountBulkIncrementPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductRemovalPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductUpdatePort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
@@ -35,13 +35,13 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @RequiredArgsConstructor
 public class VariantToProductSyncAdapter
         implements
-        AddVariantToProductPort,
-        UpdateVariantInProductPort,
-        IncreaseProductSoldCountsPort,
-        IncreaseProductStockCountsPort,
-        DecreaseProductSoldCountsPort,
-        DecreaseProductStockCountsPort,
-        RemoveVariantFromProductPort {
+        VariantToProductAdditionPort,
+        VariantToProductUpdatePort,
+        VariantToProductSoldCountBulkIncrementPort,
+        VariantToProductStockCountBulkIncrementPort,
+        VariantToProductSoldCountBulkDecrementPort,
+        VariantToProductStockCountBulkDecrementPort,
+        VariantToProductRemovalPort {
 
     private final ProductVariantAdditionForVariantUseCase productVariantAdditionForVariantUseCase;
     private final ProductVariantUpdateForVariantUseCase productVariantUpdateForVariantUseCase;

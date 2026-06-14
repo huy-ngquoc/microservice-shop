@@ -14,7 +14,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedLookupByIdPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.AddVariantToProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductAdditionPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantRestorablePort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredEvent;
@@ -31,7 +31,7 @@ class VariantRestorationByIdService
     private final VariantSoldCountLookupByVariantIdPort soldCountLookupByIdPort;
     private final VariantStockCountLookupByVariantIdPort stockCountLookupByIdPort;
     private final CheckVariantRestorablePort checkRestorablePort;
-    private final AddVariantToProductPort addToProductPort;
+    private final VariantToProductAdditionPort addToProductPort;
     private final VariantUpdatePort updatePort;
     private final VariantEventPublicationPort eventPublicationPort;
 
