@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.variant.adapter.out.persistence;
+package vn.edu.uit.msshop.product.variant.adapter.out.persistence.count;
 
 import org.springframework.stereotype.Component;
 
