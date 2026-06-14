@@ -4,6 +4,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantIma
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 
 public interface VariantImageActiveLookupByIdUseCase {
-    VariantImageView findImageById(
+    VariantImageView find(
             final VariantImageActiveLookupByIdQuery query);
 }

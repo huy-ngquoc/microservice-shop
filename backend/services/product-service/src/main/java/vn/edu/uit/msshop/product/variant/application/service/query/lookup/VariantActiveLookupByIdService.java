@@ -32,7 +32,7 @@ class VariantActiveLookupByIdService
     @Cacheable(
             cacheNames = CacheNames.VARIANT,
             key = "#query.variantId()")
-    public VariantView findById(
+    public VariantView find(
             final VariantActiveLookupByIdQuery query) {
         final var variantId = new VariantId(query.variantId());
 

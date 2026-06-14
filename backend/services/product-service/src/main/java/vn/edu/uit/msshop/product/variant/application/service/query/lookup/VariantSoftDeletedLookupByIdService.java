@@ -27,7 +27,7 @@ class VariantSoftDeletedLookupByIdService
     @Override
     @Transactional(
             readOnly = true)
-    public VariantView findSoftDeletedById(
+    public VariantView find(
             final VariantSoftDeletedLookupByIdQuery query) {
         final var variantId = new VariantId(query.variantId());
 
