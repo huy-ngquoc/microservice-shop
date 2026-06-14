@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
+import vn.edu.uit.msshop.product.variant.adapter.in.web.request.VariantImageUpdateRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.application.dto.command.image.VariantImageDeletionByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.image.VariantImageUpdateByIdCommand;
@@ -30,7 +30,7 @@ public class VariantImageWebMapper {
 
     public VariantImageUpdateByIdCommand toUpdateByIdCommand(
             final UUID variantId,
-            final UpdateVariantImageRequest request) {
+            final VariantImageUpdateRequest request) {
         return new VariantImageUpdateByIdCommand(
                 variantId,
                 request.newImageKey(),

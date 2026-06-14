@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.mapper.VariantWebMapper;
-import vn.edu.uit.msshop.product.variant.adapter.in.web.request.FindVariantsByIdsRequest;
+import vn.edu.uit.msshop.product.variant.adapter.in.web.request.VariantBulkLookupByIdsRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantActiveBulkLookupByIdsUseCase;
 
@@ -26,7 +26,7 @@ public class VariantInternalController {
     public ResponseEntity<List<VariantResponse>> findAllByIds(
             @RequestBody
             @Valid
-            FindVariantsByIdsRequest request) {
+            VariantBulkLookupByIdsRequest request) {
         final var query = this.mapper.toActiveBulkLookupByIdsQuery(request.ids());
         final var variantById = this.activeBulkLookupByIdsUseCase.find(query);
 
