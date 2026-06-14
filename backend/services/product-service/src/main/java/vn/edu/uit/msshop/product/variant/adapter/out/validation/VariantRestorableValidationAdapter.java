@@ -9,13 +9,13 @@ import vn.edu.uit.msshop.product.product.application.dto.query.lookup.ProductAct
 import vn.edu.uit.msshop.product.product.application.port.in.query.lookup.ProductActiveLookupByIdUseCase;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
-import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantRestorablePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.validation.VariantRestorabilityCheckPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 
 @Component
 @RequiredArgsConstructor
 public class VariantRestorableValidationAdapter
-        implements CheckVariantRestorablePort {
+        implements VariantRestorabilityCheckPort {
     private final ProductActiveLookupByIdUseCase productActiveLookupByIdUseCase;
 
     // TODO: too long, split into smaller function

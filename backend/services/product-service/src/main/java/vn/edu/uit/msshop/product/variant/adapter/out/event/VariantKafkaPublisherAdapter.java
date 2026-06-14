@@ -8,17 +8,17 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.variant.adapter.out.event.config.KafkaVariantConfig;
+import vn.edu.uit.msshop.product.variant.adapter.out.event.config.VariantKafkaConfig;
 import vn.edu.uit.msshop.product.variant.application.dto.integration.VariantIntegrationEvent;
 import vn.edu.uit.msshop.product.variant.application.dto.integration.VariantSoftDeletedIntegrationEvent;
 import vn.edu.uit.msshop.product.variant.application.dto.integration.VariantUpdatedIntegrationEvent;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantIntegrationEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantIntegrationEventPublicationPort;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class VariantKafkaPublisherAdapter
-        implements PublishVariantIntegrationEventPort {
+        implements VariantIntegrationEventPublicationPort {
     private final KafkaTemplate<String, VariantIntegrationEvent> kafkaTemplate;
 
     @Override
@@ -38,7 +38,7 @@ public class VariantKafkaPublisherAdapter
     private void publish(
             final VariantIntegrationEvent event) {
         final var producerRecord = new ProducerRecord<String, VariantIntegrationEvent>(
-                KafkaVariantConfig.TOPIC_NAME,
+                VariantKafkaConfig.TOPIC_NAME,
                 event.getAggregateId(),
                 event);
         producerRecord.headers().add(

@@ -5,13 +5,13 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByVariantIdQuery;
 import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByVariantIdUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantReferencedByProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.validation.VariantReferencedByProductCheckPort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Component
 @RequiredArgsConstructor
 public class VariantReferencedByProductValidationAdapter
-        implements CheckVariantReferencedByProductPort {
+        implements VariantReferencedByProductCheckPort {
     private final ProductActiveExistenceCheckByVariantIdUseCase productActiveExistenceCheckByVariantIdUseCase;
 
     @Override
