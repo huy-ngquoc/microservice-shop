@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.mapper.VariantImageWebMapper;
-import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantImageRequest;
+import vn.edu.uit.msshop.product.variant.adapter.in.web.request.VariantImageUpdateRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageUpdateByIdUseCase;
@@ -49,7 +49,7 @@ public class VariantImageController {
 
             @RequestBody
             @Valid
-            final UpdateVariantImageRequest request) {
+            final VariantImageUpdateRequest request) {
         final var command = this.mapper.toUpdateByIdCommand(id, request);
         final var view = this.updateByIdUseCase.update(command);
 

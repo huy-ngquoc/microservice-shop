@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.mapper.VariantWebMapper;
-import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
+import vn.edu.uit.msshop.product.variant.adapter.in.web.request.VariantInfoUpdateRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantHardDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantRestorationByIdUseCase;
@@ -123,7 +123,7 @@ public class VariantController {
 
             @RequestBody
             @Valid
-            final UpdateVariantInfoRequest request) {
+            final VariantInfoUpdateRequest request) {
         final var command = this.mapper.toUpdateInfoCommand(id, request);
         final var view = this.updateInfoByIdUseCase.updateInfo(command);
 
