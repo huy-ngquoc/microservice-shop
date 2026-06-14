@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantSt
 import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantStockCountBulkSetCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkReconciliationUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkSetUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.FetchInventoryStockCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantStockCountBulkFetchPort;
 import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantInventoryStockCount;
 
 @Service
@@ -20,7 +20,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantInventoryStock
 class VariantStockCountBulkReconciliationService
         implements VariantStockCountBulkReconciliationUseCase {
 
-    private final FetchInventoryStockCountsPort fetchPort;
+    private final VariantStockCountBulkFetchPort fetchPort;
     private final VariantStockCountBulkSetUseCase setAllUseCase;
 
     @Override

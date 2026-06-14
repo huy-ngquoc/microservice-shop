@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantSoldCountBulkSetCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantSoldCountBulkReconciliationUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantSoldCountBulkSetUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.FetchAllOrderSoldCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantSoldCountBulkFetchPort;
 import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantOrderSoldCount;
 
 @Service
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantOrderSoldCount
 class VariantSoldCountBulkReconciliationService
         implements VariantSoldCountBulkReconciliationUseCase {
 
-    private final FetchAllOrderSoldCountsPort fetchAllPort;
+    private final VariantSoldCountBulkFetchPort fetchAllPort;
     private final VariantSoldCountBulkSetUseCase setAllUseCase;
 
     @Override
