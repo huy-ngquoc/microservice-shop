@@ -24,7 +24,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 
 @Component
 @RequiredArgsConstructor
-public class VariantWritePersistenceAdapter
+public class VariantCommandPersistenceAdapter
         implements
         VariantCreationPort,
         VariantBulkCreationPort,
@@ -33,6 +33,7 @@ public class VariantWritePersistenceAdapter
         VariantProductNameBulkUpdateByProductIdPort,
         VariantDeletionByIdPort,
         VariantBulkDeletionByProductIdPort {
+
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
     private final MongoTemplate mongoTemplate;

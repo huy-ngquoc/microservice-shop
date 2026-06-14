@@ -5,10 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantActiveListingQuery;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveListingPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedBulkLookupByIdsPort;
@@ -16,18 +20,48 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.varian
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Component
 @RequiredArgsConstructor
-public class VariantLoadPersistenceAdapter
+public class VariantQueryPersistenceAdapter
         implements
+        VariantActiveListingPort,
         VariantActiveLookupByIdPort,
         VariantSoftDeletedLookupByIdPort,
         VariantActiveBulkLookupByIdsPort,
         VariantBulkLookupByProductIdPort,
         VariantSoftDeletedBulkLookupByIdsPort {
+
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
+
+    @Override
+    public PageResponseDto<Variant> listActive(
+            final VariantActiveListingQuery query) {
+        final var targetList = query.targetList();
+        final var pageable = PageRequests.toPageable(
+                query.pageRequest(),
+                VariantDocument.Fields.id);
+
+        final Page<VariantDocument> page;
+        if (targetList.isEmpty()) {
+            page = this.repository.findAllByDeletionTimeIsNull(pageable);
+        } else {
+            page = this.repository.findAllByTargetsInAndDeletionTimeIsNull(targetList, pageable);
+        }
+
+        final var variants = page.getContent().stream()
+                .map(this.mapper::toDomain)
+                .toList();
+
+        return new PageResponseDto<>(
+                variants,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements());
+    }
 
     @Override
     public Optional<Variant> loadActiveById(
