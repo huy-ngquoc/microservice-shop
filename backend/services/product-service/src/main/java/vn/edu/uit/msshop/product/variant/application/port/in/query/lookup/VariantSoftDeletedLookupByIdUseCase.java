@@ -4,6 +4,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantSof
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 
 public interface VariantSoftDeletedLookupByIdUseCase {
-    VariantView findSoftDeletedById(
+    VariantView find(
             final VariantSoftDeletedLookupByIdQuery query);
 }

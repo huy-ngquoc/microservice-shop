@@ -86,7 +86,7 @@ public class VariantController {
             @PathVariable
             final UUID id) {
         final var query = this.mapper.toActiveLookupByIdQuery(id);
-        final var view = this.activeLookupByIdUseCase.findById(query);
+        final var view = this.activeLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -97,8 +97,7 @@ public class VariantController {
             @PathVariable
             final UUID id) {
         final var query = this.mapper.toSoftDeletedLookupByIdQuery(id);
-        final var view = this.softDeletedLookupByIdUseCase
-                .findSoftDeletedById(query);
+        final var view = this.softDeletedLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);

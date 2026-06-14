@@ -23,7 +23,7 @@ class VariantImageActiveLookupByIdService
     @Override
     @Transactional(
             readOnly = true)
-    public VariantImageView findImageById(
+    public VariantImageView find(
             final VariantImageActiveLookupByIdQuery query) {
         final var variantId = new VariantId(query.variantId());
         return this.loadPort.loadById(variantId)

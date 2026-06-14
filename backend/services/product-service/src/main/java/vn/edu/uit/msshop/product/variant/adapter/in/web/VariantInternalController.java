@@ -28,7 +28,7 @@ public class VariantInternalController {
             @Valid
             FindVariantsByIdsRequest request) {
         final var query = this.mapper.toActiveBulkLookupByIdsQuery(request.ids());
-        final var variantById = this.activeBulkLookupByIdsUseCase.findAllByIds(query);
+        final var variantById = this.activeBulkLookupByIdsUseCase.findAll(query);
 
         final var responses = this.mapper.toListResponse(variantById.values());
         return ResponseEntity.ok(responses);
