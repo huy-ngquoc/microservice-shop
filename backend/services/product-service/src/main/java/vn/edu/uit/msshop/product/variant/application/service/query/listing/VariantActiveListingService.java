@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.dto.query.ListVariantsQuery;
+import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantActiveListingQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.listing.VariantActiveListingUseCase;
@@ -45,7 +45,7 @@ class VariantActiveListingService
     @Cacheable(
             cacheNames = CacheNames.VARIANT_LIST)
     public PageResponseDto<VariantView> list(
-            final ListVariantsQuery query) {
+            final VariantActiveListingQuery query) {
         final var page = this.listPort.list(query);
 
         final var ids = page.items().stream()
