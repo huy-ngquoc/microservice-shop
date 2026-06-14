@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -70,12 +71,12 @@ public class VariantStockCountPersistenceAdapter
 
     @Override
     public Map<VariantId, VariantStockCount> loadAllByVariantIds(
-            final Collection<VariantId> variantIdCollection) {
-        if (variantIdCollection.isEmpty()) {
+            final Set<VariantId> variantIdSet) {
+        if (variantIdSet.isEmpty()) {
             return Map.of();
         }
 
-        final var jpVariantIdSet = variantIdCollection.stream()
+        final var jpVariantIdSet = variantIdSet.stream()
                 .map(VariantId::value)
                 .collect(Collectors.toUnmodifiableSet());
 
