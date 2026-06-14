@@ -11,8 +11,8 @@ import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantActiveLookupByIdUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountLookupByIdPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountLookupByVariantIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
@@ -22,8 +22,8 @@ class VariantActiveLookupByIdService
         implements VariantActiveLookupByIdUseCase {
 
     private final VariantActiveLookupByIdPort activeLookupByIdPort;
-    private final VariantSoldCountLookupByIdPort soldCountLookupByIdPort;
-    private final VariantStockCountLookupByIdPort stockCountLookupByIdPort;
+    private final VariantSoldCountLookupByVariantIdPort soldCountLookupByIdPort;
+    private final VariantStockCountLookupByVariantIdPort stockCountLookupByIdPort;
 
     private final VariantViewMapper mapper;
 
@@ -39,10 +39,10 @@ class VariantActiveLookupByIdService
 
         final var variant = this.activeLookupByIdPort.loadActiveById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
-        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(
+        final var soldCount = this.soldCountLookupByIdPort.loadByVariantIdOrZero(
                 variant.getId(),
                 variant.getProductId());
-        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(
+        final var stockCount = this.stockCountLookupByIdPort.loadByVariantIdOrZero(
                 variant.getId(),
                 variant.getProductId());
 
