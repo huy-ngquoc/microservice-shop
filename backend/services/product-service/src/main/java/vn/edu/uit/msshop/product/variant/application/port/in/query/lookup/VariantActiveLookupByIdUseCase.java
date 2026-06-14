@@ -4,6 +4,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantAct
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 
 public interface VariantActiveLookupByIdUseCase {
-    VariantView findById(
+    VariantView find(
             final VariantActiveLookupByIdQuery query);
 }
