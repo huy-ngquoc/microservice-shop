@@ -17,8 +17,8 @@ import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundEx
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkSetUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByVariantIdsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductStockCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductStockCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductStockCountBulkDecrementPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductStockCountBulkIncrementPort;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
@@ -31,8 +31,8 @@ class VariantStockCountBulkSetService
 
     private final VariantStockCountBulkLookupByVariantIdsPort stockCountBulkLookupByIdsPort;
     private final VariantStockCountBulkUpdatePort stockCountBulkUpdatePort;
-    private final IncreaseProductStockCountsPort increaseProductStockCountsPort;
-    private final DecreaseProductStockCountsPort decreaseProductStockCountsPort;
+    private final VariantToProductStockCountBulkIncrementPort increaseProductStockCountsPort;
+    private final VariantToProductStockCountBulkDecrementPort decreaseProductStockCountsPort;
 
     @Override
     @Transactional
