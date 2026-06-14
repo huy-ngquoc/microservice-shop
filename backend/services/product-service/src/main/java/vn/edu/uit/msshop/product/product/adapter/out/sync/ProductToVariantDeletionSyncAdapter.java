@@ -36,7 +36,7 @@ public class ProductToVariantDeletionSyncAdapter
         final var rawProductId = productId.value();
 
         final var command = new VariantBulkSoftDeletionByProductIdForProductCommand(rawProductId);
-        this.variantBulkSoftDeletionByProductIdForProductUseCase.deleteByProductId(command);
+        this.variantBulkSoftDeletionByProductIdForProductUseCase.softDeleteAll(command);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ProductToVariantDeletionSyncAdapter
                 .collect(Collectors.toUnmodifiableSet());
 
         final var command = new VariantBulkSoftDeletionByIdsForProductCommand(rawVariantIdSet);
-        this.variantBulkSoftDeletionByIdsForProductUseCase.deleteByIds(command);
+        this.variantBulkSoftDeletionByIdsForProductUseCase.softDeleteAll(command);
     }
 
     @Override
@@ -56,6 +56,6 @@ public class ProductToVariantDeletionSyncAdapter
         final var rawProductId = productId.value();
 
         final var command = new VariantBulkHardDeletionByProductIdForProductCommand(rawProductId);
-        this.variantBulkHardDeletionByProductIdForProductUseCase.purgeByProductId(command);
+        this.variantBulkHardDeletionByProductIdForProductUseCase.hardDeleteAll(command);
     }
 }

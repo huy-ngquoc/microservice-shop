@@ -31,7 +31,7 @@ class VariantProductNameBulkUpdateForProductService
                             cacheNames = CacheNames.VARIANT_LIST,
                             allEntries = true)
             })
-    public void execute(
+    public void updateAll(
             final VariantProductNameBulkUpdateForProductCommand cmd) {
         final var productId = new VariantProductId(cmd.productId());
         final var productName = new VariantProductName(cmd.productName());

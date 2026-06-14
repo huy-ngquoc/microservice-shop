@@ -22,7 +22,7 @@ class VariantSoldCountBulkReconciliationService
     private final VariantSoldCountBulkSetUseCase setAllUseCase;
 
     @Override
-    public void execute() {
+    public void reconcileAll() {
         final var soldCountCollection = this.fetchAllPort.fetchAll();
         if (soldCountCollection.isEmpty()) {
             return;
@@ -31,7 +31,7 @@ class VariantSoldCountBulkReconciliationService
         final var soldCountById = VariantSoldCountBulkReconciliationService
                 .toSoldCountById(soldCountCollection);
         final var setCommand = new VariantSoldCountBulkSetCommand(soldCountById);
-        this.setAllUseCase.execute(setCommand);
+        this.setAllUseCase.setAll(setCommand);
     }
 
     private static Map<UUID, Integer> toSoldCountById(

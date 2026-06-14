@@ -28,7 +28,7 @@ public class ProductToVariantCreationSyncAdapter
                 id,
                 name,
                 newVariants);
-        final var variantViewsList = this.variantBulkCreationForNewProductUseCase.create(command);
+        final var variantViewsList = this.variantBulkCreationForNewProductUseCase.createAll(command);
 
         return this.mapper.toProductVariants(variantViewsList);
     }

@@ -46,7 +46,7 @@ class VariantSoftDeletionByIdService
                             cacheNames = CacheNames.VARIANT_LIST,
                             allEntries = true)
             })
-    public void delete(
+    public void softDelete(
             final VariantSoftDeletionByIdCommand cmd) {
         final var variantId = new VariantId(cmd.variantId());
         final var expectedVersion = new VariantVersion(cmd.variantVersion());

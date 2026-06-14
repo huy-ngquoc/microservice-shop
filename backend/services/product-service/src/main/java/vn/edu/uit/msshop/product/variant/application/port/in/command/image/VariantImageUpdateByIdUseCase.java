@@ -4,6 +4,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.image.VariantIm
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 
 public interface VariantImageUpdateByIdUseCase {
-    VariantImageView updateImage(
+    VariantImageView update(
             final VariantImageUpdateByIdCommand cmd);
 }

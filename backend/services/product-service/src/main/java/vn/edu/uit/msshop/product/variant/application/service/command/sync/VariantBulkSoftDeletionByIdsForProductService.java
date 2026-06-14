@@ -39,7 +39,7 @@ class VariantBulkSoftDeletionByIdsForProductService
                             cacheNames = CacheNames.VARIANT_LIST,
                             allEntries = true)
             })
-    public void deleteByIds(
+    public void softDeleteAll(
             final VariantBulkSoftDeletionByIdsForProductCommand cmd) {
         final var variantIdSet = cmd.idSet().stream()
                 .map(VariantId::new)

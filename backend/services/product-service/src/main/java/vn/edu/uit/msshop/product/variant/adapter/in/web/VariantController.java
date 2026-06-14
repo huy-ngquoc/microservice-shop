@@ -140,7 +140,7 @@ public class VariantController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toSoftDeleteCommand(id, version);
-        this.softDeletionByIdUseCase.delete(command);
+        this.softDeletionByIdUseCase.softDelete(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -153,7 +153,7 @@ public class VariantController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toHardDeleteCommand(id, version);
-        this.hardDeletionByIdUseCase.purge(command);
+        this.hardDeletionByIdUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();
     }

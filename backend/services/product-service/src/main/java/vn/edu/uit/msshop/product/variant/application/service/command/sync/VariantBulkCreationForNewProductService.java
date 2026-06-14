@@ -50,7 +50,7 @@ class VariantBulkCreationForNewProductService
     @CacheEvict(
             cacheNames = CacheNames.VARIANT_LIST,
             allEntries = true)
-    public List<VariantView> create(
+    public List<VariantView> createAll(
             final VariantBulkCreationForNewProductCommand cmd) {
         final var saved = this.createVariants(cmd);
         final var soldCountByVariantId = this.initializeSoldCounts(saved);

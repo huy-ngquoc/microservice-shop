@@ -26,6 +26,6 @@ public class ProductToVariantRestorationSyncAdapter
                 .collect(Collectors.toUnmodifiableSet());
 
         final var command = new VariantBulkRestorationByIdsForProductCommand(rawVariantIdSet);
-        this.variantBulkRestorationByIdsForProductUseCase.restoreByIds(command);
+        this.variantBulkRestorationByIdsForProductUseCase.restoreAll(command);
     }
 }
