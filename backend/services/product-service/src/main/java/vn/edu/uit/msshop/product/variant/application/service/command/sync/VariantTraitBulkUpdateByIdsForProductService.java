@@ -18,8 +18,8 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantTraitBulkUpdateByIdsForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantTraitBulkUpdateByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -29,8 +29,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 @RequiredArgsConstructor
 class VariantTraitBulkUpdateByIdsForProductService
         implements VariantTraitBulkUpdateByIdsForProductUseCase {
-    private final LoadAllVariantsPort loadAllPort;
-    private final UpdateAllVariantsPort updateAllPort;
+    private final VariantActiveBulkLookupByIdsPort activeBulkLookupByIdsPort;
+    private final VariantBulkUpdatePort bulkUpdatePort;
     private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
@@ -51,7 +51,7 @@ class VariantTraitBulkUpdateByIdsForProductService
 
         final var variantIdSet = newTraitsById.keySet();
         final var amountVariants = variantIdSet.size();
-        final var variantById = this.loadAllPort.loadAllByIds(variantIdSet);
+        final var variantById = this.activeBulkLookupByIdsPort.loadAllByIds(variantIdSet);
 
         final var next = new ArrayList<Variant>(amountVariants);
         for (final var variant : variantById.values()) {
@@ -63,7 +63,7 @@ class VariantTraitBulkUpdateByIdsForProductService
             next.add(updated);
         }
 
-        final var saved = this.updateAllPort.updateAll(next);
+        final var saved = this.bulkUpdatePort.updateAll(next);
         for (final var variant : saved) {
             final var event = new VariantInfoUpdatedEvent(variant.getId());
             this.eventPublicationPort.publishEvent(event);

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantActiveListingQuery;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.ListVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveListingPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
@@ -14,12 +14,12 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequiredArgsConstructor
 public class VariantListPersistenceAdapter
         implements
-        ListVariantsPort {
+        VariantActiveListingPort {
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
 
     @Override
-    public PageResponseDto<Variant> list(
+    public PageResponseDto<Variant> listActive(
             final VariantActiveListingQuery query) {
         final var targetList = query.targetList();
         final var pageable = PageRequests.toPageable(

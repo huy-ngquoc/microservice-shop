@@ -12,9 +12,9 @@ import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundEx
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantHardDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantSoldCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountDeletionByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantDeletionByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantReferencedByProductPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantHardDeletedEvent;
@@ -28,9 +28,9 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion
 class VariantHardDeletionByIdService
         implements VariantHardDeletionByIdUseCase {
 
-    private final LoadSoftDeletedVariantPort loadSoftDeletedPort;
-    private final DeleteVariantPort deletePort;
-    private final DeleteVariantSoldCountPort deleteSoldCountPort;
+    private final VariantSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
+    private final VariantDeletionByIdPort deletionByIdPort;
+    private final VariantSoldCountDeletionByIdPort soldCountDeletionByIdPort;
     private final CheckVariantReferencedByProductPort checkReferencedPort;
     private final VariantImageStoragePort imageStoragePort;
     private final VariantEventPublicationPort eventPublicationPort;
@@ -42,7 +42,7 @@ class VariantHardDeletionByIdService
         final var variantId = new VariantId(cmd.variantId());
         final var expectedVersion = new VariantVersion(cmd.variantVersion());
 
-        final var variant = this.loadSoftDeletedPort.loadSoftDeletedById(variantId)
+        final var variant = this.softDeletedLookupByIdPort.loadSoftDeletedById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
 
         VariantVersionGuard.ensureMatch(
@@ -54,8 +54,8 @@ class VariantHardDeletionByIdService
             throw new BusinessRuleException("Cannot purge variant: still referenced by a product");
         }
 
-        this.deletePort.deleteById(variantId);
-        this.deleteSoldCountPort.deleteById(variantId);
+        this.deletionByIdPort.deleteById(variantId);
+        this.soldCountDeletionByIdPort.deleteById(variantId);
 
         final var event = new VariantHardDeletedEvent(variantId);
         this.eventPublicationPort.publishEvent(event);
