@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
+import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
@@ -30,11 +31,13 @@ class VariantActiveLookupByIdService
             readOnly = true)
     @Cacheable(
             cacheNames = CacheNames.VARIANT,
-            key = "#id.value()")
+            key = "#query.variantId()")
     public VariantView findById(
-            final VariantId id) {
-        final var variant = this.loadPort.loadById(id)
-                .orElseThrow(() -> new VariantNotFoundException(id));
+            final VariantActiveLookupByIdQuery query) {
+        final var variantId = new VariantId(query.variantId());
+
+        final var variant = this.loadPort.loadById(variantId)
+                .orElseThrow(() -> new VariantNotFoundException(variantId));
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
                 variant.getId(),
                 variant.getProductId());
