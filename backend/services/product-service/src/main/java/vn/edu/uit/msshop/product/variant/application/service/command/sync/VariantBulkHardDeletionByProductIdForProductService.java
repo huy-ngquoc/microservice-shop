@@ -8,9 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkHardDeletionByProductIdForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkHardDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteAllVariantSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantsForProductPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountBulkDeletionByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkDeletionByProductIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.image.VariantImageDeleter;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantHardDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -22,9 +22,9 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 class VariantBulkHardDeletionByProductIdForProductService
         implements VariantBulkHardDeletionByProductIdForProductUseCase {
 
-    private final LoadVariantsForProductPort loadForProductPort;
-    private final DeleteVariantsForProductPort deleteForProductPort;
-    private final DeleteAllVariantSoldCountsPort deleteAllSoldCountsPort;
+    private final VariantBulkLookupByProductIdPort bulkLookupByProductIdPort;
+    private final VariantBulkDeletionByProductIdPort bulkDeletionByProductIdPort;
+    private final VariantSoldCountBulkDeletionByIdsPort soldCountBulkDeletionByIdsPort;
 
     private final VariantImageDeleter imageDeleter;
 
@@ -36,7 +36,7 @@ class VariantBulkHardDeletionByProductIdForProductService
             final VariantBulkHardDeletionByProductIdForProductCommand cmd) {
         final var productId = new VariantProductId(cmd.productId());
 
-        final var variants = this.loadForProductPort.loadAllByProductId(productId);
+        final var variants = this.bulkLookupByProductIdPort.loadAllByProductId(productId);
         if (variants.isEmpty()) {
             return;
         }
@@ -45,8 +45,8 @@ class VariantBulkHardDeletionByProductIdForProductService
                 .map(Variant::getId)
                 .toList();
 
-        this.deleteForProductPort.deleteByProductId(productId);
-        this.deleteAllSoldCountsPort.deleteAllByIds(variantIdList);
+        this.bulkDeletionByProductIdPort.deleteByProductId(productId);
+        this.soldCountBulkDeletionByIdsPort.deleteAllByIds(variantIdList);
 
         for (final var variant : variants) {
             this.imageDeleter.deleteQuietly(variant.getImageKey());

@@ -10,8 +10,8 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkSoftDeletionByProductIdForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
@@ -23,8 +23,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 class VariantBulkSoftDeletionByProductIdForProductService
         implements VariantBulkSoftDeletionByProductIdForProductUseCase {
 
-    private final LoadVariantsForProductPort loadForProductPort;
-    private final UpdateAllVariantsPort updateAllPort;
+    private final VariantBulkLookupByProductIdPort bulkLookupByProductIdPort;
+    private final VariantBulkUpdatePort bulkUpdatePort;
     private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
@@ -42,7 +42,7 @@ class VariantBulkSoftDeletionByProductIdForProductService
             final VariantBulkSoftDeletionByProductIdForProductCommand cmd) {
         final var productId = new VariantProductId(cmd.productId());
 
-        final var variants = this.loadForProductPort.loadAllByProductId(productId);
+        final var variants = this.bulkLookupByProductIdPort.loadAllByProductId(productId);
         if (variants.isEmpty()) {
             return;
         }
@@ -51,7 +51,7 @@ class VariantBulkSoftDeletionByProductIdForProductService
                 .map(VariantBulkSoftDeletionByProductIdForProductService::toSoftDeleted)
                 .toList();
 
-        final var saved = this.updateAllPort.updateAll(next);
+        final var saved = this.bulkUpdatePort.updateAll(next);
         for (final var variant : saved) {
             final var event = new VariantSoftDeletedEvent(variant.getId());
             this.eventPublicationPort.publishEvent(event);

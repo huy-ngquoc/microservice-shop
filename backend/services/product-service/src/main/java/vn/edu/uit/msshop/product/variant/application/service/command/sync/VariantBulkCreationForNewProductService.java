@@ -17,9 +17,9 @@ import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkCreationForNewProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeAllVariantSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeAllVariantStockCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountBulkInitializationPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkInitializationPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkCreationPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantCreatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
@@ -39,9 +39,9 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 class VariantBulkCreationForNewProductService
         implements VariantBulkCreationForNewProductUseCase {
 
-    private final CreateAllVariantsPort createAllVariantsPort;
-    private final InitializeAllVariantSoldCountsPort initializeAllSoldCountsPort;
-    private final InitializeAllVariantStockCountsPort initializeAllStockCountsPort;
+    private final VariantBulkCreationPort bulkCreationPort;
+    private final VariantSoldCountBulkInitializationPort soldCountBulkInitializationPort;
+    private final VariantStockCountBulkInitializationPort stockCountBulkInitializationPort;
     private final VariantEventPublicationPort eventPublicationPort;
     private final VariantViewMapper mapper;
 
@@ -78,7 +78,7 @@ class VariantBulkCreationForNewProductService
                     data);
             newVariantList.add(newVariant);
         }
-        return this.createAllVariantsPort.createAll(newVariantList);
+        return this.bulkCreationPort.createAll(newVariantList);
     }
 
     private static NewVariant toNewVariant(
@@ -103,7 +103,7 @@ class VariantBulkCreationForNewProductService
                     variant.getProductId());
             newSoldCountList.add(newSoldCount);
         }
-        return this.initializeAllSoldCountsPort.initializeAll(newSoldCountList);
+        return this.soldCountBulkInitializationPort.initializeAll(newSoldCountList);
     }
 
     private Map<VariantId, VariantStockCount> initializeStockCounts(
@@ -115,7 +115,7 @@ class VariantBulkCreationForNewProductService
                     variant.getProductId());
             newStockCountList.add(newStockCount);
         }
-        return this.initializeAllStockCountsPort.initializeAll(newStockCountList);
+        return this.stockCountBulkInitializationPort.initializeAll(newStockCountList);
     }
 
     private List<VariantView> toViews(

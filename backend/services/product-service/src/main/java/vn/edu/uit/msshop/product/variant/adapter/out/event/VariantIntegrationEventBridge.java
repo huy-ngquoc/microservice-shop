@@ -9,7 +9,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.integration.VariantSoft
 import vn.edu.uit.msshop.product.variant.application.dto.integration.VariantUpdatedIntegrationEvent;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantIntegrationEventPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKey;
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 @Component
 @RequiredArgsConstructor
 public class VariantIntegrationEventBridge {
-    private final LoadVariantPort loadPort;
+    private final VariantActiveLookupByIdPort activeLookupByIdPort;
     private final PublishVariantIntegrationEventPort integrationPort;
 
     @TransactionalEventListener(
@@ -26,7 +26,7 @@ public class VariantIntegrationEventBridge {
     public void on(
             final VariantInfoUpdatedEvent event) {
         final var variantId = event.getVariantId();
-        final var variant = this.loadPort.loadById(variantId)
+        final var variant = this.activeLookupByIdPort.loadActiveById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
 
         final var msg = new VariantUpdatedIntegrationEvent(
