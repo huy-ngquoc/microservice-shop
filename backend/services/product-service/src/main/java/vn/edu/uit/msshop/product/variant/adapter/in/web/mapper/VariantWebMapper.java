@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
-import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantInfoRequest;
+import vn.edu.uit.msshop.product.variant.adapter.in.web.request.VariantInfoUpdateRequest;
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantResponse;
 import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantHardDeletionByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantRestorationByIdCommand;
@@ -105,7 +105,7 @@ public class VariantWebMapper {
 
     public VariantInfoUpdateByIdCommand toUpdateInfoCommand(
             final UUID variantId,
-            final UpdateVariantInfoRequest request) {
+            final VariantInfoUpdateRequest request) {
         final var priceChange = ChangeRequest.toChange(request.price());
         final var traitListChange = ChangeRequest.toChange(request.traits());
         final var targetListChange = ChangeRequest.toChange(request.targets());
