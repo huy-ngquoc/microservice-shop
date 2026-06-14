@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductRemovalPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -32,7 +32,7 @@ class VariantSoftDeletionByIdService
     private final VariantSoldCountLookupByVariantIdPort soldCountLookupByIdPort;
     private final VariantStockCountLookupByVariantIdPort stockCountLookupByIdPort;
     private final VariantUpdatePort updatePort;
-    private final RemoveVariantFromProductPort removeFromProductPort;
+    private final VariantToProductRemovalPort removeFromProductPort;
     private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
