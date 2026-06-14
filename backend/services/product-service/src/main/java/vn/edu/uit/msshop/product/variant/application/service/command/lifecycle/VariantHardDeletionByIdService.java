@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImage
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountDeletionByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantDeletionByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedLookupByIdPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantReferencedByProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.validation.VariantReferencedByProductCheckPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantHardDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -31,7 +31,7 @@ class VariantHardDeletionByIdService
     private final VariantSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final VariantDeletionByIdPort deletionByIdPort;
     private final VariantSoldCountDeletionByVariantIdPort soldCountDeletionByIdPort;
-    private final CheckVariantReferencedByProductPort checkReferencedPort;
+    private final VariantReferencedByProductCheckPort checkReferencedPort;
     private final VariantImageStoragePort imageStoragePort;
     private final VariantEventPublicationPort eventPublicationPort;
 

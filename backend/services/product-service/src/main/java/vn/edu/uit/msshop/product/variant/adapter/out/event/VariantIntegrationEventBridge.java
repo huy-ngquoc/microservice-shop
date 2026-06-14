@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.dto.integration.VariantSoftDeletedIntegrationEvent;
 import vn.edu.uit.msshop.product.variant.application.dto.integration.VariantUpdatedIntegrationEvent;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.PublishVariantIntegrationEventPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantIntegrationEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
@@ -19,7 +19,7 @@ import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 @RequiredArgsConstructor
 public class VariantIntegrationEventBridge {
     private final VariantActiveLookupByIdPort activeLookupByIdPort;
-    private final PublishVariantIntegrationEventPort integrationPort;
+    private final VariantIntegrationEventPublicationPort integrationPort;
 
     @TransactionalEventListener(
             phase = TransactionPhase.AFTER_COMMIT)
