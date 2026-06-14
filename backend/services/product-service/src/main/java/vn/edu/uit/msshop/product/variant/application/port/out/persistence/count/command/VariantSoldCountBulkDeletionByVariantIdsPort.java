@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
-public interface VariantStockCountBulkDeletionByIdsPort {
-    void deleteAllByIds(
-            final Collection<VariantId> ids);
+public interface VariantSoldCountBulkDeletionByVariantIdsPort {
+    void deleteAllByVariantIds(
+            final Collection<VariantId> variantIdCollection);
 }

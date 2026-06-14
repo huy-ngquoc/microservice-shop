@@ -16,7 +16,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantSo
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantSoldCountBulkSetUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountBulkUpdatePort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductSoldCountsPort;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
@@ -29,7 +29,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCou
 class VariantSoldCountBulkSetService
         implements VariantSoldCountBulkSetUseCase {
 
-    private final VariantSoldCountBulkLookupByIdsPort soldCountBulkLookupByIdsPort;
+    private final VariantSoldCountBulkLookupByVariantIdsPort soldCountBulkLookupByIdsPort;
     private final VariantSoldCountBulkUpdatePort soldCountBulkUpdatePort;
     private final IncreaseProductSoldCountsPort increaseProductSoldCountsPort;
     private final DecreaseProductSoldCountsPort decreaseProductSoldCountsPort;
@@ -47,44 +47,45 @@ class VariantSoldCountBulkSetService
             })
     public void setAll(
             final VariantSoldCountBulkSetCommand cmd) {
-        final var rawNewValueById = cmd.soldCountById();
-        if (rawNewValueById.isEmpty()) {
+        final var rawNewValueByVariantId = cmd.soldCountByVariantId();
+        if (rawNewValueByVariantId.isEmpty()) {
             return;
         }
-        final var newValueById = VariantSoldCountBulkSetService.toNewValueById(rawNewValueById);
+        final var newValueByVariantId = VariantSoldCountBulkSetService
+                .toNewValueByVariantId(rawNewValueByVariantId);
 
-        final var changeList = this.loadChangeList(newValueById);
+        final var changeList = this.loadChangeList(newValueByVariantId);
         this.persistUpdates(changeList);
         this.propagateDeltas(changeList);
     }
 
-    private static Map<VariantId, VariantSoldCountValue> toNewValueById(
-            final Map<UUID, Integer> rawNewValueById) {
-        final var newValueById = HashMap.<VariantId, VariantSoldCountValue>newHashMap(
-                rawNewValueById.size());
-        for (final var entry : rawNewValueById.entrySet()) {
+    private static Map<VariantId, VariantSoldCountValue> toNewValueByVariantId(
+            final Map<UUID, Integer> rawNewValueByVariantId) {
+        final var newValueByVariantId = HashMap.<VariantId, VariantSoldCountValue>newHashMap(
+                rawNewValueByVariantId.size());
+        for (final var entry : rawNewValueByVariantId.entrySet()) {
             final var variantId = new VariantId(entry.getKey());
             final var variantSoldCountValue = new VariantSoldCountValue(entry.getValue());
 
-            newValueById.put(
+            newValueByVariantId.put(
                     variantId,
                     variantSoldCountValue);
         }
-        return newValueById;
+        return newValueByVariantId;
     }
 
     private List<SoldCountChange> loadChangeList(
-            final Map<VariantId, VariantSoldCountValue> newValueById) {
-        final var idSet = newValueById.keySet();
-        final var amountVariant = idSet.size();
-        final var currentById = this.soldCountBulkLookupByIdsPort.loadAllByIds(idSet);
+            final Map<VariantId, VariantSoldCountValue> newValueByVariantId) {
+        final var variantIdSet = newValueByVariantId.keySet();
+        final var amountVariant = variantIdSet.size();
+        final var currentByVariantId = this.soldCountBulkLookupByIdsPort.loadAllByVariantIds(variantIdSet);
 
         final var changeList = new ArrayList<SoldCountChange>(amountVariant);
-        for (final var entry : newValueById.entrySet()) {
+        for (final var entry : newValueByVariantId.entrySet()) {
             final var variantId = entry.getKey();
             final var newValue = entry.getValue();
 
-            final var current = currentById.get(variantId);
+            final var current = currentByVariantId.get(variantId);
             if (current == null) {
                 throw new VariantNotFoundException(variantId);
             }
@@ -147,7 +148,7 @@ class VariantSoldCountBulkSetService
 
         VariantSoldCount updatedCount() {
             return new VariantSoldCount(
-                    this.current.getId(),
+                    this.current.getVariantId(),
                     this.current.getProductId(),
                     this.newValue);
         }

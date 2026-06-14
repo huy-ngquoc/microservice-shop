@@ -16,8 +16,8 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantAc
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.listing.VariantActiveListingUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByIdsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByVariantIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveListingPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
@@ -35,8 +35,8 @@ class VariantActiveListingService
             Set<VariantId>> SET_COLLECTOR = Collectors.toSet();
 
     private final VariantActiveListingPort activeListingPort;
-    private final VariantSoldCountBulkLookupByIdsPort soldCountBulkLookupByIdsPort;
-    private final VariantStockCountBulkLookupByIdsPort stockCountBulkLookupByIdsPort;
+    private final VariantSoldCountBulkLookupByVariantIdsPort soldCountBulkLookupByIdsPort;
+    private final VariantStockCountBulkLookupByVariantIdsPort stockCountBulkLookupByIdsPort;
 
     private final VariantViewMapper mapper;
 
@@ -53,8 +53,8 @@ class VariantActiveListingService
                 .map(Variant::getId)
                 .collect(VariantActiveListingService.SET_COLLECTOR);
 
-        final var soldCountById = soldCountBulkLookupByIdsPort.loadAllByIds(ids);
-        final var stockCountById = stockCountBulkLookupByIdsPort.loadAllByIds(ids);
+        final var soldCountById = soldCountBulkLookupByIdsPort.loadAllByVariantIds(ids);
+        final var stockCountById = stockCountBulkLookupByIdsPort.loadAllByVariantIds(ids);
 
         return page.map(v -> this.toView(
                 v,

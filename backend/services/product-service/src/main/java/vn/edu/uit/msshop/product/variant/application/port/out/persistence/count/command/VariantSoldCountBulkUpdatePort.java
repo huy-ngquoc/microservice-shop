@@ -6,5 +6,5 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 
 public interface VariantSoldCountBulkUpdatePort {
     void updateAll(
-            final Collection<VariantSoldCount> soldCounts);
+            final Collection<VariantSoldCount> soldCountCollection);
 }
