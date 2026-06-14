@@ -44,7 +44,7 @@ class VariantTraitBulkUpdateByIdsForProductService
                             cacheNames = CacheNames.VARIANT_LIST,
                             allEntries = true)
             })
-    public void updateTraitsByIds(
+    public void updateAll(
             final VariantTraitBulkUpdateByIdsForProductCommand cmd) {
         final var newTraitsById = VariantTraitBulkUpdateByIdsForProductService
                 .toNewTraitsById(cmd.traitListById());

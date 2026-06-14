@@ -46,7 +46,7 @@ public class ProductToVariantUpdateSyncAdapter
         }
 
         final var command = new VariantTraitBulkUpdateByIdsForProductCommand(traitListById);
-        this.variantTraitBulkUpdateByIdsForProductUseCase.updateTraitsByIds(command);
+        this.variantTraitBulkUpdateByIdsForProductUseCase.updateAll(command);
     }
 
     @Override
@@ -59,6 +59,6 @@ public class ProductToVariantUpdateSyncAdapter
         final var command = new VariantProductNameBulkUpdateForProductCommand(
                 rawVariantId,
                 rawProductName);
-        this.variantProductNameBulkUpdateForProductUseCase.execute(command);
+        this.variantProductNameBulkUpdateForProductUseCase.updateAll(command);
     }
 }

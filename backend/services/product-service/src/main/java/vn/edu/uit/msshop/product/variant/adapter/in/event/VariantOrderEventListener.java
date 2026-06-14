@@ -32,6 +32,6 @@ public class VariantOrderEventListener {
         }
 
         final var command = new VariantSoldCountBulkSetCommand(soldCountById);
-        this.soldCountBulkSetUseCase.execute(command);
+        this.soldCountBulkSetUseCase.setAll(command);
     }
 }

@@ -47,7 +47,7 @@ class VariantImageDeletionByIdService
                             cacheNames = CacheNames.VARIANT_LIST,
                             allEntries = true)
             })
-    public VariantImageView deleteImage(
+    public VariantImageView delete(
             final VariantImageDeletionByIdCommand cmd) {
         final var variantId = new VariantId(cmd.variantId());
         final var expectedVersion = new VariantVersion(cmd.variantVersion());

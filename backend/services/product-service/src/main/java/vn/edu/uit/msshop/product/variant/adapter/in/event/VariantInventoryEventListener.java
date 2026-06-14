@@ -32,6 +32,6 @@ public class VariantInventoryEventListener {
         }
 
         final var command = new VariantStockCountBulkSetCommand(stockCountById);
-        this.stockCountBulkSetUseCase.execute(command);
+        this.stockCountBulkSetUseCase.setAll(command);
     }
 }

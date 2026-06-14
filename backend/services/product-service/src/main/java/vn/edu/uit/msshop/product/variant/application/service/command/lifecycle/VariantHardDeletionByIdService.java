@@ -37,7 +37,7 @@ class VariantHardDeletionByIdService
 
     @Override
     @Transactional
-    public void purge(
+    public void hardDelete(
             final VariantHardDeletionByIdCommand cmd) {
         final var variantId = new VariantId(cmd.variantId());
         final var expectedVersion = new VariantVersion(cmd.variantVersion());

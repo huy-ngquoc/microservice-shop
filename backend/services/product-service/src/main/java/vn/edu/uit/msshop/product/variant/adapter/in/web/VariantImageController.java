@@ -51,7 +51,7 @@ public class VariantImageController {
             @Valid
             final UpdateVariantImageRequest request) {
         final var command = this.mapper.toUpdateByIdCommand(id, request);
-        final var view = this.updateByIdUseCase.updateImage(command);
+        final var view = this.updateByIdUseCase.update(command);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -65,7 +65,7 @@ public class VariantImageController {
             @RequestParam
             final long version) {
         final var command = this.mapper.toDeleteByIdCommand(id, version);
-        final var view = this.deletionByIdUseCase.deleteImage(command);
+        final var view = this.deletionByIdUseCase.delete(command);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);

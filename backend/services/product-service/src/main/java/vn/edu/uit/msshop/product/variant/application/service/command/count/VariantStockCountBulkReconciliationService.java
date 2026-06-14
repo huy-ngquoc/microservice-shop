@@ -24,7 +24,7 @@ class VariantStockCountBulkReconciliationService
     private final VariantStockCountBulkSetUseCase setAllUseCase;
 
     @Override
-    public void execute(
+    public void reconcileAll(
             final VariantStockCountBulkReconciliationCommand cmd) {
         final var stockCountCollection = fetchPort.fetchAll(
                 cmd.rangeStartTime(),
@@ -36,7 +36,7 @@ class VariantStockCountBulkReconciliationService
         final var stockCountById = VariantStockCountBulkReconciliationService
                 .toSoldCountById(stockCountCollection);
         final var setCommand = new VariantStockCountBulkSetCommand(stockCountById);
-        this.setAllUseCase.execute(setCommand);
+        this.setAllUseCase.setAll(setCommand);
     }
 
     private static Map<UUID, Integer> toSoldCountById(
