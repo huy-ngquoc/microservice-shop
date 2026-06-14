@@ -69,7 +69,7 @@ public class VariantController {
                     required = false)
             @Nullable
             final List<String> targets) {
-        final var query = this.mapper.toListQuery(
+        final var query = this.mapper.toActiveListingQuery(
                 page,
                 size,
                 sortBy,
@@ -85,9 +85,10 @@ public class VariantController {
     public ResponseEntity<VariantResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.activeLookupByIdUseCase.findById(this.mapper.toVariantId(id));
-        final var response = this.mapper.toResponse(view);
+        final var query = this.mapper.toActiveLookupByIdQuery(id);
+        final var view = this.activeLookupByIdUseCase.findById(query);
 
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -95,8 +96,9 @@ public class VariantController {
     public ResponseEntity<VariantResponse> findSoftDeletedById(
             @PathVariable
             final UUID id) {
+        final var query = this.mapper.toSoftDeletedLookupByIdQuery(id);
         final var view = this.softDeletedLookupByIdUseCase
-                .findSoftDeletedById(this.mapper.toVariantId(id));
+                .findSoftDeletedById(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);

@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.dto.query.ListVariantsQuery;
+import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantActiveListingQuery;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.ListVariantsPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
@@ -20,7 +20,7 @@ public class VariantListPersistenceAdapter
 
     @Override
     public PageResponseDto<Variant> list(
-            final ListVariantsQuery query) {
+            final VariantActiveListingQuery query) {
         final var targetList = query.targetList();
         final var pageable = PageRequests.toPageable(
                 query.pageRequest(),

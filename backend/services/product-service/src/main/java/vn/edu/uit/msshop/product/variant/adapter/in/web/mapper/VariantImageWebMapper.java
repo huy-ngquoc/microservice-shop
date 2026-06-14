@@ -8,17 +8,13 @@ import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantIma
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.application.dto.command.image.VariantImageDeletionByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.image.VariantImageUpdateByIdCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantImageActiveLookupByIdQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Component
 public class VariantImageWebMapper {
-    public VariantId toVariantId(
-            final UUID id) {
-        return new VariantId(id);
-    }
 
-    public VariantImageResponse toImageResponse(
+    public VariantImageResponse toResponse(
             final VariantImageView view) {
         return new VariantImageResponse(
                 view.id(),
@@ -26,7 +22,13 @@ public class VariantImageWebMapper {
                 view.version());
     }
 
-    public VariantImageUpdateByIdCommand toUpdateImageCommand(
+    public VariantImageActiveLookupByIdQuery toActiveLookupByIdQuery(
+            final UUID variantId) {
+        return new VariantImageActiveLookupByIdQuery(
+                variantId);
+    }
+
+    public VariantImageUpdateByIdCommand toUpdateByIdCommand(
             final UUID variantId,
             final UpdateVariantImageRequest request) {
         return new VariantImageUpdateByIdCommand(
@@ -35,7 +37,7 @@ public class VariantImageWebMapper {
                 request.version());
     }
 
-    public VariantImageDeletionByIdCommand toDeleteImageCommand(
+    public VariantImageDeletionByIdCommand toDeleteByIdCommand(
             final UUID variantId,
             final long variantVersion) {
         return new VariantImageDeletionByIdCommand(
