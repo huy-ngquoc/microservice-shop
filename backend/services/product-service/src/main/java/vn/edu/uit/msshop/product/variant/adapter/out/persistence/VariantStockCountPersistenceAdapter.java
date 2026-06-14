@@ -18,14 +18,14 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteAllVariantStockCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantStockCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeAllVariantStockCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeVariantStockCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantStockCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantStockCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantStockCountPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkDeletionByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkInitializationPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountDeletionByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountInitializationPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -35,14 +35,14 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @RequiredArgsConstructor
 public class VariantStockCountPersistenceAdapter
         implements
-        LoadVariantStockCountPort,
-        LoadAllVariantStockCountsPort,
-        InitializeVariantStockCountPort,
-        InitializeAllVariantStockCountsPort,
-        UpdateVariantStockCountPort,
-        UpdateAllVariantStockCountsPort,
-        DeleteVariantStockCountPort,
-        DeleteAllVariantStockCountsPort {
+        VariantStockCountLookupByIdPort,
+        VariantStockCountBulkLookupByIdsPort,
+        VariantStockCountInitializationPort,
+        VariantStockCountBulkInitializationPort,
+        VariantStockCountUpdatePort,
+        VariantStockCountBulkUpdatePort,
+        VariantStockCountDeletionByIdPort,
+        VariantStockCountBulkDeletionByIdsPort {
     private static final Collector<
             VariantStockCount,
             ?,

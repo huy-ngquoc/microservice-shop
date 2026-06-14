@@ -11,10 +11,10 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.Varia
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantSoftDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountLookupByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
@@ -28,10 +28,10 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion
 class VariantSoftDeletionByIdService
         implements VariantSoftDeletionByIdUseCase {
 
-    private final LoadVariantPort loadPort;
-    private final LoadVariantSoldCountPort loadSoldCountPort;
-    private final LoadVariantStockCountPort loadStockCountPort;
-    private final UpdateVariantPort updatePort;
+    private final VariantActiveLookupByIdPort activeLookupByIdPort;
+    private final VariantSoldCountLookupByIdPort soldCountLookupByIdPort;
+    private final VariantStockCountLookupByIdPort stockCountLookupByIdPort;
+    private final VariantUpdatePort updatePort;
     private final RemoveVariantFromProductPort removeFromProductPort;
     private final VariantEventPublicationPort eventPublicationPort;
 
@@ -51,7 +51,7 @@ class VariantSoftDeletionByIdService
         final var variantId = new VariantId(cmd.variantId());
         final var expectedVersion = new VariantVersion(cmd.variantVersion());
 
-        final var variant = this.loadPort.loadById(variantId)
+        final var variant = this.activeLookupByIdPort.loadActiveById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
 
         VariantVersionGuard.ensureMatch(
@@ -59,9 +59,9 @@ class VariantSoftDeletionByIdService
                 variant.getVersion());
 
         final var productId = variant.getProductId();
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
+        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(
                 variantId, productId);
-        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
+        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(
                 variantId, productId);
         final var soldDecrement = soldCount.getValue().value();
         final var stockDecrement = stockCount.getValue().value();

@@ -15,10 +15,10 @@ import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundEx
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantInfoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantStockCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountLookupByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
@@ -34,10 +34,10 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion
 class VariantInfoUpdateByIdService
         implements VariantInfoUpdateByIdUseCase {
 
-    private final LoadVariantPort loadPort;
-    private final LoadVariantSoldCountPort loadSoldCountPort;
-    private final LoadVariantStockCountPort loadStockCountPort;
-    private final UpdateVariantPort updatePort;
+    private final VariantActiveLookupByIdPort activeLookupByIdPort;
+    private final VariantSoldCountLookupByIdPort soldCountLookupByIdPort;
+    private final VariantStockCountLookupByIdPort stockCountLookupByIdPort;
+    private final VariantUpdatePort updatePort;
     private final UpdateVariantInProductPort updateInProductPort;
     private final VariantEventPublicationPort eventPublicationPort;
     private final VariantViewMapper mapper;
@@ -68,11 +68,11 @@ class VariantInfoUpdateByIdService
         final var targetListChange = cmd.targetListChange().map(VariantTargets::of);
         final var expectedVersion = new VariantVersion(cmd.variantVersion());
 
-        final var variant = this.loadPort.loadById(variantId)
+        final var variant = this.activeLookupByIdPort.loadActiveById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
-        final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
+        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(
                 variantId, variant.getProductId());
-        final var stockCount = this.loadStockCountPort.loadByIdOrZero(
+        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(
                 variantId, variant.getProductId());
 
         final var priceSet = priceChange.getSet();

@@ -18,8 +18,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 
 @Service
@@ -28,8 +28,8 @@ import vn.edu.uit.msshop.product.variant.application.service.command.support.Var
 class VariantImageDeletionByIdService
         implements VariantImageDeletionByIdUseCase {
 
-    private final LoadVariantPort loadPort;
-    private final UpdateVariantPort updatePort;
+    private final VariantActiveLookupByIdPort activeLookupByIdPort;
+    private final VariantUpdatePort updatePort;
 
     private final VariantImageDeleter imageDeleter;
 
@@ -52,7 +52,7 @@ class VariantImageDeletionByIdService
         final var variantId = new VariantId(cmd.variantId());
         final var expectedVersion = new VariantVersion(cmd.variantVersion());
 
-        final var variant = this.loadPort.loadById(variantId)
+        final var variant = this.activeLookupByIdPort.loadActiveById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
 
         final var oldKey = variant.getImageKey();

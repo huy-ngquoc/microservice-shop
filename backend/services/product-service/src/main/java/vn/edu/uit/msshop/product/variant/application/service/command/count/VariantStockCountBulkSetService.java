@@ -15,8 +15,8 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantStockCountBulkSetCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkSetUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantStockCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantStockCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.DecreaseProductStockCountsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.IncreaseProductStockCountsPort;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
@@ -29,8 +29,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCo
 class VariantStockCountBulkSetService
         implements VariantStockCountBulkSetUseCase {
 
-    private final LoadAllVariantStockCountsPort loadAllStockCountsPort;
-    private final UpdateAllVariantStockCountsPort updateAllStockCountsPort;
+    private final VariantStockCountBulkLookupByIdsPort stockCountBulkLookupByIdsPort;
+    private final VariantStockCountBulkUpdatePort stockCountBulkUpdatePort;
     private final IncreaseProductStockCountsPort increaseProductStockCountsPort;
     private final DecreaseProductStockCountsPort decreaseProductStockCountsPort;
 
@@ -77,7 +77,7 @@ class VariantStockCountBulkSetService
             final Map<VariantId, VariantStockCountValue> newValueById) {
         final var idSet = newValueById.keySet();
         final var amountVariant = idSet.size();
-        final var currentById = this.loadAllStockCountsPort.loadAllByIds(idSet);
+        final var currentById = this.stockCountBulkLookupByIdsPort.loadAllByIds(idSet);
 
         final var changeList = new ArrayList<StockCountChange>(amountVariant);
         for (final var entry : newValueById.entrySet()) {
@@ -101,7 +101,7 @@ class VariantStockCountBulkSetService
         for (final var change : changeList) {
             updatedCounts.add(change.updatedCount());
         }
-        this.updateAllStockCountsPort.updateAll(updatedCounts);
+        this.stockCountBulkUpdatePort.updateAll(updatedCounts);
     }
 
     private void propagateDeltas(
