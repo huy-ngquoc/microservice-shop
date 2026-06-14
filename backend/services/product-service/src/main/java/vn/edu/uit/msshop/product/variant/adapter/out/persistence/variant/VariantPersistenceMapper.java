@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.variant.adapter.out.persistence;
+package vn.edu.uit.msshop.product.variant.adapter.out.persistence.variant;
 
 import java.util.Collection;
 import java.util.Map;
