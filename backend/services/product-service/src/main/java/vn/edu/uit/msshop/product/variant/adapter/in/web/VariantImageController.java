@@ -36,7 +36,7 @@ public class VariantImageController {
             @PathVariable
             final UUID id) {
         final var query = this.mapper.toActiveLookupByIdQuery(id);
-        final var view = this.activeLookupByIdUseCase.findImageById(query);
+        final var view = this.activeLookupByIdUseCase.find(query);
 
         final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);

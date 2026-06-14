@@ -32,7 +32,7 @@ class VariantActiveBulkLookupByIdsService
     private final VariantViewMapper mapper;
 
     @Override
-    public Map<UUID, VariantView> findAllByIds(
+    public Map<UUID, VariantView> findAll(
             final VariantActiveBulkLookupByIdsQuery query) {
         final var rawVariantIdSet = query.variantIdSet();
         if (rawVariantIdSet.isEmpty()) {
