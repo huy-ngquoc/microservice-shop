@@ -20,7 +20,7 @@ public class ReconcileVariantSoldCountsJob {
             timeUnit = TimeUnit.HOURS)
     public void reconcile() {
         try {
-            this.soldCountBulkReconciliationUSeCase.execute();
+            this.soldCountBulkReconciliationUSeCase.reconcileAll();
         } catch (final RuntimeException e) {
             log.warn("Sold count reconciliation skipped: {}", e.getMessage());
         }

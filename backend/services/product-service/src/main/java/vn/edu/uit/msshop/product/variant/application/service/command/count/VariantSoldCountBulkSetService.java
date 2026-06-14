@@ -45,7 +45,7 @@ class VariantSoldCountBulkSetService
                             cacheNames = CacheNames.VARIANT_LIST,
                             allEntries = true)
             })
-    public void execute(
+    public void setAll(
             final VariantSoldCountBulkSetCommand cmd) {
         final var rawNewValueById = cmd.soldCountById();
         if (rawNewValueById.isEmpty()) {

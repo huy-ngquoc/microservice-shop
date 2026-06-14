@@ -52,7 +52,7 @@ class VariantImageUpdateByIdService
                             cacheNames = CacheNames.VARIANT_LIST,
                             allEntries = true)
             })
-    public VariantImageView updateImage(
+    public VariantImageView update(
             final VariantImageUpdateByIdCommand cmd) {
         final var variantId = new VariantId(cmd.variantId());
         final var newImageKey = new VariantImageKey(cmd.newImageKey());

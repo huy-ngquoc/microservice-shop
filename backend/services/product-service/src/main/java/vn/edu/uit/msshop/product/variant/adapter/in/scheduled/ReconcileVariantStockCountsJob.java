@@ -30,7 +30,7 @@ public class ReconcileVariantStockCountsJob {
         final var command = new VariantStockCountBulkReconciliationCommand(rangeStartTime, rangeEndTime);
 
         try {
-            this.stockCountBulkReconciliationUseCase.execute(command);
+            this.stockCountBulkReconciliationUseCase.reconcileAll(command);
         } catch (final RuntimeException e) {
             log.warn("Stock count reconciliation skipped: {}", e.getMessage());
         }

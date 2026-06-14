@@ -6,6 +6,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBul
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 
 public interface VariantBulkCreationForNewProductUseCase {
-    List<VariantView> create(
+    List<VariantView> createAll(
             final VariantBulkCreationForNewProductCommand cmd);
 }
