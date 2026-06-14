@@ -13,8 +13,8 @@ import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantsNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantActiveBulkLookupByIdsUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByIdsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByVariantIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
@@ -27,8 +27,8 @@ class VariantActiveBulkLookupByIdsService
         implements VariantActiveBulkLookupByIdsUseCase {
 
     private final VariantActiveBulkLookupByIdsPort activeBulkLookupByIdsPort;
-    private final VariantSoldCountBulkLookupByIdsPort soldCountBulkLookupByIdsPort;
-    private final VariantStockCountBulkLookupByIdsPort stockCountBulkLookupByIdsPort;
+    private final VariantSoldCountBulkLookupByVariantIdsPort soldCountBulkLookupByIdsPort;
+    private final VariantStockCountBulkLookupByVariantIdsPort stockCountBulkLookupByIdsPort;
 
     private final VariantViewMapper mapper;
 
@@ -52,8 +52,8 @@ class VariantActiveBulkLookupByIdsService
             throw new VariantsNotFoundException(missing);
         }
 
-        final var soldCountById = this.soldCountBulkLookupByIdsPort.loadAllByIds(variantIdSet);
-        final var stockCountById = this.stockCountBulkLookupByIdsPort.loadAllByIds(variantIdSet);
+        final var soldCountById = this.soldCountBulkLookupByIdsPort.loadAllByVariantIds(variantIdSet);
+        final var stockCountById = this.stockCountBulkLookupByIdsPort.loadAllByVariantIds(variantIdSet);
 
         final var viewById = HashMap.<UUID, VariantView>newHashMap(variantById.size());
         for (final var variant : variantById.values()) {

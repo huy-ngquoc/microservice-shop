@@ -6,13 +6,13 @@ import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
-public interface VariantSoldCountLookupByIdPort {
-    Optional<VariantSoldCount> loadById(
-            final VariantId id);
+public interface VariantSoldCountLookupByVariantIdPort {
+    Optional<VariantSoldCount> loadByVariantId(
+            final VariantId variantId);
 
-    default VariantSoldCount loadByIdOrZero(
-            final VariantId id,
+    default VariantSoldCount loadByVariantIdOrZero(
+            final VariantId variantId,
             final VariantProductId productId) {
-        return this.loadById(id).orElse(VariantSoldCount.zero(id, productId));
+        return this.loadByVariantId(variantId).orElse(VariantSoldCount.zero(variantId, productId));
     }
 }

@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkHardDeletionByProductIdForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkHardDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountBulkDeletionByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountBulkDeletionByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkDeletionByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.image.VariantImageDeleter;
@@ -24,7 +24,7 @@ class VariantBulkHardDeletionByProductIdForProductService
 
     private final VariantBulkLookupByProductIdPort bulkLookupByProductIdPort;
     private final VariantBulkDeletionByProductIdPort bulkDeletionByProductIdPort;
-    private final VariantSoldCountBulkDeletionByIdsPort soldCountBulkDeletionByIdsPort;
+    private final VariantSoldCountBulkDeletionByVariantIdsPort soldCountBulkDeletionByIdsPort;
 
     private final VariantImageDeleter imageDeleter;
 
@@ -46,7 +46,7 @@ class VariantBulkHardDeletionByProductIdForProductService
                 .toList();
 
         this.bulkDeletionByProductIdPort.deleteByProductId(productId);
-        this.soldCountBulkDeletionByIdsPort.deleteAllByIds(variantIdList);
+        this.soldCountBulkDeletionByIdsPort.deleteAllByVariantIds(variantIdList);
 
         for (final var variant : variants) {
             this.imageDeleter.deleteQuietly(variant.getImageKey());
