@@ -7,6 +7,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantAct
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 
 public interface VariantActiveBulkLookupByIdsUseCase {
-    Map<UUID, VariantView> findAll(
+    Map<UUID, VariantView> find(
             final VariantActiveBulkLookupByIdsQuery query);
 }

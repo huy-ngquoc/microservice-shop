@@ -21,14 +21,14 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteAllVariantSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantSoldCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeAllVariantSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.InitializeVariantSoldCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantSoldCountPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantSoldCountPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountBulkDeletionByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountBulkInitializationPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountBulkUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountDeletionByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountInitializationPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -37,14 +37,14 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 @RequiredArgsConstructor
 public class VariantSoldCountPersistenceAdapter
         implements
-        LoadVariantSoldCountPort,
-        LoadAllVariantSoldCountsPort,
-        InitializeVariantSoldCountPort,
-        InitializeAllVariantSoldCountsPort,
-        UpdateVariantSoldCountPort,
-        UpdateAllVariantSoldCountsPort,
-        DeleteVariantSoldCountPort,
-        DeleteAllVariantSoldCountsPort {
+        VariantSoldCountLookupByIdPort,
+        VariantSoldCountBulkLookupByIdsPort,
+        VariantSoldCountInitializationPort,
+        VariantSoldCountBulkInitializationPort,
+        VariantSoldCountUpdatePort,
+        VariantSoldCountBulkUpdatePort,
+        VariantSoldCountDeletionByIdPort,
+        VariantSoldCountBulkDeletionByIdsPort {
     private static final Collector<
             VariantSoldCount,
             ?,

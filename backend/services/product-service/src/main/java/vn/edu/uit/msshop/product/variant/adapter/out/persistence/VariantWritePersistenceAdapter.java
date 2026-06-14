@@ -9,13 +9,13 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.CreateVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.DeleteVariantsForProductPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsProductNameForProductPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateVariantPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkCreationPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkDeletionByProductIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantCreationPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantDeletionByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantProductNameBulkUpdateByProductIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -26,13 +26,13 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @RequiredArgsConstructor
 public class VariantWritePersistenceAdapter
         implements
-        CreateVariantPort,
-        CreateAllVariantsPort,
-        UpdateVariantPort,
-        UpdateAllVariantsPort,
-        UpdateAllVariantsProductNameForProductPort,
-        DeleteVariantPort,
-        DeleteVariantsForProductPort {
+        VariantCreationPort,
+        VariantBulkCreationPort,
+        VariantUpdatePort,
+        VariantBulkUpdatePort,
+        VariantProductNameBulkUpdateByProductIdPort,
+        VariantDeletionByIdPort,
+        VariantBulkDeletionByProductIdPort {
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
     private final MongoTemplate mongoTemplate;

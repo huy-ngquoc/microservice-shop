@@ -11,8 +11,8 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkRestorationByIdsForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkRestorationByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkUpdatePort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -22,8 +22,8 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 class VariantBulkRestorationByIdsForProductService
         implements VariantBulkRestorationByIdsForProductUseCase {
 
-    private final LoadAllSoftDeletedVariantsPort loadAllSoftDeletedPort;
-    private final UpdateAllVariantsPort updateAllPort;
+    private final VariantSoftDeletedBulkLookupByIdsPort softDeletedBulkLookupByIdsPort;
+    private final VariantBulkUpdatePort bulkUpdatePort;
     private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
@@ -37,13 +37,13 @@ class VariantBulkRestorationByIdsForProductService
                 .map(VariantId::new)
                 .collect(Collectors.toUnmodifiableSet());
 
-        final var variants = this.loadAllSoftDeletedPort
+        final var variants = this.softDeletedBulkLookupByIdsPort
                 .loadAllSoftDeletedByIds(variantIdSet);
 
         final var next = variants.stream()
                 .map(VariantBulkRestorationByIdsForProductService::toRestored)
                 .toList();
-        final var saved = this.updateAllPort.updateAll(next);
+        final var saved = this.bulkUpdatePort.updateAll(next);
 
         for (final var variant : saved) {
             final var event = new VariantRestoredEvent(variant.getId());

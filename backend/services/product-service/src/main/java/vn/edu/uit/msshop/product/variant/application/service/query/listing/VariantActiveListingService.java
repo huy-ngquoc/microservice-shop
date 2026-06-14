@@ -16,9 +16,9 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantAc
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.listing.VariantActiveListingUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.ListVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantStockCountsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveListingPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
@@ -34,9 +34,10 @@ class VariantActiveListingService
             ?,
             Set<VariantId>> SET_COLLECTOR = Collectors.toSet();
 
-    private final ListVariantsPort listPort;
-    private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
-    private final LoadAllVariantStockCountsPort loadAllStockCountsPort;
+    private final VariantActiveListingPort activeListingPort;
+    private final VariantSoldCountBulkLookupByIdsPort soldCountBulkLookupByIdsPort;
+    private final VariantStockCountBulkLookupByIdsPort stockCountBulkLookupByIdsPort;
+
     private final VariantViewMapper mapper;
 
     @Override
@@ -46,14 +47,14 @@ class VariantActiveListingService
             cacheNames = CacheNames.VARIANT_LIST)
     public PageResponseDto<VariantView> list(
             final VariantActiveListingQuery query) {
-        final var page = this.listPort.list(query);
+        final var page = this.activeListingPort.listActive(query);
 
         final var ids = page.items().stream()
                 .map(Variant::getId)
                 .collect(VariantActiveListingService.SET_COLLECTOR);
 
-        final var soldCountById = loadAllSoldCountsPort.loadAllByIds(ids);
-        final var stockCountById = loadAllStockCountsPort.loadAllByIds(ids);
+        final var soldCountById = soldCountBulkLookupByIdsPort.loadAllByIds(ids);
+        final var stockCountById = stockCountBulkLookupByIdsPort.loadAllByIds(ids);
 
         return page.map(v -> this.toView(
                 v,

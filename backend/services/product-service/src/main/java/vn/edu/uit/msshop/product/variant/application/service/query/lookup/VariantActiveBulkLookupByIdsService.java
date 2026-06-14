@@ -13,9 +13,9 @@ import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantsNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantActiveBulkLookupByIdsUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantSoldCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantStockCountsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
@@ -26,13 +26,14 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 class VariantActiveBulkLookupByIdsService
         implements VariantActiveBulkLookupByIdsUseCase {
 
-    private final LoadAllVariantsPort loadAllPort;
-    private final LoadAllVariantSoldCountsPort loadAllSoldCountsPort;
-    private final LoadAllVariantStockCountsPort loadAllStockCountsPort;
+    private final VariantActiveBulkLookupByIdsPort activeBulkLookupByIdsPort;
+    private final VariantSoldCountBulkLookupByIdsPort soldCountBulkLookupByIdsPort;
+    private final VariantStockCountBulkLookupByIdsPort stockCountBulkLookupByIdsPort;
+
     private final VariantViewMapper mapper;
 
     @Override
-    public Map<UUID, VariantView> findAll(
+    public Map<UUID, VariantView> find(
             final VariantActiveBulkLookupByIdsQuery query) {
         final var rawVariantIdSet = query.variantIdSet();
         if (rawVariantIdSet.isEmpty()) {
@@ -43,7 +44,7 @@ class VariantActiveBulkLookupByIdsService
                 .map(VariantId::new)
                 .collect(Collectors.toUnmodifiableSet());
 
-        final var variantById = this.loadAllPort.loadAllByIds(variantIdSet);
+        final var variantById = this.activeBulkLookupByIdsPort.loadAllByIds(variantIdSet);
         final var missing = variantIdSet.stream()
                 .filter(id -> !variantById.containsKey(id))
                 .collect(Collectors.toUnmodifiableSet());
@@ -51,8 +52,8 @@ class VariantActiveBulkLookupByIdsService
             throw new VariantsNotFoundException(missing);
         }
 
-        final var soldCountById = this.loadAllSoldCountsPort.loadAllByIds(variantIdSet);
-        final var stockCountById = this.loadAllStockCountsPort.loadAllByIds(variantIdSet);
+        final var soldCountById = this.soldCountBulkLookupByIdsPort.loadAllByIds(variantIdSet);
+        final var stockCountById = this.stockCountBulkLookupByIdsPort.loadAllByIds(variantIdSet);
 
         final var viewById = HashMap.<UUID, VariantView>newHashMap(variantById.size());
         for (final var variant : variantById.values()) {

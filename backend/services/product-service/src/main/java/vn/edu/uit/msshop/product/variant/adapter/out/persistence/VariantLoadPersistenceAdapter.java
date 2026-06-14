@@ -8,11 +8,11 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllSoftDeletedVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadAllVariantsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadSoftDeletedVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.LoadVariantsForProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
@@ -21,16 +21,16 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @RequiredArgsConstructor
 public class VariantLoadPersistenceAdapter
         implements
-        LoadVariantPort,
-        LoadSoftDeletedVariantPort,
-        LoadAllVariantsPort,
-        LoadVariantsForProductPort,
-        LoadAllSoftDeletedVariantsPort {
+        VariantActiveLookupByIdPort,
+        VariantSoftDeletedLookupByIdPort,
+        VariantActiveBulkLookupByIdsPort,
+        VariantBulkLookupByProductIdPort,
+        VariantSoftDeletedBulkLookupByIdsPort {
     private final VariantMongoRepository repository;
     private final VariantPersistenceMapper mapper;
 
     @Override
-    public Optional<Variant> loadById(
+    public Optional<Variant> loadActiveById(
             final VariantId id) {
         final var jpaId = id.value();
         return this.repository.findByIdAndDeletionTimeIsNull(jpaId)

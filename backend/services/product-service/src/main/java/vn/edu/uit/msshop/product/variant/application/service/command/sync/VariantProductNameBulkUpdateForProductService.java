@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantProductNameBulkUpdateForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantProductNameBulkUpdateForProductUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.UpdateAllVariantsProductNameForProductPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantProductNameBulkUpdateByProductIdPort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
 
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 class VariantProductNameBulkUpdateForProductService
         implements VariantProductNameBulkUpdateForProductUseCase {
 
-    private final UpdateAllVariantsProductNameForProductPort updatePort;
+    private final VariantProductNameBulkUpdateByProductIdPort productNameBulkUpdateByProductIdPort;
 
     @Override
     @Transactional
@@ -36,7 +36,7 @@ class VariantProductNameBulkUpdateForProductService
         final var productId = new VariantProductId(cmd.productId());
         final var productName = new VariantProductName(cmd.productName());
 
-        this.updatePort.updateProductNameByProductId(
+        this.productNameBulkUpdateByProductIdPort.updateProductNameByProductId(
                 productId,
                 productName);
     }
