@@ -31,7 +31,7 @@ class VariantBulkRestorationByIdsForProductService
     @CacheEvict(
             cacheNames = CacheNames.VARIANT_LIST,
             allEntries = true)
-    public void restoreByIds(
+    public void restoreAll(
             final VariantBulkRestorationByIdsForProductCommand cmd) {
         final var variantIdSet = cmd.idSet().stream()
                 .map(VariantId::new)

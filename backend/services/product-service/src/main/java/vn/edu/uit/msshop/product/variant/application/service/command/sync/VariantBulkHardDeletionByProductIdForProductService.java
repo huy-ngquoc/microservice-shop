@@ -32,7 +32,7 @@ class VariantBulkHardDeletionByProductIdForProductService
 
     @Override
     @Transactional
-    public void purgeByProductId(
+    public void hardDeleteAll(
             final VariantBulkHardDeletionByProductIdForProductCommand cmd) {
         final var productId = new VariantProductId(cmd.productId());
 

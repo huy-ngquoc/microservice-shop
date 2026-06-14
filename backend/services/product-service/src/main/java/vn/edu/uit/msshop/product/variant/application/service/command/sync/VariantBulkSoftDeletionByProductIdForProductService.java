@@ -38,7 +38,7 @@ class VariantBulkSoftDeletionByProductIdForProductService
                             cacheNames = CacheNames.VARIANT_LIST,
                             allEntries = true)
             })
-    public void deleteByProductId(
+    public void softDeleteAll(
             final VariantBulkSoftDeletionByProductIdForProductCommand cmd) {
         final var productId = new VariantProductId(cmd.productId());
 
