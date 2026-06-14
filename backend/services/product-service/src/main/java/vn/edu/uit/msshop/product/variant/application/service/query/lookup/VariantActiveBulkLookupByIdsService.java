@@ -2,13 +2,13 @@ package vn.edu.uit.msshop.product.variant.application.service.query.lookup;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantActiveBulkLookupByIdsQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantsNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
@@ -33,12 +33,13 @@ class VariantActiveBulkLookupByIdsService
 
     @Override
     public Map<UUID, VariantView> findAllByIds(
-            final Set<UUID> idSet) {
-        if (idSet.isEmpty()) {
+            final VariantActiveBulkLookupByIdsQuery query) {
+        final var rawVariantIdSet = query.variantIdSet();
+        if (rawVariantIdSet.isEmpty()) {
             return Map.of();
         }
 
-        final var variantIdSet = idSet.stream()
+        final var variantIdSet = rawVariantIdSet.stream()
                 .map(VariantId::new)
                 .collect(Collectors.toUnmodifiableSet());
 

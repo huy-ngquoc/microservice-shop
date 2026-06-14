@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantSoftDeletedLookupByIdQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
@@ -27,9 +28,11 @@ class VariantSoftDeletedLookupByIdService
     @Transactional(
             readOnly = true)
     public VariantView findSoftDeletedById(
-            final VariantId id) {
-        final var variant = this.loadSoftDeletedPort.loadSoftDeletedById(id)
-                .orElseThrow(() -> new VariantNotFoundException(id));
+            final VariantSoftDeletedLookupByIdQuery query) {
+        final var variantId = new VariantId(query.variantId());
+
+        final var variant = this.loadSoftDeletedPort.loadSoftDeletedById(variantId)
+                .orElseThrow(() -> new VariantNotFoundException(variantId));
         final var soldCount = this.loadSoldCountPort.loadByIdOrZero(
                 variant.getId(),
                 variant.getProductId());

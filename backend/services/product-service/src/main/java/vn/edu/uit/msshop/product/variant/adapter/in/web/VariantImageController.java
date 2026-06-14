@@ -19,13 +19,13 @@ import vn.edu.uit.msshop.product.variant.adapter.in.web.request.UpdateVariantIma
 import vn.edu.uit.msshop.product.variant.adapter.in.web.response.VariantImageResponse;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.image.VariantImageUpdateByIdUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantActiveImageLookupByIdUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantImageActiveLookupByIdUseCase;
 
 @RestController
 @RequestMapping("/variants")
 @RequiredArgsConstructor
 public class VariantImageController {
-    private final VariantActiveImageLookupByIdUseCase activeLookupByIdUseCase;
+    private final VariantImageActiveLookupByIdUseCase activeLookupByIdUseCase;
     private final VariantImageUpdateByIdUseCase updateByIdUseCase;
     private final VariantImageDeletionByIdUseCase deletionByIdUseCase;
 
@@ -35,10 +35,10 @@ public class VariantImageController {
     public ResponseEntity<VariantImageResponse> findById(
             @PathVariable
             final UUID id) {
-        final var view = this.activeLookupByIdUseCase
-                .findImageById(this.mapper.toVariantId(id));
+        final var query = this.mapper.toActiveLookupByIdQuery(id);
+        final var view = this.activeLookupByIdUseCase.findImageById(query);
 
-        final var response = this.mapper.toImageResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -50,10 +50,10 @@ public class VariantImageController {
             @RequestBody
             @Valid
             final UpdateVariantImageRequest request) {
-        final var command = this.mapper.toUpdateImageCommand(id, request);
+        final var command = this.mapper.toUpdateByIdCommand(id, request);
         final var view = this.updateByIdUseCase.updateImage(command);
 
-        final var response = this.mapper.toImageResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 
@@ -64,10 +64,10 @@ public class VariantImageController {
 
             @RequestParam
             final long version) {
-        final var command = this.mapper.toDeleteImageCommand(id, version);
+        final var command = this.mapper.toDeleteByIdCommand(id, version);
         final var view = this.deletionByIdUseCase.deleteImage(command);
 
-        final var response = this.mapper.toImageResponse(view);
+        final var response = this.mapper.toResponse(view);
         return ResponseEntity.ok(response);
     }
 }
