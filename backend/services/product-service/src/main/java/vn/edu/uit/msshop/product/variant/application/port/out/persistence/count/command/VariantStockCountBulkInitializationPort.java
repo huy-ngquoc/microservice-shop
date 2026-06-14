@@ -9,5 +9,5 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 public interface VariantStockCountBulkInitializationPort {
     Map<VariantId, VariantStockCount> initializeAll(
-            final Collection<NewVariantStockCount> newStockCounts);
+            final Collection<NewVariantStockCount> newStockCountCollection);
 }

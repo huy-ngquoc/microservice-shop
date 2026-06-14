@@ -15,8 +15,8 @@ import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundEx
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantInfoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountLookupByIdPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountLookupByVariantIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.UpdateVariantInProductPort;
@@ -35,8 +35,8 @@ class VariantInfoUpdateByIdService
         implements VariantInfoUpdateByIdUseCase {
 
     private final VariantActiveLookupByIdPort activeLookupByIdPort;
-    private final VariantSoldCountLookupByIdPort soldCountLookupByIdPort;
-    private final VariantStockCountLookupByIdPort stockCountLookupByIdPort;
+    private final VariantSoldCountLookupByVariantIdPort soldCountLookupByIdPort;
+    private final VariantStockCountLookupByVariantIdPort stockCountLookupByIdPort;
     private final VariantUpdatePort updatePort;
     private final UpdateVariantInProductPort updateInProductPort;
     private final VariantEventPublicationPort eventPublicationPort;
@@ -70,9 +70,9 @@ class VariantInfoUpdateByIdService
 
         final var variant = this.activeLookupByIdPort.loadActiveById(variantId)
                 .orElseThrow(() -> new VariantNotFoundException(variantId));
-        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(
+        final var soldCount = this.soldCountLookupByIdPort.loadByVariantIdOrZero(
                 variantId, variant.getProductId());
-        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(
+        final var stockCount = this.stockCountLookupByIdPort.loadByVariantIdOrZero(
                 variantId, variant.getProductId());
 
         final var priceSet = priceChange.getSet();

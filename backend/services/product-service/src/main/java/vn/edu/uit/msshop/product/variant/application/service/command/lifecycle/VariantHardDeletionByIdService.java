@@ -12,7 +12,7 @@ import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundEx
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantHardDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountDeletionByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountDeletionByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantDeletionByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.CheckVariantReferencedByProductPort;
@@ -30,7 +30,7 @@ class VariantHardDeletionByIdService
 
     private final VariantSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final VariantDeletionByIdPort deletionByIdPort;
-    private final VariantSoldCountDeletionByIdPort soldCountDeletionByIdPort;
+    private final VariantSoldCountDeletionByVariantIdPort soldCountDeletionByIdPort;
     private final CheckVariantReferencedByProductPort checkReferencedPort;
     private final VariantImageStoragePort imageStoragePort;
     private final VariantEventPublicationPort eventPublicationPort;
@@ -55,7 +55,7 @@ class VariantHardDeletionByIdService
         }
 
         this.deletionByIdPort.deleteById(variantId);
-        this.soldCountDeletionByIdPort.deleteById(variantId);
+        this.soldCountDeletionByIdPort.deleteByVariantId(variantId);
 
         final var event = new VariantHardDeletedEvent(variantId);
         this.eventPublicationPort.publishEvent(event);

@@ -18,14 +18,14 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkDeletionByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkDeletionByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkInitializationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkUpdatePort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountDeletionByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountDeletionByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountInitializationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountUpdatePort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByIdsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByVariantIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -35,14 +35,14 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 @RequiredArgsConstructor
 public class VariantStockCountPersistenceAdapter
         implements
-        VariantStockCountLookupByIdPort,
-        VariantStockCountBulkLookupByIdsPort,
+        VariantStockCountLookupByVariantIdPort,
+        VariantStockCountBulkLookupByVariantIdsPort,
         VariantStockCountInitializationPort,
         VariantStockCountBulkInitializationPort,
         VariantStockCountUpdatePort,
         VariantStockCountBulkUpdatePort,
-        VariantStockCountDeletionByIdPort,
-        VariantStockCountBulkDeletionByIdsPort {
+        VariantStockCountDeletionByVariantIdPort,
+        VariantStockCountBulkDeletionByVariantIdsPort {
     private static final Collector<
             VariantStockCount,
             ?,
@@ -58,26 +58,30 @@ public class VariantStockCountPersistenceAdapter
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public VariantStockCount loadByIdOrZero(
-            final VariantId id,
+    public VariantStockCount loadByVariantIdOrZero(
+            final VariantId variantId,
             final VariantProductId productId) {
-        final var jpaId = id.value();
+        final var jpaId = variantId.value();
 
         return this.repository.findById(jpaId)
                 .map(this.mapper::toDomain)
-                .orElseGet(() -> VariantStockCount.zero(id, productId));
+                .orElseGet(() -> VariantStockCount.zero(variantId, productId));
     }
 
     @Override
-    public Map<VariantId, VariantStockCount> loadAllByIds(
-            final Collection<VariantId> ids) {
-        if (ids.isEmpty()) {
+    public Map<VariantId, VariantStockCount> loadAllByVariantIds(
+            final Collection<VariantId> variantIdCollection) {
+        if (variantIdCollection.isEmpty()) {
             return Map.of();
         }
 
-        final var jpaIds = ids.stream().map(VariantId::value).collect(Collectors.toUnmodifiableSet());
+        final var jpVariantIdSet = variantIdCollection.stream()
+                .map(VariantId::value)
+                .collect(Collectors.toUnmodifiableSet());
 
-        return this.repository.findAllById(jpaIds).stream().map(this.mapper::toDomain)
+        return this.repository.findAllById(jpVariantIdSet)
+                .stream()
+                .map(this.mapper::toDomain)
                 .collect(VariantStockCountPersistenceAdapter.COLLECTOR);
     }
 
@@ -96,17 +100,17 @@ public class VariantStockCountPersistenceAdapter
 
     @Override
     public Map<VariantId, VariantStockCount> initializeAll(
-            final Collection<NewVariantStockCount> newStockCounts) {
-        if (newStockCounts.isEmpty()) {
+            final Collection<NewVariantStockCount> newStockCountCollection) {
+        if (newStockCountCollection.isEmpty()) {
             return Map.of();
         }
 
-        final var initialized = new ArrayList<VariantStockCount>(newStockCounts.size());
+        final var initialized = new ArrayList<VariantStockCount>(newStockCountCollection.size());
 
         final var bulkOps = this.mongoTemplate.bulkOps(BulkMode.UNORDERED, VariantStockCountDocument.class);
         final var instantNow = Instant.now();
 
-        for (final var newStockCount : newStockCounts) {
+        for (final var newStockCount : newStockCountCollection) {
             final var query = new Query(Criteria.where("_id").is(newStockCount.getVariantId().value()));
             final var update = new Update()
                     .setOnInsert(VariantStockCountDocument.Fields.productId,
@@ -115,12 +119,15 @@ public class VariantStockCountPersistenceAdapter
                     .setOnInsert(VariantStockCountDocument.Fields.lastUpdatedTime, instantNow);
             bulkOps.upsert(query, update);
 
-            initialized
-                    .add(VariantStockCount.zero(newStockCount.getVariantId(), newStockCount.getProductId()));
+            final var variantZeroStockCount = VariantStockCount.zero(
+                    newStockCount.getVariantId(),
+                    newStockCount.getProductId());
+            initialized.add(variantZeroStockCount);
         }
         bulkOps.execute();
 
-        return initialized.stream().collect(VariantStockCountPersistenceAdapter.COLLECTOR);
+        return initialized.stream()
+                .collect(VariantStockCountPersistenceAdapter.COLLECTOR);
     }
 
     @Override
@@ -137,15 +144,15 @@ public class VariantStockCountPersistenceAdapter
 
     @Override
     public void updateAll(
-            final Collection<VariantStockCount> stockCounts) {
-        if (stockCounts.isEmpty()) {
+            final Collection<VariantStockCount> stockCountCollection) {
+        if (stockCountCollection.isEmpty()) {
             return;
         }
 
         final var bulkOps = this.mongoTemplate.bulkOps(BulkMode.UNORDERED, VariantStockCountDocument.class);
         final var instantNow = Instant.now();
 
-        for (final var stockCount : stockCounts) {
+        for (final var stockCount : stockCountCollection) {
             final var query = new Query(Criteria.where("_id").is(stockCount.getVariantId().value()));
             final var update = new Update()
                     .setOnInsert(VariantStockCountDocument.Fields.productId,
@@ -159,21 +166,23 @@ public class VariantStockCountPersistenceAdapter
     }
 
     @Override
-    public void deleteById(
-            final VariantId id) {
-        final var jpaId = id.value();
-        this.repository.deleteById(jpaId);
+    public void deleteByVariantId(
+            final VariantId variantId) {
+        final var jpaVariantId = variantId.value();
+        this.repository.deleteById(jpaVariantId);
     }
 
     @Override
-    public void deleteAllByIds(
-            final Collection<VariantId> ids) {
-        if (ids.isEmpty()) {
+    public void deleteAllByVariantIds(
+            final Collection<VariantId> variantIdCollection) {
+        if (variantIdCollection.isEmpty()) {
             return;
         }
 
-        final var jpaIds = ids.stream().map(VariantId::value).toList();
-        this.repository.deleteAllById(jpaIds);
+        final var jpaVariantIdCollection = variantIdCollection.stream()
+                .map(VariantId::value)
+                .toList();
+        this.repository.deleteAllById(jpaVariantIdCollection);
     }
 
     private VariantStockCount upsertAndReturnDomain(

@@ -12,28 +12,28 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCou
         onlyExplicitlyIncluded = true)
 public final class VariantSoldCount {
     @EqualsAndHashCode.Include
-    private final VariantId id;
+    private final VariantId variantId;
 
     private final VariantProductId productId;
 
     private final VariantSoldCountValue value;
 
     public VariantSoldCount(
-            final VariantId id,
+            final VariantId variantId,
             final VariantProductId productId,
             final VariantSoldCountValue value) {
-        this.id = Domains.requireNonNull(id, "Variant ID must NOT be null");
+        this.variantId = Domains.requireNonNull(variantId, "Variant ID must NOT be null");
         this.productId = Domains.requireNonNull(productId, "Variant product ID must NOT be null");
         this.value = Domains.requireNonNull(value, "Variant sold count value must NOT be null");
     }
 
     public static VariantSoldCount zero(
-            final VariantId id,
+            final VariantId variantId,
             final VariantProductId productId) {
         final var value = VariantSoldCountValue.zero();
 
         return new VariantSoldCount(
-                id,
+                variantId,
                 productId,
                 value);
     }

@@ -6,7 +6,7 @@ import java.util.Set;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
-public interface VariantSoldCountBulkLookupByIdsPort {
-    Map<VariantId, VariantSoldCount> loadAllByIds(
-            final Set<VariantId> ids);
+public interface VariantSoldCountBulkLookupByVariantIdsPort {
+    Map<VariantId, VariantSoldCount> loadAllByVariantIds(
+            final Set<VariantId> variantIdSet);
 }

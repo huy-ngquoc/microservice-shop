@@ -11,8 +11,8 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.Varia
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantSoftDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountLookupByIdPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountLookupByVariantIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.RemoveVariantFromProductPort;
@@ -29,8 +29,8 @@ class VariantSoftDeletionByIdService
         implements VariantSoftDeletionByIdUseCase {
 
     private final VariantActiveLookupByIdPort activeLookupByIdPort;
-    private final VariantSoldCountLookupByIdPort soldCountLookupByIdPort;
-    private final VariantStockCountLookupByIdPort stockCountLookupByIdPort;
+    private final VariantSoldCountLookupByVariantIdPort soldCountLookupByIdPort;
+    private final VariantStockCountLookupByVariantIdPort stockCountLookupByIdPort;
     private final VariantUpdatePort updatePort;
     private final RemoveVariantFromProductPort removeFromProductPort;
     private final VariantEventPublicationPort eventPublicationPort;
@@ -59,9 +59,9 @@ class VariantSoftDeletionByIdService
                 variant.getVersion());
 
         final var productId = variant.getProductId();
-        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(
+        final var soldCount = this.soldCountLookupByIdPort.loadByVariantIdOrZero(
                 variantId, productId);
-        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(
+        final var stockCount = this.stockCountLookupByIdPort.loadByVariantIdOrZero(
                 variantId, productId);
         final var soldDecrement = soldCount.getValue().value();
         final var stockDecrement = stockCount.getValue().value();

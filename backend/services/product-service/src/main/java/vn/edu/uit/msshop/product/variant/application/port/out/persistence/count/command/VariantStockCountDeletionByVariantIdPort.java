@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.variant.application.port.out.persistence.count
 
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
-public interface VariantSoldCountDeletionByIdPort {
-    void deleteById(
-            final VariantId id);
+public interface VariantStockCountDeletionByVariantIdPort {
+    void deleteByVariantId(
+            final VariantId variantId);
 }

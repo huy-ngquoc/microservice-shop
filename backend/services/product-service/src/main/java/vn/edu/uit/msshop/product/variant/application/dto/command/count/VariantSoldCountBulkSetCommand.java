@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public record VariantSoldCountBulkSetCommand(
-        Map<UUID, Integer> soldCountById) {
+        Map<UUID, Integer> soldCountByVariantId) {
 
     public VariantSoldCountBulkSetCommand {
-        soldCountById = Map.copyOf(soldCountById);
+        soldCountByVariantId = Map.copyOf(soldCountByVariantId);
     }
 }
