@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.out.sync.request.VariantStockCountBulkFetchRequest;
 import vn.edu.uit.msshop.product.variant.adapter.out.sync.response.VariantStockCountResponse;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantStockCountBulkFetchPort;
-import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantInventoryStockCount;
+import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantStockCountSnapshot;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCountValue;
 
@@ -24,10 +24,10 @@ public class VariantStockCountFeignAdapter
     private final VariantStockCountFeignClient feignClient;
 
     @Override
-    public List<VariantInventoryStockCount> fetchAll(
+    public List<VariantStockCountSnapshot> fetchAll(
             final Instant rangeStartTime,
             final Instant rangeEndTime) {
-        final var allStockCounts = new ArrayList<VariantInventoryStockCount>();
+        final var allStockCounts = new ArrayList<VariantStockCountSnapshot>();
 
         int pageNumber = 0;
         boolean hasNextPage = false;
@@ -57,9 +57,9 @@ public class VariantStockCountFeignAdapter
         return List.copyOf(allStockCounts);
     }
 
-    private static VariantInventoryStockCount toDomainDto(
+    private static VariantStockCountSnapshot toDomainDto(
             final VariantStockCountResponse response) {
-        return new VariantInventoryStockCount(
+        return new VariantStockCountSnapshot(
                 new VariantId(response.variantId()),
                 new VariantStockCountValue(response.quantity()));
     }

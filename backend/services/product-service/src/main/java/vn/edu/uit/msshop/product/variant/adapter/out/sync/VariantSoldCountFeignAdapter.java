@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.out.sync.response.VariantSoldCountResponse;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantSoldCountBulkFetchPort;
-import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantOrderSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantSoldCountSnapshot;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCountValue;
 
@@ -19,15 +19,15 @@ public class VariantSoldCountFeignAdapter
     private final VariantSoldCountFeignClient feignClient;
 
     @Override
-    public Collection<VariantOrderSoldCount> fetchAll() {
+    public Collection<VariantSoldCountSnapshot> fetchAll() {
         return this.feignClient.getSoldCounts().stream()
                 .map(VariantSoldCountFeignAdapter::toDomainDto)
                 .toList();
     }
 
-    private static VariantOrderSoldCount toDomainDto(
+    private static VariantSoldCountSnapshot toDomainDto(
             final VariantSoldCountResponse response) {
-        return new VariantOrderSoldCount(
+        return new VariantSoldCountSnapshot(
                 new VariantId(response.variantId()),
                 new VariantSoldCountValue(response.soldCount()));
     }
