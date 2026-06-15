@@ -18,8 +18,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.varian
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductRemovalPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
-import vn.edu.uit.msshop.product.variant.domain.model.Variant;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
@@ -66,16 +64,7 @@ class VariantSoftDeletionByIdService
         final var soldDecrement = soldCount.getValue().value();
         final var stockDecrement = stockCount.getValue().value();
 
-        final var next = new Variant(
-                variant.getId(),
-                variant.getProductId(),
-                variant.getProductName(),
-                variant.getPrice(),
-                variant.getTraits(),
-                variant.getTargets(),
-                variant.getImageKey(),
-                variant.getVersion(),
-                VariantDeletionTime.now());
+        final var next = variant.softDeleted();
         final var saved = this.updatePort.update(next);
 
         this.removeFromProductPort.removeFromProduct(

@@ -14,7 +14,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.varian
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 // TODO: should delete image?
@@ -48,7 +47,7 @@ class VariantBulkSoftDeletionByProductIdForProductService
         }
 
         final var next = variants.stream()
-                .map(VariantBulkSoftDeletionByProductIdForProductService::toSoftDeleted)
+                .map(Variant::softDeleted)
                 .toList();
 
         final var saved = this.bulkUpdatePort.updateAll(next);
@@ -56,19 +55,5 @@ class VariantBulkSoftDeletionByProductIdForProductService
             final var event = new VariantSoftDeletedEvent(variant.getId());
             this.eventPublicationPort.publishEvent(event);
         }
-    }
-
-    private static Variant toSoftDeleted(
-            final Variant variant) {
-        return new Variant(
-                variant.getId(),
-                variant.getProductId(),
-                variant.getProductName(),
-                variant.getPrice(),
-                variant.getTraits(),
-                variant.getTargets(),
-                variant.getImageKey(),
-                variant.getVersion(),
-                VariantDeletionTime.now());
     }
 }
