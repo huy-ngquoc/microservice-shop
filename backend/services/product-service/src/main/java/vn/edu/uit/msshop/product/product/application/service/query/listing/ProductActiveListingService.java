@@ -1,8 +1,6 @@
 package vn.edu.uit.msshop.product.product.application.service.query.listing;
 
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.Cacheable;
@@ -30,10 +28,6 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequiredArgsConstructor
 class ProductActiveListingService
         implements ProductActiveListingUseCase {
-    private static final Collector<
-            ProductId,
-            ?,
-            Set<ProductId>> SET_COLLECTOR = Collectors.toSet();
 
     private final ProductActiveListingPort activeListingPort;
     private final ProductSoldCountBulkLookupByProductIdsPort soldCountBulkLookupByProductIdsPort;
@@ -51,35 +45,35 @@ class ProductActiveListingService
             final ProductActiveListingQuery query) {
         final var page = this.activeListingPort.list(query.pageRequest());
 
-        final var ids = page.items().stream()
+        final var productIdSet = page.items().stream()
                 .map(Product::getId)
-                .collect(SET_COLLECTOR);
+                .collect(Collectors.toUnmodifiableSet());
 
-        final var soldCountById = this.soldCountBulkLookupByProductIdsPort.loadAllByProductIds(ids);
-        final var stockCountById = this.stockCountBulkLookupByProductIdsPort.loadAllByProductIds(ids);
-        final var ratingById = this.ratingBulkLookupByProductIdsPort.loadAllByProductIds(ids);
+        final var soldCountByProductId = this.soldCountBulkLookupByProductIdsPort.loadAllByProductIds(productIdSet);
+        final var stockCountByProductId = this.stockCountBulkLookupByProductIdsPort.loadAllByProductIds(productIdSet);
+        final var ratingByProductId = this.ratingBulkLookupByProductIdsPort.loadAllByProductIds(productIdSet);
 
         return page.map(p -> this.toView(
                 p,
-                soldCountById,
-                stockCountById,
-                ratingById));
+                soldCountByProductId,
+                stockCountByProductId,
+                ratingByProductId));
     }
 
     private ProductView toView(
             Product product,
-            Map<ProductId, ProductSoldCount> soldCountById,
-            Map<ProductId, ProductStockCount> stockCountById,
-            Map<ProductId, ProductRating> ratingById) {
+            Map<ProductId, ProductSoldCount> soldCountByProductId,
+            Map<ProductId, ProductStockCount> stockCountByProductId,
+            Map<ProductId, ProductRating> ratingByProductId) {
         final var productId = product.getId();
 
-        final var soldCount = soldCountById.getOrDefault(
+        final var soldCount = soldCountByProductId.getOrDefault(
                 productId,
                 ProductSoldCount.zero(productId));
-        final var stockCount = stockCountById.getOrDefault(
+        final var stockCount = stockCountByProductId.getOrDefault(
                 productId,
                 ProductStockCount.zero(productId));
-        final var rating = ratingById.getOrDefault(
+        final var rating = ratingByProductId.getOrDefault(
                 productId,
                 ProductRating.zero(productId));
 

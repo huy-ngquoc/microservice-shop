@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.data.mongodb.core.BulkOperations;
@@ -38,16 +37,6 @@ class ProductRatingPersistenceAdapter
         ProductRatingBulkUpdatePort,
         ProductRatingDeletionByProductIdPort {
 
-    private static final Collector<
-            ProductRating,
-            ?,
-            Map<ProductId, ProductRating>> COLLECTOR = Collectors.toUnmodifiableMap(
-                    ProductRating::getProductId,
-                    Function.identity(),
-                    (
-                            existing,
-                            replacement) -> existing);
-
     private final ProductRatingMongoRepository repository;
     private final ProductRatingPersistenceMapper mapper;
     private final MongoTemplate mongoTemplate;
@@ -73,7 +62,9 @@ class ProductRatingPersistenceAdapter
                 .toList();
         return this.repository.findAllById(jpaProductIdSet).stream()
                 .map(this.mapper::toDomain)
-                .collect(ProductRatingPersistenceAdapter.COLLECTOR);
+                .collect(Collectors.toUnmodifiableMap(
+                        ProductRating::getProductId,
+                        Function.identity()));
     }
 
     @Override

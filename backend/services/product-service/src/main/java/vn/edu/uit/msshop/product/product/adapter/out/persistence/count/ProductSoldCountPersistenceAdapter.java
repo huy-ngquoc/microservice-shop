@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.data.mongodb.core.BulkOperations;
@@ -39,16 +38,6 @@ class ProductSoldCountPersistenceAdapter
         ProductSoldCountBulkDecrementPort,
         ProductSoldCountDeletionByProductIdPort {
 
-    private static final Collector<
-            ProductSoldCount,
-            ?,
-            Map<ProductId, ProductSoldCount>> COLLECTOR = Collectors.toUnmodifiableMap(
-                    ProductSoldCount::getProductId,
-                    Function.identity(),
-                    (
-                            existing,
-                            replacement) -> existing);
-
     private final ProductSoldCountMongoRepository repository;
     private final ProductSoldCountPersistenceMapper mapper;
     private final MongoTemplate mongoTemplate;
@@ -74,7 +63,9 @@ class ProductSoldCountPersistenceAdapter
                 .toList();
         return this.repository.findAllById(jpaProductIdSet).stream()
                 .map(this.mapper::toDomain)
-                .collect(ProductSoldCountPersistenceAdapter.COLLECTOR);
+                .collect(Collectors.toUnmodifiableMap(
+                        ProductSoldCount::getProductId,
+                        Function.identity()));
     }
 
     @Override
