@@ -138,15 +138,9 @@ class VariantInfoUpdateByIdService
             return null;
         }
 
-        return new Variant(
-                current.getId(),
-                current.getProductId(),
-                current.getProductName(),
+        return current.updateInfo(
                 applyPriceResult.newValue(),
                 applyTraitsResult.newValue(),
-                applyTargetsResult.newValue(),
-                current.getImageKey(),
-                current.getVersion(),
-                current.getDeletionTime());
+                applyTargetsResult.newValue());
     }
 }

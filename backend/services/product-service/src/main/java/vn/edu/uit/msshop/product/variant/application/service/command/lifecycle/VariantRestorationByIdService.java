@@ -18,7 +18,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProd
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.VariantRestorabilityCheckPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredEvent;
-import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 
@@ -63,16 +62,7 @@ class VariantRestorationByIdService
         final var soldIncrement = soldCount.getValue().value();
         final var stockIncrement = stockCount.getValue().value();
 
-        final var next = new Variant(
-                variant.getId(),
-                variant.getProductId(),
-                variant.getProductName(),
-                variant.getPrice(),
-                variant.getTraits(),
-                variant.getTargets(),
-                variant.getImageKey(),
-                variant.getVersion(),
-                null);
+        final var next = variant.restored();
         final var saved = this.updatePort.update(next);
 
         this.addToProductPort.addToProduct(
