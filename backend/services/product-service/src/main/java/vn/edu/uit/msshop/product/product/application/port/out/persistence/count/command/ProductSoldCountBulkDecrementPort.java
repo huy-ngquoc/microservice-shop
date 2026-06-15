@@ -4,7 +4,7 @@ import java.util.Map;
 
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
-public interface ProductStockCountBulkDecreationPort {
+public interface ProductSoldCountBulkDecrementPort {
     void decreaseAll(
             Map<ProductId, Integer> decrementByProductId);
 }
