@@ -29,27 +29,27 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 class ProductPersistenceMapper {
 
     public Product toDomain(
-            final ProductDocument entity) {
-        final var id = new ProductId(entity.getId());
+            final ProductDocument doc) {
+        final var id = new ProductId(doc.getId());
 
-        final var name = new ProductName(entity.getName());
-        final var categoryId = new ProductCategoryId(entity.getCategoryId());
-        final var brandId = new ProductBrandId(entity.getBrandId());
+        final var name = new ProductName(doc.getName());
+        final var categoryId = new ProductCategoryId(doc.getCategoryId());
+        final var brandId = new ProductBrandId(doc.getBrandId());
 
-        final var options = ProductOptions.of(entity.getOptions());
+        final var options = ProductOptions.of(doc.getOptions());
 
-        final var variantsList = entity.getVariants().stream().map(this::toDomain).toList();
+        final var variantsList = doc.getVariants().stream().map(this::toDomain).toList();
         final var variants = new ProductVariants(variantsList);
 
         final var configuration = new ProductConfiguration(options, variants);
 
-        final var imageKeys = ProductImageKeys.of(entity.getImageKeys());
+        final var imageKeys = ProductImageKeys.of(doc.getImageKeys());
 
         final var versionValue = Objects.requireNonNull(
-                entity.getVersion(),
+                doc.getVersion(),
                 "Persisted product must have a version");
         final var version = new ProductVersion(versionValue);
-        final var deletionTime = ProductDeletionTime.ofNullable(entity.getDeletionTime());
+        final var deletionTime = ProductDeletionTime.ofNullable(doc.getDeletionTime());
 
         return new Product(
                 id,
