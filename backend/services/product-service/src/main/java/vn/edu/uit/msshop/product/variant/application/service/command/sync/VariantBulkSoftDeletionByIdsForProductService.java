@@ -16,7 +16,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.varian
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantDeletionTime;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 @Service
@@ -48,7 +47,7 @@ class VariantBulkSoftDeletionByIdsForProductService
         final var variantById = this.activeBulkLookupByIdsPort.loadAllByIds(variantIdSet);
 
         final var next = variantById.values().stream()
-                .map(VariantBulkSoftDeletionByIdsForProductService::toSoftDeleted)
+                .map(Variant::softDeleted)
                 .toList();
         final var saved = this.bulkUpdatePort.updateAll(next);
 
@@ -56,19 +55,5 @@ class VariantBulkSoftDeletionByIdsForProductService
             final var event = new VariantSoftDeletedEvent(variant.getId());
             this.eventPublicationPort.publishEvent(event);
         }
-    }
-
-    private static Variant toSoftDeleted(
-            final Variant variant) {
-        return new Variant(
-                variant.getId(),
-                variant.getProductId(),
-                variant.getProductName(),
-                variant.getPrice(),
-                variant.getTraits(),
-                variant.getTargets(),
-                variant.getImageKey(),
-                variant.getVersion(),
-                VariantDeletionTime.now());
     }
 }

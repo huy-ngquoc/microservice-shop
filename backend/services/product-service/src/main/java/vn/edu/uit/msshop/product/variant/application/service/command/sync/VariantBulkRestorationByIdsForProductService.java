@@ -37,11 +37,11 @@ class VariantBulkRestorationByIdsForProductService
                 .map(VariantId::new)
                 .collect(Collectors.toUnmodifiableSet());
 
-        final var variants = this.softDeletedBulkLookupByIdsPort
+        final var variantList = this.softDeletedBulkLookupByIdsPort
                 .loadAllSoftDeletedByIds(variantIdSet);
 
-        final var next = variants.stream()
-                .map(VariantBulkRestorationByIdsForProductService::toRestored)
+        final var next = variantList.stream()
+                .map(Variant::restored)
                 .toList();
         final var saved = this.bulkUpdatePort.updateAll(next);
 
@@ -49,19 +49,5 @@ class VariantBulkRestorationByIdsForProductService
             final var event = new VariantRestoredEvent(variant.getId());
             this.eventPublicationPort.publishEvent(event);
         }
-    }
-
-    private static Variant toRestored(
-            final Variant variant) {
-        return new Variant(
-                variant.getId(),
-                variant.getProductId(),
-                variant.getProductName(),
-                variant.getPrice(),
-                variant.getTraits(),
-                variant.getTargets(),
-                variant.getImageKey(),
-                variant.getVersion(),
-                null);
     }
 }

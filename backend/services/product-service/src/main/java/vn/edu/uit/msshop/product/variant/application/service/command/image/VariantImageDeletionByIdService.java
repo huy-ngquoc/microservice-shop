@@ -12,7 +12,6 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.image.VariantIm
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantImageUpdatedEvent;
-import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantVersion;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
@@ -64,16 +63,7 @@ class VariantImageDeletionByIdService
                 expectedVersion,
                 variant.getVersion());
 
-        final var next = new Variant(
-                variant.getId(),
-                variant.getProductId(),
-                variant.getProductName(),
-                variant.getPrice(),
-                variant.getTraits(),
-                variant.getTargets(),
-                null,
-                expectedVersion,
-                variant.getDeletionTime());
+        final var next = variant.removeImageKey();
         final var saved = this.updatePort.update(next);
 
         final var event = new VariantImageUpdatedEvent(
