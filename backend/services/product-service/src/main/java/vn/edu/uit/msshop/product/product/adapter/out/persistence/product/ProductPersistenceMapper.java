@@ -1,6 +1,9 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence.product;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.stereotype.Component;
@@ -24,6 +27,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 
 @Component
 class ProductPersistenceMapper {
+
     public Product toDomain(
             final ProductDocument entity) {
         final var id = new ProductId(entity.getId());
@@ -68,6 +72,19 @@ class ProductPersistenceMapper {
                 id,
                 price,
                 traits);
+    }
+
+    public Map<ProductId, Product> toDomainById(
+            final Collection<Product> productCollection) {
+        final var byId = HashMap.<ProductId, Product>newHashMap(productCollection.size());
+        for (final var product : productCollection) {
+            final var previous = byId.put(product.getId(), product);
+            if (previous != null) {
+                throw new IllegalStateException(
+                        "Duplicate product ID: " + product.getId().value());
+            }
+        }
+        return Map.copyOf(byId);
     }
 
     public ProductDocument toPersistence(
