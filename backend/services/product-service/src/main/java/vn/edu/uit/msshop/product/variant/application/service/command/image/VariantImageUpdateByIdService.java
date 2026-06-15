@@ -94,16 +94,7 @@ class VariantImageUpdateByIdService
         this.imageStoragePort.publishImage(newImageKey);
 
         try {
-            final var next = new Variant(
-                    current.getId(),
-                    current.getProductId(),
-                    current.getProductName(),
-                    current.getPrice(),
-                    current.getTraits(),
-                    current.getTargets(),
-                    newImageKey,
-                    current.getVersion(),
-                    current.getDeletionTime());
+            final var next = current.changeImageKey(newImageKey);
             return this.updatePort.update(next);
         } catch (final RuntimeException e) {
             try {

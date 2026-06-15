@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -57,9 +56,11 @@ class VariantTraitBulkUpdateByIdsForProductService
         for (final var variant : variantById.values()) {
             final var variantId = variant.getId();
             final var newTraits = newTraitsById.get(variantId);
+            if (newTraits == null) {
+                throw new BusinessRuleException("Missing traits for variant: " + variant.getId().value());
+            }
 
-            final var updated = VariantTraitBulkUpdateByIdsForProductService
-                    .withNewTraits(variant, newTraits);
+            final var updated = variant.changeTraits(newTraits);
             next.add(updated);
         }
 
@@ -80,25 +81,5 @@ class VariantTraitBulkUpdateByIdsForProductService
                     VariantTraits.of(entry.getValue()));
         }
         return newTraitsByVariantId;
-    }
-
-    private static Variant withNewTraits(
-            final Variant variant,
-            @Nullable
-            final VariantTraits newTraits) {
-        if (newTraits == null) {
-            throw new BusinessRuleException("Missing traits for variant: " + variant.getId().value());
-        }
-
-        return new Variant(
-                variant.getId(),
-                variant.getProductId(),
-                variant.getProductName(),
-                variant.getPrice(),
-                newTraits,
-                variant.getTargets(),
-                variant.getImageKey(),
-                variant.getVersion(),
-                variant.getDeletionTime());
     }
 }

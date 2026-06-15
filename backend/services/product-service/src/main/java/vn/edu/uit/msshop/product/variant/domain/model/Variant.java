@@ -73,4 +73,87 @@ public final class Variant {
         this.version = Domains.requireNonNull(version, "Variant version must not be null");
         this.deletionTime = deletionTime;
     }
+
+    public Variant updateInfo(
+            VariantPrice newPrice,
+            VariantTraits newTraits,
+            VariantTargets newTargets) {
+        return new Variant(
+                this.id,
+                this.productId,
+                this.productName,
+                newPrice,
+                newTraits,
+                newTargets,
+                this.imageKey,
+                this.version,
+                this.deletionTime);
+    }
+
+    public Variant changeTraits(
+            final VariantTraits newTraits) {
+        return new Variant(
+                this.id,
+                this.productId,
+                this.productName,
+                this.price,
+                newTraits,
+                this.targets,
+                this.imageKey,
+                this.version,
+                this.deletionTime);
+    }
+
+    public Variant changeImageKey(
+            VariantImageKey newImageKey) {
+        return new Variant(
+                this.id,
+                this.productId,
+                this.productName,
+                this.price,
+                this.traits,
+                this.targets,
+                newImageKey,
+                this.version,
+                this.deletionTime);
+    }
+
+    public Variant removeImageKey() {
+        return new Variant(
+                this.id,
+                this.productId,
+                this.productName,
+                this.price,
+                this.traits,
+                this.targets,
+                null,
+                this.version,
+                this.deletionTime);
+    }
+
+    public Variant softDeleted() {
+        return new Variant(
+                this.id,
+                this.productId,
+                this.productName,
+                this.price,
+                this.traits,
+                this.targets,
+                this.imageKey,
+                this.version,
+                VariantDeletionTime.now());
+    }
+
+    public Variant restored() {
+        return new Variant(
+                this.id,
+                this.productId,
+                this.productName,
+                this.price,
+                this.traits,
+                this.targets,
+                this.imageKey,
+                this.version,
+                null);
+    }
 }

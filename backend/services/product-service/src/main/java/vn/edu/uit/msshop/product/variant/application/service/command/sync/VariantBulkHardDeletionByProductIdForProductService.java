@@ -36,23 +36,23 @@ class VariantBulkHardDeletionByProductIdForProductService
             final VariantBulkHardDeletionByProductIdForProductCommand cmd) {
         final var productId = new VariantProductId(cmd.productId());
 
-        final var variants = this.bulkLookupByProductIdPort.loadAllByProductId(productId);
-        if (variants.isEmpty()) {
+        final var variantList = this.bulkLookupByProductIdPort.loadAllByProductId(productId);
+        if (variantList.isEmpty()) {
             return;
         }
 
-        final var variantIdList = variants.stream()
+        final var variantIdList = variantList.stream()
                 .map(Variant::getId)
                 .toList();
 
         this.bulkDeletionByProductIdPort.deleteByProductId(productId);
         this.soldCountBulkDeletionByIdsPort.deleteAllByVariantIds(variantIdList);
 
-        for (final var variant : variants) {
+        for (final var variant : variantList) {
             this.imageDeleter.deleteQuietly(variant.getImageKey());
         }
 
-        for (final var variant : variants) {
+        for (final var variant : variantList) {
             final var event = new VariantHardDeletedEvent(variant.getId());
             this.eventPublicationPort.publishEvent(event);
         }
