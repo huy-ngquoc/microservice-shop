@@ -1,8 +1,8 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence.product;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -27,6 +27,7 @@ class ProductQueryPersistenceAdapter
         ProductActiveLookupByIdPort,
         ProductActiveBulkLookupByIdsPort,
         ProductSoftDeletedLookupByIdPort {
+
     private final ProductMongoRepository repository;
     private final ProductPersistenceMapper mapper;
 
@@ -71,12 +72,16 @@ class ProductQueryPersistenceAdapter
     }
 
     @Override
-    public List<Product> loadAllByIds(
-            final Collection<ProductId> ids) {
-        final var jpaIds = ids.stream().map(ProductId::value).toList();
-        return this.repository.findAllByDeletionTimeIsNull(jpaIds).stream()
+    public Map<ProductId, Product> loadAllByIds(
+            final Set<ProductId> idSet) {
+        final var jpaIdSet = idSet.stream()
+                .map(ProductId::value)
+                .toList();
+        final var productList = this.repository.findAllByDeletionTimeIsNull(jpaIdSet).stream()
                 .map(this.mapper::toDomain)
                 .toList();
+
+        return this.mapper.toDomainById(productList);
     }
 
     @Override
