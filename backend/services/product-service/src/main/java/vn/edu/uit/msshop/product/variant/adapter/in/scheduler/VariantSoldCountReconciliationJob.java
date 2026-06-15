@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.variant.adapter.in.scheduled;
+package vn.edu.uit.msshop.product.variant.adapter.in.scheduler;
 
 import java.util.concurrent.TimeUnit;
 
