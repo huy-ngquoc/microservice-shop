@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.adapter.in.event.payload.SetVariantStockCountsEvent;
 import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantStockCountBulkSetCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkSetUseCase;
-import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantInventoryStockCount;
+import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantStockCountSnapshot;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCountValue;
 

@@ -13,7 +13,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantSt
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkReconciliationUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkSetUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantStockCountBulkFetchPort;
-import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantInventoryStockCount;
+import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantStockCountSnapshot;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +40,7 @@ class VariantStockCountBulkReconciliationService
     }
 
     private static Map<UUID, Integer> toSoldCountById(
-            final Collection<VariantInventoryStockCount> stockCountCollection) {
+            final Collection<VariantStockCountSnapshot> stockCountCollection) {
         final var stockCountById = HashMap.<UUID, Integer>newHashMap(
                 stockCountCollection.size());
         for (final var stockCount : stockCountCollection) {

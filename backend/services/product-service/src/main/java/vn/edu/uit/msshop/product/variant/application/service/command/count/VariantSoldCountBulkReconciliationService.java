@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantSo
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantSoldCountBulkReconciliationUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantSoldCountBulkSetUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantSoldCountBulkFetchPort;
-import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantOrderSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.sync.VariantSoldCountSnapshot;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ class VariantSoldCountBulkReconciliationService
     }
 
     private static Map<UUID, Integer> toSoldCountById(
-            final Collection<VariantOrderSoldCount> soldCountCollection) {
+            final Collection<VariantSoldCountSnapshot> soldCountCollection) {
         final var soldCountById = HashMap.<UUID, Integer>newHashMap(
                 soldCountCollection.size());
         for (final var soldCount : soldCountCollection) {
