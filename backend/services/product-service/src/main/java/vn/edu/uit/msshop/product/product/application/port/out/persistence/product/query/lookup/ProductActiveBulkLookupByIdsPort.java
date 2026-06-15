@@ -6,7 +6,7 @@ import java.util.List;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
-public interface ProductActiveBulkLookupByIds {
+public interface ProductActiveBulkLookupByIdsPort {
     List<Product> loadAllByIds(
             final Collection<ProductId> ids);
 }
