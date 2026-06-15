@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.product.application.port.out.persistence.count
 
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
-public interface ProductStockCountDeletionByIdPort {
-    void deleteById(
-            final ProductId id);
+public interface ProductSoldCountDeletionByProductIdPort {
+    void deleteByProductId(
+            final ProductId productId);
 }

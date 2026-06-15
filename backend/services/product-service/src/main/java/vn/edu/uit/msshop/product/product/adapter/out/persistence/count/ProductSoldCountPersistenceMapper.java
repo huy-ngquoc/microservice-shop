@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductSoldCou
 class ProductSoldCountPersistenceMapper {
     public ProductSoldCount toDomain(
             final ProductSoldCountDocument entity) {
-        final var id = new ProductId(entity.getId());
+        final var id = new ProductId(entity.getProductId());
         final var value = new ProductSoldCountValue(entity.getSoldCount());
 
         return new ProductSoldCount(id, value);

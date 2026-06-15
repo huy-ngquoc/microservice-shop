@@ -19,7 +19,7 @@ import lombok.experimental.FieldNameConstants;
 final class ProductRatingDocument {
     @Id
     @EqualsAndHashCode.Include
-    private final UUID id;
+    private final UUID productId;
 
     private final long total;
 
@@ -27,23 +27,13 @@ final class ProductRatingDocument {
 
     private final Instant lastUpdatedTime;
 
-    public ProductRatingDocument(
-            final UUID id,
-            final long total,
-            final int amount) {
-        this.id = id;
-        this.total = total;
-        this.amount = amount;
-        this.lastUpdatedTime = Instant.now();
-    }
-
     @PersistenceCreator
-    ProductRatingDocument(
-            final UUID id,
+    public ProductRatingDocument(
+            final UUID productId,
             final long total,
             final int amount,
             final Instant lastUpdatedTime) {
-        this.id = id;
+        this.productId = productId;
         this.total = total;
         this.amount = amount;
         this.lastUpdatedTime = lastUpdatedTime;

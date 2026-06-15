@@ -6,7 +6,7 @@ import java.util.Set;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
-public interface ProductSoldCountBulkLookupByIdsPort {
-    Map<ProductId, ProductSoldCount> loadAllByIds(
-            final Set<ProductId> ids);
+public interface ProductSoldCountBulkLookupByProductIdsPort {
+    Map<ProductId, ProductSoldCount> loadAllByProductIds(
+            final Set<ProductId> productIdSet);
 }

@@ -18,12 +18,12 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingDeletionPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingInitializationByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingDeletionByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingInitializationByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingBulkUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingUpdatePort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingBulkLookupByIdsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingBulkLookupByProductIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
@@ -31,17 +31,18 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @RequiredArgsConstructor
 class ProductRatingPersistenceAdapter
         implements
-        ProductRatingLookupByIdPort,
-        ProductRatingBulkLookupByIdsPort,
-        ProductRatingInitializationByIdPort,
+        ProductRatingLookupByProductIdPort,
+        ProductRatingBulkLookupByProductIdsPort,
+        ProductRatingInitializationByProductIdPort,
         ProductRatingUpdatePort,
         ProductRatingBulkUpdatePort,
-        ProductRatingDeletionPort {
+        ProductRatingDeletionByProductIdPort {
+
     private static final Collector<
             ProductRating,
             ?,
             Map<ProductId, ProductRating>> COLLECTOR = Collectors.toUnmodifiableMap(
-                    ProductRating::getId,
+                    ProductRating::getProductId,
                     Function.identity(),
                     (
                             existing,
@@ -52,35 +53,35 @@ class ProductRatingPersistenceAdapter
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public ProductRating loadByIdOrZero(
-            final ProductId id) {
-        final var jpaId = id.value();
-        return this.repository.findById(jpaId)
+    public ProductRating loadByProductIdOrZero(
+            final ProductId productId) {
+        final var jpaProductId = productId.value();
+        return this.repository.findById(jpaProductId)
                 .map(this.mapper::toDomain)
-                .orElseGet(() -> ProductRating.zero(id));
+                .orElseGet(() -> ProductRating.zero(productId));
     }
 
     @Override
-    public Map<ProductId, ProductRating> loadAllByIds(
-            final Set<ProductId> ids) {
-        if (ids.isEmpty()) {
+    public Map<ProductId, ProductRating> loadAllByProductIds(
+            final Set<ProductId> productIdSet) {
+        if (productIdSet.isEmpty()) {
             return Map.of();
         }
 
-        final var jpaIds = ids.stream()
+        final var jpaProductIdSet = productIdSet.stream()
                 .map(ProductId::value)
                 .toList();
-        return this.repository.findAllById(jpaIds).stream()
+        return this.repository.findAllById(jpaProductIdSet).stream()
                 .map(this.mapper::toDomain)
                 .collect(ProductRatingPersistenceAdapter.COLLECTOR);
     }
 
     @Override
-    public ProductRating initializeById(
-            final ProductId id) {
-        final var jpaId = id.value();
+    public ProductRating initializeByProductId(
+            final ProductId productId) {
+        final var jpaProductId = productId.value();
 
-        final var query = new Query(Criteria.where("_id").is(jpaId));
+        final var query = new Query(Criteria.where("_id").is(jpaProductId));
         final var update = new Update()
                 .setOnInsert(ProductRatingDocument.Fields.total, 0)
                 .setOnInsert(ProductRatingDocument.Fields.amount, 0)
@@ -92,7 +93,7 @@ class ProductRatingPersistenceAdapter
     @Override
     public ProductRating update(
             final ProductRating rating) {
-        final var query = new Query(Criteria.where("_id").is(rating.getId().value()));
+        final var query = new Query(Criteria.where("_id").is(rating.getProductId().value()));
         final var update = new Update()
                 .set(ProductRatingDocument.Fields.total, rating.getTotal().value())
                 .set(ProductRatingDocument.Fields.amount, rating.getAmount().value())
@@ -114,7 +115,7 @@ class ProductRatingPersistenceAdapter
         final var instantNow = Instant.now();
 
         for (final var rating : ratings) {
-            final var query = new Query(Criteria.where("_id").is(rating.getId().value()));
+            final var query = new Query(Criteria.where("_id").is(rating.getProductId().value()));
             final var update = new Update()
                     .set(ProductRatingDocument.Fields.total, rating.getTotal().value())
                     .set(ProductRatingDocument.Fields.amount, rating.getAmount().value())
@@ -126,10 +127,10 @@ class ProductRatingPersistenceAdapter
     }
 
     @Override
-    public void deleteById(
-            final ProductId id) {
-        final var jpaId = id.value();
-        this.repository.deleteById(jpaId);
+    public void deleteByProductId(
+            final ProductId productId) {
+        final var jpaProductId = productId.value();
+        this.repository.deleteById(jpaProductId);
     }
 
     private ProductRating upsertAndReturnDomain(
