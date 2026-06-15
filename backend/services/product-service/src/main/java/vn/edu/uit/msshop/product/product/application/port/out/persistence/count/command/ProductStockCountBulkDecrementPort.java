@@ -4,7 +4,7 @@ import java.util.Map;
 
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
-public interface ProductSoldCountBulkIncreationPort {
-    void increaseAll(
-            final Map<ProductId, Integer> incrementByProductId);
+public interface ProductStockCountBulkDecrementPort {
+    void decreaseAll(
+            Map<ProductId, Integer> decrementByProductId);
 }

@@ -14,8 +14,8 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductMustHaveAt
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkDecreationPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkDecrementPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
@@ -29,8 +29,8 @@ class ProductVariantRemovalForVariantService
         implements ProductVariantRemovalForVariantUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductUpdatePort updatePort;
-    private final ProductSoldCountBulkDecreationPort soldCountBulkDecreationPort;
-    private final ProductStockCountBulkDecreationPort stockCountBulkDecreationPort;
+    private final ProductSoldCountBulkDecrementPort soldCountBulkDecrementPort;
+    private final ProductStockCountBulkDecrementPort stockCountBulkDecrementPort;
 
     private final ProductEventPublicationPort eventPort;
 
@@ -73,11 +73,11 @@ class ProductVariantRemovalForVariantService
 
         if (cmd.productSoldCountDecrement() > 0) {
             final var decrementByProductId = Map.of(productId, cmd.productSoldCountDecrement());
-            this.soldCountBulkDecreationPort.decreaseAll(decrementByProductId);
+            this.soldCountBulkDecrementPort.decreaseAll(decrementByProductId);
         }
         if (cmd.productStockCountDecrement() > 0) {
             final var decrementByProductId = Map.of(productId, cmd.productStockCountDecrement());
-            this.stockCountBulkDecreationPort.decreaseAll(decrementByProductId);
+            this.stockCountBulkDecrementPort.decreaseAll(decrementByProductId);
         }
 
         this.eventPort.publishEvent(new ProductInfoUpdatedEvent(saved.getId()));
