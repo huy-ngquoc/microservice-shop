@@ -15,15 +15,15 @@ public final class ProductRating {
     private static final int MIN_POINT = 1;
     private static final int MAX_POINT = 5;
 
-    private final ProductId id;
+    private final ProductId productId;
     private final ProductRatingTotal total;
     private final ProductRatingAmount amount;
 
     public ProductRating(
-            final ProductId id,
+            final ProductId productId,
             final ProductRatingTotal total,
             final ProductRatingAmount amount) {
-        this.id = Domains.requireNonNull(id, "Product ID must NOT be null");
+        this.productId = Domains.requireNonNull(productId, "Product ID must NOT be null");
         this.total = Domains.requireNonNull(total, "Product rating total must NOT be null");
         this.amount = Domains.requireNonNull(amount, "Product rating amount must NOT be null");
 
@@ -31,11 +31,14 @@ public final class ProductRating {
     }
 
     public static ProductRating zero(
-            final ProductId id) {
+            final ProductId productId) {
         final var total = new ProductRatingTotal(0);
         final var amount = new ProductRatingAmount(0);
 
-        return new ProductRating(id, total, amount);
+        return new ProductRating(
+                productId,
+                total,
+                amount);
     }
 
     public ProductRating addRating(
@@ -54,7 +57,7 @@ public final class ProductRating {
         final var newAmount = new ProductRatingAmount(newAmountValue);
 
         return new ProductRating(
-                this.id,
+                this.productId,
                 newTotal,
                 newAmount);
     }
@@ -68,7 +71,7 @@ public final class ProductRating {
         final var oldAmountValue = this.amount.value();
         if (oldAmountValue <= 1) {
             return new ProductRating(
-                    this.id,
+                    this.productId,
                     ProductRatingTotal.zero(),
                     ProductRatingAmount.zero());
         }
@@ -81,7 +84,7 @@ public final class ProductRating {
         final var newAmount = new ProductRatingAmount(newAmountValue);
 
         return new ProductRating(
-                id,
+                productId,
                 newTotal,
                 newAmount);
     }
@@ -103,7 +106,7 @@ public final class ProductRating {
         final var newTotal = new ProductRatingTotal(newTotalValue);
 
         return new ProductRating(
-                this.id,
+                this.productId,
                 newTotal,
                 this.amount);
     }

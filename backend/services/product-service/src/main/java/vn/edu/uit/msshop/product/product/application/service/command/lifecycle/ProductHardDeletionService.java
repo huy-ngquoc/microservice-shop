@@ -8,11 +8,11 @@ import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.Produ
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountDeletionByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountDeletionByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountDeletionByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountDeletionByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductDeletionByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingDeletionPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingDeletionByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkHardDeletionForProductPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductHardDeletedEvent;
@@ -26,9 +26,9 @@ class ProductHardDeletionService
         implements ProductHardDeletionUseCase {
     private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final ProductDeletionByIdPort deletionByIdPort;
-    private final ProductSoldCountDeletionByIdPort soldCountDeletionByIdPort;
-    private final ProductStockCountDeletionByIdPort stockCountDeletionByIdPort;
-    private final ProductRatingDeletionPort ratingDeletionPort;
+    private final ProductSoldCountDeletionByProductIdPort soldCountDeletionByProductIdPort;
+    private final ProductStockCountDeletionByProductIdPort stockCountDeletionByProductIdPort;
+    private final ProductRatingDeletionByProductIdPort ratingDeletionByProductIdPort;
 
     private final ProductVariantBulkHardDeletionForProductPort variantBulkHardDeleteByIdsPort;
 
@@ -49,9 +49,9 @@ class ProductHardDeletionService
                 product.getVersion());
 
         this.deletionByIdPort.deleteById(productId);
-        this.soldCountDeletionByIdPort.deleteById(productId);
-        this.stockCountDeletionByIdPort.deleteById(productId);
-        this.ratingDeletionPort.deleteById(productId);
+        this.soldCountDeletionByProductIdPort.deleteByProductId(productId);
+        this.stockCountDeletionByProductIdPort.deleteByProductId(productId);
+        this.ratingDeletionByProductIdPort.deleteByProductId(productId);
 
         this.variantBulkHardDeleteByIdsPort.purgeByProductId(productId);
 

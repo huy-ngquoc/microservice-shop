@@ -11,22 +11,22 @@ import vn.edu.uit.msshop.shared.domain.Domains;
         onlyExplicitlyIncluded = true)
 public final class ProductStockCount {
     @EqualsAndHashCode.Include
-    private final ProductId id;
+    private final ProductId productId;
 
     private final ProductStockCountValue value;
 
     public ProductStockCount(
-            final ProductId id,
+            final ProductId productId,
             final ProductStockCountValue value) {
-        this.id = Domains.requireNonNull(id, "Product ID must NOT be null");
+        this.productId = Domains.requireNonNull(productId, "Product ID must NOT be null");
         this.value = Domains.requireNonNull(value, "Product stock count value must NOT be null");
     }
 
     public static ProductStockCount zero(
-            final ProductId id) {
+            final ProductId productId) {
         final var value = new ProductStockCountValue(0);
         return new ProductStockCount(
-                id,
+                productId,
                 value);
     }
 }

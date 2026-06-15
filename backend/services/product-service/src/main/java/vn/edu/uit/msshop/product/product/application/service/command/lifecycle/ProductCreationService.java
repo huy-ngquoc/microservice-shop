@@ -15,10 +15,10 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNo
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductCreationUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountInitializationByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountInitializationByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountInitializationByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountInitializationByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductCreationPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingInitializationByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingInitializationByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkCreationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductBrandExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
@@ -40,9 +40,9 @@ class ProductCreationService
     private final ProductCategoryExistenceCheckByIdPort categoryExistenceCheckByIdPort;
     private final ProductBrandExistenceCheckByIdPort brandExistenceCheckByIdPort;
     private final ProductVariantBulkCreationPort variantBulkCreationPort;
-    private final ProductSoldCountInitializationByIdPort soldCountInitializationByIdPort;
-    private final ProductStockCountInitializationByIdPort stockCountInitializationByIdPort;
-    private final ProductRatingInitializationByIdPort ratingInitializationPort;
+    private final ProductSoldCountInitializationByProductIdPort soldCountInitializationByProductIdPort;
+    private final ProductStockCountInitializationByProductIdPort stockCountInitializationByProductIdPort;
+    private final ProductRatingInitializationByProductIdPort ratingInitializationByProductIdPort;
 
     private final ProductEventPublicationPort eventPublicationPort;
     private final ProductViewMapper mapper;
@@ -94,9 +94,9 @@ class ProductCreationService
         final var savedProduct = this.creationPort.create(newProduct);
         final var savedProductId = savedProduct.getId();
 
-        final var savedSoldCount = this.soldCountInitializationByIdPort.initializeById(savedProductId);
-        final var savedStockCount = this.stockCountInitializationByIdPort.initializeById(savedProductId);
-        final var savedRating = this.ratingInitializationPort.initializeById(savedProductId);
+        final var savedSoldCount = this.soldCountInitializationByProductIdPort.initializeByProductId(savedProductId);
+        final var savedStockCount = this.stockCountInitializationByProductIdPort.initializeByProductId(savedProductId);
+        final var savedRating = this.ratingInitializationByProductIdPort.initializeByProductId(savedProductId);
 
         final var event = new ProductCreatedEvent(savedProductId);
         this.eventPublicationPort.publishEvent(event);

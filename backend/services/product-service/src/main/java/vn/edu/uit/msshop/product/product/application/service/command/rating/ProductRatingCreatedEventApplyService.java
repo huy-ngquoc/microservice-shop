@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.rating.ProductRatingCreatedEventApplyCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.rating.ProductRatingCreatedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingUpdatePort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProductProcessedRatingEventExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.ratingevent.ProductProcessedRatingEventCreationPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -23,7 +23,7 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 class ProductRatingCreatedEventApplyService
         implements ProductRatingCreatedEventApplyUseCase {
 
-    private final ProductRatingLookupByIdPort ratingLookupByIdPort;
+    private final ProductRatingLookupByProductIdPort ratingLookupByProductIdPort;
     private final ProductRatingUpdatePort ratingUpdatePort;
     private final ProductProcessedRatingEventExistenceCheckByIdPort processedRatingEventExistenceCheckByIdPort;
     private final ProductProcessedRatingEventCreationPort processedRatingEventCreationPort;
@@ -49,7 +49,7 @@ class ProductRatingCreatedEventApplyService
 
         try {
             final var productId = new ProductId(cmd.productId());
-            final var rating = this.ratingLookupByIdPort.loadByIdOrZero(productId);
+            final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(productId);
 
             final var next = rating.addRating(cmd.ratingPoint());
             this.ratingUpdatePort.update(next);

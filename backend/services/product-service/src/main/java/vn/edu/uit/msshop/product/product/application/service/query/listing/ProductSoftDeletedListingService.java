@@ -13,10 +13,10 @@ import vn.edu.uit.msshop.product.product.application.dto.query.listing.ProductSo
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductSoftDeletedListingUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountBulkLookupByIdsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountBulkLookupByProductIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountBulkLookupByProductIdsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.listing.ProductSoftDeletedListingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingBulkLookupByProductIdsPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
@@ -34,9 +34,9 @@ class ProductSoftDeletedListingService
             Set<ProductId>> SET_COLLECTOR = Collectors.toSet();
 
     private final ProductSoftDeletedListingPort softDeletedListingPort;
-    private final ProductSoldCountBulkLookupByIdsPort soldCountBulkLookupByIdsPort;
-    private final ProductStockCountBulkLookupByIdsPort stockCountBulkLookupByIdsPort;
-    private final ProductRatingBulkLookupByIdsPort ratingBulkLookupByIdsPort;
+    private final ProductSoldCountBulkLookupByProductIdsPort soldCountBulkLookupByProductIdsPort;
+    private final ProductStockCountBulkLookupByProductIdsPort stockCountBulkLookupByProductIdsPort;
+    private final ProductRatingBulkLookupByProductIdsPort ratingBulkLookupByProductIdsPort;
 
     private final ProductViewMapper mapper;
 
@@ -47,36 +47,36 @@ class ProductSoftDeletedListingService
             final ProductSoftDeletedListingQuery query) {
         final var page = this.softDeletedListingPort.listSoftDeleted(query.pageRequest());
 
-        final var ids = page.items().stream()
+        final var productIdSet = page.items().stream()
                 .map(Product::getId)
                 .collect(SET_COLLECTOR);
 
-        final var soldCountById = this.soldCountBulkLookupByIdsPort.loadAllByIds(ids);
-        final var stockCountById = this.stockCountBulkLookupByIdsPort.loadAllByIds(ids);
-        final var ratingById = this.ratingBulkLookupByIdsPort.loadAllByIds(ids);
+        final var soldCountByProductId = this.soldCountBulkLookupByProductIdsPort.loadAllByProductIds(productIdSet);
+        final var stockCountByProductId = this.stockCountBulkLookupByProductIdsPort.loadAllByProductIds(productIdSet);
+        final var ratingByProductId = this.ratingBulkLookupByProductIdsPort.loadAllByProductIds(productIdSet);
 
         return page.map(p -> this.toView(
                 p,
-                soldCountById,
-                stockCountById,
-                ratingById));
+                soldCountByProductId,
+                stockCountByProductId,
+                ratingByProductId));
     }
 
     // TODO: Duplicate with ProductActiveListingService.
     // Move it to somewhere that all can use.
     private ProductView toView(
             Product product,
-            Map<ProductId, ProductSoldCount> soldCountById,
-            Map<ProductId, ProductStockCount> stockCountById,
-            Map<ProductId, ProductRating> ratingById) {
+            Map<ProductId, ProductSoldCount> soldCountByProductId,
+            Map<ProductId, ProductStockCount> stockCountByProductId,
+            Map<ProductId, ProductRating> ratingByProductId) {
         final var productId = product.getId();
 
-        final var soldCount = soldCountById.getOrDefault(
+        final var soldCount = soldCountByProductId.getOrDefault(
                 productId,
                 ProductSoldCount.zero(productId));
-        final var stockCount = stockCountById.getOrDefault(productId,
+        final var stockCount = stockCountByProductId.getOrDefault(productId,
                 ProductStockCount.zero(productId));
-        final var rating = ratingById.getOrDefault(
+        final var rating = ratingByProductId.getOrDefault(
                 productId,
                 ProductRating.zero(productId));
 
