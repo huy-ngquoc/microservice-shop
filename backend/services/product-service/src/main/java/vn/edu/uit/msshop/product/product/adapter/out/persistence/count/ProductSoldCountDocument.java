@@ -19,28 +19,19 @@ import lombok.experimental.FieldNameConstants;
 final class ProductSoldCountDocument {
     @Id
     @EqualsAndHashCode.Include
-    private final UUID id;
+    private final UUID productId;
 
     private final int soldCount;
 
     private final Instant lastUpdatedTime;
 
-    public ProductSoldCountDocument(
-            final UUID id,
-            final int soldCount) {
-        this.id = id;
-        this.soldCount = soldCount;
-        this.lastUpdatedTime = Instant.now();
-    }
-
-    // TODO: should be package or public?
     @PersistenceCreator
-    ProductSoldCountDocument(
-            final UUID id,
-            final int soldCount,
+    public ProductSoldCountDocument(
+            final UUID productId,
+            final int value,
             final Instant lastUpdatedTime) {
-        this.id = id;
-        this.soldCount = soldCount;
+        this.productId = productId;
+        this.soldCount = value;
         this.lastUpdatedTime = lastUpdatedTime;
     }
 }

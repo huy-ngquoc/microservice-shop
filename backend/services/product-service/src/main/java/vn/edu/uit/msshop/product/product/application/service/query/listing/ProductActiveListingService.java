@@ -15,10 +15,10 @@ import vn.edu.uit.msshop.product.product.application.dto.query.listing.ProductAc
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.query.listing.ProductActiveListingUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountBulkLookupByIdsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountBulkLookupByProductIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountBulkLookupByProductIdsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.listing.ProductActiveListingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingBulkLookupByProductIdsPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
@@ -36,9 +36,9 @@ class ProductActiveListingService
             Set<ProductId>> SET_COLLECTOR = Collectors.toSet();
 
     private final ProductActiveListingPort activeListingPort;
-    private final ProductSoldCountBulkLookupByIdsPort soldCountBulkLookupByIdsPort;
-    private final ProductStockCountBulkLookupByIdsPort stockCountBulkLookupByIdsPort;
-    private final ProductRatingBulkLookupByIdsPort ratingBulkLookupByIdsPort;
+    private final ProductSoldCountBulkLookupByProductIdsPort soldCountBulkLookupByProductIdsPort;
+    private final ProductStockCountBulkLookupByProductIdsPort stockCountBulkLookupByProductIdsPort;
+    private final ProductRatingBulkLookupByProductIdsPort ratingBulkLookupByProductIdsPort;
 
     private final ProductViewMapper mapper;
 
@@ -55,9 +55,9 @@ class ProductActiveListingService
                 .map(Product::getId)
                 .collect(SET_COLLECTOR);
 
-        final var soldCountById = this.soldCountBulkLookupByIdsPort.loadAllByIds(ids);
-        final var stockCountById = this.stockCountBulkLookupByIdsPort.loadAllByIds(ids);
-        final var ratingById = this.ratingBulkLookupByIdsPort.loadAllByIds(ids);
+        final var soldCountById = this.soldCountBulkLookupByProductIdsPort.loadAllByProductIds(ids);
+        final var stockCountById = this.stockCountBulkLookupByProductIdsPort.loadAllByProductIds(ids);
+        final var ratingById = this.ratingBulkLookupByProductIdsPort.loadAllByProductIds(ids);
 
         return page.map(p -> this.toView(
                 p,

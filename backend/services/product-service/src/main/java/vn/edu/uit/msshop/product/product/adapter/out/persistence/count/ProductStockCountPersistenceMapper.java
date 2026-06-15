@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductStockCo
 class ProductStockCountPersistenceMapper {
     public ProductStockCount toDomain(
             final ProductStockCountDocument doc) {
-        final var id = new ProductId(doc.getId());
+        final var id = new ProductId(doc.getProductId());
         final var value = new ProductStockCountValue(doc.getValue());
 
         return new ProductStockCount(id, value);

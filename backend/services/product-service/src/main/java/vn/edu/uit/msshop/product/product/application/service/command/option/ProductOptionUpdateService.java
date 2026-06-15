@@ -14,11 +14,11 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundEx
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionUpdateUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
@@ -32,9 +32,9 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 class ProductOptionUpdateService
         implements ProductOptionUpdateUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
-    private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;
-    private final ProductStockCountLookupByIdPort stockCountLookupByIdPort;
-    private final ProductRatingLookupByIdPort ratingLookupByIdPort;
+    private final ProductSoldCountLookupByProductIdPort soldCountLookupByProductIdPort;
+    private final ProductStockCountLookupByProductIdPort stockCountLookupByProductIdPort;
+    private final ProductRatingLookupByProductIdPort ratingLookupByProductIdPort;
     private final ProductUpdatePort updatePort;
 
     private final ProductEventPublicationPort eventPublicationPort;
@@ -64,9 +64,9 @@ class ProductOptionUpdateService
                 expectedVersion,
                 product.getVersion());
 
-        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(productId);
-        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(productId);
-        final var rating = this.ratingLookupByIdPort.loadByIdOrZero(productId);
+        final var soldCount = this.soldCountLookupByProductIdPort.loadByProductIdOrZero(productId);
+        final var stockCount = this.stockCountLookupByProductIdPort.loadByProductIdOrZero(productId);
+        final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(productId);
 
         final var next = ProductOptionUpdateService.applyChanges(
                 product,
