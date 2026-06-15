@@ -100,13 +100,12 @@ public class VariantQueryPersistenceAdapter
     }
 
     @Override
-    public List<Variant> loadAllSoftDeletedByIds(
-            final Collection<VariantId> ids) {
-        final var jpaIds = ids.stream()
+    public Map<VariantId, Variant> loadAllSoftDeletedByIds(
+            final Set<VariantId> ids) {
+        final var jpaIdList = ids.stream()
                 .map(VariantId::value)
                 .toList();
-        return this.repository.findAllByIdInAndDeletionTimeIsNotNull(jpaIds).stream()
-                .map(this.mapper::toDomain)
-                .toList();
+        final var docs = this.repository.findAllByIdInAndDeletionTimeIsNotNull(jpaIdList);
+        return this.mapper.toDomainMap(docs);
     }
 }

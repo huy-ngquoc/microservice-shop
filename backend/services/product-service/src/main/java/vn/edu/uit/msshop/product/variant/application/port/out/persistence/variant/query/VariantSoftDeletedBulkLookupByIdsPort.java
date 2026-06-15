@@ -1,12 +1,12 @@
 package vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
 public interface VariantSoftDeletedBulkLookupByIdsPort {
-    List<Variant> loadAllSoftDeletedByIds(
-            final Collection<VariantId> ids);
+    Map<VariantId, Variant> loadAllSoftDeletedByIds(
+            final Set<VariantId> idSet);
 }

@@ -37,10 +37,10 @@ class VariantBulkRestorationByIdsForProductService
                 .map(VariantId::new)
                 .collect(Collectors.toUnmodifiableSet());
 
-        final var variantList = this.softDeletedBulkLookupByIdsPort
+        final var variantById = this.softDeletedBulkLookupByIdsPort
                 .loadAllSoftDeletedByIds(variantIdSet);
 
-        final var next = variantList.stream()
+        final var next = variantById.values().stream()
                 .map(Variant::restored)
                 .toList();
         final var saved = this.bulkUpdatePort.updateAll(next);
