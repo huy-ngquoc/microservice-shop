@@ -11,7 +11,7 @@ class ProductSoldCountPersistenceMapper {
     public ProductSoldCount toDomain(
             final ProductSoldCountDocument entity) {
         final var id = new ProductId(entity.getProductId());
-        final var value = new ProductSoldCountValue(entity.getSoldCount());
+        final var value = new ProductSoldCountValue(entity.getValue());
 
         return new ProductSoldCount(id, value);
     }
