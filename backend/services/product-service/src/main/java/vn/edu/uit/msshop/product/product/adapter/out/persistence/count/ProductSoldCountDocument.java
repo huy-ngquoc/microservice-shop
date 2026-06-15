@@ -21,7 +21,7 @@ final class ProductSoldCountDocument {
     @EqualsAndHashCode.Include
     private final UUID productId;
 
-    private final int soldCount;
+    private final int value;
 
     private final Instant lastUpdatedTime;
 
@@ -31,7 +31,7 @@ final class ProductSoldCountDocument {
             final int value,
             final Instant lastUpdatedTime) {
         this.productId = productId;
-        this.soldCount = value;
+        this.value = value;
         this.lastUpdatedTime = lastUpdatedTime;
     }
 }

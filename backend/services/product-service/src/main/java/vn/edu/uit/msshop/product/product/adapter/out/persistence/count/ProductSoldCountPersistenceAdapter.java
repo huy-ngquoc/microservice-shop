@@ -84,7 +84,7 @@ class ProductSoldCountPersistenceAdapter
 
         final var query = new Query(Criteria.where("_id").is(jpaProductId));
         final var update = new Update()
-                .setOnInsert(ProductSoldCountDocument.Fields.soldCount, 0)
+                .setOnInsert(ProductSoldCountDocument.Fields.value, 0)
                 .setOnInsert(ProductSoldCountDocument.Fields.lastUpdatedTime, Instant.now());
 
         return this.upsertAndReturnDomain(query, update);
@@ -113,7 +113,7 @@ class ProductSoldCountPersistenceAdapter
 
             final var query = new Query(Criteria.where("_id").is(jpaProductId));
             final var update = new Update()
-                    .inc(ProductSoldCountDocument.Fields.soldCount, inc)
+                    .inc(ProductSoldCountDocument.Fields.value, inc)
                     .set(ProductSoldCountDocument.Fields.lastUpdatedTime, instantNow);
             bulkOps.upsert(query, update);
         }
@@ -145,9 +145,9 @@ class ProductSoldCountPersistenceAdapter
 
             final var query = new Query(
                     Criteria.where("_id").is(jpaProductId)
-                            .and(ProductSoldCountDocument.Fields.soldCount).gte(dec));
+                            .and(ProductSoldCountDocument.Fields.value).gte(dec));
             final var update = new Update()
-                    .inc(ProductSoldCountDocument.Fields.soldCount, -dec)
+                    .inc(ProductSoldCountDocument.Fields.value, -dec)
                     .set(ProductSoldCountDocument.Fields.lastUpdatedTime, instantNow);
             bulkOps.updateOne(query, update);
 
