@@ -9,17 +9,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountDecreaseForVariantsCommand;
-import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountDecreaseForVariantsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecrementPort;
+import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductSoldCountDecreaseForVariantsCommand;
+import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductSoldCountDecrementForVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkDecrementPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
 @RequiredArgsConstructor
-class ProductStockCountDecreaseForVariantsService
-        implements ProductStockCountDecreaseForVariantsUseCase {
+class ProductSoldCountDecrementForVariantsService
+        implements ProductSoldCountDecrementForVariantsUseCase {
 
-    private final ProductStockCountBulkDecrementPort bulkDecrementPort;
+    private final ProductSoldCountBulkDecrementPort bulkDecrementPort;
 
     @Override
     @Transactional
@@ -33,7 +33,7 @@ class ProductStockCountDecreaseForVariantsService
                             allEntries = true)
             })
     public void decrease(
-            ProductStockCountDecreaseForVariantsCommand cmd) {
+            ProductSoldCountDecreaseForVariantsCommand cmd) {
         final var incrementByProductId = HashMap.<ProductId, Integer>newHashMap(
                 cmd.decrementById().size());
 

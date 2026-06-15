@@ -10,14 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountIncreaseForVariantsCommand;
-import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountIncreaseForVariantsUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountIncrementForVariantsUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkIncrementPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
 @RequiredArgsConstructor
-class ProductStockCountIncreaseForVariantsService
-        implements ProductStockCountIncreaseForVariantsUseCase {
+class ProductStockCountIncrementForVariantsService
+        implements ProductStockCountIncrementForVariantsUseCase {
 
     private final ProductStockCountBulkIncrementPort bulkIncrementPort;
 
