@@ -88,6 +88,7 @@ payos:
     api-key: ${PAYOS_API_KEY}
     checksum-key: ${PAYOS_CHECKSUM_KEY} 
 app:
+    payment_link_lifetime: 1
     observability:
         tracing:
             service-name: ${spring.application.name}

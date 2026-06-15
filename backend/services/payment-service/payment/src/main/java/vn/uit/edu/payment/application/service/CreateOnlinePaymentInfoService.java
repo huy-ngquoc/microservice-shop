@@ -2,6 +2,7 @@ package vn.uit.edu.payment.application.service;
 
 import java.time.Instant;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,8 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
     private final PayOS payOS;
     private static final String RETURN_URL = "";
     private static final String CANCEL_URL = "";
-    private static final long PAYMENT_LINK_LIFETIME = 15 * 60;
+    @Value("#{${app.payment_link_lifetime} * 60}")
+private long paymentLinkLifetime;
     private final PublishPaymentEventPort publishEventPort;
     private final PaymentLinkCreatedRepository paymentLinkCreatedRepo;
 
@@ -51,7 +53,7 @@ public class CreateOnlinePaymentInfoService implements CreateOnlinePaymentInfoUs
                 .description("Payment")
                 .returnUrl(RETURN_URL)
                 .cancelUrl(CANCEL_URL)
-                .expiredAt((System.currentTimeMillis() / 1000) + PAYMENT_LINK_LIFETIME)
+                .expiredAt((System.currentTimeMillis() / 1000) +paymentLinkLifetime)
                 .build();
         var paymentLink = payOS.paymentRequests().create(request);
 

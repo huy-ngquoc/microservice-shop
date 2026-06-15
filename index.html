@@ -18,7 +18,7 @@
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
             // Subscribe vào topic (Thay "binh123" bằng ID bạn đang test)
-            stompClient.subscribe('/topic/order/0c69ac8c-7a0a-4454-9158-57b8f6316ee6', function (notification) {
+            stompClient.subscribe('/topic/order/e350e62b-9abe-403f-b352-6a0975216e62', function (notification) {
                 var msg = JSON.parse(notification.body);
                 var node = document.createElement("P");
                 node.innerHTML = "<b>[MỚI]</b> Đơn hàng #" + msg.orderId + " trạng thái: " + msg.emailType.value;
