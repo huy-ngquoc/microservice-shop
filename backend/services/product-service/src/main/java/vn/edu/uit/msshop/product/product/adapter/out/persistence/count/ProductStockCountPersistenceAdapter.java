@@ -1,9 +1,9 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence.count;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -65,12 +65,12 @@ class ProductStockCountPersistenceAdapter
 
     @Override
     public Map<ProductId, ProductStockCount> loadAllByProductIds(
-            final Collection<ProductId> productIdCollection) {
-        if (productIdCollection.isEmpty()) {
+            final Set<ProductId> productIdSet) {
+        if (productIdSet.isEmpty()) {
             return Map.of();
         }
 
-        final var jpaProductId = productIdCollection.stream()
+        final var jpaProductId = productIdSet.stream()
                 .map(ProductId::value)
                 .collect(Collectors.toSet());
 
