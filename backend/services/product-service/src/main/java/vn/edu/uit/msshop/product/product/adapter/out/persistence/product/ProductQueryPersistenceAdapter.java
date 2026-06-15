@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.listing.ProductActiveListingPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.listing.ProductSoftDeletedListingPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveBulkLookupByIds;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
@@ -25,7 +25,7 @@ class ProductQueryPersistenceAdapter
         ProductActiveListingPort,
         ProductSoftDeletedListingPort,
         ProductActiveLookupByIdPort,
-        ProductActiveBulkLookupByIds,
+        ProductActiveBulkLookupByIdsPort,
         ProductSoftDeletedLookupByIdPort {
     private final ProductMongoRepository repository;
     private final ProductPersistenceMapper mapper;
