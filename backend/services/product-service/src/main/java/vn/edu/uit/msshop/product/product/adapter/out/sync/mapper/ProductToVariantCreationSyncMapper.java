@@ -26,14 +26,9 @@ public class ProductToVariantCreationSyncMapper {
             final ProductName name,
             final NewProductVariants newVariants) {
         final var newVariantList = newVariants.values();
-        final var amountVariant = newVariantList.size();
-        final var newVariantDataList = new ArrayList<NewVariantForNewProductData>(
-                amountVariant);
-
-        for (final var variant : newVariantList) {
-            final var newVariantData = ProductToVariantCreationSyncMapper.toNewVariantData(variant);
-            newVariantDataList.add(newVariantData);
-        }
+        final var newVariantDataList = newVariantList.stream()
+                .map(ProductToVariantCreationSyncMapper::toNewVariantData)
+                .toList();
 
         return new VariantBulkCreationForNewProductCommand(
                 id.value(),
@@ -55,6 +50,7 @@ public class ProductToVariantCreationSyncMapper {
                 variant.price().value(),
                 variant.traits().unwrap(),
                 variant.targets().unwrap());
+
     }
 
     private static ProductVariant toProductVariant(
