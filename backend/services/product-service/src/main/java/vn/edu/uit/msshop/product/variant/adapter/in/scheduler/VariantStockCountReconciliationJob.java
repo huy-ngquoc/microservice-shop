@@ -1,4 +1,4 @@
-package vn.edu.uit.msshop.product.variant.adapter.in.scheduled;
+package vn.edu.uit.msshop.product.variant.adapter.in.scheduler;
 
 import java.time.Duration;
 import java.time.Instant;
