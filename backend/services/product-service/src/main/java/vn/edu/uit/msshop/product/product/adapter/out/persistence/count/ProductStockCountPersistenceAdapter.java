@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountDeletionByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkIncreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkIncrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountInitializationByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
@@ -35,9 +35,10 @@ class ProductStockCountPersistenceAdapter
         ProductStockCountLookupByIdPort,
         ProductStockCountBulkLookupByIdsPort,
         ProductStockCountInitializationByIdPort,
-        ProductStockCountBulkIncreationPort,
-        ProductStockCountBulkDecreationPort,
+        ProductStockCountBulkIncrementPort,
+        ProductStockCountBulkDecrementPort,
         ProductStockCountDeletionByIdPort {
+
     private static final Collector<
             ProductStockCount,
             ?,

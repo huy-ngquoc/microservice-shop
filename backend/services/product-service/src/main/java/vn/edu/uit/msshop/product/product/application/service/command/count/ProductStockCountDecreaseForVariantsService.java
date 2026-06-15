@@ -11,14 +11,15 @@ import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductStockCountDecreaseForVariantsCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductStockCountDecreaseForVariantsUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecreationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecrementPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
 @Service
 @RequiredArgsConstructor
 class ProductStockCountDecreaseForVariantsService
         implements ProductStockCountDecreaseForVariantsUseCase {
-    private final ProductStockCountBulkDecreationPort bulkDecreationPort;
+
+    private final ProductStockCountBulkDecrementPort bulkDecrementPort;
 
     @Override
     @Transactional
@@ -43,6 +44,6 @@ class ProductStockCountDecreaseForVariantsService
             incrementByProductId.put(productId, decrement);
         }
 
-        this.bulkDecreationPort.decreaseAll(incrementByProductId);
+        this.bulkDecrementPort.decreaseAll(incrementByProductId);
     }
 }
