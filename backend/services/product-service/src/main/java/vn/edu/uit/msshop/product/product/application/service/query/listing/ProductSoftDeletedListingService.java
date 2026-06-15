@@ -1,8 +1,6 @@
 package vn.edu.uit.msshop.product.product.application.service.query.listing;
 
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -28,10 +26,6 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 @RequiredArgsConstructor
 class ProductSoftDeletedListingService
         implements ProductSoftDeletedListingUseCase {
-    private static final Collector<
-            ProductId,
-            ?,
-            Set<ProductId>> SET_COLLECTOR = Collectors.toSet();
 
     private final ProductSoftDeletedListingPort softDeletedListingPort;
     private final ProductSoldCountBulkLookupByProductIdsPort soldCountBulkLookupByProductIdsPort;
@@ -49,7 +43,7 @@ class ProductSoftDeletedListingService
 
         final var productIdSet = page.items().stream()
                 .map(Product::getId)
-                .collect(SET_COLLECTOR);
+                .collect(Collectors.toUnmodifiableSet());
 
         final var soldCountByProductId = this.soldCountBulkLookupByProductIdsPort.loadAllByProductIds(productIdSet);
         final var stockCountByProductId = this.stockCountBulkLookupByProductIdsPort.loadAllByProductIds(productIdSet);
