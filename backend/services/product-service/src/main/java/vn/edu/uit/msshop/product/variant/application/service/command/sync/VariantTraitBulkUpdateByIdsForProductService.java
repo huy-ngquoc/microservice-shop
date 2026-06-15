@@ -66,7 +66,7 @@ class VariantTraitBulkUpdateByIdsForProductService
 
         final var saved = this.bulkUpdatePort.updateAll(next);
         for (final var variant : saved) {
-            final var event = new VariantInfoUpdatedEvent(variant.getId());
+            final var event = VariantInfoUpdatedEvent.of(variant);
             this.eventPublicationPort.publishEvent(event);
         }
     }

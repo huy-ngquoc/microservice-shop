@@ -106,7 +106,7 @@ class VariantInfoUpdateByIdService
 
         final var saved = this.updatePort.update(next);
 
-        final var event = new VariantInfoUpdatedEvent(saved.getId());
+        final var event = VariantInfoUpdatedEvent.of(saved);
         this.eventPublicationPort.publishEvent(event);
 
         this.updateInProductPort.updateInProduct(saved);
