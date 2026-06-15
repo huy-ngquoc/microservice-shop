@@ -15,11 +15,11 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundEx
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantBulkRemovalUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionByIdsPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
@@ -36,9 +36,9 @@ class ProductVariantBulkRemovalService
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductUpdatePort updatePort;
     private final ProductVariantBulkSoftDeletionByIdsPort variantBulkSoftDeletionByIdsPort;
-    private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;
-    private final ProductStockCountLookupByIdPort stockCountLookupByIdPort;
-    private final ProductRatingLookupByIdPort ratingLookupByIdPort;
+    private final ProductSoldCountLookupByProductIdPort soldCountLookupByProductIdPort;
+    private final ProductStockCountLookupByProductIdPort stockCountLookupByProductIdPort;
+    private final ProductRatingLookupByProductIdPort ratingLookupByProductIdPort;
 
     private final ProductViewMapper mapper;
     private final ProductEventPublicationPort eventPort;
@@ -94,9 +94,9 @@ class ProductVariantBulkRemovalService
         final var savedProduct = this.updatePort.update(next);
         final var savedProductId = savedProduct.getId();
 
-        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(savedProductId);
-        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(savedProductId);
-        final var rating = this.ratingLookupByIdPort.loadByIdOrZero(savedProductId);
+        final var soldCount = this.soldCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
+        final var stockCount = this.stockCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
+        final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
 
         final var event = new ProductInfoUpdatedEvent(savedProductId);
         this.eventPort.publishEvent(event);

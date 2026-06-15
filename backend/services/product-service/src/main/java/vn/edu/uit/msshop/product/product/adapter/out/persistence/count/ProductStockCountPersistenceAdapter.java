@@ -19,11 +19,11 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecrementPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountDeletionByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountDeletionByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkIncrementPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountInitializationByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountBulkLookupByIdsPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountInitializationByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountBulkLookupByProductIdsPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductStockCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
@@ -32,18 +32,18 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 @Slf4j
 class ProductStockCountPersistenceAdapter
         implements
-        ProductStockCountLookupByIdPort,
-        ProductStockCountBulkLookupByIdsPort,
-        ProductStockCountInitializationByIdPort,
+        ProductStockCountLookupByProductIdPort,
+        ProductStockCountBulkLookupByProductIdsPort,
+        ProductStockCountInitializationByProductIdPort,
         ProductStockCountBulkIncrementPort,
         ProductStockCountBulkDecrementPort,
-        ProductStockCountDeletionByIdPort {
+        ProductStockCountDeletionByProductIdPort {
 
     private static final Collector<
             ProductStockCount,
             ?,
             Map<ProductId, ProductStockCount>> COLLECTOR = Collectors.toUnmodifiableMap(
-                    ProductStockCount::getId,
+                    ProductStockCount::getProductId,
                     Function.identity(),
                     (
                             existing,
@@ -54,38 +54,38 @@ class ProductStockCountPersistenceAdapter
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public ProductStockCount loadByIdOrZero(
-            final ProductId id) {
-        final var jpaId = id.value();
+    public ProductStockCount loadByProductIdOrZero(
+            final ProductId productId) {
+        final var jpaProductId = productId.value();
 
-        return this.repository.findById(jpaId)
+        return this.repository.findById(jpaProductId)
                 .map(this.mapper::toDomain)
-                .orElseGet(() -> ProductStockCount.zero(id));
+                .orElseGet(() -> ProductStockCount.zero(productId));
     }
 
     @Override
-    public Map<ProductId, ProductStockCount> loadAllByIds(
-            final Collection<ProductId> ids) {
-        if (ids.isEmpty()) {
+    public Map<ProductId, ProductStockCount> loadAllByProductIds(
+            final Collection<ProductId> productIdCollection) {
+        if (productIdCollection.isEmpty()) {
             return Map.of();
         }
 
-        final var jpaIds = ids.stream()
+        final var jpaProductId = productIdCollection.stream()
                 .map(ProductId::value)
                 .collect(Collectors.toSet());
 
-        return this.repository.findAllById(jpaIds)
+        return this.repository.findAllById(jpaProductId)
                 .stream()
                 .map(this.mapper::toDomain)
                 .collect(ProductStockCountPersistenceAdapter.COLLECTOR);
     }
 
     @Override
-    public ProductStockCount initializeById(
-            final ProductId id) {
-        final var jpaId = id.value();
+    public ProductStockCount initializeByProductId(
+            final ProductId productId) {
+        final var jpaProductId = productId.value();
 
-        final var query = new Query(Criteria.where("_id").is(jpaId));
+        final var query = new Query(Criteria.where("_id").is(jpaProductId));
         final var update = new Update()
                 .setOnInsert(ProductStockCountDocument.Fields.value, 0)
                 .setOnInsert(ProductStockCountDocument.Fields.lastUpdatedTime, Instant.now());
@@ -106,13 +106,17 @@ class ProductStockCountPersistenceAdapter
                 ProductStockCountDocument.class);
 
         for (final var entry : incrementByProductId.entrySet()) {
-            final var id = entry.getKey();
-            final var jpaId = id.value();
-            final var increment = entry.getValue();
+            final var inc = entry.getValue();
+            if (inc <= 0) {
+                continue;
+            }
 
-            final var query = new Query(Criteria.where("_id").is(jpaId));
+            final var productId = entry.getKey();
+            final var jpaProductId = productId.value();
+
+            final var query = new Query(Criteria.where("_id").is(jpaProductId));
             final var update = new Update()
-                    .inc(ProductStockCountDocument.Fields.value, increment)
+                    .inc(ProductStockCountDocument.Fields.value, inc)
                     .set(ProductStockCountDocument.Fields.lastUpdatedTime, instantNow);
 
             bulkOps.upsert(query, update);
@@ -140,11 +144,11 @@ class ProductStockCountPersistenceAdapter
                 continue;
             }
 
-            final var id = entry.getKey();
-            final var jpaId = id.value();
+            final var productId = entry.getKey();
+            final var jpaProductId = productId.value();
 
             final var query = new Query(
-                    Criteria.where("_id").is(jpaId)
+                    Criteria.where("_id").is(jpaProductId)
                             .and(ProductStockCountDocument.Fields.value).gte(dec));
             final var update = new Update()
                     .inc(ProductStockCountDocument.Fields.value, -dec)
@@ -174,10 +178,10 @@ class ProductStockCountPersistenceAdapter
     }
 
     @Override
-    public void deleteById(
-            final ProductId id) {
-        final var jpaId = id.value();
-        this.repository.deleteById(jpaId);
+    public void deleteByProductId(
+            final ProductId productId) {
+        final var jpaProductId = productId.value();
+        this.repository.deleteById(jpaProductId);
     }
 
     private ProductStockCount upsertAndReturnDomain(

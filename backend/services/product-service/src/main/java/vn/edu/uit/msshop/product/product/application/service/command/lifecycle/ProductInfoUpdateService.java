@@ -16,11 +16,11 @@ import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundEx
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductInfoUpdateUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantNameBulkUpdateForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductBrandExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
@@ -39,9 +39,9 @@ import vn.edu.uit.msshop.shared.application.dto.Change;
 class ProductInfoUpdateService
         implements ProductInfoUpdateUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
-    private final ProductSoldCountLookupByIdPort soldCountLookupByIdPort;
-    private final ProductStockCountLookupByIdPort stockCountLookupByIdPort;
-    private final ProductRatingLookupByIdPort ratingLookupByIdPort;
+    private final ProductSoldCountLookupByProductIdPort soldCountLookupByProductIdPort;
+    private final ProductStockCountLookupByProductIdPort stockCountLookupByProductIdPort;
+    private final ProductRatingLookupByProductIdPort ratingLookupByProductIdPort;
     private final ProductUpdatePort updatePort;
     private final ProductCategoryExistenceCheckByIdPort categoryExistenceCheckByIdPort;
     private final ProductBrandExistenceCheckByIdPort brandExistenceCheckByIdPort;
@@ -79,9 +79,9 @@ class ProductInfoUpdateService
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        final var soldCount = this.soldCountLookupByIdPort.loadByIdOrZero(productId);
-        final var stockCount = this.stockCountLookupByIdPort.loadByIdOrZero(productId);
-        final var rating = this.ratingLookupByIdPort.loadByIdOrZero(productId);
+        final var soldCount = this.soldCountLookupByProductIdPort.loadByProductIdOrZero(productId);
+        final var stockCount = this.stockCountLookupByProductIdPort.loadByProductIdOrZero(productId);
+        final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(productId);
 
         final var nameSet = nameChange.getSet();
         final var categoryIdSet = categoryIdChange.getSet();

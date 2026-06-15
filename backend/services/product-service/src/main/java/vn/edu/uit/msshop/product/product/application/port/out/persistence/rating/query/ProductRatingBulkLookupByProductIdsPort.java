@@ -1,9 +1,12 @@
 package vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query;
 
+import java.util.Map;
+import java.util.Set;
+
 import vn.edu.uit.msshop.product.product.domain.model.ProductRating;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 
-public interface ProductRatingLookupByIdPort {
-    ProductRating loadByIdOrZero(
-            final ProductId id);
+public interface ProductRatingBulkLookupByProductIdsPort {
+    Map<ProductId, ProductRating> loadAllByProductIds(
+            final Set<ProductId> productIdSet);
 }

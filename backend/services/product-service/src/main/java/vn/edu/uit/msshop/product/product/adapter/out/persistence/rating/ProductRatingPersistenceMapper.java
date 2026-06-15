@@ -11,7 +11,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductRatingT
 class ProductRatingPersistenceMapper {
     public ProductRating toDomain(
             final ProductRatingDocument entity) {
-        final var id = new ProductId(entity.getId());
+        final var id = new ProductId(entity.getProductId());
 
         final var total = new ProductRatingTotal(entity.getTotal());
         final var amount = new ProductRatingAmount(entity.getAmount());
