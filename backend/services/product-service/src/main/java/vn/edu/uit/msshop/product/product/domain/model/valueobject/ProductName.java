@@ -15,6 +15,10 @@ public record ProductName(
             throw new DomainException("Product name is null");
         }
 
+        if (value.length() > MAX_RAW_LENGTH) {
+            throw new DomainException("Product name wildly exceeds acceptable technical bounds");
+        }
+
         value = Domains.getWhitespacePattern().matcher(value.trim()).replaceAll(" ");
 
         if (value.isBlank()) {
