@@ -29,11 +29,16 @@ public record ProductVariants(
             throw new DomainException("Variants CANNOT exceed " + MAX_AMOUNT);
         }
 
+        final var uniqueIdSet = HashSet.<ProductVariantId>newHashSet(values.size());
         final var uniqueCombinationSet = HashSet.<List<String>>newHashSet(values.size());
 
         for (final var variant : values) {
             if (variant == null) {
                 throw new DomainException("Variant in list CANNOT be null");
+            }
+
+            if (!uniqueIdSet.add(variant.id())) {
+                throw new DomainException("Duplicate variant ID found: " + variant.id().value());
             }
 
             final var normalizedTraitValues = variant.traits().unwrapNormalized();
