@@ -16,8 +16,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.produc
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeletedEvent;
-import vn.edu.uit.msshop.product.product.domain.model.Product;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductDeletionTime;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
@@ -55,15 +53,7 @@ class ProductSoftDeletionService
                 expectedVersion,
                 product.getVersion());
 
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                product.getConfiguration(),
-                product.getImageKeys(),
-                product.getVersion(),
-                ProductDeletionTime.now());
+        final var next = product.softDeleted();
         final var saved = this.updatePort.update(next);
 
         this.variantBulkSoftDeletionForProductPort.deleteByProductId(saved.getId());

@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.product.application.service.command.variant;
 
-import java.util.ArrayList;
-
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -23,8 +21,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionByIdsPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
-import vn.edu.uit.msshop.product.product.domain.model.Product;
-import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
@@ -66,30 +62,11 @@ class ProductVariantBulkRemovalService
                 expectedVersion,
                 product.getVersion());
 
-        final var variantIdList = new ArrayList<ProductVariantId>(cmd.variantIdList().size());
-        for (final var variantId : cmd.variantIdList()) {
-            final var productVariantId = new ProductVariantId(variantId);
-            variantIdList.add(productVariantId);
-        }
+        final var variantIdList = cmd.variantIdList().stream()
+                .map(ProductVariantId::new)
+                .toList();
 
-        // FIXME: O(n^2)?
-        var nextVariants = product.getVariants();
-        for (final var variantId : variantIdList) {
-            nextVariants = nextVariants.removeById(variantId);
-        }
-
-        final var newConfig = new ProductConfiguration(
-                product.getOptions(),
-                nextVariants);
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                newConfig,
-                product.getImageKeys(),
-                product.getVersion(),
-                product.getDeletionTime());
+        final var next = product.removeVariantsByIds(variantIdList);
 
         final var savedProduct = this.updatePort.update(next);
         final var savedProductId = savedProduct.getId();

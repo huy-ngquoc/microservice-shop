@@ -15,7 +15,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.produc
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkRestorationByIdsPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductRestoredEvent;
-import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
@@ -48,15 +47,7 @@ class ProductRestorationService
                 expectedVersion,
                 product.getVersion());
 
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                product.getConfiguration(),
-                product.getImageKeys(),
-                product.getVersion(),
-                null);
+        final var next = product.restored();
         final var saved = this.updatePort.update(next);
 
         final var manifestIds = saved.getVariants().values().stream()
