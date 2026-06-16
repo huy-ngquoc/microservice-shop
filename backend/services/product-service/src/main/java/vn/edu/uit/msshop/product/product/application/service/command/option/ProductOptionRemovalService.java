@@ -67,13 +67,16 @@ class ProductOptionRemovalService
                 expectedVersion,
                 product.getVersion());
 
-        final var next = this.applyOptionRemoval(
+        ProductOptionRemovalService.ensureOptionRemovable(
                 product,
                 cmd.optionIndex());
 
+        final var next = product.removeOptionAt(cmd.optionIndex());
         final var savedProduct = this.updatePort.update(next);
-        final var savedProductId = savedProduct.getId();
 
+        this.syncVariantTraits(next.getVariants());
+
+        final var savedProductId = savedProduct.getId();
         final var soldCount = this.soldCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var stockCount = this.stockCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
@@ -86,15 +89,6 @@ class ProductOptionRemovalService
                 soldCount,
                 stockCount,
                 rating);
-    }
-
-    private Product applyOptionRemoval(
-            final Product product,
-            final int optionIndex) {
-        ProductOptionRemovalService.ensureOptionRemovable(product, optionIndex);
-        final var next = product.removeOptionAt(optionIndex);
-        this.syncVariantTraits(next.getVariants());
-        return next;
     }
 
     private static void ensureOptionRemovable(
