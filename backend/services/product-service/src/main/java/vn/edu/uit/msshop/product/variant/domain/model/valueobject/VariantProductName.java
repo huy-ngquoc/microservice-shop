@@ -15,6 +15,10 @@ public record VariantProductName(
             throw new DomainException("Variant Product name is null");
         }
 
+        if (value.length() > MAX_RAW_LENGTH) {
+            throw new DomainException("Variant Product name wildly exceeds acceptable technical bounds");
+        }
+
         value = Domains.getWhitespacePattern()
                 .matcher(value.trim())
                 .replaceAll(" ");
