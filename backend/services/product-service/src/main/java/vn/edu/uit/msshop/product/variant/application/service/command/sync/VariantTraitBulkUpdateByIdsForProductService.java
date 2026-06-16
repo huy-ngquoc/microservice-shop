@@ -55,7 +55,8 @@ class VariantTraitBulkUpdateByIdsForProductService
         if (variantById.size() != variantIdSet.size()) {
             final var missing = new HashSet<>(variantIdSet);
             missing.removeAll(variantById.keySet());
-            throw new BusinessRuleException("Cannot update traits; variants not found: " + missing);
+            throw new IllegalStateException(
+                    "Product/variant data inconsistency; variants not found for trait sync: " + missing);
         }
 
         final var amountVariants = variantById.size();
