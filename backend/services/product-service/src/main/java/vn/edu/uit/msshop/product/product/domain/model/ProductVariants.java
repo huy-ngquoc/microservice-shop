@@ -34,9 +34,7 @@ public record ProductVariants(
                 throw new DomainException("Variant in list CANNOT be null");
             }
 
-            final var normalizedTraitValues = variant.traits().values().stream().map(ProductVariantTrait::value)
-                    .map(String::toLowerCase).toList();
-
+            final var normalizedTraitValues = variant.traits().unwrapNormalized();
             if (!uniqueCombinationSet.add(normalizedTraitValues)) {
                 throw new DomainException("Duplicate variant traits combination found: " + variant.traits());
             }
@@ -145,5 +143,24 @@ public record ProductVariants(
                         v.traits().add(trait)))
                 .toList();
         return new ProductVariants(newValues);
+    }
+
+    public boolean collapsesOnTraitRemovalAt(
+            final int traitIndex) {
+        final var seen = HashSet.<List<String>>newHashSet(this.values.size());
+        for (final var variant : this.values) {
+            final var normalizedRawTraitList = new ArrayList<>(
+                    variant.traits().unwrapNormalized());
+
+            if ((traitIndex < 0) || (traitIndex >= normalizedRawTraitList.size())) {
+                throw new DomainException("Trait index out of bounds: " + traitIndex);
+            }
+            normalizedRawTraitList.remove(traitIndex);
+
+            if (!seen.add(normalizedRawTraitList)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
