@@ -20,7 +20,7 @@ public record ProductOptions(
             throw new DomainException("Product options list CANNOT be null");
         }
 
-        if (values.size() > MAX_AMOUNT) {
+        if (values.size() > ProductOptions.MAX_AMOUNT) {
             throw new DomainException("Product can have maximum " + MAX_AMOUNT + " options");
         }
 
@@ -59,6 +59,24 @@ public record ProductOptions(
 
     public int size() {
         return values.size();
+    }
+
+    public boolean isFull() {
+        return this.values.size() >= ProductOptions.MAX_AMOUNT;
+    }
+
+    public boolean isValidIndex(
+            final int index) {
+        return (index >= 0) && (index < this.values.size());
+    }
+
+    public boolean containsIgnoreCase(
+            final ProductOption option) {
+        final var target = option.value().toLowerCase(Locale.ROOT);
+        return this.values.stream()
+                .anyMatch(existing -> existing.value()
+                        .toLowerCase(Locale.ROOT)
+                        .equals(target));
     }
 
     public ProductOptions add(

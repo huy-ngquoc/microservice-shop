@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
@@ -162,5 +164,45 @@ public record ProductVariants(
             }
         }
         return false;
+    }
+
+    public boolean appendTraitCollides(
+            final ProductVariantTrait trait) {
+        final var normalizedNewValue = trait.value().toLowerCase(Locale.ROOT);
+        for (final var variant : this.values) {
+            if (variant.traits().unwrapNormalized().contains(normalizedNewValue)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean combinationExists(
+            final ProductVariantTraits traits) {
+        final var target = traits.unwrapNormalized();
+        for (final var variant : this.values) {
+            if (variant.traits().unwrapNormalized().equals(target)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsAllIds(
+            final Collection<ProductVariantId> ids) {
+        final var presentIds = HashSet.<ProductVariantId>newHashSet(this.values.size());
+        for (final var variant : this.values) {
+            presentIds.add(variant.id());
+        }
+        return presentIds.containsAll(ids);
+    }
+
+    public boolean removingByIdsLeavesEmpty(
+            final Collection<ProductVariantId> idCollection) {
+        final var idSetToRemove = Set.copyOf(idCollection);
+        final var remaining = this.values.stream()
+                .filter(variant -> !idSetToRemove.contains(variant.id()))
+                .count();
+        return remaining == 0;
     }
 }
