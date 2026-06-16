@@ -94,6 +94,9 @@ class ProductOptionRemovalService
     private static void ensureOptionRemovable(
             final Product product,
             final int optionIndex) {
+        if (!product.getOptions().isValidIndex(optionIndex)) {
+            throw new BusinessRuleException("Option index out of bounds: " + optionIndex);
+        }
         if (product.getVariants().collapsesOnTraitRemovalAt(optionIndex)) {
             throw new BusinessRuleException(
                     "Cannot remove this option because it would merge multiple variants into one; "
