@@ -1,9 +1,6 @@
 package vn.edu.uit.msshop.product.product.application.service.command.option;
 
 import java.util.HashMap;
-import java.util.List;
-
-import org.jspecify.annotations.Nullable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -22,21 +19,13 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkCreationPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
-import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
-import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
-import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariant;
-import vn.edu.uit.msshop.product.product.domain.model.creation.NewProductVariants;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantPrice;
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTargets;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
@@ -47,8 +36,6 @@ class ProductOptionRemovalService
         implements ProductOptionRemovalUseCase {
     private final ProductActiveLookupByIdPort activeLookupById;
     private final ProductUpdatePort updatePort;
-    private final ProductVariantBulkSoftDeletionForProductPort variantBulkSoftDeletionForProductPort;
-    private final ProductVariantBulkCreationPort variantBulkCreationPort;
     private final ProductVariantTraitBulkUpdatePort variantTraitBulkUpdatePort;
     private final ProductSoldCountLookupByProductIdPort soldCountLookupByProductIdPort;
     private final ProductStockCountLookupByProductIdPort stockCountLookupByProductIdPort;
@@ -71,7 +58,6 @@ class ProductOptionRemovalService
     public ProductView remove(
             final ProductOptionRemovalCommand cmd) {
         final var productId = new ProductId(cmd.productId());
-        final var defaultPrice = ProductPrice.ofNullable(cmd.defaultPrice());
         final var expectedVersion = new ProductVersion(cmd.productVersion());
 
         final var product = this.activeLookupById.loadById(productId)
@@ -83,8 +69,7 @@ class ProductOptionRemovalService
 
         final var next = this.applyOptionRemoval(
                 product,
-                cmd.optionIndex(),
-                defaultPrice);
+                cmd.optionIndex());
 
         final var savedProduct = this.updatePort.update(next);
         final var savedProductId = savedProduct.getId();
@@ -103,54 +88,34 @@ class ProductOptionRemovalService
                 rating);
     }
 
-    // FIXME: bug when optionsSize == 1
     private Product applyOptionRemoval(
             final Product product,
-            final int optionIndex,
-            @Nullable
-            final ProductPrice defaultPrice) {
-        final var optionsSize = product.getOptions().size();
+            final int optionIndex) {
+        ProductOptionRemovalService.ensureOptionRemovable(product, optionIndex);
+        final var next = product.removeOptionAt(optionIndex);
+        this.syncVariantTraits(next.getVariants());
+        return next;
+    }
 
-        if (optionsSize <= 0) {
-            throw new BusinessRuleException("Product has no options to remove");
+    private static void ensureOptionRemovable(
+            final Product product,
+            final int optionIndex) {
+        if (product.getVariants().collapsesOnTraitRemovalAt(optionIndex)) {
+            throw new BusinessRuleException(
+                    "Cannot remove this option because it would merge multiple variants into one; "
+                            + "remove the duplicate variations first");
         }
+    }
 
-        if (optionsSize > 1) {
-            final var next = product.removeOptionAt(optionIndex);
-            final var newVariants = next.getVariants();
+    private void syncVariantTraits(
+            final ProductVariants variants) {
+        final var newTraitsMap = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(variants.size());
+        for (final var variant : variants.values()) {
+            final var variantId = variant.id();
+            final var variantTraits = variant.traits();
 
-            final var newTraitsMap = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(
-                    newVariants.size());
-            for (final var variant : newVariants.values()) {
-                final var variantId = variant.id();
-                final var variantTraits = variant.traits();
-
-                newTraitsMap.put(variantId, variantTraits);
-            }
-            this.variantTraitBulkUpdatePort.updateTraitsByIds(newTraitsMap);
-
-            return next;
+            newTraitsMap.put(variantId, variantTraits);
         }
-
-        if (defaultPrice == null) {
-            throw new BusinessRuleException("Default price is required when removing the last option");
-        }
-
-        final var productId = product.getId();
-        this.variantBulkSoftDeletionForProductPort.deleteByProductId(productId);
-
-        final var newVariant = new NewProductVariant(
-                new ProductVariantPrice(defaultPrice.value()),
-                ProductVariantTraits.empty(),
-                ProductVariantTargets.empty());
-        final var createdVariants = this.variantBulkCreationPort.create(
-                productId,
-                product.getName(),
-                new NewProductVariants(List.of(newVariant)));
-        final var simpleConfig = new ProductConfiguration(
-                ProductOptions.empty(),
-                createdVariants);
-
-        return product.changeConfiguration(simpleConfig);
+        this.variantTraitBulkUpdatePort.updateTraitsByIds(newTraitsMap);
     }
 }
