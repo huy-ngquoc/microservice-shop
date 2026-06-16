@@ -2,6 +2,7 @@ package vn.edu.uit.msshop.product.variant.application.service.command.sync;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -49,9 +50,15 @@ class VariantTraitBulkUpdateByIdsForProductService
                 .toNewTraitsById(cmd.traitListById());
 
         final var variantIdSet = newTraitsById.keySet();
-        final var amountVariants = variantIdSet.size();
         final var variantById = this.activeBulkLookupByIdsPort.loadAllByIds(variantIdSet);
 
+        if (variantById.size() != variantIdSet.size()) {
+            final var missing = new HashSet<>(variantIdSet);
+            missing.removeAll(variantById.keySet());
+            throw new BusinessRuleException("Cannot update traits; variants not found: " + missing);
+        }
+
+        final var amountVariants = variantById.size();
         final var next = new ArrayList<Variant>(amountVariants);
         for (final var variant : variantById.values()) {
             final var variantId = variant.getId();
