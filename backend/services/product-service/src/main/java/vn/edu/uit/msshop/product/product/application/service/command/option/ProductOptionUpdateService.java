@@ -22,7 +22,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
-import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
@@ -103,18 +102,8 @@ class ProductOptionUpdateService
             return null;
         }
 
-        final var newOptions = currentOptions.replaceAt(optionIndex, newOption);
-
-        final var configuration = new ProductConfiguration(newOptions, current.getVariants());
-
-        return new Product(
-                current.getId(),
-                current.getName(),
-                current.getCategoryId(),
-                current.getBrandId(),
-                configuration,
-                current.getImageKeys(),
-                current.getVersion(),
-                current.getDeletionTime());
+        return current.replaceOptionAt(
+                optionIndex,
+                newOption);
     }
 }

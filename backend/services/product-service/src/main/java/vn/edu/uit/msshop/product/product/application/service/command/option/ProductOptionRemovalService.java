@@ -81,19 +81,10 @@ class ProductOptionRemovalService
                 expectedVersion,
                 product.getVersion());
 
-        final var newConfiguration = this.removeOptionFromConfiguration(
+        final var next = this.applyOptionRemoval(
                 product,
                 cmd.optionIndex(),
                 defaultPrice);
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                newConfiguration,
-                product.getImageKeys(),
-                product.getVersion(),
-                product.getDeletionTime());
 
         final var savedProduct = this.updatePort.update(next);
         final var savedProductId = savedProduct.getId();
@@ -102,7 +93,8 @@ class ProductOptionRemovalService
         final var stockCount = this.stockCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
 
-        this.eventPublicationPort.publishEvent(new ProductInfoUpdatedEvent(savedProductId));
+        final var event = new ProductInfoUpdatedEvent(savedProductId);
+        this.eventPublicationPort.publishEvent(event);
 
         return this.mapper.toView(
                 savedProduct,
@@ -111,7 +103,8 @@ class ProductOptionRemovalService
                 rating);
     }
 
-    private ProductConfiguration removeOptionFromConfiguration(
+    // FIXME: bug when optionsSize == 1
+    private Product applyOptionRemoval(
             final Product product,
             final int optionIndex,
             @Nullable
@@ -123,16 +116,20 @@ class ProductOptionRemovalService
         }
 
         if (optionsSize > 1) {
-            final var newConfig = product.getConfiguration().removeOptionAt(optionIndex);
+            final var next = product.removeOptionAt(optionIndex);
+            final var newVariants = next.getVariants();
 
-            final var newTraitsMap = new HashMap<ProductVariantId, ProductVariantTraits>(
-                    newConfig.variants().size(), 1);
-            for (final var variant : newConfig.variants().values()) {
-                newTraitsMap.put(variant.id(), variant.traits());
+            final var newTraitsMap = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(
+                    newVariants.size());
+            for (final var variant : newVariants.values()) {
+                final var variantId = variant.id();
+                final var variantTraits = variant.traits();
+
+                newTraitsMap.put(variantId, variantTraits);
             }
             this.variantTraitBulkUpdatePort.updateTraitsByIds(newTraitsMap);
 
-            return newConfig;
+            return next;
         }
 
         if (defaultPrice == null) {
@@ -146,13 +143,14 @@ class ProductOptionRemovalService
                 new ProductVariantPrice(defaultPrice.value()),
                 ProductVariantTraits.empty(),
                 ProductVariantTargets.empty());
-        final var newVariants = this.variantBulkCreationPort.create(
+        final var createdVariants = this.variantBulkCreationPort.create(
                 productId,
                 product.getName(),
                 new NewProductVariants(List.of(newVariant)));
-
-        return new ProductConfiguration(
+        final var simpleConfig = new ProductConfiguration(
                 ProductOptions.empty(),
-                newVariants);
+                createdVariants);
+
+        return product.changeConfiguration(simpleConfig);
     }
 }

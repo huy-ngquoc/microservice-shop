@@ -156,15 +156,10 @@ class ProductInfoUpdateService
             return null;
         }
 
-        return new Product(
-                current.getId(),
+        return current.updateInfo(
                 applyNameResult.newValue(),
                 applyCategoryIdResult.newValue(),
-                applyBrandIdResult.newValue(),
-                current.getConfiguration(),
-                current.getImageKeys(),
-                current.getVersion(),
-                current.getDeletionTime());
+                applyBrandIdResult.newValue());
     }
 
     private void validateCategoryExists(
