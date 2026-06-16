@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductVariantTraits(
@@ -54,6 +55,13 @@ public record ProductVariantTraits(
     public List<String> unwrap() {
         return this.values.stream()
                 .map(ProductVariantTrait::value)
+                .toList();
+    }
+
+    public List<String> unwrapNormalized() {
+        return this.values.stream()
+                .map(ProductVariantTrait::value)
+                .map(String::toLowerCase)
                 .toList();
     }
 

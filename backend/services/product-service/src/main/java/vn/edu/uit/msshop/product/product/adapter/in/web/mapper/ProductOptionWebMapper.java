@@ -41,7 +41,6 @@ public class ProductOptionWebMapper {
         return new ProductOptionRemovalCommand(
                 productId,
                 optionIndex,
-                request.defaultPrice(),
                 request.version());
     }
 }

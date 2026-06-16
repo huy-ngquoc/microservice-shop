@@ -1,6 +1,5 @@
 package vn.edu.uit.msshop.product.product.adapter.out.sync.mapper;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.stereotype.Component;
