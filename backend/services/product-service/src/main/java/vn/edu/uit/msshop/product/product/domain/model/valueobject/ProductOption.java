@@ -5,6 +5,7 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductOption(
         String value) {
+
     public static final int MAX_LENGTH_VALUE = 20;
     public static final int MAX_RAW_LENGTH_VALUE = 30;
 

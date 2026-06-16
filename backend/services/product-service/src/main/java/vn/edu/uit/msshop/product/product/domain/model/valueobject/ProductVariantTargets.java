@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Locale;
 
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
+import vn.edu.uit.msshop.product.shared.domain.variant.VariantTargetsConstraints;
 
 public record ProductVariantTargets(
         List<ProductVariantTarget> values) {
-    public static final int MAX_AMOUNT = VariantTargets.MAX_AMOUNT;
+
+    public static final int MAX_AMOUNT = VariantTargetsConstraints.MAX_AMOUNT;
     private static final ProductVariantTargets EMPTY = new ProductVariantTargets(List.of());
 
     public ProductVariantTargets {

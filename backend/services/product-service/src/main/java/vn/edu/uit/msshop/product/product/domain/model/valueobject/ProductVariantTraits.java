@@ -6,12 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
-import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
+import vn.edu.uit.msshop.product.shared.domain.variant.VariantTraitsConstraints;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductVariantTraits(
         List<ProductVariantTrait> values) {
-    public static final int MAX_TRAITS_AMOUNT = ProductOptions.MAX_AMOUNT;
+
+    public static final int MAX_TRAITS_AMOUNT = VariantTraitsConstraints.MAX_AMOUNT;
 
     private static final ProductVariantTraits EMPTY = new ProductVariantTraits(List.of());
 

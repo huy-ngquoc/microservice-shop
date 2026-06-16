@@ -1,12 +1,13 @@
 package vn.edu.uit.msshop.product.variant.domain.model.valueobject;
 
+import vn.edu.uit.msshop.product.shared.domain.variant.VariantTargetConstraints;
 import vn.edu.uit.msshop.shared.domain.Domains;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record VariantTarget(
         String value) {
-    public static final int MAX_LENGTH = 30;
-    public static final int MAX_RAW_LENGTH = (int) (MAX_LENGTH * Domains.RAW_LENGTH_TOLERANCE_FACTOR);
+    public static final int MAX_LENGTH = VariantTargetConstraints.MAX_LENGTH;
+    public static final int MAX_RAW_LENGTH = VariantTargetConstraints.MAX_RAW_LENGTH;
 
     public VariantTarget {
         value = VariantTarget.validateAndNormalizeValue(value);
