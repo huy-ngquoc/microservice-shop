@@ -13,6 +13,7 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.variant.Pro
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVariantGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -54,6 +55,11 @@ class ProductVariantAdditionForVariantService
 
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
+
+        ProductVariantGuard.ensureNotProductSimple(product);
+        ProductVariantGuard.ensureNoDuplicateCombination(
+                product,
+                variantTraits);
 
         final var next = product.addVariant(newVariant);
         final var saved = this.updatePort.update(next);

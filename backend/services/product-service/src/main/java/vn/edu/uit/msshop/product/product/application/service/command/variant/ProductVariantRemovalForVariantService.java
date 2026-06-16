@@ -1,5 +1,6 @@
 package vn.edu.uit.msshop.product.product.application.service.command.variant;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -10,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantRemovalForVariantCommand;
-import vn.edu.uit.msshop.product.product.application.exception.ProductMustHaveAtLeastOneVariantException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
@@ -18,6 +18,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVariantGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
@@ -52,9 +53,9 @@ class ProductVariantRemovalForVariantService
         final var product = this.activeLookupByIdPort.loadById(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        if (product.getVariants().size() <= 1) {
-            throw new ProductMustHaveAtLeastOneVariantException(productId);
-        }
+        final var idList = List.of(variantId);
+        ProductVariantGuard.ensureAllVariantsExist(product, idList);
+        ProductVariantGuard.ensureAtLeastOneVariantRemains(product, idList);
 
         final var next = product.removeVariantById(variantId);
         final var saved = this.updatePort.update(next);
