@@ -2,12 +2,13 @@ package vn.edu.uit.msshop.product.product.domain.model.valueobject;
 
 import vn.edu.uit.msshop.shared.domain.Domains;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTrait;
+import vn.edu.uit.msshop.product.shared.domain.variant.VariantTraitConstraints;
 
 public record ProductVariantTrait(
         String value) {
-    public static final int MAX_LENGTH = VariantTrait.MAX_LENGTH;
-    public static final int MAX_RAW_LENGTH = VariantTrait.MAX_RAW_LENGTH;
+
+    public static final int MAX_LENGTH = VariantTraitConstraints.MAX_LENGTH;
+    public static final int MAX_RAW_LENGTH = VariantTraitConstraints.MAX_RAW_LENGTH;
 
     public ProductVariantTrait {
         if (value == null) {

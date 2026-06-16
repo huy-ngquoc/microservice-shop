@@ -1,12 +1,14 @@
 package vn.edu.uit.msshop.product.variant.domain.model.valueobject;
 
-import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductName;
+import vn.edu.uit.msshop.product.shared.domain.product.ProductNameConstraints;
 import vn.edu.uit.msshop.shared.domain.Domains;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record VariantProductName(
         String value) {
-    public static final int MAX_LENGTH = ProductName.MAX_LENGTH;
+
+    public static final int MAX_LENGTH = ProductNameConstraints.MAX_LENGTH;
+    public static final int MAX_RAW_LENGTH = ProductNameConstraints.MAX_RAW_LENGTH;
 
     public VariantProductName {
         if (value == null) {
