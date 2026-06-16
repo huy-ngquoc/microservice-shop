@@ -19,6 +19,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.produc
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionByIdsPort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVariantGuard;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -65,6 +66,13 @@ class ProductVariantBulkRemovalService
         final var variantIdList = cmd.variantIdList().stream()
                 .map(ProductVariantId::new)
                 .toList();
+
+        ProductVariantGuard.ensureAllVariantsExist(
+                product,
+                variantIdList);
+        ProductVariantGuard.ensureAtLeastOneVariantRemains(
+                product,
+                variantIdList);
 
         final var next = product.removeVariantsByIds(variantIdList);
 

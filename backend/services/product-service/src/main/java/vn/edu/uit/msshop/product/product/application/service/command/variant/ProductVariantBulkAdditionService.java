@@ -1,5 +1,8 @@
 package vn.edu.uit.msshop.product.product.application.service.command.variant;
 
+import java.util.HashSet;
+import java.util.List;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -20,9 +23,12 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.produc
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkCreationPort;
+import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVariantGuard;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
+import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
@@ -63,11 +69,9 @@ class ProductVariantBulkAdditionService
                 expectedVersion,
                 product.getVersion());
 
-        for (final var variant : cmd.newVariantList()) {
-            if (product.getOptions().size() != variant.traitList().size()) {
-                throw new BusinessRuleException("Inconsistent traits size");
-            }
-        }
+        ProductVariantBulkAdditionService.ensureVariantsAddable(
+                product,
+                cmd.newVariantList());
 
         final var newVariants = NewProductVariantData.toNewProductVariants(cmd.newVariantList());
         final var createdVariants = this.variantBulkCreationPort.create(
@@ -92,5 +96,25 @@ class ProductVariantBulkAdditionService
                 soldCount,
                 stockCount,
                 rating);
+    }
+
+    private static void ensureVariantsAddable(
+            final Product product,
+            final List<NewProductVariantData> newVariantList) {
+        ProductVariantGuard.ensureNotProductSimple(product);
+
+        final var expectedTraitCount = product.getOptions().size();
+        final var seenCombinations = new HashSet<List<String>>();
+        for (final var newVariant : newVariantList) {
+            if (expectedTraitCount != newVariant.traitList().size()) {
+                throw new BusinessRuleException("Inconsistent traits size");
+            }
+            final var traits = ProductVariantTraits.of(newVariant.traitList());
+            ProductVariantGuard.ensureNoDuplicateCombination(product, traits);
+            if (!seenCombinations.add(traits.unwrapNormalized())) {
+                throw new BusinessRuleException(
+                        "Duplicate trait combination within the request: " + traits.unwrap());
+            }
+        }
     }
 }
