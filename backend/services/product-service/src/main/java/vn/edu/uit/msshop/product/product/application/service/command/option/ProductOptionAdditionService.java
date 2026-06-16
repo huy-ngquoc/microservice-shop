@@ -23,7 +23,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
-import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
@@ -70,26 +69,19 @@ class ProductOptionAdditionService
                 expectedVersion,
                 product.getVersion());
 
-        final var currentConfig = product.getConfiguration();
-        final var newConfig = currentConfig.addOption(
+        final var next = product.addOption(
                 newOption,
                 defaultTrait);
+        final var newVariants = next.getVariants();
 
         final var newTraitsMap = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(
-                newConfig.variants().size());
-        for (final var v : newConfig.variants().values()) {
-            newTraitsMap.put(v.id(), v.traits());
-        }
+                newVariants.size());
+        for (final var variant : newVariants.values()) {
+            final var variantId = variant.id();
+            final var variantTraits = variant.traits();
 
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                newConfig,
-                product.getImageKeys(),
-                product.getVersion(),
-                product.getDeletionTime());
+            newTraitsMap.put(variantId, variantTraits);
+        }
 
         final var savedProduct = this.updatePort.update(next);
         final var savedProductId = savedProduct.getId();

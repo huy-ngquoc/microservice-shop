@@ -22,8 +22,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkCreationPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
-import vn.edu.uit.msshop.product.product.domain.model.Product;
-import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
@@ -77,20 +75,7 @@ class ProductVariantBulkAdditionService
                 product.getName(),
                 newVariants);
 
-        final var nextVariants = product.getVariants().addAll(createdVariants);
-        final var newConfig = new ProductConfiguration(
-                product.getOptions(),
-                nextVariants);
-
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                newConfig,
-                product.getImageKeys(),
-                product.getVersion(),
-                product.getDeletionTime());
+        final var next = product.addVariants(createdVariants);
 
         final var savedProduct = this.updatePort.update(next);
         final var savedProductId = savedProduct.getId();

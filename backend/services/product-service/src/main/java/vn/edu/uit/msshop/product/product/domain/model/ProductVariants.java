@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.product.domain.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -90,6 +91,20 @@ public record ProductVariants(
             throw new DomainException("Variant not found: " + variantId.value());
         }
         return new ProductVariants(newValues);
+    }
+
+    public ProductVariants removeAllByIds(
+            final Collection<ProductVariantId> idCollection) {
+        if (idCollection.isEmpty()) {
+            return this;
+        }
+
+        var newVariants = this;
+        for (final var id : idCollection) {
+            newVariants = newVariants.removeById(id);
+        }
+
+        return newVariants;
     }
 
     public Optional<ProductVariant> findById(

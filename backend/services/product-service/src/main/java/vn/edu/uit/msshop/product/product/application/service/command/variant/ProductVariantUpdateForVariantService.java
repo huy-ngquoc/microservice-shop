@@ -14,8 +14,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEvent
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
-import vn.edu.uit.msshop.product.product.domain.model.Product;
-import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
@@ -54,19 +52,9 @@ class ProductVariantUpdateForVariantService
                 new ProductVariantPrice(cmd.variantPrice()),
                 ProductVariantTraits.of(cmd.variantTraitList()));
 
-        final var currentVariants = product.getVariants();
-        final var newVariants = currentVariants.replaceById(variantId, newVariant);
-        final var newConfig = new ProductConfiguration(product.getOptions(), newVariants);
-
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                newConfig,
-                product.getImageKeys(),
-                product.getVersion(),
-                product.getDeletionTime());
+        final var next = product.replaceVariantById(
+                variantId,
+                newVariant);
         final var saved = this.updatePort.update(next);
 
         final var event = new ProductInfoUpdatedEvent(saved.getId());
