@@ -19,7 +19,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
-import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 
@@ -57,18 +56,7 @@ class ProductVariantRemovalForVariantService
             throw new ProductMustHaveAtLeastOneVariantException(productId);
         }
 
-        final var currentConfig = product.getConfiguration();
-        final var newConfig = currentConfig.removeVariant(variantId);
-
-        final var next = new Product(
-                product.getId(),
-                product.getName(),
-                product.getCategoryId(),
-                product.getBrandId(),
-                newConfig,
-                product.getImageKeys(),
-                product.getVersion(),
-                product.getDeletionTime());
+        final var next = product.removeVariantById(variantId);
         final var saved = this.updatePort.update(next);
 
         if (cmd.productSoldCountDecrement() > 0) {
@@ -80,6 +68,7 @@ class ProductVariantRemovalForVariantService
             this.stockCountBulkDecrementPort.decreaseAll(decrementByProductId);
         }
 
-        this.eventPort.publishEvent(new ProductInfoUpdatedEvent(saved.getId()));
+        final var event = new ProductInfoUpdatedEvent(saved.getId());
+        this.eventPort.publishEvent(event);
     }
 }
