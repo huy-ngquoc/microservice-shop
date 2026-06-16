@@ -9,6 +9,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBul
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkHardDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountBulkDeletionByVariantIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkDeletionByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkDeletionByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.image.VariantImageDeleter;
@@ -25,6 +26,7 @@ class VariantBulkHardDeletionByProductIdForProductService
     private final VariantBulkLookupByProductIdPort bulkLookupByProductIdPort;
     private final VariantBulkDeletionByProductIdPort bulkDeletionByProductIdPort;
     private final VariantSoldCountBulkDeletionByVariantIdsPort soldCountBulkDeletionByIdsPort;
+    private final VariantStockCountBulkDeletionByVariantIdsPort stockCountBulkDeletionByVariantIdsPort;
 
     private final VariantImageDeleter imageDeleter;
 
@@ -47,6 +49,7 @@ class VariantBulkHardDeletionByProductIdForProductService
 
         this.bulkDeletionByProductIdPort.deleteByProductId(productId);
         this.soldCountBulkDeletionByIdsPort.deleteAllByVariantIds(variantIdList);
+        this.stockCountBulkDeletionByVariantIdsPort.deleteAllByVariantIds(variantIdList);
 
         for (final var variant : variantList) {
             this.imageDeleter.deleteQuietly(variant.getImageKey());
