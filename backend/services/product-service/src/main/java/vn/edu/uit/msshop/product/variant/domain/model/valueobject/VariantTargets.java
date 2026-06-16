@@ -5,11 +5,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+import vn.edu.uit.msshop.product.shared.domain.variant.VariantTargetsConstraints;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record VariantTargets(
         List<VariantTarget> values) {
-    public static final int MAX_AMOUNT = 7;
+
+    public static final int MAX_AMOUNT = VariantTargetsConstraints.MAX_AMOUNT;
 
     public VariantTargets {
         if (values == null) {
