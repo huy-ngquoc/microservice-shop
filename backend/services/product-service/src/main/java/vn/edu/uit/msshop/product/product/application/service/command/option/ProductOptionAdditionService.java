@@ -23,12 +23,15 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
+import vn.edu.uit.msshop.product.product.domain.model.Product;
+import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTrait;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
+import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
 @RequiredArgsConstructor
@@ -69,6 +72,11 @@ class ProductOptionAdditionService
                 expectedVersion,
                 product.getVersion());
 
+        ProductOptionAdditionService.ensureOptionAddable(
+                product,
+                newOption,
+                defaultTrait);
+
         final var next = product.addOption(
                 newOption,
                 defaultTrait);
@@ -100,5 +108,23 @@ class ProductOptionAdditionService
                 soldCount,
                 stockCount,
                 rating);
+    }
+
+    private static void ensureOptionAddable(
+            final Product product,
+            final ProductOption newOption,
+            final ProductVariantTrait defaultTrait) {
+        if (product.getOptions().isFull()) {
+            throw new BusinessRuleException(
+                    "Product already has the maximum number of options (" + ProductOptions.MAX_AMOUNT + ")");
+        }
+        if (product.getOptions().containsIgnoreCase(newOption)) {
+            throw new BusinessRuleException("Option already exists: " + newOption.value());
+        }
+        if (product.getVariants().appendTraitCollides(defaultTrait)) {
+            throw new BusinessRuleException(
+                    "Default trait '" + defaultTrait.value()
+                            + "' collides with an existing trait value in a variant");
+        }
     }
 }
