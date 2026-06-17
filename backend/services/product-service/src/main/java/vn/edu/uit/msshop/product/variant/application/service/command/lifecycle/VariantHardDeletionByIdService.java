@@ -13,6 +13,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.V
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.image.VariantImageStoragePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountDeletionByVariantIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountDeletionByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantDeletionByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.VariantReferencedByProductCheckPort;
@@ -31,6 +32,7 @@ class VariantHardDeletionByIdService
     private final VariantSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final VariantDeletionByIdPort deletionByIdPort;
     private final VariantSoldCountDeletionByVariantIdPort soldCountDeletionByIdPort;
+    private final VariantStockCountDeletionByVariantIdPort stockCountDeletionByIdPort;
     private final VariantReferencedByProductCheckPort checkReferencedPort;
     private final VariantImageStoragePort imageStoragePort;
     private final VariantEventPublicationPort eventPublicationPort;
@@ -56,6 +58,7 @@ class VariantHardDeletionByIdService
 
         this.deletionByIdPort.deleteById(variantId);
         this.soldCountDeletionByIdPort.deleteByVariantId(variantId);
+        this.stockCountDeletionByIdPort.deleteByVariantId(variantId);
 
         final var event = new VariantHardDeletedEvent(variantId);
         this.eventPublicationPort.publishEvent(event);
