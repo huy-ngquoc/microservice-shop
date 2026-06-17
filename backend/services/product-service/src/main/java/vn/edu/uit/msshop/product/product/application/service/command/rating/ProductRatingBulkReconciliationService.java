@@ -21,7 +21,7 @@ class ProductRatingBulkReconciliationService
     private final ProductRatingBulkUpdateUseCase ratingBulkUpdateUseCase;
 
     @Override
-    public void execute(
+    public void reconcileAll(
             final ProductRatingBulkReconciliationCommand cmd) {
         final var snapshots = this.ratingBulkFetchPort.fetchAll(
                 cmd.rangeStartTime(),
@@ -37,6 +37,6 @@ class ProductRatingBulkReconciliationService
         }
 
         final var updateCommand = new ProductRatingBulkUpdateCommand(ratingDataList);
-        this.ratingBulkUpdateUseCase.execute(updateCommand);
+        this.ratingBulkUpdateUseCase.updateAll(updateCommand);
     }
 }
