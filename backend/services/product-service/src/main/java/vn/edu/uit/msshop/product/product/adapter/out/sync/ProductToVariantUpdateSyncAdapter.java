@@ -31,7 +31,8 @@ public class ProductToVariantUpdateSyncAdapter
 
     @Override
     public void updateTraitsByIds(
-            final Map<ProductVariantId, ProductVariantTraits> newTraitsByVariantId) {
+            final Map<ProductVariantId, ProductVariantTraits> newTraitsByVariantId,
+            final ProductId productId) {
         final var amountVariants = newTraitsByVariantId.size();
         final var traitListById = HashMap.<UUID, List<String>>newHashMap(amountVariants);
 
@@ -45,7 +46,9 @@ public class ProductToVariantUpdateSyncAdapter
             traitListById.put(rawVariantId, rawVariantTraitList);
         }
 
-        final var command = new VariantTraitBulkUpdateByIdsForProductCommand(traitListById);
+        final var command = new VariantTraitBulkUpdateByIdsForProductCommand(
+                traitListById,
+                productId.value());
         this.variantTraitBulkUpdateByIdsForProductUseCase.updateAll(command);
     }
 

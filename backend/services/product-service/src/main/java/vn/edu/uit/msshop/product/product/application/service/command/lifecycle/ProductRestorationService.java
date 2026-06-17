@@ -53,7 +53,9 @@ class ProductRestorationService
         final var manifestIds = saved.getVariants().values().stream()
                 .map(ProductVariant::id)
                 .toList();
-        this.variantBulkRestorationForProductPort.restoreByVariantIds(manifestIds);
+        this.variantBulkRestorationForProductPort.restoreByVariantIds(
+                manifestIds,
+                productId);
 
         this.eventPublicationPort.publishEvent(new ProductRestoredEvent(saved.getId()));
     }

@@ -101,7 +101,9 @@ class ProductOptionAdditionService
         final var event = new ProductInfoUpdatedEvent(savedProductId);
         this.eventPublicationPort.publishEvent(event);
 
-        this.variantTraitBulkUpdatePort.updateTraitsByIds(newTraitsMap);
+        this.variantTraitBulkUpdatePort.updateTraitsByIds(
+                newTraitsMap,
+                savedProductId);
 
         return this.mapper.toView(
                 savedProduct,

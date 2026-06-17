@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public record VariantTraitBulkUpdateByIdsForProductCommand(
-        Map<UUID, List<String>> traitListById) {
+        Map<UUID, List<String>> traitListById,
+        UUID productId) {
 
     public VariantTraitBulkUpdateByIdsForProductCommand {
         final var defensiveCopy = HashMap.<UUID, List<String>>newHashMap(traitListById.size());
