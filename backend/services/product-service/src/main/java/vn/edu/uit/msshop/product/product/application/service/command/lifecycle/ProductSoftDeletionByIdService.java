@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSoftDeletionCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSoftDeletionByIdCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductSoftDeletionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductSoftDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
@@ -21,8 +21,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 
 @Service
 @RequiredArgsConstructor
-class ProductSoftDeletionService
-        implements ProductSoftDeletionUseCase {
+class ProductSoftDeletionByIdService
+        implements ProductSoftDeletionByIdUseCase {
     private final ProductActiveLookupByIdPort loadPort;
     private final ProductUpdatePort updatePort;
 
@@ -42,7 +42,7 @@ class ProductSoftDeletionService
                             allEntries = true)
             })
     public void softDelete(
-            final ProductSoftDeletionCommand cmd) {
+            final ProductSoftDeletionByIdCommand cmd) {
         final var productId = new ProductId(cmd.productId());
         final var expectedVersion = new ProductVersion(cmd.productVersion());
 
