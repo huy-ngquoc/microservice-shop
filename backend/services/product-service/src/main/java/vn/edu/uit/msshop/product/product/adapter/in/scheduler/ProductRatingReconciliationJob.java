@@ -31,7 +31,7 @@ public class ProductRatingReconciliationJob {
         final var command = new ProductRatingBulkReconciliationCommand(rangeStartTime, rangeEndTime);
 
         try {
-            ratingBulkReconciliationUseCase.execute(command);
+            ratingBulkReconciliationUseCase.reconcileAll(command);
         } catch (final RuntimeException e) {
             log.warn("Product rating reconciliation skipped: {}", e.getMessage());
         }
