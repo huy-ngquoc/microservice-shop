@@ -75,9 +75,9 @@ public final class Variant {
     }
 
     public Variant updateInfo(
-            VariantPrice newPrice,
-            VariantTraits newTraits,
-            VariantTargets newTargets) {
+            final VariantPrice newPrice,
+            final VariantTraits newTraits,
+            final VariantTargets newTargets) {
         return new Variant(
                 this.id,
                 this.productId,
@@ -105,7 +105,7 @@ public final class Variant {
     }
 
     public Variant changeImageKey(
-            VariantImageKey newImageKey) {
+            final VariantImageKey newImageKey) {
         return new Variant(
                 this.id,
                 this.productId,
