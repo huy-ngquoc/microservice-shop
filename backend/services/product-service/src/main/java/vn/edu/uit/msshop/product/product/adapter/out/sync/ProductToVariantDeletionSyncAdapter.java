@@ -41,12 +41,15 @@ public class ProductToVariantDeletionSyncAdapter
 
     @Override
     public void deleteByIds(
-            final Collection<ProductVariantId> variantIdCollection) {
+            final Collection<ProductVariantId> variantIdCollection,
+            final ProductId productId) {
         final var rawVariantIdSet = variantIdCollection.stream()
                 .map(ProductVariantId::value)
                 .collect(Collectors.toUnmodifiableSet());
 
-        final var command = new VariantBulkSoftDeletionByIdsForProductCommand(rawVariantIdSet);
+        final var command = new VariantBulkSoftDeletionByIdsForProductCommand(
+                rawVariantIdSet,
+                productId.value());
         this.variantBulkSoftDeletionByIdsForProductUseCase.softDeleteAll(command);
     }
 

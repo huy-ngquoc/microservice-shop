@@ -4,9 +4,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public record VariantBulkRestorationByIdsForProductCommand(
-        Set<UUID> idSet) {
+        Set<UUID> variantIdSet,
+        UUID productId) {
 
     public VariantBulkRestorationByIdsForProductCommand {
-        idSet = Set.copyOf(idSet);
+        variantIdSet = Set.copyOf(variantIdSet);
     }
 }
