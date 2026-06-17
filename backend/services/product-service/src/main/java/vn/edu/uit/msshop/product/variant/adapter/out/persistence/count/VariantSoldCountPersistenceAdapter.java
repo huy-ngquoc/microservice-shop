@@ -3,11 +3,12 @@ package vn.edu.uit.msshop.product.variant.adapter.out.persistence.count;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
@@ -66,11 +67,13 @@ public class VariantSoldCountPersistenceAdapter
         final var jpaVariantIdSet = variantIdSet.stream()
                 .map(VariantId::value)
                 .toList();
-        final var soldCountList = this.repository.findAllById(jpaVariantIdSet).stream()
-                .map(this.mapper::toDomain)
-                .toList();
+        final var docList = this.repository.findAllById(jpaVariantIdSet);
 
-        return VariantSoldCountPersistenceAdapter.toMapByVariantId(soldCountList);
+        return docList.stream()
+                .map(this.mapper::toDomain)
+                .collect(Collectors.toUnmodifiableMap(
+                        VariantSoldCount::getVariantId,
+                        Function.identity()));
     }
 
     @Override
@@ -114,7 +117,10 @@ public class VariantSoldCountPersistenceAdapter
         }
         bulk.execute();
 
-        return VariantSoldCountPersistenceAdapter.toMapByVariantId(initialized);
+        return initialized.stream()
+                .collect(Collectors.toUnmodifiableMap(
+                        VariantSoldCount::getVariantId,
+                        Function.identity()));
     }
 
     @Override
@@ -171,19 +177,6 @@ public class VariantSoldCountPersistenceAdapter
                 .map(VariantId::value)
                 .toList();
         this.repository.deleteAllById(jpaVariantIdList);
-    }
-
-    private static Map<VariantId, VariantSoldCount> toMapByVariantId(
-            final Collection<VariantSoldCount> soldCountCollection) {
-        final var byVariantId = HashMap.<VariantId, VariantSoldCount>newHashMap(soldCountCollection.size());
-        for (final var soldCount : soldCountCollection) {
-            final var previous = byVariantId.put(soldCount.getVariantId(), soldCount);
-            if (previous != null) {
-                throw new IllegalStateException(
-                        "Duplicate sold count for variant " + soldCount.getVariantId().value());
-            }
-        }
-        return Map.copyOf(byVariantId);
     }
 
     private VariantSoldCount upsertAndReturnDomain(

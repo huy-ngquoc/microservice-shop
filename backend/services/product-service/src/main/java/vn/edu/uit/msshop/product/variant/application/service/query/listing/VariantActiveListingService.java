@@ -29,11 +29,6 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 class VariantActiveListingService
         implements VariantActiveListingUseCase {
 
-    private static final Collector<
-            VariantId,
-            ?,
-            Set<VariantId>> SET_COLLECTOR = Collectors.toSet();
-
     private final VariantActiveListingPort activeListingPort;
     private final VariantSoldCountBulkLookupByVariantIdsPort soldCountBulkLookupByIdsPort;
     private final VariantStockCountBulkLookupByVariantIdsPort stockCountBulkLookupByIdsPort;
@@ -51,7 +46,7 @@ class VariantActiveListingService
 
         final var ids = page.items().stream()
                 .map(Variant::getId)
-                .collect(VariantActiveListingService.SET_COLLECTOR);
+                .collect(Collectors.toUnmodifiableSet());
 
         final var soldCountById = soldCountBulkLookupByIdsPort.loadAllByVariantIds(ids);
         final var stockCountById = stockCountBulkLookupByIdsPort.loadAllByVariantIds(ids);
