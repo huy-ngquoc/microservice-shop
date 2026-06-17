@@ -2,7 +2,6 @@ package vn.edu.uit.msshop.product.variant.application.service.command.sync;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -20,6 +19,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.Varian
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantSyncGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -51,13 +51,9 @@ class VariantTraitBulkUpdateByIdsForProductService
 
         final var variantIdSet = newTraitsById.keySet();
         final var variantById = this.activeBulkLookupByIdsPort.loadAllByIds(variantIdSet);
-
-        if (variantById.size() != variantIdSet.size()) {
-            final var missing = new HashSet<>(variantIdSet);
-            missing.removeAll(variantById.keySet());
-            throw new IllegalStateException(
-                    "Product/variant data inconsistency; variants not found for trait sync: " + missing);
-        }
+        VariantSyncGuard.ensureAllVariantsFound(
+                variantIdSet,
+                variantById);
 
         final var amountVariants = variantById.size();
         final var next = new ArrayList<Variant>(amountVariants);
