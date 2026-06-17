@@ -3,6 +3,8 @@ package vn.edu.uit.msshop.product.product.adapter.out.persistence.product;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -76,12 +78,14 @@ class ProductQueryPersistenceAdapter
             final Set<ProductId> idSet) {
         final var jpaIdSet = idSet.stream()
                 .map(ProductId::value)
-                .toList();
-        final var productList = this.repository.findAllByDeletionTimeIsNull(jpaIdSet).stream()
-                .map(this.mapper::toDomain)
-                .toList();
+                .collect(Collectors.toUnmodifiableSet());
+        final var docList = this.repository.findAllByDeletionTimeIsNull(jpaIdSet);
 
-        return this.mapper.toDomainById(productList);
+        return docList.stream()
+                .map(this.mapper::toDomain)
+                .collect(Collectors.toUnmodifiableMap(
+                        Product::getId,
+                        Function.identity()));
     }
 
     @Override

@@ -60,8 +60,10 @@ class ProductSoldCountPersistenceAdapter
 
         final var jpaProductIdSet = productIdSet.stream()
                 .map(ProductId::value)
-                .toList();
-        return this.repository.findAllById(jpaProductIdSet).stream()
+                .collect(Collectors.toUnmodifiableSet());
+        final var docList = this.repository.findAllById(jpaProductIdSet);
+
+        return docList.stream()
                 .map(this.mapper::toDomain)
                 .collect(Collectors.toUnmodifiableMap(
                         ProductSoldCount::getProductId,

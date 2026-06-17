@@ -3,10 +3,10 @@ package vn.edu.uit.msshop.product.variant.adapter.out.persistence.count;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
@@ -66,14 +66,16 @@ public class VariantStockCountPersistenceAdapter
             return Map.of();
         }
 
-        final var jpVariantIdSet = variantIdSet.stream()
+        final var jpaVariantIdSet = variantIdSet.stream()
                 .map(VariantId::value)
                 .collect(Collectors.toUnmodifiableSet());
-        final var stockCountList = this.repository.findAllById(jpVariantIdSet).stream()
-                .map(this.mapper::toDomain)
-                .toList();
+        final var docList = this.repository.findAllById(jpaVariantIdSet);
 
-        return VariantStockCountPersistenceAdapter.toMapByVariantId(stockCountList);
+        return docList.stream()
+                .map(this.mapper::toDomain)
+                .collect(Collectors.toUnmodifiableMap(
+                        VariantStockCount::getVariantId,
+                        Function.identity()));
     }
 
     @Override
@@ -117,7 +119,10 @@ public class VariantStockCountPersistenceAdapter
         }
         bulkOps.execute();
 
-        return VariantStockCountPersistenceAdapter.toMapByVariantId(initialized);
+        return initialized.stream()
+                .collect(Collectors.toUnmodifiableMap(
+                        VariantStockCount::getVariantId,
+                        Function.identity()));
     }
 
     @Override
@@ -173,19 +178,6 @@ public class VariantStockCountPersistenceAdapter
                 .map(VariantId::value)
                 .toList();
         this.repository.deleteAllById(jpaVariantIdCollection);
-    }
-
-    private static Map<VariantId, VariantStockCount> toMapByVariantId(
-            final Collection<VariantStockCount> stockCountCollection) {
-        final var byVariantId = HashMap.<VariantId, VariantStockCount>newHashMap(stockCountCollection.size());
-        for (final var stockCount : stockCountCollection) {
-            final var previous = byVariantId.put(stockCount.getVariantId(), stockCount);
-            if (previous != null) {
-                throw new IllegalStateException(
-                        "Duplicate stock count for variant " + stockCount.getVariantId().value());
-            }
-        }
-        return Map.copyOf(byVariantId);
     }
 
     private VariantStockCount upsertAndReturnDomain(

@@ -1,10 +1,11 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.persistence.variant;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -87,7 +88,11 @@ public class VariantQueryPersistenceAdapter
                 .toList();
 
         final var docs = this.repository.findAllByIdInAndDeletionTimeIsNull(jpaIds);
-        return this.mapper.toDomainMap(docs);
+        return docs.stream()
+                .map(this.mapper::toDomain)
+                .collect(Collectors.toUnmodifiableMap(
+                        Variant::getId,
+                        Function.identity()));
     }
 
     @Override
@@ -101,11 +106,15 @@ public class VariantQueryPersistenceAdapter
 
     @Override
     public Map<VariantId, Variant> loadAllSoftDeletedByIds(
-            final Set<VariantId> ids) {
-        final var jpaIdList = ids.stream()
+            final Set<VariantId> idSet) {
+        final var jpaIdList = idSet.stream()
                 .map(VariantId::value)
                 .toList();
         final var docs = this.repository.findAllByIdInAndDeletionTimeIsNotNull(jpaIdList);
-        return this.mapper.toDomainMap(docs);
+        return docs.stream()
+                .map(this.mapper::toDomain)
+                .collect(Collectors.toUnmodifiableMap(
+                        Variant::getId,
+                        Function.identity()));
     }
 }
