@@ -4,9 +4,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public record VariantBulkSoftDeletionByIdsForProductCommand(
-        Set<UUID> idSet) {
+        Set<UUID> variantIdSet,
+        UUID productId) {
 
     public VariantBulkSoftDeletionByIdsForProductCommand {
-        idSet = Set.copyOf(idSet);
+        variantIdSet = Set.copyOf(variantIdSet);
     }
 }

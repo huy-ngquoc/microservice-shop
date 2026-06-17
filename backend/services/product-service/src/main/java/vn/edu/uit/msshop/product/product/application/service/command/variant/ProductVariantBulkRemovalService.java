@@ -86,7 +86,9 @@ class ProductVariantBulkRemovalService
         final var event = new ProductInfoUpdatedEvent(savedProductId);
         this.eventPort.publishEvent(event);
 
-        this.variantBulkSoftDeletionByIdsPort.deleteByIds(variantIdList);
+        this.variantBulkSoftDeletionByIdsPort.deleteByIds(
+                variantIdList,
+                savedProductId);
 
         return this.mapper.toView(
                 savedProduct,
