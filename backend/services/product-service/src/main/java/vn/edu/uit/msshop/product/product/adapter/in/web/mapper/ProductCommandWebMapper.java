@@ -57,7 +57,7 @@ public class ProductCommandWebMapper {
                 productVersion);
     }
 
-    public ProductInfoUpdateByIdCommand toInfoUpdateCommand(
+    public ProductInfoUpdateByIdCommand toInfoUpdateByIdCommand(
             final UUID productId,
             final ProductInfoUpdateRequest request) {
         final var nameChange = ChangeRequest.toChange(request.name());

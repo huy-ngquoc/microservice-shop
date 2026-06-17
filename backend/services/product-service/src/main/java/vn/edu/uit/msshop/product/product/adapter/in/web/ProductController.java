@@ -100,7 +100,7 @@ public class ProductController {
             @RequestBody
             @Valid
             final ProductInfoUpdateRequest request) {
-        final var command = this.commandMapper.toInfoUpdateCommand(id, request);
+        final var command = this.commandMapper.toInfoUpdateByIdCommand(id, request);
         final var view = this.infoUpdateByIdUseCase.updateInfo(command);
 
         final var response = this.responseMapper.toResponse(view);
