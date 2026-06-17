@@ -74,9 +74,11 @@ class ProductOptionRemovalService
         final var next = product.removeOptionAt(cmd.optionIndex());
         final var savedProduct = this.updatePort.update(next);
 
-        this.syncVariantTraits(next.getVariants());
-
         final var savedProductId = savedProduct.getId();
+        this.syncVariantTraits(
+                next.getVariants(),
+                savedProductId);
+
         final var soldCount = this.soldCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var stockCount = this.stockCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
@@ -105,7 +107,8 @@ class ProductOptionRemovalService
     }
 
     private void syncVariantTraits(
-            final ProductVariants variants) {
+            final ProductVariants variants,
+            final ProductId productId) {
         final var newTraitsMap = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(variants.size());
         for (final var variant : variants.values()) {
             final var variantId = variant.id();
@@ -113,6 +116,8 @@ class ProductOptionRemovalService
 
             newTraitsMap.put(variantId, variantTraits);
         }
-        this.variantTraitBulkUpdatePort.updateTraitsByIds(newTraitsMap);
+        this.variantTraitBulkUpdatePort.updateTraitsByIds(
+                newTraitsMap,
+                productId);
     }
 }

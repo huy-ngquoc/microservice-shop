@@ -18,6 +18,7 @@ import vn.edu.uit.msshop.product.variant.application.service.command.support.Var
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 @Service
 @RequiredArgsConstructor
@@ -41,12 +42,16 @@ class VariantBulkSoftDeletionByIdsForProductService
             })
     public void softDeleteAll(
             final VariantBulkSoftDeletionByIdsForProductCommand cmd) {
-        final var variantIdSet = cmd.idSet().stream()
+        final var productId = new VariantProductId(cmd.productId());
+        final var variantIdSet = cmd.variantIdSet().stream()
                 .map(VariantId::new)
                 .collect(Collectors.toUnmodifiableSet());
 
         final var variantById = this.activeBulkLookupByIdsPort.loadAllByIds(variantIdSet);
         VariantSyncGuard.ensureAllVariantsFound(variantIdSet, variantById);
+        VariantSyncGuard.ensureAllBelongToProduct(
+                variantById.values(),
+                productId);
 
         final var next = variantById.values().stream()
                 .map(Variant::softDeleted)

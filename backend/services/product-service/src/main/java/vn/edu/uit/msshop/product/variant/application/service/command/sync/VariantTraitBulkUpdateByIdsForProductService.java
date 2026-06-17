@@ -23,6 +23,7 @@ import vn.edu.uit.msshop.product.variant.application.service.command.support.Var
 import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTraits;
 
 @Service
@@ -46,6 +47,7 @@ class VariantTraitBulkUpdateByIdsForProductService
             })
     public void updateAll(
             final VariantTraitBulkUpdateByIdsForProductCommand cmd) {
+        final var productId = new VariantProductId(cmd.productId());
         final var newTraitsById = VariantTraitBulkUpdateByIdsForProductService
                 .toNewTraitsById(cmd.traitListById());
 
@@ -54,6 +56,9 @@ class VariantTraitBulkUpdateByIdsForProductService
         VariantSyncGuard.ensureAllVariantsFound(
                 variantIdSet,
                 variantById);
+        VariantSyncGuard.ensureAllBelongToProduct(
+                variantById.values(),
+                productId);
 
         final var amountVariants = variantById.size();
         final var next = new ArrayList<Variant>(amountVariants);
