@@ -11,10 +11,10 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductInfoUpdat
 import vn.edu.uit.msshop.product.product.application.dto.command.data.NewProductVariantData;
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductCreationCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSimpleCreationCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductHardDeletionCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductRestorationCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSoftDeletionCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductInfoUpdateCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductHardDeletionByIdCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductRestorationByIdCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductSoftDeletionByIdCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductInfoUpdateByIdCommand;
 import vn.edu.uit.msshop.shared.adapter.in.web.request.ChangeRequest;
 
 @Component
@@ -49,22 +49,22 @@ public class ProductCommandWebMapper {
                 request.targets());
     }
 
-    public ProductRestorationCommand toRestorationCommand(
+    public ProductRestorationByIdCommand toRestorationByIdCommand(
             final UUID productId,
             final long productVersion) {
-        return new ProductRestorationCommand(
+        return new ProductRestorationByIdCommand(
                 productId,
                 productVersion);
     }
 
-    public ProductInfoUpdateCommand toInfoUpdateCommand(
+    public ProductInfoUpdateByIdCommand toInfoUpdateCommand(
             final UUID productId,
             final ProductInfoUpdateRequest request) {
         final var nameChange = ChangeRequest.toChange(request.name());
         final var categoryIdChange = ChangeRequest.toChange(request.categoryId());
         final var brandIdChange = ChangeRequest.toChange(request.brandId());
 
-        return new ProductInfoUpdateCommand(
+        return new ProductInfoUpdateByIdCommand(
                 productId,
                 nameChange,
                 categoryIdChange,
@@ -72,19 +72,19 @@ public class ProductCommandWebMapper {
                 request.version());
     }
 
-    public ProductSoftDeletionCommand toSoftDeletionCommand(
+    public ProductSoftDeletionByIdCommand toSoftDeletionByIdCommand(
             final UUID productId,
             final long productVersion) {
 
-        return new ProductSoftDeletionCommand(
+        return new ProductSoftDeletionByIdCommand(
                 productId,
                 productVersion);
     }
 
-    public ProductHardDeletionCommand toHardDeletionCommand(
+    public ProductHardDeletionByIdCommand toHardDeletionByIdCommand(
             final UUID productId,
             final long productVersion) {
-        return new ProductHardDeletionCommand(
+        return new ProductHardDeletionByIdCommand(
                 productId,
                 productVersion);
     }

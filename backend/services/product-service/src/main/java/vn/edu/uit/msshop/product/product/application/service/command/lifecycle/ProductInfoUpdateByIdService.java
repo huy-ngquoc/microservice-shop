@@ -8,13 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductInfoUpdateCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductInfoUpdateByIdCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductBrandNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductCategoryNotFoundException;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductInfoUpdateUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductInfoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByProductIdPort;
@@ -36,8 +36,8 @@ import vn.edu.uit.msshop.shared.application.dto.Change;
 
 @Service
 @RequiredArgsConstructor
-class ProductInfoUpdateService
-        implements ProductInfoUpdateUseCase {
+class ProductInfoUpdateByIdService
+        implements ProductInfoUpdateByIdUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductSoldCountLookupByProductIdPort soldCountLookupByProductIdPort;
     private final ProductStockCountLookupByProductIdPort stockCountLookupByProductIdPort;
@@ -69,7 +69,7 @@ class ProductInfoUpdateService
                                     "#cmd.brandIdChange().getSet() != null")
             })
     public ProductView updateInfo(
-            final ProductInfoUpdateCommand cmd) {
+            final ProductInfoUpdateByIdCommand cmd) {
         final var productId = new ProductId(cmd.productId());
         final var nameChange = cmd.productNameChange().map(ProductName::new);
         final var categoryIdChange = cmd.categoryIdChange().map(ProductCategoryId::new);

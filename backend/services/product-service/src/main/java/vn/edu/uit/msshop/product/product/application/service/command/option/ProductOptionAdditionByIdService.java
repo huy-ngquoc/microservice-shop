@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionAdditionCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionAdditionByIdCommand;
 import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
-import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionAdditionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionAdditionByIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByProductIdPort;
@@ -35,8 +35,8 @@ import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
 
 @Service
 @RequiredArgsConstructor
-class ProductOptionAdditionService
-        implements ProductOptionAdditionUseCase {
+class ProductOptionAdditionByIdService
+        implements ProductOptionAdditionByIdUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductUpdatePort updatePort;
     private final ProductVariantTraitBulkUpdatePort variantTraitBulkUpdatePort;
@@ -59,7 +59,7 @@ class ProductOptionAdditionService
                             allEntries = true)
             })
     public ProductView add(
-            final ProductOptionAdditionCommand cmd) {
+            final ProductOptionAdditionByIdCommand cmd) {
         final var productId = new ProductId(cmd.productId());
         final var newOption = new ProductOption(cmd.newOption());
         final var defaultTrait = new ProductVariantTrait(cmd.defaultTrait());
@@ -72,7 +72,7 @@ class ProductOptionAdditionService
                 expectedVersion,
                 product.getVersion());
 
-        ProductOptionAdditionService.ensureOptionAddable(
+        ProductOptionAdditionByIdService.ensureOptionAddable(
                 product,
                 newOption,
                 defaultTrait);

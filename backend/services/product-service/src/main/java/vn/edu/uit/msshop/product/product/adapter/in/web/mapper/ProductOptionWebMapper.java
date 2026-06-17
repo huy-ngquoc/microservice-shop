@@ -7,38 +7,38 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductOptionAdditionRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductOptionRemovalRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductOptionUpdateRequest;
-import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionAdditionCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionRemovalCommand;
-import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionUpdateCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionAdditionByIdCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionRemovalByIdCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.option.ProductOptionUpdateByIdCommand;
 
 @Component
 public class ProductOptionWebMapper {
-    public ProductOptionAdditionCommand toAdditionCommand(
+    public ProductOptionAdditionByIdCommand toAdditionByIdCommand(
             final UUID productId,
             final ProductOptionAdditionRequest request) {
-        return new ProductOptionAdditionCommand(
+        return new ProductOptionAdditionByIdCommand(
                 productId,
                 request.option(),
                 request.defaultTrait(),
                 request.version());
     }
 
-    public ProductOptionUpdateCommand toUpdateCommand(
+    public ProductOptionUpdateByIdCommand toUpdateByIdCommand(
             final UUID productId,
             final int optionIndex,
             final ProductOptionUpdateRequest request) {
-        return new ProductOptionUpdateCommand(
+        return new ProductOptionUpdateByIdCommand(
                 productId,
                 optionIndex,
                 request.option(),
                 request.version());
     }
 
-    public ProductOptionRemovalCommand toRemovalCommand(
+    public ProductOptionRemovalByIdCommand toRemovalByIdCommand(
             final UUID productId,
             final int optionIndex,
             final ProductOptionRemovalRequest request) {
-        return new ProductOptionRemovalCommand(
+        return new ProductOptionRemovalByIdCommand(
                 productId,
                 optionIndex,
                 request.version());

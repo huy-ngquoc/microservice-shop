@@ -2,7 +2,7 @@ package vn.edu.uit.msshop.product.product.application.dto.command.lifecycle;
 
 import java.util.UUID;
 
-public record ProductRestorationCommand(
+public record ProductHardDeletionByIdCommand(
         UUID productId,
         long productVersion) {
 }
