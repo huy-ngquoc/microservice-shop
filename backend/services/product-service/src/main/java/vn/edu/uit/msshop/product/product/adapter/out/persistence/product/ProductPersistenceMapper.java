@@ -1,9 +1,6 @@
 package vn.edu.uit.msshop.product.product.adapter.out.persistence.product;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.stereotype.Component;
@@ -74,24 +71,12 @@ class ProductPersistenceMapper {
                 traits);
     }
 
-    public Map<ProductId, Product> toDomainById(
-            final Collection<Product> productCollection) {
-        final var byId = HashMap.<ProductId, Product>newHashMap(productCollection.size());
-        for (final var product : productCollection) {
-            final var previous = byId.put(product.getId(), product);
-            if (previous != null) {
-                throw new IllegalStateException(
-                        "Duplicate product ID: " + product.getId().value());
-            }
-        }
-        return Map.copyOf(byId);
-    }
-
     public ProductDocument toPersistence(
             final Product product) {
         final var priceRange = product.getPriceRange();
-        final var variantDocs = product.getVariants().values().stream()
-                .map(ProductPersistenceMapper::toPersistence).toList();
+        final var variantDocList = product.getVariants().values().stream()
+                .map(ProductPersistenceMapper::toPersistence)
+                .toList();
 
         return new ProductDocument(
                 product.getId().value(),
@@ -101,7 +86,7 @@ class ProductPersistenceMapper {
                 priceRange.minPrice().value(),
                 priceRange.maxPrice().value(),
                 product.getOptions().unwrap(),
-                variantDocs,
+                variantDocList,
                 product.getImageKeys().unwrap(),
                 product.getVersion().value(),
                 ProductDeletionTime.unwrap(product.getDeletionTime()));
