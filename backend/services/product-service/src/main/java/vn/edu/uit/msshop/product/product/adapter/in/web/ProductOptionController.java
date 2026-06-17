@@ -19,37 +19,37 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductOptionAdd
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductOptionRemovalRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductOptionUpdateRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
-import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionAdditionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionRemovalUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionUpdateUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionAdditionByIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionRemovalByIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionUpdateByIdUseCase;
 
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductOptionController {
 
-    private final ProductOptionAdditionUseCase additionUseCase;
-    private final ProductOptionUpdateUseCase updateUseCase;
-    private final ProductOptionRemovalUseCase removalUseCase;
+    private final ProductOptionAdditionByIdUseCase additionByIdUseCase;
+    private final ProductOptionUpdateByIdUseCase updateByIdUseCase;
+    private final ProductOptionRemovalByIdUseCase removalByIdUseCase;
 
     private final ProductOptionWebMapper optionMapper;
     private final ProductResponseWebMapper responseMapper;
 
     @PostMapping("/{id}/options")
-    public ResponseEntity<ProductResponse> addOption(
+    public ResponseEntity<ProductResponse> addById(
             @PathVariable
             final UUID id,
 
             @RequestBody
             @Valid
             final ProductOptionAdditionRequest request) {
-        final var command = this.optionMapper.toAdditionCommand(id, request);
-        final var view = this.additionUseCase.add(command);
+        final var command = this.optionMapper.toAdditionByIdCommand(id, request);
+        final var view = this.additionByIdUseCase.add(command);
         return ResponseEntity.ok(this.responseMapper.toResponse(view));
     }
 
     @PatchMapping("/{id}/options/{index}")
-    public ResponseEntity<ProductResponse> updateOption(
+    public ResponseEntity<ProductResponse> updateById(
             @PathVariable
             final UUID id,
 
@@ -59,13 +59,13 @@ public class ProductOptionController {
             @RequestBody
             @Valid
             final ProductOptionUpdateRequest request) {
-        final var command = this.optionMapper.toUpdateCommand(id, index, request);
-        final var view = this.updateUseCase.update(command);
+        final var command = this.optionMapper.toUpdateByIdCommand(id, index, request);
+        final var view = this.updateByIdUseCase.update(command);
         return ResponseEntity.ok(this.responseMapper.toResponse(view));
     }
 
     @DeleteMapping("/{id}/options/{index}")
-    public ResponseEntity<ProductResponse> removeOption(
+    public ResponseEntity<ProductResponse> removeById(
             @PathVariable
             final UUID id,
 
@@ -75,8 +75,8 @@ public class ProductOptionController {
             @RequestBody
             @Valid
             final ProductOptionRemovalRequest request) {
-        final var command = this.optionMapper.toRemovalCommand(id, index, request);
-        final var view = this.removalUseCase.remove(command);
+        final var command = this.optionMapper.toRemovalByIdCommand(id, index, request);
+        final var view = this.removalByIdUseCase.remove(command);
         return ResponseEntity.ok(this.responseMapper.toResponse(view));
     }
 }
