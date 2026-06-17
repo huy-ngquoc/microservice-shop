@@ -13,6 +13,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.Varian
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantSyncGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -39,6 +40,7 @@ class VariantBulkRestorationByIdsForProductService
 
         final var variantById = this.softDeletedBulkLookupByIdsPort
                 .loadAllSoftDeletedByIds(variantIdSet);
+        VariantSyncGuard.ensureAllVariantsFound(variantIdSet, variantById);
 
         final var next = variantById.values().stream()
                 .map(Variant::restored)
