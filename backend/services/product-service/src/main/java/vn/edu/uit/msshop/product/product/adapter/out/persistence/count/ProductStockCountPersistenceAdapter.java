@@ -59,12 +59,12 @@ class ProductStockCountPersistenceAdapter
             return Map.of();
         }
 
-        final var jpaProductId = productIdSet.stream()
+        final var jpaProductIdSet = productIdSet.stream()
                 .map(ProductId::value)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toUnmodifiableSet());
+        final var docList = this.repository.findAllById(jpaProductIdSet);
 
-        return this.repository.findAllById(jpaProductId)
-                .stream()
+        return docList.stream()
                 .map(this.mapper::toDomain)
                 .collect(Collectors.toUnmodifiableMap(
                         ProductStockCount::getProductId,
