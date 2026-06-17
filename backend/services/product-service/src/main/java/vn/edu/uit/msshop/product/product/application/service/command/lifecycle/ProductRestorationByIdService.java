@@ -6,9 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductRestorationCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductRestorationByIdCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductRestorationUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductRestorationByIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
@@ -21,8 +21,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 
 @Service
 @RequiredArgsConstructor
-class ProductRestorationService
-        implements ProductRestorationUseCase {
+class ProductRestorationByIdService
+        implements ProductRestorationByIdUseCase {
     private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final ProductUpdatePort updatePort;
     private final ProductVariantBulkRestorationByIdsPort variantBulkRestorationForProductPort;
@@ -35,7 +35,7 @@ class ProductRestorationService
             cacheNames = CacheNames.PRODUCT_LIST,
             allEntries = true)
     public void restore(
-            final ProductRestorationCommand cmd) {
+            final ProductRestorationByIdCommand cmd) {
         final var productId = new ProductId(cmd.productId());
         final var expectedVersion = new ProductVersion(cmd.productVersion());
 

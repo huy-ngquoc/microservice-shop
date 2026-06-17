@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductHardDeletionCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.lifecycle.ProductHardDeletionByIdCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountDeletionByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountDeletionByProductIdPort;
@@ -22,8 +22,8 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion
 // TODO: delete image as well.
 @Service
 @RequiredArgsConstructor
-class ProductHardDeletionService
-        implements ProductHardDeletionUseCase {
+class ProductHardDeletionByIdService
+        implements ProductHardDeletionByIdUseCase {
     private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final ProductDeletionByIdPort deletionByIdPort;
     private final ProductSoldCountDeletionByProductIdPort soldCountDeletionByProductIdPort;
@@ -37,7 +37,7 @@ class ProductHardDeletionService
     @Override
     @Transactional
     public void hardDelete(
-            ProductHardDeletionCommand cmd) {
+            ProductHardDeletionByIdCommand cmd) {
         final var productId = new ProductId(cmd.productId());
         final var expectedVersion = new ProductVersion(cmd.productVersion());
 

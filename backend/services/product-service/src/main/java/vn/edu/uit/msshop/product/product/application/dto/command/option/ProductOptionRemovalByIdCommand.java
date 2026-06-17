@@ -2,9 +2,8 @@ package vn.edu.uit.msshop.product.product.application.dto.command.option;
 
 import java.util.UUID;
 
-public record ProductOptionUpdateCommand(
+public record ProductOptionRemovalByIdCommand(
         UUID productId,
         int optionIndex,
-        String newOption,
         long productVersion) {
 }

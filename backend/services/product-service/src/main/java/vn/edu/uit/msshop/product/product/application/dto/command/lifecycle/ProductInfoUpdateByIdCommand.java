@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import vn.edu.uit.msshop.shared.application.dto.Change;
 
-public record ProductInfoUpdateCommand(
+public record ProductInfoUpdateByIdCommand(
         UUID productId,
         Change<String> productNameChange,
         Change<UUID> categoryIdChange,

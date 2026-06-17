@@ -22,10 +22,10 @@ import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductSimpleCre
 import vn.edu.uit.msshop.product.product.adapter.in.web.request.ProductInfoUpdateRequest;
 import vn.edu.uit.msshop.product.product.adapter.in.web.response.ProductResponse;
 import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductCreationUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductRestorationUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductSoftDeletionUseCase;
-import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductInfoUpdateUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductHardDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductRestorationByIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductSoftDeletionByIdUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.ProductInfoUpdateByIdUseCase;
 
 @RestController
 @RequestMapping("/products")
@@ -33,10 +33,10 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.P
 public class ProductController {
 
     private final ProductCreationUseCase creationUseCase;
-    private final ProductRestorationUseCase restorationUseCase;
-    private final ProductInfoUpdateUseCase infoUpdateUseCase;
-    private final ProductSoftDeletionUseCase softDeletionUseCase;
-    private final ProductHardDeletionUseCase hardDeletionUseCase;
+    private final ProductRestorationByIdUseCase restorationByIdUseCase;
+    private final ProductInfoUpdateByIdUseCase infoUpdateByIdUseCase;
+    private final ProductSoftDeletionByIdUseCase softDeletionByIdUseCase;
+    private final ProductHardDeletionByIdUseCase hardDeletionByIdUseCase;
 
     private final ProductCommandWebMapper commandMapper;
     private final ProductResponseWebMapper responseMapper;
@@ -86,14 +86,14 @@ public class ProductController {
 
             @RequestParam
             final long version) {
-        final var command = this.commandMapper.toRestorationCommand(id, version);
-        this.restorationUseCase.restore(command);
+        final var command = this.commandMapper.toRestorationByIdCommand(id, version);
+        this.restorationByIdUseCase.restore(command);
 
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateInfo(
+    public ResponseEntity<ProductResponse> updateInfoById(
             @PathVariable
             final UUID id,
 
@@ -101,7 +101,7 @@ public class ProductController {
             @Valid
             final ProductInfoUpdateRequest request) {
         final var command = this.commandMapper.toInfoUpdateCommand(id, request);
-        final var view = this.infoUpdateUseCase.updateInfo(command);
+        final var view = this.infoUpdateByIdUseCase.updateInfo(command);
 
         final var response = this.responseMapper.toResponse(view);
         return ResponseEntity.ok(response);
@@ -114,8 +114,8 @@ public class ProductController {
 
             @RequestParam
             final long version) {
-        final var command = this.commandMapper.toSoftDeletionCommand(id, version);
-        this.softDeletionUseCase.softDelete(command);
+        final var command = this.commandMapper.toSoftDeletionByIdCommand(id, version);
+        this.softDeletionByIdUseCase.softDelete(command);
 
         return ResponseEntity.noContent().build();
     }
@@ -127,8 +127,8 @@ public class ProductController {
 
             @RequestParam
             final long version) {
-        final var command = this.commandMapper.toHardDeletionCommand(id, version);
-        this.hardDeletionUseCase.hardDelete(command);
+        final var command = this.commandMapper.toHardDeletionByIdCommand(id, version);
+        this.hardDeletionByIdUseCase.hardDelete(command);
 
         return ResponseEntity.noContent().build();
     }
