@@ -45,7 +45,9 @@ public class ProductOptionController {
             final ProductOptionAdditionRequest request) {
         final var command = this.optionMapper.toAdditionByIdCommand(id, request);
         final var view = this.additionByIdUseCase.add(command);
-        return ResponseEntity.ok(this.responseMapper.toResponse(view));
+
+        final var response = this.responseMapper.toResponse(view);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}/options/{index}")
@@ -61,7 +63,9 @@ public class ProductOptionController {
             final ProductOptionUpdateRequest request) {
         final var command = this.optionMapper.toUpdateByIdCommand(id, index, request);
         final var view = this.updateByIdUseCase.update(command);
-        return ResponseEntity.ok(this.responseMapper.toResponse(view));
+
+        final var response = this.responseMapper.toResponse(view);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}/options/{index}")
@@ -77,6 +81,8 @@ public class ProductOptionController {
             final ProductOptionRemovalRequest request) {
         final var command = this.optionMapper.toRemovalByIdCommand(id, index, request);
         final var view = this.removalByIdUseCase.remove(command);
-        return ResponseEntity.ok(this.responseMapper.toResponse(view));
+
+        final var response = this.responseMapper.toResponse(view);
+        return ResponseEntity.ok(response);
     }
 }
