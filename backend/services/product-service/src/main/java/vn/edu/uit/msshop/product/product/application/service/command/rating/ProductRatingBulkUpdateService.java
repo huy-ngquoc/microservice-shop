@@ -39,7 +39,7 @@ class ProductRatingBulkUpdateService
                             allEntries = true,
                             condition = "!#cmd.ratingList().isEmpty()"),
             })
-    public void execute(
+    public void updateAll(
             final ProductRatingBulkUpdateCommand cmd) {
         final var ratingList = cmd.ratingList();
         if (ratingList.isEmpty()) {
