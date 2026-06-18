@@ -38,7 +38,7 @@ class CategorySoftDeletionByIdService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY,
-                            key = "#cmd.id().value()"),
+                            key = "#cmd.categoryId()"),
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY_LIST,
                             allEntries = true)
