@@ -38,7 +38,7 @@ class BrandSoftDeletionByIdService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND,
-                            key = "#cmd.id().value()"),
+                            key = "#cmd.brandId()"),
                     @CacheEvict(
                             cacheNames = CacheNames.BRAND_LIST,
                             allEntries = true)
