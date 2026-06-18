@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByBrandIdQuery;
 import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByCategoryIdQuery;
 import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByIdQuery;
-import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByVariantIdQuery;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductExistenceCheckByVariantIdQuery;
 import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductSoftDeletedExistenceCheckByBrandIdQuery;
 import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductSoftDeletedExistenceCheckByCategoryIdQuery;
 import vn.edu.uit.msshop.product.product.application.dto.query.listing.ProductActiveListingQuery;
@@ -37,9 +37,9 @@ public class ProductQueryWebMapper {
                 categoryId);
     }
 
-    public ProductActiveExistenceCheckByVariantIdQuery toActiveExistenceCheckByVariantIdQuery(
+    public ProductExistenceCheckByVariantIdQuery toExistenceCheckByVariantIdQuery(
             final UUID variantId) {
-        return new ProductActiveExistenceCheckByVariantIdQuery(
+        return new ProductExistenceCheckByVariantIdQuery(
                 variantId);
     }
 
