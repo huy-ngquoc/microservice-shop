@@ -43,12 +43,12 @@ class CategoryInfoUpdateByIdService
             evict = {
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY,
-                            key = "#cmd.id().value()",
-                            condition = "#cmd.name().getSet() != null"),
+                            key = "#cmd.categoryId()",
+                            condition = "#cmd.categoryNameChange().getSet() != null"),
                     @CacheEvict(
                             cacheNames = CacheNames.CATEGORY_LIST,
                             allEntries = true,
-                            condition = "#cmd.name().getSet() != null")
+                            condition = "#cmd.categoryNameChange().getSet() != null")
             })
     public CategoryView updateInfo(
             final CategoryInfoUpdateByIdCommand cmd) {

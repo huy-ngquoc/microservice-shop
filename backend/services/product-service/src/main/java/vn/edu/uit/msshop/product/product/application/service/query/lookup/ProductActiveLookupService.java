@@ -33,7 +33,7 @@ class ProductActiveLookupService
             readOnly = true)
     @Cacheable(
             cacheNames = CacheNames.PRODUCT,
-            key = "#id.value()")
+            key = "#query.productId()")
     public ProductView find(
             final ProductActiveLookupByIdQuery query) {
         final var productId = new ProductId(query.productId());
