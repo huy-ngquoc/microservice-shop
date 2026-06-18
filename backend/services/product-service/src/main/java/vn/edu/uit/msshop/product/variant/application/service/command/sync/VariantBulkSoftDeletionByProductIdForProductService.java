@@ -41,12 +41,12 @@ class VariantBulkSoftDeletionByProductIdForProductService
             final VariantBulkSoftDeletionByProductIdForProductCommand cmd) {
         final var productId = new VariantProductId(cmd.productId());
 
-        final var variants = this.bulkLookupByProductIdPort.loadAllByProductId(productId);
-        if (variants.isEmpty()) {
+        final var activeVariants = this.bulkLookupByProductIdPort.loadAllActiveByProductId(productId);
+        if (activeVariants.isEmpty()) {
             return;
         }
 
-        final var next = variants.stream()
+        final var next = activeVariants.stream()
                 .map(Variant::softDeleted)
                 .toList();
 
