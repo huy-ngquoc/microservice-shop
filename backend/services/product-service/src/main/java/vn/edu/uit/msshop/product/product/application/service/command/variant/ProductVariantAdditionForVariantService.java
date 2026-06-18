@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.product.application.service.command.variant;
 
+import java.util.Map;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,8 @@ import vn.edu.uit.msshop.product.product.application.dto.command.variant.Product
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantAdditionForVariantUseCase;
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkIncrementPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkIncrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVariantGuard;
@@ -27,6 +31,8 @@ class ProductVariantAdditionForVariantService
         implements ProductVariantAdditionForVariantUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductUpdatePort updatePort;
+    private final ProductSoldCountBulkIncrementPort soldCountBulkIncrementPort;
+    private final ProductStockCountBulkIncrementPort stockCountBulkIncrementPort;
 
     private final ProductEventPublicationPort eventPort;
 
@@ -63,6 +69,15 @@ class ProductVariantAdditionForVariantService
 
         final var next = product.addVariant(newVariant);
         final var saved = this.updatePort.update(next);
+
+        if (cmd.productSoldCountIncrement() > 0) {
+            final var incrementByProductId = Map.of(productId, cmd.productSoldCountIncrement());
+            this.soldCountBulkIncrementPort.increaseAll(incrementByProductId);
+        }
+        if (cmd.productStockCountIncrement() > 0) {
+            final var incrementByProductId = Map.of(productId, cmd.productStockCountIncrement());
+            this.stockCountBulkIncrementPort.increaseAll(incrementByProductId);
+        }
 
         final var event = new ProductInfoUpdatedEvent(saved.getId());
         this.eventPort.publishEvent(event);
