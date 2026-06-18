@@ -105,6 +105,15 @@ public class VariantQueryPersistenceAdapter
     }
 
     @Override
+    public List<Variant> loadAllActiveByProductId(
+            final VariantProductId productId) {
+        final var jpaProductId = productId.value();
+        return this.repository.findAllByProductIdAndDeletionTimeIsNull(jpaProductId).stream()
+                .map(this.mapper::toDomain)
+                .toList();
+    }
+
+    @Override
     public Map<VariantId, Variant> loadAllSoftDeletedByIds(
             final Set<VariantId> idSet) {
         final var jpaIdList = idSet.stream()

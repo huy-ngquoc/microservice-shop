@@ -8,4 +8,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 public interface VariantBulkLookupByProductIdPort {
     List<Variant> loadAllByProductId(
             final VariantProductId id);
+
+    List<Variant> loadAllActiveByProductId(
+            final VariantProductId id);
 }
