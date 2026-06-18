@@ -17,8 +17,8 @@ import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
 public record ProductVariants(
         List<ProductVariant> values) {
-    public static final int MAX_AMOUNT = Math.addExact(ProductOptions.MAX_AMOUNT,
-            ProductVariantTraits.MAX_TRAITS_AMOUNT);
+
+    public static final int MAX_AMOUNT = 50;
 
     public ProductVariants {
         if (values == null) {
