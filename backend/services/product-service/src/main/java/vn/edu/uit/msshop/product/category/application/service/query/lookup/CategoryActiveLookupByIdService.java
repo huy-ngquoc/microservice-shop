@@ -27,7 +27,7 @@ class CategoryActiveLookupByIdService
             readOnly = true)
     @Cacheable(
             cacheNames = CacheNames.CATEGORY,
-            key = "#id.value()")
+            key = "#query.categoryId()")
     public CategoryView find(
             final CategoryActiveLookupByIdQuery query) {
         final var categoryId = new CategoryId(query.categoryId());
