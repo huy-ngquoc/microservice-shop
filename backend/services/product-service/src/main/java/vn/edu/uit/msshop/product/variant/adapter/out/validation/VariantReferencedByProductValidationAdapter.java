@@ -3,8 +3,8 @@ package vn.edu.uit.msshop.product.variant.adapter.out.validation;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductActiveExistenceCheckByVariantIdQuery;
-import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductActiveExistenceCheckByVariantIdUseCase;
+import vn.edu.uit.msshop.product.product.application.dto.query.existence.ProductExistenceCheckByVariantIdQuery;
+import vn.edu.uit.msshop.product.product.application.port.in.query.existence.ProductExistenceCheckByVariantIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.VariantReferencedByProductCheckPort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 
@@ -12,12 +12,12 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 @RequiredArgsConstructor
 public class VariantReferencedByProductValidationAdapter
         implements VariantReferencedByProductCheckPort {
-    private final ProductActiveExistenceCheckByVariantIdUseCase productActiveExistenceCheckByVariantIdUseCase;
+    private final ProductExistenceCheckByVariantIdUseCase productExistenceCheckByVariantIdUseCase;
 
     @Override
     public boolean isReferencedByProduct(
             final VariantId variantId) {
-        final var query = new ProductActiveExistenceCheckByVariantIdQuery(variantId.value());
-        return this.productActiveExistenceCheckByVariantIdUseCase.exists(query);
+        final var query = new ProductExistenceCheckByVariantIdQuery(variantId.value());
+        return this.productExistenceCheckByVariantIdUseCase.exists(query);
     }
 }
