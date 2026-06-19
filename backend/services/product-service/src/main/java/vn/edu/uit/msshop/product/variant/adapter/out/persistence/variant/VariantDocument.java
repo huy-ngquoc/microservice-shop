@@ -2,7 +2,9 @@ package vn.edu.uit.msshop.product.variant.adapter.out.persistence.variant;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.annotation.Id;
@@ -20,6 +22,9 @@ import lombok.experimental.FieldNameConstants;
         onlyExplicitlyIncluded = true)
 @FieldNameConstants
 public final class VariantDocument {
+
+    private static final String TRAITS_KEY_DELIMITER = "|";
+
     @Id
     @EqualsAndHashCode.Include
     private final UUID id;
@@ -31,6 +36,8 @@ public final class VariantDocument {
     private final long price;
 
     private final List<String> traits;
+
+    private final String traitsKey;
 
     private final List<String> targets;
 
@@ -71,9 +78,18 @@ public final class VariantDocument {
         this.productName = productName;
         this.price = price;
         this.traits = List.copyOf(traits);
+        this.traitsKey = VariantDocument.computeTraitsKey(traits);
         this.targets = List.copyOf(targets);
         this.imageKey = imageKey;
         this.version = version;
         this.deletionTime = deletionTime;
+    }
+
+    private static String computeTraitsKey(
+            final List<String> traits) {
+        return traits.stream()
+                .map(trait -> trait.toLowerCase(Locale.ROOT))
+                .map(trait -> trait.length() + ":" + trait)
+                .collect(Collectors.joining(TRAITS_KEY_DELIMITER));
     }
 }
