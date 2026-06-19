@@ -72,10 +72,7 @@ class VariantImageUpdateByIdService
             return this.mapper.toImageView(variant);
         }
 
-        final var event = new VariantImageUpdatedEvent(
-                saved.getId(),
-                saved.getImageKey(),
-                variant.getImageKey());
+        final var event = VariantImageUpdatedEvent.of(saved, variant.getImageKey());
         this.eventPublicationPort.publishEvent(event);
 
         this.imageDeleter.deleteQuietly(variant.getImageKey());

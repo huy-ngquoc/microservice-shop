@@ -56,7 +56,7 @@ class VariantBulkHardDeletionByProductIdForProductService
         }
 
         for (final var variant : variantList) {
-            final var event = new VariantHardDeletedEvent(variant.getId());
+            final var event = VariantHardDeletedEvent.of(variant);
             this.eventPublicationPort.publishEvent(event);
         }
     }

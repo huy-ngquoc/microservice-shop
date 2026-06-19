@@ -66,10 +66,7 @@ class VariantImageDeletionByIdService
         final var next = variant.removeImageKey();
         final var saved = this.updatePort.update(next);
 
-        final var event = new VariantImageUpdatedEvent(
-                saved.getId(),
-                null,
-                oldKey);
+        final var event = VariantImageUpdatedEvent.of(saved, oldKey);
         this.eventPublicationPort.publishEvent(event);
 
         this.imageDeleter.deleteQuietly(oldKey);
