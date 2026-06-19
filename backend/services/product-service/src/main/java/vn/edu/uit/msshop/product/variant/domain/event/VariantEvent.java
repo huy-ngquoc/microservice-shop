@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 public sealed interface VariantEvent
         permits
@@ -19,5 +20,7 @@ public sealed interface VariantEvent
     Instant getOccurrenceTime();
 
     VariantId getVariantId();
+
+    VariantProductId getProductId();
 
 }

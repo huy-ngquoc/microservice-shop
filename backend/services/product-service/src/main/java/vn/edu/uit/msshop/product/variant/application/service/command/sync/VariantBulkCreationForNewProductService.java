@@ -156,7 +156,7 @@ class VariantBulkCreationForNewProductService
     private void publishCreatedEvents(
             final List<Variant> saved) {
         for (final var variant : saved) {
-            final var event = new VariantCreatedEvent(variant.getId());
+            final var event = VariantCreatedEvent.of(variant);
             this.eventPublicationPort.publishEvent(event);
         }
     }

@@ -70,7 +70,7 @@ class VariantRestorationByIdService
                 soldIncrement,
                 stockIncrement);
 
-        final var event = new VariantRestoredEvent(saved.getId());
+        final var event = VariantRestoredEvent.of(saved);
         this.eventPublicationPort.publishEvent(event);
     }
 }

@@ -60,7 +60,7 @@ class VariantHardDeletionByIdService
         this.soldCountDeletionByIdPort.deleteByVariantId(variantId);
         this.stockCountDeletionByIdPort.deleteByVariantId(variantId);
 
-        final var event = new VariantHardDeletedEvent(variantId);
+        final var event = VariantHardDeletedEvent.of(variant);
         this.eventPublicationPort.publishEvent(event);
 
         this.deleteImage(variant.getImageKey());
