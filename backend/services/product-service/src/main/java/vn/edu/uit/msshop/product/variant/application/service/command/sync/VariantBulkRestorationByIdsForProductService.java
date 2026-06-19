@@ -55,7 +55,7 @@ class VariantBulkRestorationByIdsForProductService
         final var saved = this.bulkUpdatePort.updateAll(next);
 
         for (final var variant : saved) {
-            final var event = new VariantRestoredEvent(variant.getId());
+            final var event = VariantRestoredEvent.of(variant);
             this.eventPublicationPort.publishEvent(event);
         }
     }
