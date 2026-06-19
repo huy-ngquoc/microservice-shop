@@ -59,7 +59,7 @@ class VariantBulkSoftDeletionByIdsForProductService
         final var saved = this.bulkUpdatePort.updateAll(next);
 
         for (final var variant : saved) {
-            final var event = new VariantSoftDeletedEvent(variant.getId());
+            final var event = VariantSoftDeletedEvent.of(variant);
             this.eventPublicationPort.publishEvent(event);
         }
     }
