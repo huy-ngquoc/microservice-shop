@@ -6,8 +6,12 @@ import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantSoldCountValue;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCountValue;
 import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 
 @RequiredArgsConstructor
@@ -25,11 +29,19 @@ public final class VariantSoftDeletedEvent
 
     private final VariantProductId productId;
 
+    private final VariantSoldCountValue soldCountValue;
+
+    private final VariantStockCountValue stockCountValue;
+
     public static VariantSoftDeletedEvent of(
-            final Variant variant) {
+            final Variant variant,
+            final VariantSoldCount soldCount,
+            final VariantStockCount stockCount) {
         return new VariantSoftDeletedEvent(
                 variant.getId(),
-                variant.getProductId());
+                variant.getProductId(),
+                soldCount.getValue(),
+                stockCount.getValue());
     }
 
     @Override
@@ -52,4 +64,11 @@ public final class VariantSoftDeletedEvent
         return this.productId;
     }
 
+    public VariantSoldCountValue getSoldCountValue() {
+        return this.soldCountValue;
+    }
+
+    public VariantStockCountValue getStockCountValue() {
+        return this.stockCountValue;
+    }
 }

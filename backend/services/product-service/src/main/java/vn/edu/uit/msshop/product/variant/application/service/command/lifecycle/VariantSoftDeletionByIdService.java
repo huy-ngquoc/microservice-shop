@@ -73,7 +73,10 @@ class VariantSoftDeletionByIdService
                 soldDecrement,
                 stockDecrement);
 
-        final var event = VariantSoftDeletedEvent.of(saved);
+        final var event = VariantSoftDeletedEvent.of(
+                saved,
+                soldCount,
+                stockCount);
         this.eventPublicationPort.publishEvent(event);
     }
 }
