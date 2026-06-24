@@ -24,6 +24,7 @@ import vn.edu.uit.msshop.shared.domain.Domains;
         onlyExplicitlyIncluded = true)
 // TODO: add status
 public final class Product {
+
     @EqualsAndHashCode.Include
     private final ProductId id;
 
