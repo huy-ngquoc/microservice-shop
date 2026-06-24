@@ -19,7 +19,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
@@ -38,7 +37,7 @@ class VariantInfoUpdateByIdService
     private final VariantSoldCountLookupByVariantIdPort soldCountLookupByIdPort;
     private final VariantStockCountLookupByVariantIdPort stockCountLookupByIdPort;
     private final VariantUpdatePort updatePort;
-    private final VariantToProductUpdatePort updateInProductPort;
+
     private final VariantEventPublicationPort eventPublicationPort;
     private final VariantViewMapper mapper;
 
@@ -108,8 +107,6 @@ class VariantInfoUpdateByIdService
 
         final var event = VariantInfoUpdatedEvent.of(saved);
         this.eventPublicationPort.publishEvent(event);
-
-        this.updateInProductPort.updateInProduct(saved);
 
         return this.mapper.toView(
                 saved,

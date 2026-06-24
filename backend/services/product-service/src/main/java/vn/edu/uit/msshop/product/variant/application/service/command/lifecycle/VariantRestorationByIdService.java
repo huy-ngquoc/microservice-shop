@@ -14,7 +14,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedLookupByIdPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductAdditionPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.validation.VariantRestorabilityCheckPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredEvent;
@@ -30,7 +29,7 @@ class VariantRestorationByIdService
     private final VariantSoldCountLookupByVariantIdPort soldCountLookupByIdPort;
     private final VariantStockCountLookupByVariantIdPort stockCountLookupByIdPort;
     private final VariantRestorabilityCheckPort checkRestorablePort;
-    private final VariantToProductAdditionPort addToProductPort;
+
     private final VariantUpdatePort updatePort;
     private final VariantEventPublicationPort eventPublicationPort;
 
@@ -59,16 +58,9 @@ class VariantRestorationByIdService
                 variantId, productId);
         final var stockCount = this.stockCountLookupByIdPort.loadByVariantIdOrZero(
                 variantId, productId);
-        final var soldIncrement = soldCount.getValue().value();
-        final var stockIncrement = stockCount.getValue().value();
 
         final var next = variant.restored();
         final var saved = this.updatePort.update(next);
-
-        this.addToProductPort.addToProduct(
-                saved,
-                soldIncrement,
-                stockIncrement);
 
         final var event = VariantRestoredEvent.of(
                 saved,
