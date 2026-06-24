@@ -15,10 +15,13 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.count.VariantStockCountBulkSetCommand;
 import vn.edu.uit.msshop.product.variant.application.exception.VariantNotFoundException;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantStockCountBulkSetUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductStockCountBulkDecrementPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductStockCountBulkIncrementPort;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantStockCountBulkUpdatedEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantStockCountBulkUpdatedEvent.VariantStockCountDelta;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
@@ -33,6 +36,8 @@ class VariantStockCountBulkSetService
     private final VariantStockCountBulkUpdatePort stockCountBulkUpdatePort;
     private final VariantToProductStockCountBulkIncrementPort increaseProductStockCountsPort;
     private final VariantToProductStockCountBulkDecrementPort decreaseProductStockCountsPort;
+
+    private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -56,6 +61,7 @@ class VariantStockCountBulkSetService
         final var changeList = this.loadChangeList(newValueById);
         this.persistUpdates(changeList);
         this.propagateDeltas(changeList);
+        this.publishStockCountChanges(changeList);
     }
 
     private static Map<VariantId, VariantStockCountValue> toNewValueByVariantId(
@@ -116,6 +122,20 @@ class VariantStockCountBulkSetService
         }
     }
 
+    private void publishStockCountChanges(
+            final List<StockCountChange> changeList) {
+        final var deltaList = changeList.stream()
+                .filter(change -> change.delta() != 0)
+                .map(StockCountChange::toDelta)
+                .toList();
+        if (deltaList.isEmpty()) {
+            return;
+        }
+
+        final var event = new VariantStockCountBulkUpdatedEvent(deltaList);
+        this.eventPublicationPort.publishEvent(event);
+    }
+
     private static DeltasByProductId toDeltasByProductId(
             final List<StockCountChange> changeList) {
         final var amountVariant = changeList.size();
@@ -153,12 +173,19 @@ class VariantStockCountBulkSetService
                     this.newValue);
         }
 
+        VariantProductId productId() {
+            return this.current.getProductId();
+        }
+
         int delta() {
             return this.newValue.value() - this.current.getValue().value();
         }
 
-        VariantProductId productId() {
-            return this.current.getProductId();
+        VariantStockCountDelta toDelta() {
+            return new VariantStockCountDelta(
+                    this.current.getVariantId().value(),
+                    this.current.getProductId().value(),
+                    this.delta());
         }
     }
 
