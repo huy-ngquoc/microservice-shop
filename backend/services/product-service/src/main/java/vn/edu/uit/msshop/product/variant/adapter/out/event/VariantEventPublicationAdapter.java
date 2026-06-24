@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantCountBulkUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantEvent;
 
 @Component
@@ -17,6 +18,12 @@ public class VariantEventPublicationAdapter
     @Override
     public void publishEvent(
             final VariantEvent event) {
+        this.publisher.publishEvent(event);
+    }
+
+    @Override
+    public void publishEvent(
+            VariantCountBulkUpdatedEvent event) {
         this.publisher.publishEvent(event);
     }
 
