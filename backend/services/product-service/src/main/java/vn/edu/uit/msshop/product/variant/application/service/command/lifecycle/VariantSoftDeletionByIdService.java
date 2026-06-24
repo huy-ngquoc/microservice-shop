@@ -15,7 +15,6 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountLookupByVariantIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductRemovalPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantVersionGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -30,7 +29,7 @@ class VariantSoftDeletionByIdService
     private final VariantSoldCountLookupByVariantIdPort soldCountLookupByIdPort;
     private final VariantStockCountLookupByVariantIdPort stockCountLookupByIdPort;
     private final VariantUpdatePort updatePort;
-    private final VariantToProductRemovalPort removeFromProductPort;
+
     private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
@@ -61,17 +60,9 @@ class VariantSoftDeletionByIdService
                 variantId, productId);
         final var stockCount = this.stockCountLookupByIdPort.loadByVariantIdOrZero(
                 variantId, productId);
-        final var soldDecrement = soldCount.getValue().value();
-        final var stockDecrement = stockCount.getValue().value();
 
         final var next = variant.softDeleted();
         final var saved = this.updatePort.update(next);
-
-        this.removeFromProductPort.removeFromProduct(
-                saved.getId(),
-                saved.getProductId(),
-                soldDecrement,
-                stockDecrement);
 
         final var event = VariantSoftDeletedEvent.of(
                 saved,
