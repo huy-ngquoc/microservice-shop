@@ -3,6 +3,7 @@ package vn.edu.uit.msshop.product.variant.application.mapper;
 import org.springframework.stereotype.Component;
 
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantImageView;
+import vn.edu.uit.msshop.product.variant.application.dto.view.VariantProjectionView;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
@@ -11,6 +12,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantImageKe
 
 @Component
 public class VariantViewMapper {
+
     public VariantView toView(
             final Variant variant,
             final VariantSoldCount soldCount,
@@ -29,6 +31,14 @@ public class VariantViewMapper {
                 targets,
                 VariantImageKey.unwrap(variant.getImageKey()),
                 variant.getVersion().value());
+    }
+
+    public VariantProjectionView toProjectionView(
+            final Variant variant) {
+        return new VariantProjectionView(
+                variant.getId().value(),
+                variant.getPrice().value(),
+                variant.getTraits().unwrap());
     }
 
     public VariantImageView toImageView(

@@ -26,6 +26,7 @@ public record VariantView(
         String imageKey,
 
         long version) {
+
     public VariantView {
         traits = List.copyOf(traits);
         targets = List.copyOf(targets);
