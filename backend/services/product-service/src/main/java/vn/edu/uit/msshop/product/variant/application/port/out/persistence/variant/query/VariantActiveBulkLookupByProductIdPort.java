@@ -5,7 +5,7 @@ import java.util.List;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
-public interface VariantBulkLookupByProductIdPort {
-    List<Variant> loadAllByProductId(
+public interface VariantActiveBulkLookupByProductIdPort {
+    List<Variant> loadAllActiveByProductId(
             final VariantProductId productId);
 }
