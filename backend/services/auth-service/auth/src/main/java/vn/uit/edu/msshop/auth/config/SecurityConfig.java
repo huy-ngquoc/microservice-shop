@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .permitAll()
                         .pathMatchers("/products/**").permitAll()
                         .pathMatchers("/variants/**").permitAll()
+                        .pathMatchers("/recommendation/**").permitAll()
                         .pathMatchers("/fake_payment/**").permitAll()
                         // .pathMatchers("/order/**").permitAll()
                         .anyExchange().authenticated())

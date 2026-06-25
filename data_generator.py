@@ -5,7 +5,7 @@ import time
 import os
 
 # Cấu hình URL
-PRODUCT_API = 'http://localhost:64364/products'
+PRODUCT_API = 'http://localhost:63151/products'
 INVENTORY_API = 'http://localhost:8090/inventory/'
 LOG_FILE = 'created_variant_ids.txt'
 
@@ -66,8 +66,8 @@ def create_product():
 
     payload = {
         "name": product_name,
-        "categoryId": "019e35ff-dc11-73ed-b5d2-bd397d6df37d",
-        "brandId": "019e35fe-87df-7752-9ce9-68562df83717",
+        "categoryId": "019e95ec-7210-7457-a95e-30fbd02f6065",
+        "brandId": "019e95ed-069e-75b2-bc8a-4b290439e3df",
         "options": product_options,
         "variants": [{
             "price": random.randint(10, 25) * 20000,
@@ -110,8 +110,8 @@ def create_product():
 
     payload = {
         "name": product_name,
-        "categoryId": "019e35ff-dc11-73ed-b5d2-bd397d6df37d",
-        "brandId": "019e35fe-87df-7752-9ce9-68562df83717",
+        "categoryId": "019e95ec-7210-7457-a95e-30fbd02f6065",
+        "brandId": "019e95ed-069e-75b2-bc8a-4b290439e3df",
         "options": product_options,
         "variants": [
             {
@@ -140,7 +140,7 @@ def create_product():
         print(f"Có lỗi xảy ra: {e}")
 
 if __name__ == "__main__":
-    count = 10000
+    count = 1000
     print(f"Bắt đầu seeding {count} sản phẩm...")
     
     if os.path.exists(LOG_FILE):

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Recommendation & Checkout Demo - MSShop</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .preview-image { max-height: 280px; object-fit: contain; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen">
+
+    <header class="bg-indigo-600 text-white py-4 px-6 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold tracking-wide">👕 MSShop - AI Consultant & Order Demo</h1>
+        <div class="flex items-center gap-3">
+            <a href="order.html" class="text-xs bg-indigo-700 hover:bg-indigo-800 text-white px-3 py-1.5 rounded-lg font-medium transition-colors">📋 Go to Orders</a>
+            <a href="inventory.html" class="text-xs bg-indigo-700 hover:bg-indigo-800 text-white px-3 py-1.5 rounded-lg font-medium transition-colors">📦 Go to Inventory</a>
+            <div id="auth-status-nav" class="text-xs bg-indigo-800 px-3 py-1.5 rounded-lg font-medium"></div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">1. Upload Body Shape / Outfit Image</h2>
+                
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-indigo-500 transition-colors" id="drop-zone">
+                    <input type="file" id="file-input" accept="image/*" class="hidden">
+                    <label for="file-input" class="cursor-pointer">
+                        <div class="text-gray-500 py-8" id="upload-prompt">
+                            <span class="text-4xl">📸</span>
+                            <p class="mt-2 text-sm font-medium">Click to select or drag and drop image here</p>
+                        </div>
+                        <img id="image-preview" class="preview-image hidden mx-auto rounded-lg shadow-sm" src="#" alt="Preview">
+                    </label>
+                </div>
+
+                <div id="ai-analysis-box" class="mt-6 hidden bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">📊 AI Analysis Results:</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Gender:</span>
+                            <span id="res-gender" class="font-semibold text-indigo-600">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Body Shape:</span>
+                            <span id="res-bodyshape" class="font-semibold text-indigo-600">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-predict" disabled class="mt-6 w-full bg-gray-400 text-white font-medium py-3 px-4 rounded-lg cursor-not-allowed hover:bg-indigo-700 transition-colors shadow-sm">
+                Find Matching Products 🚀
+            </button>
+        </div>
+
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800">2. Recommended Items by MSShop</h2>
+                    <span id="ai-status" class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Awaiting image...</span>
+                </div>
+
+                <div id="loading" class="hidden text-center py-16">
+                    <div class="animate-spin inline-block w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mb-3"></div>
+                    <p class="text-gray-500 text-sm">AI is analyzing image and fetching the best variants...</p>
+                </div>
+
+                <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch">
+                    <div class="col-span-full text-center py-16 text-gray-400 border border-dashed border-gray-200 rounded-lg">
+                        No data available. Please upload an image and analyze.
+                    </div>
+                </div>
+            </div>
+
+            <div id="pagination-box" class="hidden mt-8 pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
+                <div class="text-gray-500">
+                    Showing page <span id="current-page-text" class="font-semibold text-gray-800">1</span>, total of <span id="total-elements-text" class="font-semibold text-gray-800">0</span> products.
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="btn-prev-page" class="px-3 py-1.5 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors">
+                        ◀ Prev
+                    </button>
+                    <span class="text-gray-600 px-2">
+                        Page <span id="page-info">1 / 1</span>
+                    </span>
+                    <button id="btn-next-page" class="px-3 py-1.5 border border-gray-300 rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors">
+                        Next ▶
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="order-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative border border-gray-100">
+            
+            <div id="modal-alert" class="hidden p-3 rounded-lg text-xs font-semibold mb-3"></div>
+
+            <h3 class="text-lg font-bold text-gray-900 mb-2">🛍️ Create Demo Order</h3>
+            <p class="text-xs text-gray-500 mb-4">Submit payload to target microservice.</p>
+            
+            <form id="order-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Target Variant ID</label>
+                    <div class="relative flex items-center">
+                        <input type="text" id="ord-variant-id" readonly class="w-full pl-3 pr-10 py-2 bg-gray-100 border border-gray-200 rounded-lg text-gray-500 text-xs focus:outline-hidden cursor-not-allowed font-mono">
+                        <button type="button" onclick="copyTextFromInput('ord-variant-id')" class="absolute right-2 text-gray-400 hover:text-indigo-600 text-xs font-medium px-1.5 py-1 bg-white border border-gray-200 rounded shadow-xs" title="Copy ID">📋</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Full Name</label>
+                        <input type="text" id="ord-fullname" value="Dang Le Binh" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Phone Number</label>
+                        <input type="text" id="ord-phone" value="0825865662" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Shipping Address</label>
+                    <input type="text" id="ord-address" value="Tra Vinh" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Payment Method</label>
+                        <select id="ord-payment-method" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-hidden focus:ring-2 focus:ring-indigo-500 font-medium">
+                            <option value="ONLINE" selected>🌐 ONLINE</option>
+                            <option value="COD">💵 COD</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Quantity</label>
+                        <input type="number" id="ord-quantity" value="1" min="1" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" id="btn-close-modal" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+                    <button type="submit" id="btn-submit-order" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm shadow-sm transition-colors flex items-center gap-1.5">
+                        <span>Confirm Order</span>
+                        <div id="order-spinner" class="hidden animate-spin w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const imagePreview = document.getElementById('image-preview');
+        const uploadPrompt = document.getElementById('upload-prompt');
+        const btnPredict = document.getElementById('btn-predict');
+        const aiStatus = document.getElementById('ai-status');
+        const loading = document.getElementById('loading');
+        const productList = document.getElementById('product-list');
+        
+        const aiAnalysisBox = document.getElementById('ai-analysis-box');
+        const resGender = document.getElementById('res-gender');
+        const resBodyShape = document.getElementById('res-bodyshape');
+
+        const paginationBox = document.getElementById('pagination-box');
+        const currentPageText = document.getElementById('current-page-text');
+        const totalElementsText = document.getElementById('total-elements-text');
+        const pageInfo = document.getElementById('page-info');
+        const btnPrevPage = document.getElementById('btn-prev-page');
+        const btnNextPage = document.getElementById('btn-next-page');
+
+        // Modal View Containers
+        const orderModal = document.getElementById('order-modal');
+        const orderForm = document.getElementById('order-form');
+        const ordVariantId = document.getElementById('ord-variant-id');
+        const ordPaymentMethod = document.getElementById('ord-payment-method');
+        const ordQuantity = document.getElementById('ord-quantity');
+        const btnCloseModal = document.getElementById('btn-close-modal');
+        const btnSubmitOrder = document.getElementById('btn-submit-order');
+        const orderSpinner = document.getElementById('order-spinner');
+        const modalAlert = document.getElementById('modal-alert');
+        const authStatusNav = document.getElementById('auth-status-nav');
+
+        const GATEWAY_URL = 'http://localhost:8082'; 
+        
+        let currentGender = "";
+        let currentBodyShape = "";
+        let currentPage = 1;
+        const pageSize = 9; 
+
+        let selectedFile = null; 
+
+        // --- Check Authentication State on Init ---
+        const token = localStorage.getItem('ms_access_token');
+        if (!token) {
+            authStatusNav.innerHTML = `<span class="text-red-300 font-bold">⚠️ Unauthorized</span>`;
+            authStatusNav.className = "text-xs bg-red-950 border border-red-800 px-3 py-1.5 rounded-lg text-red-200";
+        } else {
+            authStatusNav.innerHTML = `<span class="text-green-400 font-bold">● Authorized</span>`;
+        }
+
+        // --- Copy Utility Helpers ---
+        window.copyTextFromInput = function(inputId) {
+            const copyText = document.getElementById(inputId);
+            if (!copyText || !copyText.value) return;
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                alert("📋 Variant ID copied: " + copyText.value);
+            });
+        };
+
+        window.copyDirectText = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("📋 Variant ID copied: " + text);
+            });
+        };
+
+        // --- 1. Image Preview Handler ---
+        fileInput.addEventListener('change', function(e) {
+            selectedFile = e.target.files[0]; 
+            if (selectedFile) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.classList.remove('hidden');
+                    uploadPrompt.classList.add('hidden');
+                    aiAnalysisBox.classList.add('hidden');
+                    paginationBox.classList.add('hidden'); 
+                    btnPredict.disabled = false;
+                    btnPredict.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    btnPredict.classList.add('bg-indigo-600');
+                    aiStatus.textContent = "Ready to analyze";
+                    aiStatus.className = "text-sm font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full";
+                    currentPage = 1;
+                }
+                reader.readAsDataURL(selectedFile);
+            }
+        });
+
+        // --- 2. Post Binary Image to ML Server ---
+        btnPredict.addEventListener('click', async () => {
+            if (!selectedFile) return;
+            loading.classList.remove('hidden');
+            productList.classList.add('hidden');
+            paginationBox.classList.add('hidden');
+            aiStatus.textContent = "AI Processing...";
+            btnPredict.disabled = true;
+            currentPage = 1; 
+
+            try {
+                const mlResponse = await fetch(`${GATEWAY_URL}/recommendation/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': selectedFile.type },
+                    body: selectedFile
+                });
+                if (!mlResponse.ok) throw new Error('Failed to connect to AI Core Service.');
+                const mlData = await mlResponse.json();
+
+                if (mlData.status === "success" && mlData.prediction) {
+                    currentGender = mlData.prediction.gender;
+                    currentBodyShape = mlData.prediction.body_shape;
+                    resGender.textContent = currentGender;
+                    resBodyShape.textContent = currentBodyShape;
+                    aiAnalysisBox.classList.remove('hidden');
+                    aiStatus.textContent = `Detected: ${currentGender} + ${currentBodyShape}`;
+                    aiStatus.className = "text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full";
+
+                    await fetchProductVariants(currentPage, currentGender, currentBodyShape);
+                } else {
+                    throw new Error('Invalid response structure from ML Server.');
+                }
+            } catch (error) {
+                console.error(error);
+                aiStatus.textContent = "Failed";
+                aiStatus.className = "text-sm font-medium text-red-600 bg-red-50 px-3 py-1 rounded-full";
+                productList.innerHTML = `<div class="col-span-full text-center py-12 text-red-500 font-medium">❌ Error: ${error.message}</div>`;
+                productList.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+                btnPredict.disabled = false;
+            }
+        });
+
+        // --- 3. Fetch Product Variants API Function ---
+        async function fetchProductVariants(page, gender, bodyShape) {
+            try {
+                productList.classList.add('hidden');
+                loading.classList.remove('hidden');
+                const urlParams = new URLSearchParams();
+                urlParams.append('page', page.toString());
+                urlParams.append('size', pageSize.toString());
+                urlParams.append('target', gender);
+                urlParams.append('target', bodyShape);
+
+                const productResponse = await fetch(`${GATEWAY_URL}/variants?${urlParams.toString()}`);
+                if (!productResponse.ok) throw new Error('Failed to fetch variants from Product Service.');
+                const productData = await productResponse.json();
+                
+                const variantsList = productData.items || []; 
+                renderVariants(variantsList);
+                setupPagination(page, pageSize, productData.totalElements || 0);
+            } catch (error) {
+                productList.innerHTML = `<div class="col-span-full text-center py-12 text-red-500 font-medium">❌ API Error: ${error.message}</div>`;
+                productList.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        // --- 4. Pagination Setup Configuration ---
+        function setupPagination(page, size, totalElements) {
+            if (totalElements === 0) { paginationBox.classList.add('hidden'); return; }
+            const totalPages = Math.ceil(totalElements / size) || 1;
+            currentPageText.textContent = page;
+            totalElementsText.textContent = totalElements;
+            pageInfo.textContent = `${page} / ${totalPages}`;
+            btnPrevPage.disabled = (page === 1);
+            btnNextPage.disabled = (page === totalPages);
+            paginationBox.classList.remove('hidden');
+        }
+
+        btnPrevPage.addEventListener('click', () => { if (currentPage > 1) { currentPage--; fetchProductVariants(currentPage, currentGender, currentBodyShape); } });
+        btnNextPage.addEventListener('click', () => { if (currentPage < Math.ceil(parseInt(totalElementsText.textContent) / pageSize)) { currentPage++; fetchProductVariants(currentPage, currentGender, currentBodyShape); } });
+
+        // --- 5. Render Product Cards ---
+        function renderVariants(variants) {
+            productList.innerHTML = '';
+            productList.classList.remove('hidden');
+            if (variants.length === 0) { productList.innerHTML = `<div class="col-span-full text-center py-16 text-gray-400">No products found.</div>`; return; }
+
+            variants.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "border border-gray-200 rounded-xl p-4 flex flex-col bg-white shadow-xs hover:shadow-md transition-all duration-200 h-full justify-between flex-1 relative";
+                const productName = item.productName || 'MSShop Fashion Item';
+                const price = item.price ? item.price.toLocaleString('vi-VN') + ' đ' : 'Contact Us';
+                const imgUrl = item.imageUrl || 'https://via.placeholder.com/200x250?text=MSShop+Fashion';
+                const variantId = item.id;
+                
+                let traitsHtml = '';
+                if (item.traits) item.traits.forEach(t => traitsHtml += `<span class="bg-gray-100 text-gray-600 text-[11px] px-2 py-0.5 rounded-sm font-medium">${t}</span> `);
+                let targetsHtml = '';
+                if (item.targets) item.targets.forEach(t => targetsHtml += `<span class="bg-indigo-50 text-indigo-600 text-[11px] px-1.5 py-0.5 rounded-sm font-semibold border border-indigo-100">${t}</span> `);
+
+                card.innerHTML = `
+                    <div>
+                        <button onclick="copyDirectText('${variantId}')" class="absolute top-6 right-6 z-10 bg-white/80 hover:bg-white border border-gray-200 shadow-xs p-1.5 rounded-md text-xs" title="Copy Variant UUID">📋</button>
+                        <div class="overflow-hidden rounded-lg bg-gray-50 mb-3 aspect-square flex items-center justify-center"><img src="${imgUrl}" class="w-full h-full object-cover"></div>
+                        <div class="flex flex-col justify-start">
+                            <h3 class="font-semibold text-gray-800 text-sm line-clamp-2 min-h-[40px] mb-2">${productName}</h3>
+                            <div class="flex flex-wrap gap-1 mb-1.5 min-h-[22px]">${traitsHtml}</div>
+                            <div class="flex flex-wrap gap-1 min-h-[22px]">${targetsHtml}</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-gray-100 flex flex-col gap-2">
+                        <div class="flex justify-between items-center"><span class="text-indigo-600 font-bold text-sm">${price}</span><span class="text-[10px] text-gray-400 font-medium">AI Match</span></div>
+                        <button onclick="openCheckoutModal('${variantId}')" class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs rounded-lg transition-colors">🛒 Instant Buy Now</button>
+                    </div>`;
+                productList.appendChild(card);
+            });
+        }
+
+        // --- 6. Order Operations System ---
+        window.openCheckoutModal = function(variantId) {
+            const currentToken = localStorage.getItem('ms_access_token');
+            if (!currentToken) { alert('Unauthorized operation. Please login first.'); return; }
+            ordVariantId.value = variantId;
+            ordQuantity.value = "1";
+            showModalAlert('', 'hide');
+            orderModal.classList.remove('hidden');
+        };
+
+        btnCloseModal.addEventListener('click', () => { orderModal.classList.add('hidden'); });
+
+        // --- FLOW A: FORM POST CONFIRMATION & REDIRECT PIPELINE ---
+        orderForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const currentToken = localStorage.getItem('ms_access_token');
+            if (!currentToken) { showModalAlert('Token contextual error.', 'error'); return; }
+
+            btnSubmitOrder.disabled = true;
+            orderSpinner.classList.remove('hidden');
+            showModalAlert('', 'hide');
+
+            const orderPayload = {
+                fullName: document.getElementById('ord-fullname').value.trim(),
+                address: document.getElementById('ord-address').value.trim(),
+                phone: document.getElementById('ord-phone').value.trim(),
+                email: "22520128@gm.uit.edu.vn", 
+                detailRequests: [{ variantId: ordVariantId.value, quantity: parseInt(ordQuantity.value, 10) || 1 }],
+                discount: 0, currency: "VND", paymentMethod: ordPaymentMethod.value 
+            };
+
+            try {
+                const response = await fetch(`${GATEWAY_URL}/order/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
+                    body: JSON.stringify(orderPayload)
+                });
+
+                // Đọc bằng .text() vì phản hồi từ backend là chuỗi text thô
+                const resText = await response.text();
+
+                if (response.ok) {
+                    showModalAlert('Order processed successfully! Navigating to dashboard...', 'success');
+                    console.log("Raw Response:", resText);
+
+                    let cleanUUID = "";
+
+                    // Sử dụng Regex bóc tách chuỗi để lấy UUID chuẩn
+                    if (resText && resText.includes("value=")) {
+                        const match = resText.match(/value=([^\]]+)/);
+                        if (match && match[1]) {
+                            cleanUUID = match[1].trim();
+                        }
+                    } else {
+                        cleanUUID = resText.trim();
+                    }
+
+                    // CHỦ ĐỘNG XỬ LÝ LỖI DẤU NGOẶC KÉP THỪA: 
+                    // Loại bỏ hoàn toàn dấu " ở đầu và cuối chuỗi nếu có
+                    cleanUUID = cleanUUID.replace(/^"|"$/g, '');
+
+                    // Lưu UUID sạch vào localStorage
+                    if (cleanUUID && cleanUUID !== "undefined" && cleanUUID !== "null") {
+                        localStorage.setItem('ms_last_order_id', cleanUUID);
+                    } else {
+                        console.warn("⚠️ Khởi động chế độ tìm kiếm dự phòng FETCH_LATEST");
+                        localStorage.setItem('ms_last_order_id', 'FETCH_LATEST');
+                    }
+
+                    setTimeout(() => { 
+                        window.location.href = 'order.html'; 
+                    }, 1000);
+                } else {
+                    throw new Error(resText || `Server Rejected Execution (HTTP Status: ${response.status})`);
+                }
+            } catch (error) {
+                showModalAlert(error.message, 'error');
+                btnSubmitOrder.disabled = false;
+                orderSpinner.classList.add('hidden');
+            }
+        });
+
+        function showModalAlert(msg, type) {
+            if (type === 'hide') { modalAlert.classList.add('hidden'); return; }
+            modalAlert.classList.remove('hidden'); modalAlert.textContent = msg;
+            if (type === 'success') modalAlert.className = "p-3 rounded-lg text-xs font-semibold mb-3 bg-green-50 text-green-700 border border-green-100";
+            if (type === 'error') modalAlert.className = "p-3 rounded-lg text-xs font-semibold mb-3 bg-red-50 text-red-700 border border-red-100";
+        }
+    </script>
+</body>
+</html>

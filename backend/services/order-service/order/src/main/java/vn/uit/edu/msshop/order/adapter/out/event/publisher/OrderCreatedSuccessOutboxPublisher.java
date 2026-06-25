@@ -66,7 +66,7 @@ public class OrderCreatedSuccessOutboxPublisher {
             OrderCreatedSuccessDocument event,
             String error) {
         int retries = event.getRetryCount() == null ? 0 : event.getRetryCount();
-        if (retries >= 3) {
+        if (retries >= 100) {
             updateStatus(event, "FAILED", "Max retries reached: " + error);
         } else {
             event.setRetryCount(retries + 1);

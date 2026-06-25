@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management Dashboard - MSShop</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen">
+
+    <header class="bg-indigo-600 text-white py-4 px-6 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold tracking-wide">📋 MSShop - Order Dashboard</h1>
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="text-xs bg-indigo-700 hover:bg-indigo-800 text-white px-3 py-1.5 rounded-lg font-medium transition-colors">👕 Back to Shop</a>
+            <a href="inventory.html" class="text-xs bg-indigo-700 hover:bg-indigo-800 text-white px-3 py-1.5 rounded-lg font-medium transition-colors">📦 Go to Inventory</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-6">
+        
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row gap-3 items-center">
+            <div class="w-full relative">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase absolute top-1.5 left-3">Tracking Order UUID</label>
+                <input type="text" id="input-order-id" placeholder="Enter Order UUID (e.g. a11f3d51...)" class="w-full pt-5 pb-2 px-3 border border-gray-300 rounded-lg text-sm font-mono focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <button id="btn-fetch-order" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3.5 rounded-lg text-sm transition-colors shadow-sm shrink-0">
+                Fetch Invoice
+            </button>
+        </div>
+
+        <div id="global-alert" class="hidden p-4 rounded-xl text-sm font-medium mb-6"></div>
+
+        <div id="order-dashboard" class="hidden space-y-6">
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">Order Reference</span>
+                    <h2 id="view-order-id" class="text-base font-mono font-bold text-gray-800 mt-0.5">-</h2>
+                </div>
+                <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                    <span id="view-status" class="text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide bg-gray-100 text-gray-700">
+                        PENDING
+                    </span>
+                    
+                    <button id="btn-cancel-order" class="hidden bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-xs">
+                        <span>Cancel Order</span>
+                        <div id="cancel-spinner" class="hidden animate-spin w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full"></div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 md:col-span-1 space-y-3">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 pb-2">Customer Profiles</h3>
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium">Full Name</p>
+                        <p id="view-fullname" class="text-sm font-semibold text-gray-800 mt-0.5">-</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium">Phone Number</p>
+                        <p id="view-phone" class="text-sm font-semibold text-gray-800 mt-0.5">-</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium">Email Address</p>
+                        <p id="view-email" class="text-xs font-mono font-medium text-gray-600 mt-0.5 truncate">-</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium">Shipping Address</p>
+                        <p id="view-address" class="text-sm font-semibold text-gray-800 mt-0.5">-</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 md:col-span-2 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 pb-2 mb-4">Financial Ledger & Items</h3>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-gray-500">
+                                <thead class="text-xs text-gray-400 uppercase font-bold bg-gray-50 rounded-lg">
+                                    <tr>
+                                        <th scope="col" class="px-3 py-2 rounded-l-lg">Product Details</th>
+                                        <th scope="col" class="px-3 py-2 text-right">Unit Price</th>
+                                        <th scope="col" class="px-3 py-2 text-right rounded-r-lg">Qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="view-items-tbody">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-100 grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">Payment</p>
+                            <span id="view-method" class="inline-block mt-1 text-xs font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-sm">-</span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">Discount</p>
+                            <p id="view-discount" class="text-sm font-semibold text-gray-800 mt-0.5">0 đ</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">Currency</p>
+                            <p id="view-currency" class="text-sm font-semibold text-gray-800 mt-0.5">VND</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium text-right">Grand Total</p>
+                            <p id="view-total-price" class="text-base font-bold text-indigo-600 mt-0.5 text-right">0 đ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const inputOrderId = document.getElementById('input-order-id');
+        const btnFetchOrder = document.getElementById('btn-fetch-order');
+        const globalAlert = document.getElementById('global-alert');
+        const orderDashboard = document.getElementById('order-dashboard');
+
+        // Target View Nodes
+        const viewOrderId = document.getElementById('view-order-id');
+        const viewStatus = document.getElementById('view-status');
+        const viewFullname = document.getElementById('view-fullname');
+        const viewPhone = document.getElementById('view-phone');
+        const viewEmail = document.getElementById('view-email');
+        const viewAddress = document.getElementById('view-address');
+        const viewItemsTbody = document.getElementById('view-items-tbody');
+        const viewMethod = document.getElementById('view-method');
+        const viewDiscount = document.getElementById('view-discount');
+        const viewCurrency = document.getElementById('view-currency');
+        const viewTotalPrice = document.getElementById('view-total-price');
+
+        const btnCancelOrder = document.getElementById('btn-cancel-order');
+        const cancelSpinner = document.getElementById('cancel-spinner');
+
+        const GATEWAY_URL = 'http://localhost:8082';
+
+        // Biến toàn cục lưu đối tượng đơn hàng hiện tại từ API GET về
+        let currentOrderData = null;
+
+        // --- 1. LẮNG NGHE SỰ KIỆN KHI LOAD TRANG ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            const currentToken = localStorage.getItem('ms_access_token');
+            if (!currentToken) { window.location.href = 'login.html'; return; }
+
+            const savedOrderIdRaw = localStorage.getItem('ms_last_order_id');
+            
+            if (savedOrderIdRaw && savedOrderIdRaw !== 'undefined') {
+                if (savedOrderIdRaw === 'FETCH_LATEST') {
+                    showAlert('Đang tự động đồng bộ đơn hàng mới nhất từ server...', 'success');
+                    try {
+                        const response = await fetch(`${GATEWAY_URL}/order`, {
+                            method: 'GET',
+                            headers: { 'Authorization': `Bearer ${currentToken}` }
+                        });
+                        if (response.ok) {
+                            const listData = await response.json();
+                            const orders = listData.items || listData.content || (Array.isArray(listData) ? listData : []);
+                            if (orders.length > 0) {
+                                const latestOrder = orders[0];
+                                // Đồng bộ logic lấy ID sạch từ chuỗi OrderId[value=...] nếu có
+                                let cleanUUID = latestOrder.orderId || latestOrder.id || "";
+                                if (cleanUUID.includes("value=")) {
+                                    const match = cleanUUID.match(/value=([^\]]+)/);
+                                    if (match && match[1]) cleanUUID = match[1].trim();
+                                }
+                                cleanUUID = cleanUUID.replace(/^"|"$/g, '');
+
+                                inputOrderId.value = cleanUUID;
+                                populateOrderDashboard(latestOrder, cleanUUID);
+                                showAlert('Đã tải đơn hàng mới nhất thành công!', 'hide');
+                            } else {
+                                showAlert('Không tìm thấy đơn hàng nào trong hệ thống.', 'error');
+                            }
+                        }
+                    } catch (err) {
+                        showAlert('Lỗi tự động lấy đơn hàng mới: ' + err.message, 'error');
+                    }
+                } else {
+                    inputOrderId.value = savedOrderIdRaw;
+                    fetchOrderMetrics(savedOrderIdRaw);
+                }
+                localStorage.removeItem('ms_last_order_id'); 
+            }
+        });
+
+        // --- 2. CLICK ĐỂ TÌM KIẾM ĐƠN HÀNG CHỦ ĐỘNG ---
+        btnFetchOrder.addEventListener('click', () => {
+            const searchId = inputOrderId.value.trim().replace(/^"|"$/g, '');
+            if (!searchId) { showAlert('Vui lòng điền mã Order UUID vào ô tìm kiếm.', 'error'); return; }
+            fetchOrderMetrics(searchId);
+        });
+
+        // --- 3. ĐỌC DỮ LIỆU ĐƠN HÀNG TỪ API ---
+        async function fetchOrderMetrics(orderId) {
+            const currentToken = localStorage.getItem('ms_access_token');
+            showAlert('', 'hide');
+            orderDashboard.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${GATEWAY_URL}/order/${orderId}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                if (!response.ok) throw new Error(`Không thể tìm thấy hóa đơn (Mã lỗi HTTP: ${response.status})`);
+                const data = await response.json();
+
+                populateOrderDashboard(data, orderId);
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        // --- 4. RENDER DỮ LIỆU CHUẨN HÓA LÊN UI ---
+        function populateOrderDashboard(order, cleanId) {
+            currentOrderData = order;
+            viewOrderId.textContent = cleanId;
+            
+            // CHUẨN HÓA ĐỌC STATUS: Đọc chính xác từ trường .status của JSON thực tế
+            const statusStr = String(order.status || 'PENDING').toUpperCase();
+            viewStatus.textContent = statusStr;
+
+            // Đổi màu Badge theo trạng thái thực tế
+            if (statusStr === 'CANCELLED') {
+                viewStatus.className = "text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide bg-red-100 text-red-700 border border-red-200";
+                btnCancelOrder.classList.add('hidden'); // Đã hủy thì ẩn nút đi
+            } else if (statusStr === 'CONFIRMED') {
+                viewStatus.className = "text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide bg-green-100 text-green-700 border border-green-200";
+                btnCancelOrder.classList.remove('hidden'); // Hiển thị nút Hủy nếu đơn đang active
+            } else {
+                viewStatus.className = "text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide bg-yellow-100 text-yellow-700 border border-yellow-200";
+                btnCancelOrder.classList.remove('hidden');
+            }
+
+            // Gán thông tin khách hàng công khai từ JSON phẳng
+            viewFullname.textContent = order.fullName || 'N/A';
+            viewPhone.textContent = order.phone || 'N/A';
+            viewEmail.textContent = order.email || 'N/A';
+            viewAddress.textContent = order.address || 'N/A';
+
+            viewMethod.textContent = order.paymentMethod || 'COD';
+            viewDiscount.textContent = (order.discount || 0).toLocaleString('vi-VN') + ' đ';
+            viewCurrency.textContent = order.currency || 'VND';
+
+            // CHUẨN HÓA ĐỌC DANH SÁCH MẶT HÀNG: Đọc chính xác từ mảng .detailResponses
+            viewItemsTbody.innerHTML = '';
+            const details = order.detailResponses || [];
+            
+            let calculatedTotal = 0;
+
+            if (details.length === 0) {
+                viewItemsTbody.innerHTML = `<tr><td colspan="3" class="px-3 py-2 text-xs text-gray-400 italic text-center">No items recorded.</td></tr>`;
+            } else {
+                details.forEach(det => {
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-gray-100 hover:bg-gray-50/50 text-xs";
+                    
+                    const name = det.productName || 'Fashion Item';
+                    const traits = (det.traits && det.traits.length > 0) ? ` (${det.traits.join(', ')})` : '';
+                    const unitPrice = det.unitPrice || 0;
+                    const amount = det.amount || 1;
+                    
+                    calculatedTotal += (unitPrice * amount);
+
+                    tr.innerHTML = `
+                        <td class="px-3 py-2.5">
+                            <div class="font-semibold text-gray-800">${name}${traits}</div>
+                            <div class="text-[10px] text-gray-400 font-mono mt-0.5">Variant: ${det.variantId}</div>
+                        </td>
+                        <td class="px-3 py-2.5 text-right font-medium text-gray-700">${unitPrice.toLocaleString('vi-VN')} đ</td>
+                        <td class="px-3 py-2.5 text-right font-bold text-gray-900">${amount}</td>
+                    `;
+                    viewItemsTbody.appendChild(tr);
+                });
+            }
+
+            // Gán tổng tiền (nếu backend không trả về totalPrice, dùng tiền tự tính toán từ chi tiết sản phẩm)
+            const finalPrice = order.totalPrice || (calculatedTotal - (order.discount || 0) + (order.shippingFee || 0));
+            viewTotalPrice.textContent = finalPrice.toLocaleString('vi-VN') + ' đ';
+
+            orderDashboard.classList.remove('hidden');
+        }
+
+        // --- 5. PIPELINE XỬ LÝ HỦY ĐƠN HÀNG (PUT METHOD) ---
+        btnCancelOrder.addEventListener('click', async () => {
+            if (!currentOrderData) return;
+            if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) return;
+
+            const currentToken = localStorage.getItem('ms_access_token');
+            btnCancelOrder.disabled = true;
+            cancelSpinner.classList.remove('hidden');
+
+            const targetOrderId = viewOrderId.textContent.trim();
+
+            // Khởi tạo Payload chính xác theo cấu trúc bạn yêu cầu gửi lên
+            const updatePayload = {
+                id: targetOrderId,
+                fullName: { value: currentOrderData.fullName || "" },
+                email: { value: currentOrderData.email || "" },
+                address: { value: currentOrderData.address || "" },
+                phone: { value: currentOrderData.phone || "" },
+                orderStatus: { value: "CANCELLED" }
+            };
+
+            try {
+                const response = await fetch(`${GATEWAY_URL}/order/update`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify(updatePayload)
+                });
+
+                // Nhận diện mã 204 No Content hoặc 2xx thành công
+                if (response.ok || response.status === 204) {
+                    showAlert('Đơn hàng đã được hủy thành công! Đang tải lại dữ liệu...', 'success');
+                    
+                    // Ghim lại ID để khi reload trang tự động fetch lại bản mới nhất
+                    localStorage.setItem('ms_last_order_id', targetOrderId);
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1200);
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `Yêu cầu bị từ chối (HTTP Status: ${response.status})`);
+                }
+            } catch (error) {
+                showAlert('Lỗi khi hủy đơn hàng: ' + error.message, 'error');
+                btnCancelOrder.disabled = false;
+                cancelSpinner.classList.add('hidden');
+            }
+        });
+
+        // --- TOOLKIT: HIỂN THỊ ALERT HỆ THỐNG ---
+        function showAlert(msg, type) {
+            if (type === 'hide') { globalAlert.classList.add('hidden'); return; }
+            globalAlert.classList.remove('hidden');
+            globalAlert.textContent = msg;
+            if (type === 'success') globalAlert.className = "p-4 rounded-xl text-sm font-medium mb-6 bg-green-50 text-green-700 border border-green-100";
+            if (type === 'error') globalAlert.className = "p-4 rounded-xl text-sm font-medium mb-6 bg-red-50 text-red-700 border border-red-100";
+        }
+    </script>
+</body>
+</html>
