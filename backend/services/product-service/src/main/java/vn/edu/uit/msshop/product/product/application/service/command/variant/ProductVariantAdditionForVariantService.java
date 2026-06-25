@@ -29,6 +29,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 @RequiredArgsConstructor
 class ProductVariantAdditionForVariantService
         implements ProductVariantAdditionForVariantUseCase {
+
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductUpdatePort updatePort;
     private final ProductSoldCountBulkIncrementPort soldCountBulkIncrementPort;
