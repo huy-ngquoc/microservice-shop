@@ -18,13 +18,10 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.count.Varia
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByVariantIdsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductStockCountBulkDecrementPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.sync.VariantToProductStockCountBulkIncrementPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantStockCountBulkUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantStockCountBulkUpdatedEvent.VariantStockCountDelta;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantStockCountValue;
 
 @Service
@@ -34,8 +31,6 @@ class VariantStockCountBulkSetService
 
     private final VariantStockCountBulkLookupByVariantIdsPort stockCountBulkLookupByIdsPort;
     private final VariantStockCountBulkUpdatePort stockCountBulkUpdatePort;
-    private final VariantToProductStockCountBulkIncrementPort increaseProductStockCountsPort;
-    private final VariantToProductStockCountBulkDecrementPort decreaseProductStockCountsPort;
 
     private final VariantEventPublicationPort eventPublicationPort;
 
@@ -60,7 +55,6 @@ class VariantStockCountBulkSetService
 
         final var changeList = this.loadChangeList(newValueById);
         this.persistUpdates(changeList);
-        this.propagateDeltas(changeList);
         this.publishStockCountChanges(changeList);
     }
 
@@ -110,18 +104,6 @@ class VariantStockCountBulkSetService
         this.stockCountBulkUpdatePort.updateAll(updatedCounts);
     }
 
-    private void propagateDeltas(
-            final List<StockCountChange> changeList) {
-        final var deltas = VariantStockCountBulkSetService.toDeltasByProductId(changeList);
-
-        if (!deltas.increments().isEmpty()) {
-            this.increaseProductStockCountsPort.increaseAllStockCounts(deltas.increments());
-        }
-        if (!deltas.decrements().isEmpty()) {
-            this.decreaseProductStockCountsPort.decreaseAllStockCounts(deltas.decrements());
-        }
-    }
-
     private void publishStockCountChanges(
             final List<StockCountChange> changeList) {
         final var deltaList = changeList.stream()
@@ -136,32 +118,6 @@ class VariantStockCountBulkSetService
         this.eventPublicationPort.publishEvent(event);
     }
 
-    private static DeltasByProductId toDeltasByProductId(
-            final List<StockCountChange> changeList) {
-        final var amountVariant = changeList.size();
-
-        final var incrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(amountVariant);
-        final var decrementByProductId = HashMap.<VariantProductId, Integer>newHashMap(amountVariant);
-
-        for (final var change : changeList) {
-            final var delta = change.delta();
-            if (delta == 0) {
-                continue;
-            }
-
-            final var productId = change.productId();
-            if (delta > 0) {
-                incrementByProductId.merge(productId, delta, Integer::sum);
-            } else {
-                decrementByProductId.merge(productId, -delta, Integer::sum);
-            }
-        }
-
-        return new DeltasByProductId(
-                incrementByProductId,
-                decrementByProductId);
-    }
-
     private record StockCountChange(
             VariantStockCount current,
             VariantStockCountValue newValue) {
@@ -171,10 +127,6 @@ class VariantStockCountBulkSetService
                     this.current.getVariantId(),
                     this.current.getProductId(),
                     this.newValue);
-        }
-
-        VariantProductId productId() {
-            return this.current.getProductId();
         }
 
         int delta() {
@@ -189,12 +141,4 @@ class VariantStockCountBulkSetService
         }
     }
 
-    private record DeltasByProductId(
-            Map<VariantProductId, Integer> increments,
-            Map<VariantProductId, Integer> decrements) {
-        DeltasByProductId {
-            increments = Map.copyOf(increments);
-            decrements = Map.copyOf(decrements);
-        }
-    }
 }
