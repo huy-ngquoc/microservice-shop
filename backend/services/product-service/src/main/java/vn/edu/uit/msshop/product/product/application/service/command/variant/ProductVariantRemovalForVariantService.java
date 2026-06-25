@@ -27,6 +27,7 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 @RequiredArgsConstructor
 class ProductVariantRemovalForVariantService
         implements ProductVariantRemovalForVariantUseCase {
+
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductUpdatePort updatePort;
     private final ProductSoldCountBulkDecrementPort soldCountBulkDecrementPort;
