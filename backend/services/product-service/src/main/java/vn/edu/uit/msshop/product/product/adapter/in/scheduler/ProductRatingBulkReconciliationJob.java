@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.rating.Prod
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ProductRatingReconciliationJob {
+public class ProductRatingBulkReconciliationJob {
 
     private static final Duration WINDOW_DURATION = Duration.ofHours(24);
 
