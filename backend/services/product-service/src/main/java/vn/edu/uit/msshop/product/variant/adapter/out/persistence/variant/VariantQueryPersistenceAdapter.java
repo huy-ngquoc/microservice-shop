@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantActiveListingQuery;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveListingPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
@@ -33,6 +34,7 @@ public class VariantQueryPersistenceAdapter
         VariantSoftDeletedLookupByIdPort,
         VariantActiveBulkLookupByIdsPort,
         VariantBulkLookupByProductIdPort,
+        VariantActiveBulkLookupByProductIdPort,
         VariantSoftDeletedBulkLookupByIdsPort {
 
     private final VariantMongoRepository repository;

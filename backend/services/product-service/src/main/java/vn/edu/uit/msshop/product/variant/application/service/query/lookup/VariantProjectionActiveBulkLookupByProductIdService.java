@@ -10,7 +10,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantPro
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantProjectionView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantProjectionActiveBulkLookupByProductIdUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
 @Service
@@ -18,7 +18,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 class VariantProjectionActiveBulkLookupByProductIdService
         implements VariantProjectionActiveBulkLookupByProductIdUseCase {
 
-    private final VariantBulkLookupByProductIdPort bulkLookupByProductIdPort;
+    private final VariantActiveBulkLookupByProductIdPort activeBulkLookupByProductIdPort;
     private final VariantViewMapper mapper;
 
     @Override
@@ -27,7 +27,7 @@ class VariantProjectionActiveBulkLookupByProductIdService
     public List<VariantProjectionView> find(
             final VariantProjectionActiveBulkLookupByProductIdQuery query) {
         final var productId = new VariantProductId(query.productId());
-        return this.bulkLookupByProductIdPort.loadAllActiveByProductId(productId).stream()
+        return this.activeBulkLookupByProductIdPort.loadAllActiveByProductId(productId).stream()
                 .map(this.mapper::toProjectionView)
                 .toList();
     }

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantProjectionRebuildByProductIdCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantProjectionRebuildByProductIdUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkFetchByProductIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductConfiguration;

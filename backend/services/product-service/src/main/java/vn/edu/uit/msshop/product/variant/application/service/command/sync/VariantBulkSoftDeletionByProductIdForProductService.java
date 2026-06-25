@@ -15,7 +15,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEvent
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkUpdatePort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
@@ -28,7 +28,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProduct
 class VariantBulkSoftDeletionByProductIdForProductService
         implements VariantBulkSoftDeletionByProductIdForProductUseCase {
 
-    private final VariantBulkLookupByProductIdPort bulkLookupByProductIdPort;
+    private final VariantActiveBulkLookupByProductIdPort activeBulkLookupByProductIdPort;
     private final VariantSoldCountBulkLookupByVariantIdsPort soldCountBulkLookupByVariantIdsPort;
     private final VariantStockCountBulkLookupByVariantIdsPort stockCountBulkLookupByVariantIdsPort;
     private final VariantBulkUpdatePort bulkUpdatePort;
@@ -49,7 +49,7 @@ class VariantBulkSoftDeletionByProductIdForProductService
             final VariantBulkSoftDeletionByProductIdForProductCommand cmd) {
         final var productId = new VariantProductId(cmd.productId());
 
-        final var activeVariants = this.bulkLookupByProductIdPort
+        final var activeVariants = this.activeBulkLookupByProductIdPort
                 .loadAllActiveByProductId(productId);
         if (activeVariants.isEmpty()) {
             return;
