@@ -1,0 +1,53 @@
+global:
+  scrape_interval: 15s # Cứ mỗi 15 giây sẽ đi kéo dữ liệu một lần
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9091']
+
+  - job_name: 'account-service'
+    metrics_path: '/actuator/prometheus' # Đường dẫn chứa metrics (VD này của Spring Boot, nếu là Node.js/Go thường là /metrics)
+    static_configs:
+      - targets: ['account-service:8071'] # Sử dụng service name trong Docker làm host
+
+  - job_name: 'auth-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['auth-service:8082']
+  - job_name: 'cart-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['auth-service:8089']
+  - job_name: 'notification-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['notification-service:8092']
+  - job_name: 'inventory-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['inventory-service:8090']
+  - job_name: 'order-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['order-service-1:58921']
+  - job_name: 'payment-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['payment-service:8074']
+  - job_name: 'product-service-1'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['product-service-1:8070']
+  - job_name: 'product-service-2'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['product-service-2:8070']
+  - job_name: 'rating-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['rating-service:8072']
+  - job_name: 'recommendation-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['recommendation-service:8080']

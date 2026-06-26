@@ -42,6 +42,11 @@
                         PENDING
                     </span>
                     
+                    <button id="btn-pay-now" class="hidden bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm">
+                        <span>Pay Now 💳</span>
+                        <div id="pay-spinner" class="hidden animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full"></div>
+                    </button>
+                    
                     <button id="btn-cancel-order" class="hidden bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-xs">
                         <span>Cancel Order</span>
                         <div id="cancel-spinner" class="hidden animate-spin w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full"></div>
@@ -135,6 +140,10 @@
         const btnCancelOrder = document.getElementById('btn-cancel-order');
         const cancelSpinner = document.getElementById('cancel-spinner');
 
+        // Định nghĩa thêm Nút Thanh toán và Spinner
+        const btnPayNow = document.getElementById('btn-pay-now');
+        const paySpinner = document.getElementById('pay-spinner');
+
         const GATEWAY_URL = 'http://localhost:8082';
 
         // Biến toàn cục lưu đối tượng đơn hàng hiện tại từ API GET về
@@ -160,7 +169,6 @@
                             const orders = listData.items || listData.content || (Array.isArray(listData) ? listData : []);
                             if (orders.length > 0) {
                                 const latestOrder = orders[0];
-                                // Đồng bộ logic lấy ID sạch từ chuỗi OrderId[value=...] nếu có
                                 let cleanUUID = latestOrder.orderId || latestOrder.id || "";
                                 if (cleanUUID.includes("value=")) {
                                     const match = cleanUUID.match(/value=([^\]]+)/);
@@ -219,23 +227,29 @@
             currentOrderData = order;
             viewOrderId.textContent = cleanId;
             
-            // CHUẨN HÓA ĐỌC STATUS: Đọc chính xác từ trường .status của JSON thực tế
             const statusStr = String(order.status || 'PENDING').toUpperCase();
             viewStatus.textContent = statusStr;
 
-            // Đổi màu Badge theo trạng thái thực tế
+            // Ẩn tất cả các nút chức năng trạng thái trước khi kiểm tra điều kiện
+            btnPayNow.classList.add('hidden');
+            btnCancelOrder.classList.add('hidden');
+
+            // Điều khiển hiển thị các Nút (Pay Now / Cancel Order) dựa trên trạng thái thực tế
             if (statusStr === 'CANCELLED') {
                 viewStatus.className = "text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide bg-red-100 text-red-700 border border-red-200";
-                btnCancelOrder.classList.add('hidden'); // Đã hủy thì ẩn nút đi
             } else if (statusStr === 'CONFIRMED') {
                 viewStatus.className = "text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide bg-green-100 text-green-700 border border-green-200";
-                btnCancelOrder.classList.remove('hidden'); // Hiển thị nút Hủy nếu đơn đang active
+                btnCancelOrder.classList.remove('hidden'); 
+            } else if (statusStr === 'WAITING_PAYMENT') {
+                // Trạng thái chờ thanh toán trực tuyến: Hiện cả nút Thanh toán và nút Hủy đơn
+                viewStatus.className = "text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide bg-blue-100 text-blue-700 border border-blue-200 animate-pulse";
+                btnPayNow.classList.remove('hidden');
+                btnCancelOrder.classList.remove('hidden');
             } else {
                 viewStatus.className = "text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wide bg-yellow-100 text-yellow-700 border border-yellow-200";
                 btnCancelOrder.classList.remove('hidden');
             }
 
-            // Gán thông tin khách hàng công khai từ JSON phẳng
             viewFullname.textContent = order.fullName || 'N/A';
             viewPhone.textContent = order.phone || 'N/A';
             viewEmail.textContent = order.email || 'N/A';
@@ -245,10 +259,8 @@
             viewDiscount.textContent = (order.discount || 0).toLocaleString('vi-VN') + ' đ';
             viewCurrency.textContent = order.currency || 'VND';
 
-            // CHUẨN HÓA ĐỌC DANH SÁCH MẶT HÀNG: Đọc chính xác từ mảng .detailResponses
             viewItemsTbody.innerHTML = '';
             const details = order.detailResponses || [];
-            
             let calculatedTotal = 0;
 
             if (details.length === 0) {
@@ -277,14 +289,54 @@
                 });
             }
 
-            // Gán tổng tiền (nếu backend không trả về totalPrice, dùng tiền tự tính toán từ chi tiết sản phẩm)
             const finalPrice = order.totalPrice || (calculatedTotal - (order.discount || 0) + (order.shippingFee || 0));
             viewTotalPrice.textContent = finalPrice.toLocaleString('vi-VN') + ' đ';
 
             orderDashboard.classList.remove('hidden');
         }
 
-        // --- 5. PIPELINE XỬ LÝ HỦY ĐƠN HÀNG (PUT METHOD) ---
+        // --- 5. PIPELINE XỬ LÝ LẤY LINK VÀ ĐIỀU HƯỚNG THANH TOÁN (PLAIN TEXT) ---
+        btnPayNow.addEventListener('click', async () => {
+            const targetOrderId = viewOrderId.textContent.trim();
+            if (!targetOrderId) return;
+
+            const currentToken = localStorage.getItem('ms_access_token');
+            btnPayNow.disabled = true;
+            paySpinner.classList.remove('hidden');
+            showAlert('Đang khởi tạo link thanh toán an toàn...', 'success');
+
+            try {
+                // Gọi API dạng Plain text cần kèm theo Bearer Token
+                const response = await fetch(`${GATEWAY_URL}/payment/online_payment_link/${targetOrderId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                });
+
+                if (!response.ok) throw new Error(`Không thể khởi tạo cổng thanh toán (HTTP: ${response.status})`);
+                
+                // Đọc phản hồi dưới dạng text thô vì API trả về chuỗi url trực tiếp
+                const checkoutUrl = await response.text();
+
+                if (checkoutUrl && checkoutUrl.trim().startsWith('http')) {
+                    showAlert('Khởi tạo thành công! Đang chuyển hướng sang cổng thanh toán...', 'success');
+                    
+                    // Chuyển hướng người dùng sang link thanh toán PayOS/Cổng trực tuyến
+                    setTimeout(() => {
+                        window.location.href = checkoutUrl.trim();
+                    }, 1000);
+                } else {
+                    throw new Error('Dữ liệu liên kết thanh toán trả về từ Backend không hợp lệ.');
+                }
+            } catch (error) {
+                showAlert('Lỗi cổng thanh toán: ' + error.message, 'error');
+                btnPayNow.disabled = false;
+                paySpinner.classList.add('hidden');
+            }
+        });
+
+        // --- 6. PIPELINE XỬ LÝ HỦY ĐƠN HÀNG (PUT METHOD) ---
         btnCancelOrder.addEventListener('click', async () => {
             if (!currentOrderData) return;
             if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) return;
@@ -295,7 +347,6 @@
 
             const targetOrderId = viewOrderId.textContent.trim();
 
-            // Khởi tạo Payload chính xác theo cấu trúc bạn yêu cầu gửi lên
             const updatePayload = {
                 id: targetOrderId,
                 fullName: { value: currentOrderData.fullName || "" },
@@ -315,16 +366,10 @@
                     body: JSON.stringify(updatePayload)
                 });
 
-                // Nhận diện mã 204 No Content hoặc 2xx thành công
                 if (response.ok || response.status === 204) {
                     showAlert('Đơn hàng đã được hủy thành công! Đang tải lại dữ liệu...', 'success');
-                    
-                    // Ghim lại ID để khi reload trang tự động fetch lại bản mới nhất
                     localStorage.setItem('ms_last_order_id', targetOrderId);
-                    
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1200);
+                    setTimeout(() => { window.location.reload(); }, 1200);
                 } else {
                     const errorText = await response.text();
                     throw new Error(errorText || `Yêu cầu bị từ chối (HTTP Status: ${response.status})`);

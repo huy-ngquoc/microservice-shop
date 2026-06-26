@@ -8,4 +8,12 @@ spring:
             fail-fast: true
             retry:
                 max-attempts: 5
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info,prometheus
+    endpoint:
+        prometheus:
+            enabled: true
     

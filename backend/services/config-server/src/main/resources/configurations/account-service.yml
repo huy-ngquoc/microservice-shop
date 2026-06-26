@@ -53,6 +53,9 @@ management:
     metrics:
         tags:
             application: ${spring.application.name}
+    endpoint:
+        prometheus:
+            enabled: true
 jwt:
     auth:
         converter:

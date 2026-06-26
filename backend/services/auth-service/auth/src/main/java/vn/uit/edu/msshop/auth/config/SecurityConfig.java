@@ -46,11 +46,12 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(auth -> auth
-                        .pathMatchers("/account/**")
+                        .pathMatchers("/account/**") 
 
                         // .pathMatchers("/account/create")
                         .permitAll()
                         .pathMatchers("/products/**").permitAll()
+                        .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/variants/**").permitAll()
                         .pathMatchers("/recommendation/**").permitAll()
                         .pathMatchers("/fake_payment/**").permitAll()
