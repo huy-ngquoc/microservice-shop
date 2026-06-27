@@ -21,7 +21,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantNameBulkUpdateForProductPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductBrandExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
@@ -46,8 +45,6 @@ class ProductInfoUpdateByIdService
     private final ProductUpdatePort updatePort;
     private final ProductCategoryExistenceCheckByIdPort categoryExistenceCheckByIdPort;
     private final ProductBrandExistenceCheckByIdPort brandExistenceCheckByIdPort;
-
-    private final ProductVariantNameBulkUpdateForProductPort variantNameBulkUpdateForProductPort;
 
     private final ProductEventPublicationPort eventPublicationPort;
     private final ProductViewMapper mapper;
@@ -183,10 +180,6 @@ class ProductInfoUpdateByIdService
         if (after.getName().equals(before.getName())) {
             return;
         }
-
-        this.variantNameBulkUpdateForProductPort.updateProductNameByProductId(
-                after.getId(),
-                after.getName());
 
         final var event = ProductNameChangedEvent.of(after);
         this.eventPublicationPort.publishEvent(event);

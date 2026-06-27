@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.domain.event.ProductEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductHardDeletedEvent;
+import vn.edu.uit.msshop.product.product.domain.event.ProductNameChangedEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductRestoredEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeletedEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductVariantBulkRemovedEvent;
@@ -18,20 +19,37 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBul
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkRestorationByIdsForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkSoftDeletionByIdsForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkSoftDeletionByProductIdForProductCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantProductNameBulkUpdateForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkHardDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkRestorationByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByProductIdForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantProductNameBulkUpdateForProductUseCase;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class VariantProductEventListener {
 
+    private final VariantProductNameBulkUpdateForProductUseCase productNameBulkUpdateUseCase;
     private final VariantBulkSoftDeletionByIdsForProductUseCase bulkSoftDeleteByIdsUseCase;
     private final VariantBulkSoftDeletionByProductIdForProductUseCase bulkSoftDeleteByProductIdUseCase;
     private final VariantBulkHardDeletionByProductIdForProductUseCase bulkHardDeleteByProductIdUseCase;
     private final VariantBulkRestorationByIdsForProductUseCase bulkRestorationByIdsUseCase;
+
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT)
+    public void onProductNameChanged(
+            final ProductNameChangedEvent event) {
+        final var cmd = new VariantProductNameBulkUpdateForProductCommand(
+                event.getProductId().value(),
+                event.getNewName().value());
+        try {
+            this.productNameBulkUpdateUseCase.updateAll(cmd);
+        } catch (final RuntimeException exception) {
+            this.logCascadeFailure(event, exception);
+        }
+    }
 
     @TransactionalEventListener(
             phase = TransactionPhase.AFTER_COMMIT)
