@@ -1,7 +1,5 @@
 package vn.edu.uit.msshop.product.product.application.service.command.lifecycle;
 
-import java.util.stream.Collectors;
-
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +12,8 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.P
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkRestorationByIdsPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductRestoredEvent;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
 
@@ -27,7 +23,6 @@ class ProductRestorationByIdService
         implements ProductRestorationByIdUseCase {
     private final ProductSoftDeletedLookupByIdPort softDeletedLookupByIdPort;
     private final ProductUpdatePort updatePort;
-    private final ProductVariantBulkRestorationByIdsPort variantBulkRestorationForProductPort;
 
     private final ProductEventPublicationPort eventPublicationPort;
 
@@ -51,13 +46,6 @@ class ProductRestorationByIdService
 
         final var next = product.restored();
         final var saved = this.updatePort.update(next);
-
-        final var variantIdSet = saved.getVariants().getValues().stream()
-                .map(ProductVariant::id)
-                .collect(Collectors.toUnmodifiableSet());
-        this.variantBulkRestorationForProductPort.restoreByVariantIds(
-                variantIdSet,
-                productId);
 
         final var event = ProductRestoredEvent.of(saved);
         this.eventPublicationPort.publishEvent(event);
