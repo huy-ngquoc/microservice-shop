@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
+import lombok.EqualsAndHashCode;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPrice;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductPriceRange;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
@@ -15,12 +16,18 @@ import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariant
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.shared.domain.exception.DomainException;
 
-public record ProductVariants(
-        List<ProductVariant> values) {
-
+@EqualsAndHashCode(
+        onlyExplicitlyIncluded = true)
+public final class ProductVariants {
     public static final int MAX_AMOUNT = 50;
 
-    public ProductVariants {
+    @EqualsAndHashCode.Include
+    private final List<ProductVariant> values;
+
+    private final Set<ProductVariantId> variantIdSet;
+
+    public ProductVariants(
+            final List<ProductVariant> values) {
         if (values == null) {
             throw new DomainException("Variants CANNOT be null");
         }
@@ -29,7 +36,7 @@ public record ProductVariants(
             throw new DomainException("Variants CANNOT exceed " + MAX_AMOUNT);
         }
 
-        final var uniqueIdSet = HashSet.<ProductVariantId>newHashSet(values.size());
+        final var variantIdSet = HashSet.<ProductVariantId>newHashSet(values.size());
         final var uniqueCombinationSet = HashSet.<List<String>>newHashSet(values.size());
 
         for (final var variant : values) {
@@ -37,7 +44,7 @@ public record ProductVariants(
                 throw new DomainException("Variant in list CANNOT be null");
             }
 
-            if (!uniqueIdSet.add(variant.id())) {
+            if (!variantIdSet.add(variant.id())) {
                 throw new DomainException("Duplicate variant ID found: " + variant.id().value());
             }
 
@@ -47,7 +54,16 @@ public record ProductVariants(
             }
         }
 
-        values = List.copyOf(values);
+        this.values = List.copyOf(values);
+        this.variantIdSet = Set.copyOf(variantIdSet);
+    }
+
+    public List<ProductVariant> getValues() {
+        return this.values;
+    }
+
+    public Set<ProductVariantId> getIdSet() {
+        return this.variantIdSet;
     }
 
     public ProductPriceRange getPriceRange() {
@@ -62,7 +78,9 @@ public record ProductVariants(
             min = Math.min(min, price);
             max = Math.max(max, price);
         }
-        return new ProductPriceRange(new ProductPrice(min), new ProductPrice(max));
+        return new ProductPriceRange(
+                new ProductPrice(min),
+                new ProductPrice(max));
     }
 
     public boolean isEmpty() {
@@ -76,7 +94,7 @@ public record ProductVariants(
     public ProductVariants addAll(
             final ProductVariants variants) {
         final var newValues = new ArrayList<>(this.values);
-        newValues.addAll(variants.values());
+        newValues.addAll(variants.values);
         return new ProductVariants(newValues);
     }
 

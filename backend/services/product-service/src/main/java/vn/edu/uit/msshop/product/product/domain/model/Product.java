@@ -1,6 +1,7 @@
 package vn.edu.uit.msshop.product.product.domain.model;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -71,6 +72,10 @@ public final class Product {
 
     public ProductVariants getVariants() {
         return this.configuration.variants();
+    }
+
+    public Set<ProductVariantId> getVariantIdSet() {
+        return this.getVariants().getIdSet();
     }
 
     public ProductPriceRange getPriceRange() {

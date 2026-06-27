@@ -50,8 +50,8 @@ class ProductVariantProjectionRebuildByProductIdService
         }
 
         final var current = product.getVariants();
-        final var currentVariantSet = Set.copyOf(current.values());
-        final var newVariantSet = Set.copyOf(variants.values());
+        final var currentVariantSet = Set.copyOf(current.getValues());
+        final var newVariantSet = Set.copyOf(variants.getValues());
         if (currentVariantSet.equals(newVariantSet)) {
             return;
         }

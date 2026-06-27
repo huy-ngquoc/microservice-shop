@@ -74,7 +74,7 @@ class ProductPersistenceMapper {
     public ProductDocument toPersistence(
             final Product product) {
         final var priceRange = product.getPriceRange();
-        final var variantDocList = product.getVariants().values().stream()
+        final var variantDocList = product.getVariants().getValues().stream()
                 .map(ProductPersistenceMapper::toPersistence)
                 .toList();
 
@@ -95,7 +95,7 @@ class ProductPersistenceMapper {
     public ProductDocument toPersistence(
             final NewProduct newProduct) {
         final var priceRange = newProduct.getVariants().getPriceRange();
-        final var variantDocs = newProduct.getVariants().values().stream()
+        final var variantDocs = newProduct.getVariants().getValues().stream()
                 .map(ProductPersistenceMapper::toPersistence).toList();
 
         return new ProductDocument(
