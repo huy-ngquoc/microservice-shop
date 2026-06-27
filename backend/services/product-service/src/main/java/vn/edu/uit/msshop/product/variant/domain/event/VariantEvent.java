@@ -13,7 +13,9 @@ public sealed interface VariantEvent
         VariantSoftDeletedEvent,
         VariantRestoredEvent,
         VariantHardDeletedEvent,
-        VariantImageUpdatedEvent {
+        VariantImageUpdatedEvent,
+        VariantInfoUpdatedForProductEvent,
+        VariantSoftDeletedForProductEvent {
 
     UUID getEventId();
 
