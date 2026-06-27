@@ -11,7 +11,11 @@ public sealed interface ProductEvent
         ProductInfoUpdatedEvent,
         ProductSoftDeletedEvent,
         ProductRestoredEvent,
-        ProductHardDeletedEvent {
+        ProductHardDeletedEvent,
+        ProductNameChangedEvent,
+        ProductOptionAddedEvent,
+        ProductOptionRemovedEvent,
+        ProductVariantBulkRemovedEvent {
 
     UUID getEventId();
 
