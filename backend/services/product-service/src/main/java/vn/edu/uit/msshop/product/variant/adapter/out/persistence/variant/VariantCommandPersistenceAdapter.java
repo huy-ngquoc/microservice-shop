@@ -1,7 +1,10 @@
 package vn.edu.uit.msshop.product.variant.adapter.out.persistence.variant;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -21,6 +24,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.creation.NewVariant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Component
 @RequiredArgsConstructor
@@ -62,18 +66,42 @@ public class VariantCommandPersistenceAdapter
     public Variant update(
             final Variant variant) {
         final var toSave = this.mapper.toPersistence(variant);
-        final var saved = this.repository.save(toSave);
+        final VariantDocument saved;
+        try {
+            saved = this.repository.save(toSave);
+        } catch (final OptimisticLockingFailureException _) {
+            final var expected = toSave.getVersion();
+            final var current = this.repository.findById(toSave.getId())
+                    .map(VariantDocument::getVersion)
+                    .orElse(null);
+            throw new OptimisticLockException(expected, current);
+        }
         return this.mapper.toDomain(saved);
     }
 
     @Override
     public List<Variant> updateAll(
             final Collection<Variant> variants) {
-        final var toSave = variants.stream()
+        if (variants.isEmpty()) {
+            return List.of();
+        }
+
+        final var toSaveAll = variants.stream()
                 .map(this.mapper::toPersistence)
                 .toList();
-        final var saved = this.repository.saveAll(toSave);
-        return saved.stream()
+        final var savedAll = new ArrayList<VariantDocument>(toSaveAll.size());
+        for (final var toSave : toSaveAll) {
+            try {
+                savedAll.add(this.repository.save(toSave));
+            } catch (final OptimisticLockingFailureException _) {
+                final var expected = toSave.getVersion();
+                final var current = this.repository.findById(toSave.getId())
+                        .map(VariantDocument::getVersion)
+                        .orElse(null);
+                throw new OptimisticLockException(expected, current);
+            }
+        }
+        return savedAll.stream()
                 .map(this.mapper::toDomain)
                 .toList();
     }
