@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.product.application.service.command.variant;
 
+import java.util.stream.Collectors;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionByIdsPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVariantGuard;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
-import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
+import vn.edu.uit.msshop.product.product.domain.event.ProductVariantBulkRemovedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
@@ -64,32 +66,35 @@ class ProductVariantBulkRemovalService
                 expectedVersion,
                 product.getVersion());
 
-        final var variantIdList = cmd.variantIdList().stream()
+        final var variantIdSetToRemove = cmd.variantIdSet().stream()
                 .map(ProductVariantId::new)
-                .toList();
+                .collect(Collectors.toUnmodifiableSet());
 
         ProductVariantGuard.ensureAllVariantsExist(
                 product,
-                variantIdList);
+                variantIdSetToRemove);
         ProductVariantGuard.ensureAtLeastOneVariantRemains(
                 product,
-                variantIdList);
+                variantIdSetToRemove);
 
-        final var next = product.removeVariantsByIds(variantIdList);
+        final var next = product.removeVariantsByIds(variantIdSetToRemove);
 
         final var savedProduct = this.updatePort.update(next);
         final var savedProductId = savedProduct.getId();
 
+        // TODO: omit these
         final var soldCount = this.soldCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var stockCount = this.stockCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
 
-        final var event = new ProductInfoUpdatedEvent(savedProductId);
-        this.eventPort.publishEvent(event);
-
         this.variantBulkSoftDeletionByIdsPort.deleteByIds(
-                variantIdList,
+                variantIdSetToRemove,
                 savedProductId);
+
+        final var event = new ProductVariantBulkRemovedEvent(
+                savedProductId,
+                variantIdSetToRemove);
+        this.eventPort.publishEvent(event);
 
         return this.mapper.toView(
                 savedProduct,
