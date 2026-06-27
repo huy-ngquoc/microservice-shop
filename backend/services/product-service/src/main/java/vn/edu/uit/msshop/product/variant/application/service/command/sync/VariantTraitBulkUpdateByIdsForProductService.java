@@ -8,11 +8,13 @@ import java.util.UUID;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.shared.application.exception.BusinessRuleException;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantTraitBulkUpdateByIdsForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantTraitBulkUpdateByIdsForProductUseCase;
@@ -36,6 +38,12 @@ class VariantTraitBulkUpdateByIdsForProductService
 
     @Override
     @Transactional
+    @Retryable(
+            includes = OptimisticLockException.class,
+            maxRetries = 3,
+            delay = 50,
+            multiplier = 2.0,
+            maxDelay = 500)
     @Caching(
             evict = {
                     @CacheEvict(

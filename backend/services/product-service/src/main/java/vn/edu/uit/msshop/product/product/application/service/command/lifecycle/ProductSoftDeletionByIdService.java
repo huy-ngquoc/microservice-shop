@@ -13,7 +13,6 @@ import vn.edu.uit.msshop.product.product.application.port.in.command.lifecycle.P
 import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionForProductPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeletedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -25,8 +24,6 @@ class ProductSoftDeletionByIdService
         implements ProductSoftDeletionByIdUseCase {
     private final ProductActiveLookupByIdPort loadPort;
     private final ProductUpdatePort updatePort;
-
-    private final ProductVariantBulkSoftDeletionForProductPort variantBulkSoftDeletionForProductPort;
 
     private final ProductEventPublicationPort eventPublicationPort;
 
@@ -55,8 +52,6 @@ class ProductSoftDeletionByIdService
 
         final var next = product.softDeleted();
         final var saved = this.updatePort.update(next);
-
-        this.variantBulkSoftDeletionForProductPort.deleteByProductId(saved.getId());
 
         final var event = new ProductSoftDeletedEvent(saved.getId());
         this.eventPublicationPort.publishEvent(event);

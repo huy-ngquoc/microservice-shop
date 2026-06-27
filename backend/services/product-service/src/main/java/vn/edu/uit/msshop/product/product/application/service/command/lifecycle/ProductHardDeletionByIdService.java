@@ -13,7 +13,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductDeletionByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.command.ProductRatingDeletionByProductIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkHardDeletionForProductPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductHardDeletedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -29,8 +28,6 @@ class ProductHardDeletionByIdService
     private final ProductSoldCountDeletionByProductIdPort soldCountDeletionByProductIdPort;
     private final ProductStockCountDeletionByProductIdPort stockCountDeletionByProductIdPort;
     private final ProductRatingDeletionByProductIdPort ratingDeletionByProductIdPort;
-
-    private final ProductVariantBulkHardDeletionForProductPort variantBulkHardDeleteByIdsPort;
 
     private final ProductEventPublicationPort eventPublicationPort;
 
@@ -52,8 +49,6 @@ class ProductHardDeletionByIdService
         this.soldCountDeletionByProductIdPort.deleteByProductId(productId);
         this.stockCountDeletionByProductIdPort.deleteByProductId(productId);
         this.ratingDeletionByProductIdPort.deleteByProductId(productId);
-
-        this.variantBulkHardDeleteByIdsPort.purgeByProductId(productId);
 
         final var event = new ProductHardDeletedEvent(productId);
         this.eventPublicationPort.publishEvent(event);

@@ -2,6 +2,7 @@ package vn.edu.uit.msshop.product.variant.application.service.command.sync;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +13,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.Varian
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantProductNameBulkUpdateByProductIdPort;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductName;
+import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,12 @@ class VariantProductNameBulkUpdateForProductService
 
     @Override
     @Transactional
+    @Retryable(
+            includes = OptimisticLockException.class,
+            maxRetries = 3,
+            delay = 50,
+            multiplier = 2.0,
+            maxDelay = 500)
     @Caching(
             evict = {
                     @CacheEvict(
