@@ -5,14 +5,13 @@ import java.util.Set;
 import java.util.UUID;
 
 import lombok.EqualsAndHashCode;
-import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-public final class ProductRestoredEvent
+public final class ProductVariantBulkRemovedEvent
         implements ProductEvent {
 
     @EqualsAndHashCode.Include
@@ -22,20 +21,13 @@ public final class ProductRestoredEvent
 
     private final ProductId productId;
 
-    private final Set<ProductVariantId> activeVariantIdSet;
+    private final Set<ProductVariantId> removedVariantIdSet;
 
-    private ProductRestoredEvent(
+    public ProductVariantBulkRemovedEvent(
             final ProductId productId,
-            final Set<ProductVariantId> activeVariantIdSet) {
+            final Set<ProductVariantId> removedVariantIdSet) {
         this.productId = productId;
-        this.activeVariantIdSet = Set.copyOf(activeVariantIdSet);
-    }
-
-    public static ProductRestoredEvent of(
-            final Product product) {
-        return new ProductRestoredEvent(
-                product.getId(),
-                product.getVariantIdSet());
+        this.removedVariantIdSet = Set.copyOf(removedVariantIdSet);
     }
 
     @Override
@@ -53,8 +45,8 @@ public final class ProductRestoredEvent
         return this.productId;
     }
 
-    public Set<ProductVariantId> getActiveVariantIdSet() {
-        return this.activeVariantIdSet;
+    public Set<ProductVariantId> getRemovedVariantIdSet() {
+        return this.removedVariantIdSet;
     }
 
 }

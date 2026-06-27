@@ -59,6 +59,7 @@ class ProductRestorationByIdService
                 variantIdSet,
                 productId);
 
-        this.eventPublicationPort.publishEvent(new ProductRestoredEvent(saved.getId()));
+        final var event = ProductRestoredEvent.of(saved);
+        this.eventPublicationPort.publishEvent(event);
     }
 }
