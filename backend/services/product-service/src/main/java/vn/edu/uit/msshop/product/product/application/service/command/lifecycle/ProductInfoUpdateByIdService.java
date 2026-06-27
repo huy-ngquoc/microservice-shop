@@ -26,6 +26,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.validation.Product
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
+import vn.edu.uit.msshop.product.product.domain.event.ProductNameChangedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductCategoryId;
@@ -186,5 +187,8 @@ class ProductInfoUpdateByIdService
         this.variantNameBulkUpdateForProductPort.updateProductNameByProductId(
                 after.getId(),
                 after.getName());
+
+        final var event = ProductNameChangedEvent.of(after);
+        this.eventPublicationPort.publishEvent(event);
     }
 }
