@@ -22,6 +22,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
+import vn.edu.uit.msshop.product.product.domain.event.ProductOptionRemovedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
@@ -120,5 +121,10 @@ class ProductOptionRemovalByIdService
         this.variantTraitBulkUpdatePort.updateTraitsByIds(
                 newTraitsByVariantId,
                 productId);
+
+        final var event = new ProductOptionRemovedEvent(
+                productId,
+                newTraitsByVariantId);
+        this.eventPublicationPort.publishEvent(event);
     }
 }
