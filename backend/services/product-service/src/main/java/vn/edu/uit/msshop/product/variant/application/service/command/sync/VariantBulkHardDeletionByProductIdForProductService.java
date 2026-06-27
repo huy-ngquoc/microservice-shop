@@ -7,13 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkHardDeletionByProductIdForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkHardDeletionByProductIdForProductUseCase;
-import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantSoldCountBulkDeletionByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.command.VariantStockCountBulkDeletionByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkDeletionByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.image.VariantImageDeleter;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantHardDeletedEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 
@@ -29,8 +27,6 @@ class VariantBulkHardDeletionByProductIdForProductService
     private final VariantStockCountBulkDeletionByVariantIdsPort stockCountBulkDeletionByVariantIdsPort;
 
     private final VariantImageDeleter imageDeleter;
-
-    private final VariantEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -53,11 +49,6 @@ class VariantBulkHardDeletionByProductIdForProductService
 
         for (final var variant : variantList) {
             this.imageDeleter.deleteQuietly(variant.getImageKey());
-        }
-
-        for (final var variant : variantList) {
-            final var event = VariantHardDeletedEvent.of(variant);
-            this.eventPublicationPort.publishEvent(event);
         }
     }
 }

@@ -20,7 +20,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantBulkSoftDeletionByIdsPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVariantGuard;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductVariantBulkRemovedEvent;
@@ -35,13 +34,12 @@ class ProductVariantBulkRemovalService
 
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductUpdatePort updatePort;
-    private final ProductVariantBulkSoftDeletionByIdsPort variantBulkSoftDeletionByIdsPort;
     private final ProductSoldCountLookupByProductIdPort soldCountLookupByProductIdPort;
     private final ProductStockCountLookupByProductIdPort stockCountLookupByProductIdPort;
     private final ProductRatingLookupByProductIdPort ratingLookupByProductIdPort;
 
     private final ProductViewMapper mapper;
-    private final ProductEventPublicationPort eventPort;
+    private final ProductEventPublicationPort eventPublicationPort;
 
     @Override
     @Transactional
@@ -87,14 +85,10 @@ class ProductVariantBulkRemovalService
         final var stockCount = this.stockCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
 
-        this.variantBulkSoftDeletionByIdsPort.deleteByIds(
-                variantIdSetToRemove,
-                savedProductId);
-
         final var event = new ProductVariantBulkRemovedEvent(
                 savedProductId,
                 variantIdSetToRemove);
-        this.eventPort.publishEvent(event);
+        this.eventPublicationPort.publishEvent(event);
 
         return this.mapper.toView(
                 savedProduct,
