@@ -23,6 +23,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
+import vn.edu.uit.msshop.product.product.domain.event.ProductOptionAddedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
@@ -81,30 +82,20 @@ class ProductOptionAdditionByIdService
         final var next = product.addOption(
                 newOption,
                 defaultTrait);
-        final var newVariants = next.getVariants();
-
-        final var newTraitsMap = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(
-                newVariants.size());
-        for (final var variant : newVariants.getValues()) {
-            final var variantId = variant.id();
-            final var variantTraits = variant.traits();
-
-            newTraitsMap.put(variantId, variantTraits);
-        }
-
         final var savedProduct = this.updatePort.update(next);
-        final var savedProductId = savedProduct.getId();
 
+        final var savedProductId = savedProduct.getId();
+        this.syncVariantTraits(
+                next.getVariants(),
+                savedProductId);
+
+        final var event = new ProductInfoUpdatedEvent(productId);
+        this.eventPublicationPort.publishEvent(event);
+
+        // TODO: omit these
         final var soldCount = this.soldCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var stockCount = this.stockCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
-
-        final var event = new ProductInfoUpdatedEvent(savedProductId);
-        this.eventPublicationPort.publishEvent(event);
-
-        this.variantTraitBulkUpdatePort.updateTraitsByIds(
-                newTraitsMap,
-                savedProductId);
 
         return this.mapper.toView(
                 savedProduct,
@@ -144,5 +135,10 @@ class ProductOptionAdditionByIdService
         this.variantTraitBulkUpdatePort.updateTraitsByIds(
                 newTraitsByVariantId,
                 productId);
+
+        final var event = new ProductOptionAddedEvent(
+                productId,
+                newTraitsByVariantId);
+        this.eventPublicationPort.publishEvent(event);
     }
 }

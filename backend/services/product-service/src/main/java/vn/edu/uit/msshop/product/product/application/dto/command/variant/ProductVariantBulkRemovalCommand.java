@@ -1,13 +1,13 @@
 package vn.edu.uit.msshop.product.product.application.dto.command.variant;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public record ProductVariantBulkRemovalCommand(
         UUID productId,
-        List<UUID> variantIdList,
+        Set<UUID> variantIdSet,
         long productVersion) {
     public ProductVariantBulkRemovalCommand {
-        variantIdList = List.copyOf(variantIdList);
+        variantIdSet = Set.copyOf(variantIdSet);
     }
 }
