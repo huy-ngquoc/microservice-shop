@@ -25,6 +25,7 @@ import vn.edu.uit.msshop.product.product.application.service.command.support.Pro
 import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
@@ -84,7 +85,7 @@ class ProductOptionAdditionByIdService
 
         final var newTraitsMap = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(
                 newVariants.size());
-        for (final var variant : newVariants.values()) {
+        for (final var variant : newVariants.getValues()) {
             final var variantId = variant.id();
             final var variantTraits = variant.traits();
 
@@ -128,5 +129,20 @@ class ProductOptionAdditionByIdService
                     "Default trait '" + defaultTrait.value()
                             + "' collides with an existing trait value in a variant");
         }
+    }
+
+    private void syncVariantTraits(
+            final ProductVariants variants,
+            final ProductId productId) {
+        final var newTraitsByVariantId = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(variants.size());
+        for (final var variant : variants.getValues()) {
+            final var variantId = variant.id();
+            final var variantTraits = variant.traits();
+
+            newTraitsByVariantId.put(variantId, variantTraits);
+        }
+        this.variantTraitBulkUpdatePort.updateTraitsByIds(
+                newTraitsByVariantId,
+                productId);
     }
 }

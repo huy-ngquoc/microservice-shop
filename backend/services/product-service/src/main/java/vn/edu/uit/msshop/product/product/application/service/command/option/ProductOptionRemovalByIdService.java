@@ -79,12 +79,13 @@ class ProductOptionRemovalByIdService
                 next.getVariants(),
                 savedProductId);
 
+        final var event = new ProductInfoUpdatedEvent(productId);
+        this.eventPublicationPort.publishEvent(event);
+
+        // TODO: omit these
         final var soldCount = this.soldCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var stockCount = this.stockCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
         final var rating = this.ratingLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
-
-        final var event = new ProductInfoUpdatedEvent(savedProductId);
-        this.eventPublicationPort.publishEvent(event);
 
         return this.mapper.toView(
                 savedProduct,
@@ -109,15 +110,15 @@ class ProductOptionRemovalByIdService
     private void syncVariantTraits(
             final ProductVariants variants,
             final ProductId productId) {
-        final var newTraitsMap = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(variants.size());
-        for (final var variant : variants.values()) {
+        final var newTraitsByVariantId = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(variants.size());
+        for (final var variant : variants.getValues()) {
             final var variantId = variant.id();
             final var variantTraits = variant.traits();
 
-            newTraitsMap.put(variantId, variantTraits);
+            newTraitsByVariantId.put(variantId, variantTraits);
         }
         this.variantTraitBulkUpdatePort.updateTraitsByIds(
-                newTraitsMap,
+                newTraitsByVariantId,
                 productId);
     }
 }

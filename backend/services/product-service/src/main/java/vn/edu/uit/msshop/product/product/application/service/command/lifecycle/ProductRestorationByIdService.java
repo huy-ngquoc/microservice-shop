@@ -1,5 +1,7 @@
 package vn.edu.uit.msshop.product.product.application.service.command.lifecycle;
 
+import java.util.stream.Collectors;
+
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,11 +52,11 @@ class ProductRestorationByIdService
         final var next = product.restored();
         final var saved = this.updatePort.update(next);
 
-        final var manifestIds = saved.getVariants().values().stream()
+        final var variantIdSet = saved.getVariants().getValues().stream()
                 .map(ProductVariant::id)
-                .toList();
+                .collect(Collectors.toUnmodifiableSet());
         this.variantBulkRestorationForProductPort.restoreByVariantIds(
-                manifestIds,
+                variantIdSet,
                 productId);
 
         this.eventPublicationPort.publishEvent(new ProductRestoredEvent(saved.getId()));
