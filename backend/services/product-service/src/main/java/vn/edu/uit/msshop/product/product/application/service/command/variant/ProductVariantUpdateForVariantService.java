@@ -10,10 +10,8 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantUpdateForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantUpdateForVariantUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
-import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
@@ -27,7 +25,6 @@ class ProductVariantUpdateForVariantService
 
     private final ProductActiveLookupByIdPort loadPort;
     private final ProductUpdatePort updatePort;
-    private final ProductEventPublicationPort eventPort;
 
     @Override
     @Transactional
@@ -56,10 +53,7 @@ class ProductVariantUpdateForVariantService
         final var next = product.replaceVariantById(
                 variantId,
                 newVariant);
-        final var saved = this.updatePort.update(next);
-
-        final var event = new ProductInfoUpdatedEvent(saved.getId());
-        this.eventPort.publishEvent(event);
+        this.updatePort.update(next);
     }
 
 }
