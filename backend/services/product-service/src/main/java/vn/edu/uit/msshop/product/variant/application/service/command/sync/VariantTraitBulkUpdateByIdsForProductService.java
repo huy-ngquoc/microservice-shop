@@ -22,7 +22,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEvent
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantSyncGuard;
-import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedForProductEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
@@ -83,7 +83,7 @@ class VariantTraitBulkUpdateByIdsForProductService
 
         final var saved = this.bulkUpdatePort.updateAll(next);
         for (final var variant : saved) {
-            final var event = VariantInfoUpdatedEvent.of(variant);
+            final var event = VariantInfoUpdatedForProductEvent.of(variant);
             this.eventPublicationPort.publishEvent(event);
         }
     }

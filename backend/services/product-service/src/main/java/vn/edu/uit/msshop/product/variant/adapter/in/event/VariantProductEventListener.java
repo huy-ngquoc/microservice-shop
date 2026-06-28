@@ -1,5 +1,8 @@
 package vn.edu.uit.msshop.product.variant.adapter.in.event;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -11,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import vn.edu.uit.msshop.product.product.domain.event.ProductEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductHardDeletedEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductNameChangedEvent;
+import vn.edu.uit.msshop.product.product.domain.event.ProductOptionAddedEvent;
+import vn.edu.uit.msshop.product.product.domain.event.ProductOptionRemovedEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductRestoredEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductSoftDeletedEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductVariantBulkRemovedEvent;
@@ -20,11 +25,13 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBul
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkSoftDeletionByIdsForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkSoftDeletionByProductIdForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantProductNameBulkUpdateForProductCommand;
+import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantTraitBulkUpdateByIdsForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkHardDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkRestorationByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByProductIdForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantProductNameBulkUpdateForProductUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantTraitBulkUpdateByIdsForProductUseCase;
 
 @Component
 @RequiredArgsConstructor
@@ -32,6 +39,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.Varian
 public class VariantProductEventListener {
 
     private final VariantProductNameBulkUpdateForProductUseCase productNameBulkUpdateUseCase;
+    private final VariantTraitBulkUpdateByIdsForProductUseCase traitBulkUpdateByIdsUseCase;
     private final VariantBulkSoftDeletionByIdsForProductUseCase bulkSoftDeleteByIdsUseCase;
     private final VariantBulkSoftDeletionByProductIdForProductUseCase bulkSoftDeleteByProductIdUseCase;
     private final VariantBulkHardDeletionByProductIdForProductUseCase bulkHardDeleteByProductIdUseCase;
@@ -46,6 +54,56 @@ public class VariantProductEventListener {
                 event.getNewName().value());
         try {
             this.productNameBulkUpdateUseCase.updateAll(cmd);
+        } catch (final RuntimeException exception) {
+            this.logCascadeFailure(event, exception);
+        }
+    }
+
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT)
+    public void onProductOptionAdded(
+            final ProductOptionAddedEvent event) {
+        final var traitsById = event.getTraitsByVariantId();
+
+        final var traitListById = HashMap.<UUID, List<String>>newHashMap(traitsById.size());
+        for (final var entry : traitsById.entrySet()) {
+            final var variantId = entry.getKey();
+            final var traits = entry.getValue();
+
+            traitListById.put(variantId.value(), traits.unwrap());
+        }
+
+        final var cmd = new VariantTraitBulkUpdateByIdsForProductCommand(
+                traitListById,
+                event.getProductId().value());
+
+        try {
+            this.traitBulkUpdateByIdsUseCase.updateAll(cmd);
+        } catch (final RuntimeException exception) {
+            this.logCascadeFailure(event, exception);
+        }
+    }
+
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT)
+    public void onProductOptionRemoved(
+            final ProductOptionRemovedEvent event) {
+        final var traitsById = event.getTraitsByVariantId();
+
+        final var traitListById = HashMap.<UUID, List<String>>newHashMap(traitsById.size());
+        for (final var entry : traitsById.entrySet()) {
+            final var variantId = entry.getKey();
+            final var traits = entry.getValue();
+
+            traitListById.put(variantId.value(), traits.unwrap());
+        }
+
+        final var cmd = new VariantTraitBulkUpdateByIdsForProductCommand(
+                traitListById,
+                event.getProductId().value());
+
+        try {
+            this.traitBulkUpdateByIdsUseCase.updateAll(cmd);
         } catch (final RuntimeException exception) {
             this.logCascadeFailure(event, exception);
         }
