@@ -17,7 +17,7 @@ import vn.edu.uit.msshop.shared.domain.identifier.UUIDs;
 @RequiredArgsConstructor
 @EqualsAndHashCode(
         onlyExplicitlyIncluded = true)
-public final class VariantSoftDeletedForProductEvent
+public final class VariantRestoredForProductEvent
         implements VariantEvent {
 
     @EqualsAndHashCode.Include
@@ -33,11 +33,11 @@ public final class VariantSoftDeletedForProductEvent
 
     private final VariantStockCountValue stockCountValue;
 
-    public static VariantSoftDeletedForProductEvent of(
+    public static VariantRestoredForProductEvent of(
             final Variant variant,
             final VariantSoldCount soldCount,
             final VariantStockCount stockCount) {
-        return new VariantSoftDeletedForProductEvent(
+        return new VariantRestoredForProductEvent(
                 variant.getId(),
                 variant.getProductId(),
                 soldCount.getValue(),
