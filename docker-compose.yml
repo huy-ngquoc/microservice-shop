@@ -227,21 +227,21 @@ services:
         image: prom/prometheus:latest
         container_name: prometheus
         volumes:
-        - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+            - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
         ports:
-        - "9091:9090"
+            - "9091:9090"
         networks:
-        - microservices-net
+            - microservices-net
         restart: unless-stopped
     grafana:
         image: grafana/grafana:latest
         container_name: grafana
         ports:
-        - "3000:3000"
+            - "3000:3000"
         volumes:
-        - grafana-storage:/var/lib/grafana
+            - grafana-storage:/var/lib/grafana
         networks:
-        - microservices-net
+            - microservices-net
         restart: unless-stopped
     rating-service:
         build:
@@ -625,25 +625,22 @@ services:
         container_name: ms_mongo_db_rating
         image: mongo:8
         ports:
-        - 27018:27017
+            - 27018:27017
         volumes:
-        - mongo_rating:/data/db
+            - mongo_rating:/data/db
         environment:
-        - MONGO_INITDB_ROOT_USERNAME=alibou
-        - MONGO_INITDB_ROOT_PASSWORD=alibou
-        - TZ=UTC
+            - MONGO_INITDB_ROOT_USERNAME=alibou
+            - MONGO_INITDB_ROOT_PASSWORD=alibou
+            - TZ=UTC
         networks:
-        - microservices-net
+            - microservices-net
         restart: unless-stopped
         entrypoint: >
-            bash -c "
-            if [ ! -f /data/db/mongo-keyfile ]; then
+            bash -c " if [ ! -f /data/db/mongo-keyfile ]; then
                 openssl rand -base64 756 > /data/db/mongo-keyfile
                 chmod 400 /data/db/mongo-keyfile
                 chown 999:999 /data/db/mongo-keyfile
-            fi;
-            exec mongod --replSet rs0 --bind_ip_all --keyFile /data/db/mongo-keyfile
-            "
+            fi; exec mongod --replSet rs0 --bind_ip_all --keyFile /data/db/mongo-keyfile "
         deploy:
             resources:
                 limits:
@@ -845,7 +842,7 @@ services:
             - keycloak_data:/opt/keycloak/data
 
     redis_order:
-        image: redis:7.2-alpine
+        image: redis:8.6
         container_name: redis_order
         restart: unless-stopped
         ports:
@@ -866,7 +863,7 @@ services:
             timeout: 5s
             retries: 5
     redis_inventory:
-        image: redis:7.2-alpine
+        image: redis:8.6
         container_name: redis_inventory
         restart: unless-stopped
         ports:
@@ -888,7 +885,7 @@ services:
             retries: 5
 
     redis_cart:
-        image: redis:7.2-alpine
+        image: redis:8.6
         container_name: redis_cart
         restart: unless-stopped
         ports:
