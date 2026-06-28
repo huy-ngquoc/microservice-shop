@@ -24,7 +24,6 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductBrandExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.validation.ProductCategoryExistenceCheckByIdPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
-import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductNameChangedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductBrandId;
@@ -114,9 +113,6 @@ class ProductInfoUpdateByIdService
 
         final var savedProduct = this.updatePort.update(next);
         this.syncProductNameToVariantsIfChanged(product, savedProduct);
-
-        final var event = new ProductInfoUpdatedEvent(savedProduct.getId());
-        this.eventPublicationPort.publishEvent(event);
 
         return this.mapper.toView(
                 savedProduct,

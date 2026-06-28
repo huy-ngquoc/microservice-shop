@@ -12,13 +12,11 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantAdditionForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantAdditionForVariantUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkIncrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkIncrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVariantGuard;
-import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.ProductVariant;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
@@ -34,8 +32,6 @@ class ProductVariantAdditionForVariantService
     private final ProductUpdatePort updatePort;
     private final ProductSoldCountBulkIncrementPort soldCountBulkIncrementPort;
     private final ProductStockCountBulkIncrementPort stockCountBulkIncrementPort;
-
-    private final ProductEventPublicationPort eventPort;
 
     @Override
     @Transactional
@@ -69,7 +65,7 @@ class ProductVariantAdditionForVariantService
                 variantTraits);
 
         final var next = product.addVariant(newVariant);
-        final var saved = this.updatePort.update(next);
+        this.updatePort.update(next);
 
         if (cmd.productSoldCountIncrement() > 0) {
             final var incrementByProductId = Map.of(productId, cmd.productSoldCountIncrement());
@@ -79,8 +75,5 @@ class ProductVariantAdditionForVariantService
             final var incrementByProductId = Map.of(productId, cmd.productStockCountIncrement());
             this.stockCountBulkIncrementPort.increaseAll(incrementByProductId);
         }
-
-        final var event = new ProductInfoUpdatedEvent(saved.getId());
-        this.eventPort.publishEvent(event);
     }
 }
