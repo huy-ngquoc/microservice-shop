@@ -20,13 +20,10 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantTraitBulkUpdatePort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
-import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.event.ProductOptionAddedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.ProductOptions;
-import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
@@ -41,7 +38,6 @@ class ProductOptionAdditionByIdService
         implements ProductOptionAdditionByIdUseCase {
     private final ProductActiveLookupByIdPort activeLookupByIdPort;
     private final ProductUpdatePort updatePort;
-    private final ProductVariantTraitBulkUpdatePort variantTraitBulkUpdatePort;
     private final ProductSoldCountLookupByProductIdPort soldCountLookupByProductIdPort;
     private final ProductStockCountLookupByProductIdPort stockCountLookupByProductIdPort;
     private final ProductRatingLookupByProductIdPort ratingLookupByProductIdPort;
@@ -85,12 +81,7 @@ class ProductOptionAdditionByIdService
         final var savedProduct = this.updatePort.update(next);
 
         final var savedProductId = savedProduct.getId();
-        this.syncVariantTraits(
-                next.getVariants(),
-                savedProductId);
-
-        final var event = new ProductInfoUpdatedEvent(productId);
-        this.eventPublicationPort.publishEvent(event);
+        this.publishEvent(savedProduct);
 
         // TODO: omit these
         final var soldCount = this.soldCountLookupByProductIdPort.loadByProductIdOrZero(savedProductId);
@@ -122,9 +113,11 @@ class ProductOptionAdditionByIdService
         }
     }
 
-    private void syncVariantTraits(
-            final ProductVariants variants,
-            final ProductId productId) {
+    private void publishEvent(
+            final Product product) {
+        final var variants = product.getVariants();
+        final var productId = product.getId();
+
         final var newTraitsByVariantId = HashMap.<ProductVariantId, ProductVariantTraits>newHashMap(variants.size());
         for (final var variant : variants.getValues()) {
             final var variantId = variant.id();
@@ -132,10 +125,6 @@ class ProductOptionAdditionByIdService
 
             newTraitsByVariantId.put(variantId, variantTraits);
         }
-        this.variantTraitBulkUpdatePort.updateTraitsByIds(
-                newTraitsByVariantId,
-                productId);
-
         final var event = new ProductOptionAddedEvent(
                 productId,
                 newTraitsByVariantId);
