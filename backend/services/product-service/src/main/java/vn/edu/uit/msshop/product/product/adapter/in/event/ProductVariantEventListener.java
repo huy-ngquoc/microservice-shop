@@ -14,17 +14,23 @@ import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductVa
 import vn.edu.uit.msshop.product.product.application.dto.command.count.ProductVariantStockCountBulkUpdatedEventApplyCommand.ProductVariantStockCountDelta;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantInfoUpdatedEventApplyCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantRestoredEventApplyCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantRestoredForProductEventApplyCommand;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantSoftDeletedEventApplyCommand;
+import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantSoftDeletedForProductEventApplyCommand;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductVariantSoldCountBulkUpdatedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.count.ProductVariantStockCountBulkUpdatedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantInfoUpdatedEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRestoredEventApplyUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRestoredForProductEventApplyUseCase;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantSoftDeletedEventApplyUseCase;
+import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantSoftDeletedForProductEventApplyUseCase;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantCountBulkUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantEvent;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantRestoredForProductEvent;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedEvent;
+import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedForProductEvent;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoldCountBulkUpdatedEvent;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantStockCountBulkUpdatedEvent;
 
@@ -39,6 +45,9 @@ public class ProductVariantEventListener {
 
     private final ProductVariantSoldCountBulkUpdatedEventApplyUseCase soldCountBulkUpdatedEventApplyUseCase;
     private final ProductVariantStockCountBulkUpdatedEventApplyUseCase stockCountBulkUpdatedEventApplyUseCase;
+
+    private final ProductVariantSoftDeletedForProductEventApplyUseCase softDeletedForProductEventApplyUseCase;
+    private final ProductVariantRestoredForProductEventApplyUseCase restoredForProductEventApplyUseCase;
 
     @TransactionalEventListener(
             phase = TransactionPhase.AFTER_COMMIT)
@@ -132,6 +141,36 @@ public class ProductVariantEventListener {
 
             final var newCommand = new ProductVariantStockCountBulkUpdatedEventApplyCommand(event.getEventId(), deltas);
             this.stockCountBulkUpdatedEventApplyUseCase.apply(newCommand);
+        } catch (final RuntimeException exception) {
+            this.logProjectionFailure(event, exception);
+        }
+    }
+
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT)
+    public void onSoftDeletedForProduct(
+            final VariantSoftDeletedForProductEvent event) {
+        final var cmd = new ProductVariantSoftDeletedForProductEventApplyCommand(
+                event.getProductId().value(),
+                event.getSoldCountValue().value(),
+                event.getStockCountValue().value());
+        try {
+            this.softDeletedForProductEventApplyUseCase.apply(cmd);
+        } catch (final RuntimeException exception) {
+            this.logProjectionFailure(event, exception);
+        }
+    }
+
+    @TransactionalEventListener(
+            phase = TransactionPhase.AFTER_COMMIT)
+    public void onRestoredForProduct(
+            final VariantRestoredForProductEvent event) {
+        final var cmd = new ProductVariantRestoredForProductEventApplyCommand(
+                event.getProductId().value(),
+                event.getSoldCountValue().value(),
+                event.getStockCountValue().value());
+        try {
+            this.restoredForProductEventApplyUseCase.apply(cmd);
         } catch (final RuntimeException exception) {
             this.logProjectionFailure(event, exception);
         }

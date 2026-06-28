@@ -13,11 +13,15 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.variant.application.dto.command.sync.VariantBulkSoftDeletionByIdsForProductCommand;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.sync.VariantBulkSoftDeletionByIdsForProductUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.event.VariantEventPublicationPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByVariantIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.command.VariantBulkUpdatePort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.variant.application.service.command.support.VariantSyncGuard;
 import vn.edu.uit.msshop.product.variant.domain.event.VariantSoftDeletedForProductEvent;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
+import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
 import vn.edu.uit.msshop.shared.application.exception.OptimisticLockException;
@@ -28,6 +32,8 @@ class VariantBulkSoftDeletionByIdsForProductService
         implements VariantBulkSoftDeletionByIdsForProductUseCase {
 
     private final VariantActiveBulkLookupByIdsPort activeBulkLookupByIdsPort;
+    private final VariantSoldCountBulkLookupByVariantIdsPort soldCountBulkLookupByVariantIdsPort;
+    private final VariantStockCountBulkLookupByVariantIdsPort stockCountBulkLookupByVariantIdsPort;
     private final VariantBulkUpdatePort bulkUpdatePort;
 
     private final VariantEventPublicationPort eventPublicationPort;
@@ -67,8 +73,27 @@ class VariantBulkSoftDeletionByIdsForProductService
                 .toList();
         final var savedList = this.bulkUpdatePort.updateAll(nextList);
 
+        final var savedVariantIdSet = savedList.stream()
+                .map(Variant::getId)
+                .collect(Collectors.toUnmodifiableSet());
+        final var soldCountById = this.soldCountBulkLookupByVariantIdsPort
+                .loadAllByVariantIds(savedVariantIdSet);
+        final var stockCountById = this.stockCountBulkLookupByVariantIdsPort
+                .loadAllByVariantIds(savedVariantIdSet);
+
         for (final var variant : savedList) {
-            final var event = VariantSoftDeletedForProductEvent.of(variant);
+            final var variantId = variant.getId();
+            final var soldCount = soldCountById.getOrDefault(
+                    variantId,
+                    VariantSoldCount.zero(variantId, productId));
+            final var stockCount = stockCountById.getOrDefault(
+                    variantId,
+                    VariantStockCount.zero(variantId, productId));
+
+            final var event = VariantSoftDeletedForProductEvent.of(
+                    variant,
+                    soldCount,
+                    stockCount);
             this.eventPublicationPort.publishEvent(event);
         }
     }
