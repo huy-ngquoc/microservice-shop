@@ -13,14 +13,12 @@ import vn.edu.uit.msshop.product.product.application.dto.view.ProductView;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.mapper.ProductViewMapper;
 import vn.edu.uit.msshop.product.product.application.port.in.command.option.ProductOptionUpdateByIdUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.rating.query.ProductRatingLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
-import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductOption;
@@ -36,7 +34,6 @@ class ProductOptionUpdateByIdService
     private final ProductRatingLookupByProductIdPort ratingLookupByProductIdPort;
     private final ProductUpdatePort updatePort;
 
-    private final ProductEventPublicationPort eventPublicationPort;
     private final ProductViewMapper mapper;
 
     @Override
@@ -80,9 +77,6 @@ class ProductOptionUpdateByIdService
         }
 
         final var saved = this.updatePort.update(next);
-
-        final var event = new ProductInfoUpdatedEvent(saved.getId());
-        this.eventPublicationPort.publishEvent(event);
 
         return this.mapper.toView(
                 saved,

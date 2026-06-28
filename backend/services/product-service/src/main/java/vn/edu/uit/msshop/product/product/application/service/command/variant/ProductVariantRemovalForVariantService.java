@@ -13,13 +13,11 @@ import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
 import vn.edu.uit.msshop.product.product.application.dto.command.variant.ProductVariantRemovalForVariantCommand;
 import vn.edu.uit.msshop.product.product.application.exception.ProductNotFoundException;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantRemovalForVariantUseCase;
-import vn.edu.uit.msshop.product.product.application.port.out.event.ProductEventPublicationPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkDecrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkDecrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.command.ProductUpdatePort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.product.query.lookup.ProductActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVariantGuard;
-import vn.edu.uit.msshop.product.product.domain.event.ProductInfoUpdatedEvent;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantId;
 
@@ -32,8 +30,6 @@ class ProductVariantRemovalForVariantService
     private final ProductUpdatePort updatePort;
     private final ProductSoldCountBulkDecrementPort soldCountBulkDecrementPort;
     private final ProductStockCountBulkDecrementPort stockCountBulkDecrementPort;
-
-    private final ProductEventPublicationPort eventPort;
 
     @Override
     @Transactional
@@ -59,7 +55,7 @@ class ProductVariantRemovalForVariantService
         ProductVariantGuard.ensureAtLeastOneVariantRemains(product, idList);
 
         final var next = product.removeVariantById(variantId);
-        final var saved = this.updatePort.update(next);
+        this.updatePort.update(next);
 
         if (cmd.productSoldCountDecrement() > 0) {
             final var decrementByProductId = Map.of(productId, cmd.productSoldCountDecrement());
@@ -69,8 +65,5 @@ class ProductVariantRemovalForVariantService
             final var decrementByProductId = Map.of(productId, cmd.productStockCountDecrement());
             this.stockCountBulkDecrementPort.decreaseAll(decrementByProductId);
         }
-
-        final var event = new ProductInfoUpdatedEvent(saved.getId());
-        this.eventPort.publishEvent(event);
     }
 }
