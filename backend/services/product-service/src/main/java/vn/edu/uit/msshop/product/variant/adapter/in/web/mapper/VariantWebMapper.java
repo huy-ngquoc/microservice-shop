@@ -15,6 +15,7 @@ import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.Varia
 import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantRestorationByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.command.lifecycle.VariantSoftDeletionByIdCommand;
 import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantActiveListingQuery;
+import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantSoftDeletedListingQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantActiveBulkLookupByIdsQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantSoftDeletedLookupByIdQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.query.lookup.VariantActiveLookupByIdQuery;
@@ -75,6 +76,29 @@ public class VariantWebMapper {
         return new VariantActiveListingQuery(
                 pageRequest,
                 targetList);
+    }
+
+    public VariantSoftDeletedListingQuery toSoftDeletedListingQuery(
+            int page,
+
+            int size,
+
+            @Nullable
+            String sortBy,
+
+            PageRequestDto.Direction direction,
+
+            @Nullable
+            UUID productId) {
+        final var pageRequest = new PageRequestDto(
+                page,
+                size,
+                sortBy,
+                direction);
+
+        return new VariantSoftDeletedListingQuery(
+                pageRequest,
+                productId);
     }
 
     public VariantActiveBulkLookupByIdsQuery toActiveBulkLookupByIdsQuery(
