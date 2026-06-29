@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.varian
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedBulkLookupByIdsPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedListingPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
@@ -31,6 +33,7 @@ import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 public class VariantQueryPersistenceAdapter
         implements
         VariantActiveListingPort,
+        VariantSoftDeletedListingPort,
         VariantActiveLookupByIdPort,
         VariantSoftDeletedLookupByIdPort,
         VariantActiveBulkLookupByIdsPort,
@@ -54,7 +57,39 @@ public class VariantQueryPersistenceAdapter
         if (targetList.isEmpty()) {
             page = this.repository.findAllByDeletionTimeIsNull(pageable);
         } else {
-            page = this.repository.findAllByTargetsInAndDeletionTimeIsNull(targetList, pageable);
+            page = this.repository.findAllByTargetsInAndDeletionTimeIsNull(
+                    targetList,
+                    pageable);
+        }
+
+        final var variants = page.getContent().stream()
+                .map(this.mapper::toDomain)
+                .toList();
+
+        return new PageResponseDto<>(
+                variants,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements());
+    }
+
+    @Override
+    public PageResponseDto<Variant> listSoftDeleted(
+            final PageRequestDto pageRequest,
+
+            @Nullable
+            final VariantProductId productId) {
+        final var pageable = PageRequests.toPageable(
+                pageRequest,
+                VariantDocument.Fields.id);
+
+        final Page<VariantDocument> page;
+        if (productId == null) {
+            page = this.repository.findAllByDeletionTimeIsNotNull(pageable);
+        } else {
+            page = this.repository.findAllByProductIdAndDeletionTimeIsNotNull(
+                    productId.value(),
+                    pageable);
         }
 
         final var variants = page.getContent().stream()

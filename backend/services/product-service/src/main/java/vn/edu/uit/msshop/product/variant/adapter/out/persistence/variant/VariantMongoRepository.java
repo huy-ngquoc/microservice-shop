@@ -15,6 +15,13 @@ public interface VariantMongoRepository
     Page<VariantDocument> findAllByDeletionTimeIsNull(
             final Pageable pageable);
 
+    Page<VariantDocument> findAllByDeletionTimeIsNotNull(
+            final Pageable pageable);
+
+    Page<VariantDocument> findAllByProductIdAndDeletionTimeIsNotNull(
+            final UUID productId,
+            final Pageable pageable);
+
     Page<VariantDocument> findAllByTargetsInAndDeletionTimeIsNull(
             final Collection<String> targets,
             final Pageable pageable);
