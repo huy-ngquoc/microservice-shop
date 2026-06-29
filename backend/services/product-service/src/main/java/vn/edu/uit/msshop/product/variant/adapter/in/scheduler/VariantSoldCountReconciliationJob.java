@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.count.VariantSoldCountBulkReconciliationUseCase;
 
 @Component
@@ -19,6 +20,10 @@ public class VariantSoldCountReconciliationJob {
     @Scheduled(
             fixedRate = 2,
             timeUnit = TimeUnit.HOURS)
+    @SchedulerLock(
+            name = "variantSoldCountReconciliation",
+            lockAtMostFor = "PT30M",
+            lockAtLeastFor = "PT1M")
     public void reconcile() {
         try {
             this.soldCountBulkReconciliationUSeCase.reconcileAll();
