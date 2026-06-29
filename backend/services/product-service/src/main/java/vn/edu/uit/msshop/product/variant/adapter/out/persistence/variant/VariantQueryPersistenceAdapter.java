@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantActiveListingQuery;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveListingPort;
@@ -22,7 +21,9 @@ import vn.edu.uit.msshop.product.variant.application.port.out.persistence.varian
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 import vn.edu.uit.msshop.shared.adapter.out.persistence.PageRequests;
+import vn.edu.uit.msshop.shared.application.dto.request.PageRequestDto;
 import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Component
@@ -42,11 +43,12 @@ public class VariantQueryPersistenceAdapter
 
     @Override
     public PageResponseDto<Variant> listActive(
-            final VariantActiveListingQuery query) {
-        final var targetList = query.targetList();
+            final PageRequestDto pageRequest,
+            final VariantTargets targets) {
         final var pageable = PageRequests.toPageable(
-                query.pageRequest(),
+                pageRequest,
                 VariantDocument.Fields.id);
+        final var targetList = targets.unwrap();
 
         final Page<VariantDocument> page;
         if (targetList.isEmpty()) {
