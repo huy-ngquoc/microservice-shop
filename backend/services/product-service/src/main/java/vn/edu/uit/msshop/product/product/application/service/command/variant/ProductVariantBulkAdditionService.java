@@ -25,6 +25,7 @@ import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVarian
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVariantGuard;
 import vn.edu.uit.msshop.product.product.application.service.command.support.ProductVersionGuard;
 import vn.edu.uit.msshop.product.product.domain.model.Product;
+import vn.edu.uit.msshop.product.product.domain.model.ProductVariants;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVariantTraits;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductVersion;
@@ -97,6 +98,9 @@ class ProductVariantBulkAdditionService
             final Product product,
             final List<NewProductVariantData> newVariantList) {
         ProductVariantGuard.ensureNotProductSimple(product);
+        ProductVariantBulkAdditionService.ensureWithinMaxAmount(
+                product,
+                newVariantList);
 
         final var expectedTraitCount = product.getOptions().size();
         final var seenCombinations = new HashSet<List<String>>();
@@ -110,6 +114,17 @@ class ProductVariantBulkAdditionService
                 throw new BusinessRuleException(
                         "Duplicate trait combination within the request: " + traits.unwrap());
             }
+        }
+    }
+
+    private static void ensureWithinMaxAmount(
+            final Product product,
+            final List<NewProductVariantData> newVariantList) {
+        final var resultingTotal = product.getVariants().size() + newVariantList.size();
+        if (resultingTotal > ProductVariants.MAX_AMOUNT) {
+            throw new BusinessRuleException(
+                    "Adding " + newVariantList.size()
+                            + " variants would exceed the maximum of " + ProductVariants.MAX_AMOUNT);
         }
     }
 }
