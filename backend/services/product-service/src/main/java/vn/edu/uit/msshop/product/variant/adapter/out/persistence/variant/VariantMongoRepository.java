@@ -44,6 +44,9 @@ public interface VariantMongoRepository
     List<VariantDocument> findAllByProductIdAndDeletionTimeIsNull(
             final UUID productId);
 
+    long countByProductIdAndDeletionTimeIsNull(
+            final UUID productId);
+
     void deleteAllByProductId(
             final UUID productId);
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveBulkLookupByProductIdPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveCountByProductIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveListingPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveLookupByIdPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantBulkLookupByProductIdPort;
@@ -34,6 +35,7 @@ public class VariantQueryPersistenceAdapter
         implements
         VariantActiveListingPort,
         VariantSoftDeletedListingPort,
+        VariantActiveCountByProductIdPort,
         VariantActiveLookupByIdPort,
         VariantSoftDeletedLookupByIdPort,
         VariantActiveBulkLookupByIdsPort,
@@ -101,6 +103,13 @@ public class VariantQueryPersistenceAdapter
                 page.getNumber(),
                 page.getSize(),
                 page.getTotalElements());
+    }
+
+    @Override
+    public long countActiveByProductId(
+            final VariantProductId productId) {
+        final var jpaProductId = productId.value();
+        return this.repository.countByProductIdAndDeletionTimeIsNull(jpaProductId);
     }
 
     @Override
