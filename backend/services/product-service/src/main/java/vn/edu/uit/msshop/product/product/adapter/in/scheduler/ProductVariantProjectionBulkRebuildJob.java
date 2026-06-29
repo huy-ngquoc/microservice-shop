@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import vn.edu.uit.msshop.product.product.application.port.in.command.variant.ProductVariantProjectionBulkRebuildUseCase;
 
 @Component
@@ -19,6 +20,10 @@ public class ProductVariantProjectionBulkRebuildJob {
     @Scheduled(
             fixedRate = 6,
             timeUnit = TimeUnit.HOURS)
+    @SchedulerLock(
+            name = "productVariantProjectionBulkRebuild",
+            lockAtMostFor = "PT1H",
+            lockAtLeastFor = "PT1M")
     public void rebuild() {
         try {
             this.bulkRebuildUseCase.rebuildAll();
