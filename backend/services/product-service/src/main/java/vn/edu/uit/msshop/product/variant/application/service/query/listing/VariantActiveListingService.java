@@ -21,6 +21,7 @@ import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,10 @@ class VariantActiveListingService
             cacheNames = CacheNames.VARIANT_LIST)
     public PageResponseDto<VariantView> list(
             final VariantActiveListingQuery query) {
-        final var page = this.activeListingPort.listActive(query);
+        final var variantTargets = VariantTargets.of(query.targetList());
+        final var page = this.activeListingPort.listActive(
+                query.pageRequest(),
+                variantTargets);
 
         final var ids = page.items().stream()
                 .map(Variant::getId)
