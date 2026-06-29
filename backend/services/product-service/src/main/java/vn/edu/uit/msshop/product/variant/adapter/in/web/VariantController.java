@@ -16,6 +16,7 @@ import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.V
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantSoftDeletionByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.command.lifecycle.VariantInfoUpdateByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.listing.VariantActiveListingUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.listing.VariantSoftDeletedListingUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantActiveLookupByIdUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.in.query.lookup.VariantSoftDeletedLookupByIdUseCase;
 
@@ -35,7 +36,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/variants")
 @RequiredArgsConstructor
 public class VariantController {
+
     private final VariantActiveListingUseCase activeListingUseCase;
+    private final VariantSoftDeletedListingUseCase softDeletedListingUseCase;
     private final VariantActiveLookupByIdUseCase activeLookupByIdUseCase;
     private final VariantSoftDeletedLookupByIdUseCase softDeletedLookupByIdUseCase;
     private final VariantInfoUpdateByIdUseCase updateInfoByIdUseCase;
@@ -76,6 +79,41 @@ public class VariantController {
                 direction,
                 targets);
         final var views = this.activeListingUseCase.list(query);
+
+        final var response = views.map(this.mapper::toResponse);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/deleted")
+    public ResponseEntity<PageResponseDto<VariantResponse>> listSoftDeleted(
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_PAGE_STRING)
+            final int page,
+
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_SIZE_STRING)
+            final int size,
+
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final String sortBy,
+
+            @RequestParam(
+                    defaultValue = PageRequestDto.DEFAULT_DIRECTION_STRING)
+            final PageRequestDto.Direction direction,
+
+            @RequestParam(
+                    required = false)
+            @Nullable
+            final UUID productId) {
+        final var query = this.mapper.toSoftDeletedListingQuery(
+                page,
+                size,
+                sortBy,
+                direction,
+                productId);
+        final var views = this.softDeletedListingUseCase.list(query);
 
         final var response = views.map(this.mapper::toResponse);
         return ResponseEntity.ok(response);
