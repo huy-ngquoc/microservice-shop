@@ -3,32 +3,30 @@ package vn.edu.uit.msshop.product.variant.application.service.query.listing;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
-import vn.edu.uit.msshop.product.bootstrap.config.cache.CacheNames;
-import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantActiveListingQuery;
+import vn.edu.uit.msshop.product.variant.application.dto.query.listing.VariantSoftDeletedListingQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.view.VariantView;
 import vn.edu.uit.msshop.product.variant.application.mapper.VariantViewMapper;
-import vn.edu.uit.msshop.product.variant.application.port.in.query.listing.VariantActiveListingUseCase;
+import vn.edu.uit.msshop.product.variant.application.port.in.query.listing.VariantSoftDeletedListingUseCase;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantSoldCountBulkLookupByVariantIdsPort;
 import vn.edu.uit.msshop.product.variant.application.port.out.persistence.count.query.VariantStockCountBulkLookupByVariantIdsPort;
-import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantActiveListingPort;
+import vn.edu.uit.msshop.product.variant.application.port.out.persistence.variant.query.VariantSoftDeletedListingPort;
 import vn.edu.uit.msshop.product.variant.domain.model.Variant;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantSoldCount;
 import vn.edu.uit.msshop.product.variant.domain.model.VariantStockCount;
 import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantId;
-import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantTargets;
+import vn.edu.uit.msshop.product.variant.domain.model.valueobject.VariantProductId;
+import vn.edu.uit.msshop.shared.application.dto.response.PageResponseDto;
 
 @Service
 @RequiredArgsConstructor
-class VariantActiveListingService
-        implements VariantActiveListingUseCase {
+class VariantSoftDeletedListingService
+        implements VariantSoftDeletedListingUseCase {
 
-    private final VariantActiveListingPort activeListingPort;
+    private final VariantSoftDeletedListingPort softDeletedListingPort;
     private final VariantSoldCountBulkLookupByVariantIdsPort soldCountBulkLookupByIdsPort;
     private final VariantStockCountBulkLookupByVariantIdsPort stockCountBulkLookupByIdsPort;
 
@@ -37,14 +35,12 @@ class VariantActiveListingService
     @Override
     @Transactional(
             readOnly = true)
-    @Cacheable(
-            cacheNames = CacheNames.VARIANT_LIST)
     public PageResponseDto<VariantView> list(
-            final VariantActiveListingQuery query) {
-        final var variantTargets = VariantTargets.of(query.targetList());
-        final var page = this.activeListingPort.listActive(
+            final VariantSoftDeletedListingQuery query) {
+        final var productId = VariantProductId.ofNullable(query.productId());
+        final var page = this.softDeletedListingPort.listSoftDeleted(
                 query.pageRequest(),
-                variantTargets);
+                productId);
 
         final var variantIdSet = page.items().stream()
                 .map(Variant::getId)
