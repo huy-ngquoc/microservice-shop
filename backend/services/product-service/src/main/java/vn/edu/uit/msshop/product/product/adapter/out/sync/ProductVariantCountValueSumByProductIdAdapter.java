@@ -3,8 +3,8 @@ package vn.edu.uit.msshop.product.product.adapter.out.sync;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantSoldCountSumByProductIdPort;
-import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantStockCountSumByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantSoldCountValueSumByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.sync.ProductVariantStockCountValueSumByProductIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
 import vn.edu.uit.msshop.product.variant.application.dto.query.count.VariantSoldCountValueSumByProductIdQuery;
 import vn.edu.uit.msshop.product.variant.application.dto.query.count.VariantStockCountValueSumByProductIdQuery;
@@ -15,8 +15,8 @@ import vn.edu.uit.msshop.product.variant.application.port.in.query.count.Variant
 @RequiredArgsConstructor
 class ProductVariantCountValueSumByProductIdAdapter
         implements
-        ProductVariantSoldCountSumByProductIdPort,
-        ProductVariantStockCountSumByProductIdPort {
+        ProductVariantSoldCountValueSumByProductIdPort,
+        ProductVariantStockCountValueSumByProductIdPort {
 
     private final VariantSoldCountValueSumByProductIdUseCase soldCountSumUseCase;
     private final VariantStockCountValueSumByProductIdUseCase stockCountSumUseCase;
