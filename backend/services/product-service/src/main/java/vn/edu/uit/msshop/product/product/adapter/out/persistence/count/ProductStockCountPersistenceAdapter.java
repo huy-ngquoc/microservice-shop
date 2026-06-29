@@ -21,10 +21,12 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountDeletionByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountBulkIncrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountInitializationByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductStockCountValueSetByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountBulkLookupByProductIdsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductStockCountLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductStockCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductStockCountValue;
 
 @Component
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ class ProductStockCountPersistenceAdapter
         ProductStockCountLookupByProductIdPort,
         ProductStockCountBulkLookupByProductIdsPort,
         ProductStockCountInitializationByProductIdPort,
+        ProductStockCountValueSetByProductIdPort,
         ProductStockCountBulkIncrementPort,
         ProductStockCountBulkDecrementPort,
         ProductStockCountDeletionByProductIdPort {
@@ -82,6 +85,17 @@ class ProductStockCountPersistenceAdapter
                 .setOnInsert(ProductStockCountDocument.Fields.lastUpdatedTime, Instant.now());
 
         return this.upsertAndReturnDomain(query, update);
+    }
+
+    @Override
+    public void setByProductId(
+            final ProductId productId,
+            final ProductStockCountValue value) {
+        final var query = new Query(Criteria.where("_id").is(productId.value()));
+        final var update = new Update()
+                .set(ProductStockCountDocument.Fields.value, value.value())
+                .set(ProductStockCountDocument.Fields.lastUpdatedTime, Instant.now());
+        this.mongoTemplate.upsert(query, update, ProductStockCountDocument.class);
     }
 
     @Override

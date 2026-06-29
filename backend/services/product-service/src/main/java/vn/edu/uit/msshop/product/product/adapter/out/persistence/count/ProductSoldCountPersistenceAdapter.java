@@ -21,10 +21,12 @@ import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountDeletionByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountBulkIncrementPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountInitializationByProductIdPort;
+import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.command.ProductSoldCountValueSetByProductIdPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountBulkLookupByProductIdsPort;
 import vn.edu.uit.msshop.product.product.application.port.out.persistence.count.query.ProductSoldCountLookupByProductIdPort;
 import vn.edu.uit.msshop.product.product.domain.model.ProductSoldCount;
 import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductId;
+import vn.edu.uit.msshop.product.product.domain.model.valueobject.ProductSoldCountValue;
 
 @Component
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ class ProductSoldCountPersistenceAdapter
         ProductSoldCountLookupByProductIdPort,
         ProductSoldCountBulkLookupByProductIdsPort,
         ProductSoldCountInitializationByProductIdPort,
+        ProductSoldCountValueSetByProductIdPort,
         ProductSoldCountBulkIncrementPort,
         ProductSoldCountBulkDecrementPort,
         ProductSoldCountDeletionByProductIdPort {
@@ -81,6 +84,17 @@ class ProductSoldCountPersistenceAdapter
                 .setOnInsert(ProductSoldCountDocument.Fields.lastUpdatedTime, Instant.now());
 
         return this.upsertAndReturnDomain(query, update);
+    }
+
+    @Override
+    public void setByProductId(
+            final ProductId productId,
+            final ProductSoldCountValue value) {
+        final var query = new Query(Criteria.where("_id").is(productId.value()));
+        final var update = new Update()
+                .set(ProductSoldCountDocument.Fields.value, value.value())
+                .set(ProductSoldCountDocument.Fields.lastUpdatedTime, Instant.now());
+        this.mongoTemplate.upsert(query, update, ProductSoldCountDocument.class);
     }
 
     @Override
