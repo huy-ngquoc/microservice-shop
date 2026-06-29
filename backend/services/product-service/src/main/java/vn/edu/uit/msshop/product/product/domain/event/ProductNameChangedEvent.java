@@ -37,14 +37,17 @@ public final class ProductNameChangedEvent
                 product.getName());
     }
 
+    @Override
     public UUID getEventId() {
         return this.eventId;
     }
 
+    @Override
     public Instant getOccurrenceTime() {
         return this.occurrenceTime;
     }
 
+    @Override
     public ProductId getProductId() {
         return this.productId;
     }
