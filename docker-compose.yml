@@ -639,13 +639,22 @@ services:
             start_period: 20s
         volumes:
             - mongo_order:/data
-            - ./mongodb.key:/data/configdb/mongodb.key
         environment:
             - MONGO_INITDB_ROOT_USERNAME=alibou
             - MONGO_INITDB_ROOT_PASSWORD=alibou
             - TZ=UTC
         command: mongod --replSet rs0 --keyFile /data/configdb/mongodb.key --bind_ip_all
-        entrypoint: [ "/bin/sh", "-c", "chown 999:999 /data/configdb/mongodb.key && chmod 400 /data/configdb/mongodb.key && exec docker-entrypoint.sh $$@" ]
+        entrypoint:
+            - /bin/sh
+            - -c
+            - |
+                if [ ! -s /data/configdb/mongodb.key ]; then
+                  mkdir -p /data/configdb
+                  openssl rand -base64 756 > /data/configdb/mongodb.key
+                fi
+                chown 999:999 /data/configdb/mongodb.key
+                chmod 400 /data/configdb/mongodb.key
+                exec docker-entrypoint.sh "$$@"
         networks:
             - microservices-net
         restart: unless-stopped

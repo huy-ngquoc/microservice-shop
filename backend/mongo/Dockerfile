@@ -1,6 +1,5 @@
 FROM mongo:8
-
-COPY keyfile/mongo-keyfile /etc/mongo/keyfile
-
-RUN chown mongodb:mongodb /etc/mongo/keyfile \
+RUN mkdir -p /etc/mongo \
+    && openssl rand -base64 756 > /etc/mongo/keyfile \
+    && chown mongodb:mongodb /etc/mongo/keyfile \
     && chmod 400 /etc/mongo/keyfile
