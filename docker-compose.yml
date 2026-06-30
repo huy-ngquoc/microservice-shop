@@ -387,9 +387,9 @@ services:
             - REDIS_PRODUCT_HOST=${REDIS_PRODUCT_HOST}
             - REDIS_PORT=${REDIS_PORT}
             - ZIPKIN_URL=${ZIPKIN_URL:-http://ms_zipkin:9411/api/v2/spans}
+            - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
             - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
-            - CLOUDINARY_SECRET_KEY=${CLOUDINARY_SECRET_KEY}
-            - CLOUDINARY_NAME=${CLOUDINARY_NAME}
+            - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
         deploy:
             replicas: 2
             resources:
@@ -648,13 +648,13 @@ services:
             - /bin/sh
             - -c
             - |
-                if [ ! -s /data/configdb/mongodb.key ]; then
-                  mkdir -p /data/configdb
-                  openssl rand -base64 756 > /data/configdb/mongodb.key
-                fi
-                chown 999:999 /data/configdb/mongodb.key
-                chmod 400 /data/configdb/mongodb.key
-                exec docker-entrypoint.sh "$$@"
+              if [ ! -s /data/configdb/mongodb.key ]; then
+                mkdir -p /data/configdb
+                openssl rand -base64 756 > /data/configdb/mongodb.key
+              fi
+              chown 999:999 /data/configdb/mongodb.key
+              chmod 400 /data/configdb/mongodb.key
+              exec docker-entrypoint.sh "$$@"
         networks:
             - microservices-net
         restart: unless-stopped
