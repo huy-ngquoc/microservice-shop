@@ -118,3 +118,8 @@ eureka:
         prefer-ip-address: true
         lease-renewal-interval-in-seconds: 5 
         lease-expiration-duration-in-seconds: 10
+
+cloudinary:
+    cloud-name: ${CLOUDINARY_CLOUD_NAME}
+    api-key: ${CLOUDINARY_API_KEY}
+    api-secret: ${CLOUDINARY_API_SECRET}
