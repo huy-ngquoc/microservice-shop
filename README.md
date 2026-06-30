@@ -201,9 +201,11 @@ microservice-shop/
 
 ### Run the stack
 1. Clone the repository.
-2. Create a `.env` at the repo root with the variables referenced in `docker-compose.yml`
-   (e.g. `CONFIG_SERVER_URL`, `DISCOVERY_SERVER_URL`, `KAFKA_URL`, the per‑service DB URLs/hosts,
-   `REDIS_*`, `KEYCLOAK_URL`, `CLOUDINARY_*`, `PAYOS_*`).
+2. Copy `.env.example` to `.env` and fill in the secrets (Keycloak client secret, Cloudinary,
+   PayOS). The non‑secret values are already wired for the Docker Compose network:
+   ```sh
+   cp .env.example .env
+   ```
 3. Start everything:
    ```sh
    docker compose up -d

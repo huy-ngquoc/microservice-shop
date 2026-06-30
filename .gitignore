@@ -23,6 +23,7 @@
 # Environment files
 **/*.env
 .env*
+!.env.example
 
 # Logs and crash dumps
 **/*.log
