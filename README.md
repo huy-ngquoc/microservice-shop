@@ -136,7 +136,7 @@ The parent POM runs **Error Prone + NullAway at `ERROR`**, but scoped:
 - Convention: place `@Nullable` **before the return type** — `public @Nullable Type m()` — not on
   the access‑modifier line.
 - **Formatting runs automatically on every build** (`net.revelc.code.formatter`, config
-  `backend/services/java-formatter.xml`). Run it standalone with `./mvnw.cmd formatter:format`.
+  `backend/services/java-formatter.xml`). Run it standalone with `./mvnw formatter:format`.
 
 ## Services
 
@@ -228,24 +228,24 @@ microservice-shop/
 
 ## Build & test
 
-Run from `backend/services/` using the Maven Wrapper (`mvnw.cmd` on Windows):
+Run from `backend/services/` using the bundled Maven Wrapper (`./mvnw`; on Windows use `mvnw.cmd`):
 
 ```sh
 # Build the whole reactor
-./mvnw.cmd clean install
+./mvnw clean install
 
 # Build one service together with its changed dependencies
-./mvnw.cmd -pl product-service -am clean install
+./mvnw -pl product-service -am clean install
 
 # Tests for one service
-./mvnw.cmd -pl product-service test
+./mvnw -pl product-service test
 
 # A single test class / method
-./mvnw.cmd -pl product-service test -Dtest=CloudinaryPropertiesTest
-./mvnw.cmd -pl product-service test -Dtest=CloudinaryPropertiesTest#methodName
+./mvnw -pl product-service test -Dtest=CloudinaryPropertiesTest
+./mvnw -pl product-service test -Dtest=CloudinaryPropertiesTest#methodName
 
 # Format the code (also runs automatically on every build)
-./mvnw.cmd formatter:format
+./mvnw formatter:format
 ```
 
 > Nested modules need their folder path with `-pl` (e.g. `-pl account-service/account`).
