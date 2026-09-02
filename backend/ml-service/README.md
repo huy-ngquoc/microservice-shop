@@ -33,60 +33,39 @@ resolved from `app.ml-service.url` (env var `ML_SERVICE_URL`):
 
 ## Model weights
 
-The two weight files are **not** committed (~137 MiB in total):
+Two files sit next to `server.py`, ~137 MiB in total:
 
 | File | Size |
 | --- | --- |
-| `models/gender_effb3.pth` | 41 MiB |
-| `models/best_body_shape_resnet50_new.h5` | 96 MiB |
+| `gender_effb3.pth` | 41 MiB |
+| `best_body_shape_resnet50_new.h5` | 96 MiB |
 
-They are kept out of git on purpose. Committing them would bloat every
-clone permanently, and Git LFS would tie the repo to one hosting platform:
-LFS support, storage quotas and bandwidth limits differ from host to host,
-and some hosts have none. Keeping the weights outside git means this repo
-can be pushed to any git host, self-hosted included, with no extra setup.
-
-Fetch them with the helper script. It reads `models/manifest.json`,
-skips files that already match their checksum, and verifies SHA256 after
-fetching:
-
-```powershell
-# Windows
-.\scripts\fetch-models.ps1
-```
+They are tracked in **Git LFS**, so on a machine with `git-lfs` installed a
+plain `git clone` already brings them down and there is nothing else to do.
+Check that the real files arrived, not the pointers:
 
 ```bash
-# Linux / macOS / Git Bash
-bash scripts/fetch-models.sh
+git lfs ls-files
 ```
 
-The script looks for the weights in this order:
-
-| Source | How |
-| --- | --- |
-| A local folder | `ML_MODELS_SRC=/path/to/weights` — copies, no network |
-| A mirror you host | `ML_MODELS_BASE_URL=https://example.com/weights` — fetches `<base>/<filename>` |
-| `manifest.json` | The `url` field of each entry, if it is filled in |
-
-```powershell
-$env:ML_MODELS_SRC = "d:\path\to\weights"
-.\scripts\fetch-models.ps1
-
-$env:ML_MODELS_BASE_URL = "https://example.com/weights"
-.\scripts\fetch-models.ps1
-```
+If either file is a few hundred bytes of text starting with
+`version https://git-lfs.github.com/spec/v1`, the clone ran without LFS and
+the pointer files were checked out instead. Fix it with:
 
 ```bash
-ML_MODELS_SRC=/path/to/weights bash scripts/fetch-models.sh
-ML_MODELS_BASE_URL=https://example.com/weights bash scripts/fetch-models.sh
+git lfs install
+git lfs pull
 ```
 
-> `url` in `manifest.json` is `null` by default, so nothing in this repo
-> points at a particular host. Mirror the weights wherever suits you —
-> a release asset, a package registry, an object store,
-> a plain web server — and either hand people `ML_MODELS_BASE_URL` or fill
-> `url` in. Whichever route is used, the SHA256 in the manifest is checked,
-> so a wrong or tampered mirror is caught.
+> GitHub's free tier gives 1 GB of LFS storage and 1 GB of bandwidth per
+> month. At ~137 MiB per clone that is roughly seven full clones a month
+> before LFS is throttled, CI runs included.
+
+The weights are opaque: there is no training code or dataset in this
+repo, so they cannot be regenerated here. What *is* recorded, in
+`server.py`, is everything needed to use them — the `efficientnet_b3`
+architecture, the class label order, and the preprocessing each model
+expects.
 
 ## Running locally (uv)
 
@@ -96,7 +75,6 @@ down the multi-GB CUDA build.
 
 ```bash
 uv sync
-bash scripts/fetch-models.sh
 uv run python server.py
 ```
 
@@ -104,7 +82,7 @@ Environment variables:
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `MODEL_DIR` | `models` | Directory holding the weights |
+| `MODEL_DIR` | `.` | Directory holding the weights |
 | `PORT` | `9090` | Listening port |
 
 Quick check:
@@ -127,10 +105,10 @@ docker compose --profile ml up -d ml-service
 
 Things worth knowing:
 
-- Weights are **mounted** from `backend/ml-service/models` rather than
-  baked into the image, so run `fetch-models` first —
-  otherwise the container exits immediately with a "weight not found"
-  message.
+- The two weight files are **mounted** from the working tree rather than
+  baked into the image. LFS normally puts them there at clone time; if
+  only the pointer files are present the container exits immediately with
+  a "weight not found" message, so run `git lfs pull` first.
 - The image uses `tensorflow-cpu` plus CPU torch wheels and lands at
   roughly 3.3 GB; the first build takes a while, most of it spent
   downloading ~450 MB of wheels. Rebuilds reuse pip's cache mount,

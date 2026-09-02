@@ -273,7 +273,8 @@ services:
                     memory: 256M
     # Python ML server -- only started when the `ml` profile is enabled:
     #   docker compose --profile ml up -d ml-service
-    # Weights are not in the image; run backend/ml-service/scripts/fetch-models first.
+    # Weights are not in the image; they are mounted from the working tree, so
+    # `git lfs pull` has to have brought them down first.
     ml-service:
         profiles: [ "ml" ]
         build:
@@ -282,9 +283,10 @@ services:
         ports:
             - "9090:9090"
         volumes:
-            - ./backend/ml-service/models:/app/models:ro
+            - ./backend/ml-service/gender_effb3.pth:/app/gender_effb3.pth:ro
+            - ./backend/ml-service/best_body_shape_resnet50_new.h5:/app/best_body_shape_resnet50_new.h5:ro
         environment:
-            - MODEL_DIR=/app/models
+            - MODEL_DIR=/app
             - PORT=9090
         networks:
             - microservices-net

@@ -15,18 +15,34 @@ from tensorflow.keras.applications.resnet50 import preprocess_input
 # ==========================================
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Directory holding the model weights. Weights are not tracked in git -- see scripts/fetch-models.
-MODEL_DIR = os.environ.get("MODEL_DIR", "models")
+# Directory holding the model weights. They sit next to this file and are
+# tracked in Git LFS; MODEL_DIR exists so the container can point elsewhere.
+MODEL_DIR = os.environ.get("MODEL_DIR", ".")
 PORT = int(os.environ.get("PORT", "9090"))
 
 GENDER_MODEL_PATH = os.path.join(MODEL_DIR, "gender_effb3.pth")
 BODY_SHAPE_MODEL_PATH = os.path.join(MODEL_DIR, "best_body_shape_resnet50_new.h5")
 
+# A clone made without git-lfs leaves ~130-byte pointer files in place of the
+# real weights. They are files, so an existence check alone lets them through
+# and the failure surfaces much later as an unrelated-looking unpickling error.
+# The smallest real weight here is 41 MB, so a size floor catches the pointers
+# without depending on the LFS pointer format, and catches truncated downloads
+# for free.
+MIN_WEIGHT_BYTES = 1024 * 1024
+
 for path in (GENDER_MODEL_PATH, BODY_SHAPE_MODEL_PATH):
     if not os.path.isfile(path):
         raise SystemExit(
             f"Model weight not found: {path}\n"
-            "Run scripts/fetch-models.ps1 (Windows) or scripts/fetch-models.sh (Linux/macOS) first."
+            "Weights are tracked in Git LFS; run `git lfs pull` to fetch them."
+        )
+    size = os.path.getsize(path)
+    if size < MIN_WEIGHT_BYTES:
+        raise SystemExit(
+            f"{path} is only {size} bytes, too small to be a model weight.\n"
+            "It is most likely a Git LFS pointer left by a clone made without\n"
+            "LFS; run `git lfs install && git lfs pull`."
         )
 
 # --- Gender model (PyTorch) ---

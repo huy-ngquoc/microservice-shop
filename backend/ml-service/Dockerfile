@@ -19,8 +19,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 COPY server.py .
 
-# Weights are NOT baked into the image -- they are mounted as a volume (see docker-compose.yml).
-ENV MODEL_DIR=/app/models \
+# Weights are NOT baked into the image -- they are mounted next to server.py
+# at run time (see docker-compose.yml). MODEL_DIR is set explicitly rather than
+# relying on the "." default so the server does not depend on its own cwd.
+ENV MODEL_DIR=/app \
     PORT=9090 \
     PYTHONUNBUFFERED=1
 
