@@ -6,20 +6,20 @@ Load and stress testing for microservice-shop using Apache JMeter.
 
 ```
 stress-test/
-├── scripts/                 # JMeter test plans (.jmx)
-│   └── product-service/
-│       ├── get-products.jmx      # Simple read stress test
-│       ├── crud-sequential.jmx   # Sequential CRUD flow verification
-│       └── crud-stress.jmx       # Parallel CRUD stress test
-├── config/                  # Environment configs
-│   ├── crud-sequential.properties
-│   ├── crud-stress-extreme.properties
-│   ├── crud-stress-heavy.properties
-│   ├── crud-stress-light.properties
-│   └── crud-stress-medium.properties
-├── data/                    # Test data (CSV, JSON payloads)
-├── report/                  # Generated HTML reports (gitignored)
-└── results/                 # Raw JTL results (gitignored)
++-- scripts/                 # JMeter test plans (.jmx)
+|   \-- product-service/
+|       +-- get-products.jmx      # Simple read stress test
+|       +-- crud-sequential.jmx   # Sequential CRUD flow verification
+|       \-- crud-stress.jmx       # Parallel CRUD stress test
++-- config/                  # Environment configs
+|   +-- crud-sequential.properties
+|   +-- crud-stress-extreme.properties
+|   +-- crud-stress-heavy.properties
+|   +-- crud-stress-light.properties
+|   \-- crud-stress-medium.properties
++-- data/                    # Test data (CSV, JSON payloads)
++-- report/                  # Generated HTML reports (gitignored)
+\-- results/                 # Raw JTL results (gitignored)
 ```
 
 ## Prerequisites
@@ -47,7 +47,7 @@ jmeter -n -t scripts/product-service/get-products.jmx \
 | Script | Description | Default Config |
 |--------|-------------|----------------|
 | `get-products.jmx` | GET /products with random pagination | 100 users, 5 min |
-| `crud-sequential.jmx` | Sequential CRUD: Create → Read → Update → Delete | 5 users, 10 loops |
+| `crud-sequential.jmx` | Sequential CRUD: Create -> Read -> Update -> Delete | 5 users, 10 loops |
 | `crud-stress.jmx` | Parallel CRUD with 4 thread groups | 67 total users, 3 min |
 
 ### CRUD Sequential Test
@@ -58,8 +58,8 @@ Tests the full CRUD lifecycle in sequence:
    - Create Product with Variant
    - Query Product List, Product by ID, Variant by ID, Variant List
    - Update Product, Update Variant
-   - Soft Delete Variant → Restore
-   - Soft Delete Product → Query Deleted → Hard Delete
+   - Soft Delete Variant -> Restore
+   - Soft Delete Product -> Query Deleted -> Hard Delete
 3. **Teardown**: Cleans up test Brand & Category
 
 ```bash
@@ -81,8 +81,8 @@ Parallel stress test simulating realistic mixed workload:
 |--------------|-------|-------------|-------------|
 | Writers | 10 | Continuously create products | 0s |
 | Readers | 50 | Random read operations (list, get by ID) | 5s |
-| Updaters | 5 | Fetch → Update products/variants | 10s |
-| Deleters | 2 | Soft delete → Hard delete | 30s |
+| Updaters | 5 | Fetch -> Update products/variants | 10s |
+| Deleters | 2 | Soft delete -> Hard delete | 30s |
 
 ```bash
 # Run with defaults (3 min, 67 total users)
