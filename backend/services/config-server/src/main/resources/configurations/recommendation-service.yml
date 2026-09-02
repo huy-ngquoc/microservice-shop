@@ -37,3 +37,7 @@ app:
             service-name: ${spring.application.name}
             sampling-probability: 0.1
             zipkin-endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+    ml-service:
+        # Default: the ML server runs manually on the host (see backend/ml-service/README.md).
+        # Under `docker compose --profile ml`, set ML_SERVICE_URL=http://ml-service:9090
+        url: ${ML_SERVICE_URL:http://host.docker.internal:9090}

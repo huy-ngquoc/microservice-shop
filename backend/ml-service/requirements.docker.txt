@@ -1,0 +1,11 @@
+# Dependency set used by the Linux image (see Dockerfile).
+# It differs from pyproject.toml in using `tensorflow-cpu` instead of `tensorflow`:
+# on Linux the `tensorflow` wheel drags in the full CUDA runtime (~2GB) that this server never uses.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+torch==2.12.1+cpu
+torchvision==0.27.1+cpu
+timm==1.0.27
+tensorflow-cpu==2.21.0
+numpy==2.2.6
+pillow==12.2.0
