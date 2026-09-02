@@ -51,3 +51,14 @@ QODER.md
 .mcp.json
 .opencode.json
 .github/code-review-graph.instruction.md
+
+# Python (backend/ml-service)
+**/.venv/
+**/__pycache__/
+*.py[cod]
+
+# ML model weights -- fetched via backend/ml-service/scripts/fetch-models
+*.h5
+*.pth
+*.pt
+*.onnx
