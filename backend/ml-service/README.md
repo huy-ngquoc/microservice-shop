@@ -149,9 +149,11 @@ Things worth knowing:
 
 There are deliberately two of them:
 
-| File | Used by | Difference |
-| --- | --- | --- |
-| `pyproject.toml` + `uv.lock` | local dev (`uv sync`) | `tensorflow` |
-| `requirements.docker.txt` | the Docker image | `tensorflow-cpu` |
+| File | Used by | TensorFlow | torch / torchvision |
+| --- | --- | --- | --- |
+| `pyproject.toml` + `uv.lock` | local dev (`uv sync`) | `tensorflow` | plain version, CPU wheels come from `[tool.uv.sources]` |
+| `requirements.docker.txt` | the Docker image | `tensorflow-cpu` | explicit `+cpu` local version |
 
-Keep their pins in sync when upgrading.
+Keep their pins in sync when upgrading. Do **not** add `+cpu` to the
+`pyproject.toml` pins: the PyTorch CPU index publishes that local version
+only for Linux and Windows, so pinning it there breaks `uv sync` on macOS.
