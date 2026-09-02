@@ -10,7 +10,7 @@ import vn.uit.edu.msshop.recommendation.adapter.in.web.response.AIServerResponse
 
 @FeignClient(
         name = "ML-Service",
-        url = "http://host.docker.internal:9090")
+        url = "${app.ml-service.url}")
 public interface MLServerCaller {
     @PostMapping(
             value = "/",

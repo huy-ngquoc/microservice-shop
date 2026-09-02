@@ -3,3 +3,8 @@
 
 *.jar binary
 *.class binary
+
+*.h5 binary
+*.pth binary
+*.pt binary
+*.onnx binary

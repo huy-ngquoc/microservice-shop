@@ -1,0 +1,10 @@
+.venv/
+models/
+scripts/
+__pycache__/
+*.pyc
+*.h5
+*.pth
+README.md
+uv.lock
+pyproject.toml
