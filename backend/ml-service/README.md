@@ -10,7 +10,7 @@ and `backend/stress-test/`.
 | | |
 | --- | --- |
 | `POST /` | Body is **raw image bytes** (`application/octet-stream`) |
-| `GET /health` | `{"status": "ok"}` -- used by the Compose healthcheck |
+| `GET /health` | `{"status": "ok"}` — used by the Compose healthcheck |
 
 `POST /` responds with:
 
@@ -21,9 +21,9 @@ and `backend/stress-test/`.
 }
 ```
 
-- `gender` is one of `Female`, `Male` -- EfficientNet-B3 (PyTorch).
+- `gender` is one of `Female`, `Male` — EfficientNet-B3 (PyTorch).
 - `body_shape` is one of `Apple`, `Hourglass`, `Inverted_triangle`, `Pear`,
-  `Rectangle` -- ResNet50 (Keras).
+  `Rectangle` — ResNet50 (Keras).
 
 Errors return HTTP 500 with `{"status": "error", "message": "..."}`.
 
@@ -64,8 +64,8 @@ The script looks for the weights in this order:
 
 | Source | How |
 | --- | --- |
-| A local folder | `ML_MODELS_SRC=/path/to/weights` -- copies, no network |
-| A mirror you host | `ML_MODELS_BASE_URL=https://example.com/weights` -- fetches `<base>/<filename>` |
+| A local folder | `ML_MODELS_SRC=/path/to/weights` — copies, no network |
+| A mirror you host | `ML_MODELS_BASE_URL=https://example.com/weights` — fetches `<base>/<filename>` |
 | `manifest.json` | The `url` field of each entry, if it is filled in |
 
 ```powershell
@@ -82,9 +82,9 @@ ML_MODELS_BASE_URL=https://example.com/weights bash scripts/fetch-models.sh
 ```
 
 > `url` in `manifest.json` is `null` by default, so nothing in this repo
-> points at a particular host. Mirror the weights wherever suits you --
+> points at a particular host. Mirror the weights wherever suits you —
 > a release asset, a package registry, an object store,
-> a plain web server -- and either hand people `ML_MODELS_BASE_URL` or fill
+> a plain web server — and either hand people `ML_MODELS_BASE_URL` or fill
 > `url` in. Whichever route is used, the SHA256 in the manifest is checked,
 > so a wrong or tampered mirror is caught.
 
@@ -128,7 +128,7 @@ docker compose --profile ml up -d ml-service
 Things worth knowing:
 
 - Weights are **mounted** from `backend/ml-service/models` rather than
-  baked into the image, so run `fetch-models` first --
+  baked into the image, so run `fetch-models` first —
   otherwise the container exits immediately with a "weight not found"
   message.
 - The image uses `tensorflow-cpu` plus CPU torch wheels and lands at
